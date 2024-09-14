@@ -1,0 +1,44 @@
+---
+name: Meeting Minutes Issue Creation
+about: creating an issue for meeting minutes
+title: 'Meeting # - Date'
+labels: ''
+assignees: ''
+
+---
+
+# Meeting #
+**Date:**
+
+## General Notes:
+
+
+## What was discussed:
+-
+-
+-
+-
+
+## What was decided:
+-
+-
+-
+-
+
+## Questions left to answer:
+-
+-
+-
+-
+
+#Tasks Separated:
+**Alex:**
+**Anass:**
+**Facu:**
+**Karin:**
+**Kassem:**
+**Lache:**
+**Mark:**
+**Nicola:**
+**Samy:**
+**Thaneekan:**

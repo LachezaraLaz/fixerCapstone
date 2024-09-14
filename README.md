@@ -8,6 +8,9 @@ A mobile app for small contracts from professionals
 
 
 ## Documentation
+Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXIO0Fo/Untitled?node-id=0-1&t=eFuz29nhecwWK312-1)
+
+## Core Features
 
 
 ## Contributors
@@ -70,9 +73,6 @@ A mobile app for small contracts from professionals
 </table>
 
 ## Programming Languages
-
-
-## Core Features
 
 
 ## License

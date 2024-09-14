@@ -1,9 +1,9 @@
 ---
 name: User Story Issue Creation
-about: Describe this issue template's purpose here.
+about: creating an issue for user story
 title: 'Iteration#-UserStory# : Title'
-labels: ''
-assignees: ''
+labels: userStory
+assignees: LachezaraLaz
 
 ---
 

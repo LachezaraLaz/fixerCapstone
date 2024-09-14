@@ -7,8 +7,11 @@ assignees: ''
 
 ---
 
-# Meeting #
+# Meeting#
 **Date:**
+**Attendance:**
+**Absent:**
+**Note taker:**
 
 ## General Notes:
 

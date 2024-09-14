@@ -2,7 +2,7 @@
 name: Meeting Minutes Issue Creation
 about: creating an issue for meeting minutes
 title: 'Meeting # - Date'
-labels: ''
+labels: Meeting Minutes
 assignees: ''
 
 ---

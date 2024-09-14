@@ -35,6 +35,8 @@ assignees: ''
 -
 
 #Tasks Separated:
+**Everyone:**
+
 **Alex:**
 **Anass:**
 **Facu:**

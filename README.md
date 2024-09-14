@@ -45,7 +45,7 @@ A mobile app for small contracts from professionals
   <tr>
     <td>Lachezara Lazarova</td>
     <td>40211033</td>
-    <td>[LachezaraLaz](https://github.com/LachezaraLaz)</td>
+    <td><a href="https://github.com/LachezaraLaz">LachezaraLaz</a></td>
   </tr>
   <tr>
     <td>Mark Kandaleft</td>
@@ -76,4 +76,4 @@ A mobile app for small contracts from professionals
 
 
 ## License
-The application is under the MIT License. See  for more details.
+The application is under the MIT License. See [LICENSE](https://github.com/LachezaraLaz/fixerCapstone/blob/f393faf9eeabf8ae4c7be99b558427e7161d3b41/LICENSE) for more details.

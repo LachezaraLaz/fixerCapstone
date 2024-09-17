@@ -53,7 +53,7 @@ Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXI
   <tr>
     <td>Mark Kandaleft</td>
     <td>40126013</td>
-    <td> </td>
+    <td>mkandaleft</td>
   </tr>
   <tr>
     <td>Nicola Bdewi</td>
@@ -68,7 +68,7 @@ Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXI
   <tr>
     <td>Thaneekan Thankarajah</td>
     <td>40192306</td>
-    <td> </td>
+    <td>thaneekan</td>
   </tr>
 </table>
 

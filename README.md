@@ -28,7 +28,7 @@ Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXI
   <tr>
     <td>Anass Sajid</td>
     <td>40158648</td>
-    <td>El-Mirrio</td>
+    <td><a href="https://github.com/El-Mirrio">El-Mirrio</a></td>
   </tr>
   <tr>
     <td>Facundo Alfaro</td>

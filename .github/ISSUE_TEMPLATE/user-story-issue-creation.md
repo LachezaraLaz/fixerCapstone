@@ -11,7 +11,7 @@ assignees: LachezaraLaz
 As a X, I want to Y because Z.
 **User Story Points:** 
 **Priority:** 
-**Risk:** 
+**Risk: __ Value, __ Risk** 
 
 ## Delete this section when done (everything here is done on the right sidebar of this page): 
 - Assign all contributors to this user story
@@ -23,17 +23,17 @@ As a X, I want to Y because Z.
 
 ## Task Breakdown
 
-**Discussions:** 
+**Discussions:** (Total: __)
 - single task breakdown description (X Minutes)
 - single task breakdown description (X Minutes)
 - add more if needed
 
-**Frontend Implementation:** 
+**Frontend Implementation:** (Total: __)
 - single task breakdown description (X Hours)
 - single task breakdown description (X Hours)
 - add more if needed
 
-**Backend Implementation:** 
+**Backend Implementation:** (Total: __)
 - single task breakdown description (X Hours)
 - single task breakdown description (X Hours)
 - add more if needed

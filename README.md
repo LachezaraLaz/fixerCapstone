@@ -23,7 +23,7 @@ Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXI
   <tr>
     <td>Alexander De Luca</td>
     <td>40209204</td>
-    <td>dlu2002</td>
+    <td><a href ="https://github.com/dlu2002">dlu2002</a></td>
   </tr>
   <tr>
     <td>Anass Sajid</td>

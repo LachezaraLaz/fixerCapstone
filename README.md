@@ -38,7 +38,7 @@ Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXI
   <tr>
     <td>Karin Sarkis</td>
     <td>40189273</td>
-    <td>KarinSarkis</td>
+    <td><a href="https://github.com/KarinSarkis">KarinSarkis</a></td>
   </tr>
   <tr>
     <td>Kassem </td>

@@ -58,7 +58,7 @@ Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXI
   <tr>
     <td>Nicola Bdewi</td>
     <td>40161428</td>
-    <td>Nicola-Bdewi</td>
+    <td><a href="https://github.com/nicola-bdewi">Nicola-Bdewi</a></td>
   </tr>
   <tr>
     <td>Samy Arab</td>

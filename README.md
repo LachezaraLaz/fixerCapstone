@@ -63,7 +63,7 @@ Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXI
   <tr>
     <td>Samy Arab</td>
     <td>40209595</td>
-    <td>SamyArab</td>
+    <td><a href="https://github.com/SamyArab">SamyArab</a></td>
   </tr>
   <tr>
     <td>Thaneekan Thankarajah</td>

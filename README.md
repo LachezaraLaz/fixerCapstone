@@ -52,8 +52,8 @@ Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXI
   </tr>
   <tr>
     <td>Mark Kandaleft</td>
-    <td>40126013</td>
-    <td>mkandaleft</td>
+    <td>40126013</td>https://github.com/mkandaleft
+    <td><a href="https://github.com/mkandaleft">mkandaleft</a></td>
   </tr>
   <tr>
     <td>Nicola Bdewi</td>

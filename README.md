@@ -7,18 +7,18 @@ A mobile app for small contracts from professionals
 ## Getting Started
 
 
+## Core Features
+
+## Diagrams
+- ### ER Diagram:
+  [Fixeur_ER_Diagram](https://github.com/user-attachments/assets/00dbd786-3d55-41ff-9ca2-eb0a01015595)
+
 ## Wiki References
 - [Home](https://github.com/LachezaraLaz/fixerCapstone/wiki)
 - [Diagrams](https://github.com/LachezaraLaz/fixerCapstone/wiki/Diagrams)
 - [Meeting Minutes](https://github.com/LachezaraLaz/fixerCapstone/wiki/Meeting-Minutes)
 - [Other Documentation](https://github.com/LachezaraLaz/fixerCapstone/wiki/Other-Documentation)
 - [User Stories (Simple List)](https://github.com/LachezaraLaz/fixerCapstone/wiki/User-Stories-(Simple-List))
-
-## Core Features
-
-## Diagrams
-- ### ER Diagram:
-  [Fixeur_ER_Diagram](https://github.com/user-attachments/assets/00dbd786-3d55-41ff-9ca2-eb0a01015595)
 
 ## Contributors
 <table>

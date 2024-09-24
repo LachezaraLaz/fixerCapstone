@@ -10,9 +10,9 @@ A mobile app for small contracts from professionals
 ## Wiki References
 - [Home](https://github.com/LachezaraLaz/fixerCapstone/wiki)
 - [Diagrams](https://github.com/LachezaraLaz/fixerCapstone/wiki/Diagrams)
-- Meeting Minutes
-- Other Documentation
-- User Stories (Simple List)
+- [Meeting Minutes](https://github.com/LachezaraLaz/fixerCapstone/wiki/Meeting-Minutes)
+- [Other Documentation](https://github.com/LachezaraLaz/fixerCapstone/wiki/Other-Documentation)
+- [User Stories (Simple List)](https://github.com/LachezaraLaz/fixerCapstone/wiki/User-Stories-(Simple-List))
 
 ## Core Features
 

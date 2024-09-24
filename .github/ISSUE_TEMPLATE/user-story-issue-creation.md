@@ -3,7 +3,7 @@ name: User Story Issue Creation
 about: creating an issue for user story
 title: 'Iteration#-UserStory# : Title'
 labels: userStory
-assignees: LachezaraLaz
+assignees: ''
 
 ---
 

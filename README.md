@@ -13,9 +13,8 @@ Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXI
 ## Core Features
 
 ## Diagrams
-### ER Diagram
-
-[Fixeur_ER_Diagram](https://github.com/user-attachments/assets/00dbd786-3d55-41ff-9ca2-eb0a01015595)
+- ### ER Diagram:
+  [Fixeur_ER_Diagram](https://github.com/user-attachments/assets/00dbd786-3d55-41ff-9ca2-eb0a01015595)
 
 ## Contributors
 <table>

@@ -59,7 +59,7 @@ A mobile app for small contracts from professionals
   </tr>
   <tr>
     <td>Mark Kandaleft</td>
-    <td>40126013</td>https://github.com/mkandaleft
+    <td>40126013</td>
     <td><a href="https://github.com/mkandaleft">mkandaleft</a></td>
   </tr>
   <tr>

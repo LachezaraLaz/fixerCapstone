@@ -7,8 +7,12 @@ A mobile app for small contracts from professionals
 ## Getting Started
 
 
-## Documentation
-Initial Mockups in Figma: [Here](https://www.figma.com/design/jFbOLh5FGQbl5NSQXIO0Fo/Untitled?node-id=0-1&t=eFuz29nhecwWK312-1)
+## Wiki References
+- [Home](https://github.com/LachezaraLaz/fixerCapstone/wiki)
+- [Diagrams](https://github.com/LachezaraLaz/fixerCapstone/wiki/Diagrams)
+- Meeting Minutes
+- Other Documentation
+- User Stories (Simple List)
 
 ## Core Features
 

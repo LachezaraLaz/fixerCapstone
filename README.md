@@ -18,6 +18,7 @@ A mobile app for small contracts from professionals
 - [Diagrams](https://github.com/LachezaraLaz/fixerCapstone/wiki/Diagrams)
 - [Meeting Minutes](https://github.com/LachezaraLaz/fixerCapstone/wiki/Meeting-Minutes)
 - [Other Documentation](https://github.com/LachezaraLaz/fixerCapstone/wiki/Other-Documentation)
+- [Risk](https://github.com/LachezaraLaz/fixerCapstone/wiki/Risk)
 - [User Stories (Simple List)](https://github.com/LachezaraLaz/fixerCapstone/wiki/User-Stories-(Simple-List))
 
 ## Contributors

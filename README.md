@@ -41,7 +41,7 @@ A mobile app for small contracts from professionals
   <tr>
     <td>Facundo Alfaro</td>
     <td>40177429</td>
-    <td>facu-alfaro</td>
+    <td><a href="https://github.com/Facu-alfaro">facu-alfaro</a></td>
   </tr>
   <tr>
     <td>Karin Sarkis</td>

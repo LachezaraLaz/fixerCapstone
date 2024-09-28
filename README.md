@@ -11,7 +11,8 @@ A mobile app for small contracts from professionals
 
 ## Diagrams
 - ### ER Diagram:
-  [Fixeur_ER_Diagram](https://github.com/user-attachments/assets/00dbd786-3d55-41ff-9ca2-eb0a01015595)
+  ![Fixeur_ER_Diagram drawio](https://github.com/user-attachments/assets/55a9d409-89f6-451e-9d85-f7b77d136047)
+
 
 ## Wiki References
 - [Home](https://github.com/LachezaraLaz/fixerCapstone/wiki)

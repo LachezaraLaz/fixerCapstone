@@ -11,7 +11,7 @@ assignees: ''
 As a X, I want to Y because Z.
 **User Story Points:** 
 **Priority:** 
-**Risk: __ Value, __ Risk** 
+**Risk:** __ Value, __ Risk
 
 ## Delete this section when done (everything here is done on the right sidebar of this page): 
 - Assign all contributors to this user story

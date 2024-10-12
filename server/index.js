@@ -1,8 +1,20 @@
+require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const professionalClientRoute = require('./routes/professionalClientRoute');
 const app = express();
 
+app.use(bodyParser.json());
+
 const PORT = process.env.PORT || 3000;
+
+mongoose.connect(process.env.MONGO_URL)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch(err => console.log(err));
 
 const server = app.listen(PORT, () => {
   console.log("server is running on port", server.address().port);
 });
+
+app.use('/register', professionalClientRoute.professionalRouter);

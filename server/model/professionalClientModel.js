@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const professionalClientSchema = new mongoose.Schema({
+const professionalClientModel = new mongoose.Schema({
     username: String,
     email: {type: String, unique: true, required: true},
     password: String,
@@ -9,4 +9,7 @@ const professionalClientSchema = new mongoose.Schema({
     collection: 'fixerClientInfo'
 });
 
-mongoose.model('fixerClientInfo', professionalClientSchema);
+const fixerClient = mongoose.model('fixerClientInfo', professionalClientModel);
+
+module.exports = {fixerClient};
+

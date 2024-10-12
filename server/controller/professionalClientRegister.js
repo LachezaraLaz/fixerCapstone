@@ -1,16 +1,11 @@
 const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
-require('./professionalClientSchema');
+const fixerClientObject = require('../model/professionalClientModel');
 
-// Create user model
-const user = mongoose.model("fixerClientInfo");
-
-// Function to handle POST request for user registration
 const registerUser = async (req, res) => {
     const { username, email, password } = req.body;
 
     // Check if user already exists
-    const existedUser = await user.findOne({ email: email });
+    const existedUser = await fixerClientObject.fixerClient.findOne({ email });
     if (existedUser) {
         return res.send({ data: 'user already exists' });
     }
@@ -20,9 +15,9 @@ const registerUser = async (req, res) => {
 
     // Try to create new user
     try {
-        await user.create({
-            username: username,
-            email: email,
+        await fixerClientObject.fixerClient.create({
+            username,
+            email,
             password: encryptedPassword,
             approved: false
         });
@@ -32,5 +27,4 @@ const registerUser = async (req, res) => {
     }
 };
 
-// Export the function
 module.exports = { registerUser };

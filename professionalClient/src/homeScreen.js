@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
 import { styles } from '../style/homeScreenStyle';  // Import the styles
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
     return (
         <View style={styles.container}>
             {/* Map Section */}
@@ -22,14 +22,14 @@ export default function HomeScreen() {
             {/* Work Blocks Section */}
             <View style={styles.workBlocksContainer}>
                 <ScrollView contentContainerStyle={styles.workBlocks}>
+                    <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('ProfilePage')}>
+                        <Text style={styles.workText}>Profile Page</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('Details')}>
+                        <Text style={styles.workText}>Detail Screen</Text>
+                    </TouchableOpacity>
                     <View style={styles.workBlock}>
-                        <Text style={styles.workText}>Electrician 1</Text>
-                    </View>
-                    <View style={styles.workBlock}>
-                        <Text style={styles.workText}>Plumber</Text>
-                    </View>
-                    <View style={styles.workBlock}>
-                        <Text style={styles.workText}>Electrician 2</Text>
+                        <Text style={styles.workText}>Electrician</Text>
                     </View>
                 </ScrollView>
             </View>

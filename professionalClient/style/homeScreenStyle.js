@@ -41,6 +41,6 @@ export const styles = StyleSheet.create({
     },
     footerText: {
         color: 'white',
-        fontSize: 12,
+        fontSize: 11,
     },
 });

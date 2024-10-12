@@ -9,6 +9,10 @@ export default function HomeScreen({ navigation }) {
                 title="Go to Details"
                 onPress={() => navigation.navigate('Details')}
             />
+            <Button
+                title="Create Issue"
+                onPress={() => navigation.navigate('CreateIssue')}
+            />
         </View>
     );
 }

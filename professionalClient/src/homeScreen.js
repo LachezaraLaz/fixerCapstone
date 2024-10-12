@@ -25,7 +25,7 @@ export default function HomeScreen({ navigation }) {
                     <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('ProfilePage')}>
                         <Text style={styles.workText}>Profile Page</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('Details')}>
+                    <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('Detail')}>
                         <Text style={styles.workText}>Detail Screen</Text>
                     </TouchableOpacity>
                     <View style={styles.workBlock}>

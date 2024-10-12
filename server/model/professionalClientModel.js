@@ -5,6 +5,8 @@ const professionalClientModel = new mongoose.Schema({
     email: {type: String, unique: true, required: true},
     password: String,
     approved: Boolean,
+    approvedAt: Date,
+    accountType: String
 },{
     collection: 'fixerClientInfo'
 });
@@ -12,4 +14,3 @@ const professionalClientModel = new mongoose.Schema({
 const fixerClient = mongoose.model('fixerClientInfo', professionalClientModel);
 
 module.exports = {fixerClient};
-

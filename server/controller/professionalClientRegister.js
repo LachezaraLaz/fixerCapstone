@@ -23,7 +23,6 @@ const registerUser = async (req, res) => {
             email,
             password: encryptedPassword,
             approved: false,
-            approvedAt: new Date(),
             accountType: 'professional'
         });
         res.send({ status: 'success', data: 'user created successfully' });

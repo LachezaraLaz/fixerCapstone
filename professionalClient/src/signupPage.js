@@ -19,7 +19,7 @@ export default function SignUpPage({ navigation }) {
             return;
         } else {
             try {
-                const response = await axios.post('http://192.168.0.140:3000/register', {
+                const response = await axios.post('http://"<add your ip here>":3000/register', {
                     email: email,
                     password: password
                 })

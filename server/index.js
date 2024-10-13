@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const professionalClientRoute = require('./routes/professionalClientRoute');
+const fixerClientRoute = require('./routes/fixerClientRoute');
 const app = express();
 
 app.use(bodyParser.json());
@@ -18,3 +19,4 @@ const server = app.listen(PORT, () => {
 });
 
 app.use('/register', professionalClientRoute.professionalRouter);
+app.use('/registerClient', fixerClientRoute.fixerClientRouter);

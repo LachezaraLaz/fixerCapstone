@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const fixerClientObject = require('../model/professionalClientModel');
+const fixerClientObject = require('../model/fixerClientModel');
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -23,7 +23,7 @@ const registerUser = async (req, res) => {
             email,
             password: encryptedPassword,
             approved: false,
-            accountType: 'professional'
+            accountType: 'client'
         });
         res.send({ status: 'success', data: 'user created successfully' });
     } catch (e) {

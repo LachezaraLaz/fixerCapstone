@@ -1,5 +1,8 @@
 const bcrypt = require('bcrypt');
 const fixerClientObject = require('../model/professionalClientModel');
+const express = require("express");
+const app = express();
+app.use(express.json());
 
 const registerUser = async (req, res) => {
     const { username, email, password } = req.body;
@@ -7,7 +10,7 @@ const registerUser = async (req, res) => {
     // Check if user already exists
     const existedUser = await fixerClientObject.fixerClient.findOne({ email });
     if (existedUser) {
-        return res.send({ data: 'user already exists' });
+        return res.status(400).send({ statusText: 'user already exists' });
     }
 
     // Hash password

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import axios, {request} from 'axios';
+
 
 export default function SignUpPage({ navigation }) {
     const [email, setEmail] = useState('');
@@ -7,22 +9,43 @@ export default function SignUpPage({ navigation }) {
     const [confirmPassword, setConfirmPassword] = useState('');
 
     //backend
-    const handleSignUp = async () => {
+    async function handleSignUp() {
         if (!email || !password || !confirmPassword) {
             Alert.alert('Error', 'All fields are required');
             return;
         }
-
         if (password !== confirmPassword) {
             Alert.alert('Error', 'Passwords do not match');
             return;
+        } else {
+            try {
+                const response = await axios.post('http://192.168.0.140:3000/register', {
+                    email: email,
+                    password: password
+                })
+                if (response.status !== 400) {
+                    Alert.alert("Account created successfully")
+                }
+            } catch (error) {
+                if (error.response) {
+                    // Check if the response indicates the user already exists
+                    if (error.response.status === 400) {
+                        Alert.alert("Error", "User already exists");
+                    } else {
+                        Alert.alert("Error", error.response.data.message || 'An unexpected error occurred');
+                    }
+                } else if (error.request) {
+                    Alert.alert("Error", "Network error");
+                } else {
+                    Alert.alert("Error", "An unexpected error occurred");
+                }
+            }
         }
-    };
+    }
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Sign Up</Text>
-
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -31,7 +54,6 @@ export default function SignUpPage({ navigation }) {
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
-
             <TextInput
                 style={styles.input}
                 placeholder="Password"
@@ -39,7 +61,6 @@ export default function SignUpPage({ navigation }) {
                 onChangeText={setPassword}
                 secureTextEntry
             />
-
             <TextInput
                 style={styles.input}
                 placeholder="Confirm Password"
@@ -47,17 +68,15 @@ export default function SignUpPage({ navigation }) {
                 onChangeText={setConfirmPassword}
                 secureTextEntry
             />
-
-            <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+            <TouchableOpacity style={styles.button} onPress={() => handleSignUp()}>
                 <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
-
             <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
                 <Text style={styles.signInText}>Already have an account? Sign in</Text>
             </TouchableOpacity>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {

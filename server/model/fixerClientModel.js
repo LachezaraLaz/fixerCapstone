@@ -11,6 +11,6 @@ const fixerClientModel = new mongoose.Schema({
     collection: 'fixerClientInfo'
 });
 
-const fixerClient = mongoose.model('fixerClientInfo', fixerClientModel);
+const fixerClient = mongoose.model('ClientInfo', fixerClientModel);
 
 module.exports = {fixerClient};

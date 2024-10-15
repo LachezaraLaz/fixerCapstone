@@ -5,9 +5,9 @@ const fixerClientObject = require('../model/professionalClientModel');
 const signinUser = async (req, res) => {
     const { email, password } = req.body;
 
-    // Check if user exists
+    // Check if user exists and is a professional
     const user = await fixerClientObject.fixerClient.findOne({ email });
-    if (!user) {
+    if (!user || user.accountType !== 'professional') {
         return res.status(400).send({ statusText: 'User not found' });
     }
 

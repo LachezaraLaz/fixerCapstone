@@ -86,7 +86,7 @@ export default function SignUpPage({ navigation }) {
                 onChangeText={setConfirmPassword}
                 secureTextEntry
             />
-            <TouchableOpacity style={styles.button} onPress={() => handleSignUp()}>
+            <TouchableOpacity style={styles.button} onPress={() => handleSignUp()} testID={'sign-up-button'}>
                 <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>

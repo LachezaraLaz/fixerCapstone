@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomePage from "./src/welcomePage";
 import SignInPage from "./src/signinPage";
-import SignUpPage from "./src/signupPage";
+import SignUpPage from "./src/screens/signup/signupPage";
 import {useEffect, useState} from "react";
 import HomeScreen from "./src/homeScreen";
 

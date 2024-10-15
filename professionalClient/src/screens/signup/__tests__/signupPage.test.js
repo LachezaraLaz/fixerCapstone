@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import SignUpPage from '../SignUpPage'; // Adjust the import path as necessary
+import SignUpPage from '../signupPage'; // Adjust the import path as necessary
 import { Alert } from 'react-native';
 
 // Mock the Alert.alert function

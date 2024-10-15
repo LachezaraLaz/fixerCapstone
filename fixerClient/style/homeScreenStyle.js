@@ -43,4 +43,19 @@ export const styles = StyleSheet.create({
         color: 'white',
         fontSize: 11,
     },
+
+    logoutContainer: {
+        alignItems: 'center',
+        marginBottom: 20, // Add some spacing
+    },
+    logoutButton: {
+        backgroundColor: '#FF6347',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 5,
+    },
+    logoutText: {
+        color: '#fff',
+        fontSize: 18,
+    }
 });

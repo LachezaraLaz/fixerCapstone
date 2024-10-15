@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const fixerClientModel = new mongoose.Schema({
-    username: String,
+    firstName: String,
+    lastName: String,
     email: {type: String, unique: true, required: true},
     password: String,
     approved: Boolean,

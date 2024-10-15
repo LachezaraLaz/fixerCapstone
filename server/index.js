@@ -18,5 +18,5 @@ const server = app.listen(PORT, () => {
   console.log("server is running on port", server.address().port);
 });
 
-app.use('/register', professionalClientRoute.professionalRouter);
-app.use('/registerClient', fixerClientRoute.fixerClientRouter);
+app.use('/professional', professionalClientRoute.professionalRouter);
+app.use('/client', fixerClientRoute.fixerClientRouter);

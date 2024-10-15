@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 const registerUser = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { email, firstName, lastName, password } = req.body;
 
     // Check if user already exists
     const existedUser = await fixerClientObject.fixerClient.findOne({ email });
@@ -19,7 +19,8 @@ const registerUser = async (req, res) => {
     // Try to create new user
     try {
         await fixerClientObject.fixerClient.create({
-            username,
+            firstName,
+            lastName,
             email,
             password: encryptedPassword,
             approved: false,

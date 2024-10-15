@@ -1,12 +1,25 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import MapView from 'react-native-maps';
-import { styles } from '../style/homeScreenStyle';  // Import the styles
+import { styles } from '../style/homeScreenStyle';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation, setIsLoggedIn }) {
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('token');
+            Alert.alert('Logged out', 'You have been logged out successfully');
+
+            setIsLoggedIn(false);
+            navigation.replace('welcomePage');
+        } catch (error) {
+            console.error("Error logging out: ", error);
+            Alert.alert('Error', 'An error occurred while logging out');
+        }
+    };
+
     return (
         <View style={styles.container}>
-            {/* Map Section */}
             <View style={styles.mapContainer}>
                 <MapView
                     style={styles.map}
@@ -19,7 +32,6 @@ export default function HomeScreen({ navigation }) {
                 />
             </View>
 
-            {/* Work Blocks Section */}
             <View style={styles.workBlocksContainer}>
                 <ScrollView contentContainerStyle={styles.workBlocks}>
                     <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('ProfilePage')}>
@@ -34,7 +46,12 @@ export default function HomeScreen({ navigation }) {
                 </ScrollView>
             </View>
 
-            {/* Footer */}
+            <View style={styles.logoutContainer}>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                    <Text style={styles.logoutText}>Logout</Text>
+                </TouchableOpacity>
+            </View>
+
             <View style={styles.footer}>
                 <Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.
                 </Text>

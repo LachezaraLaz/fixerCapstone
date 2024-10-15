@@ -1,9 +1,23 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import {View, Text, ScrollView, TouchableOpacity, Alert} from 'react-native';
 import MapView from 'react-native-maps';
 import { styles } from '../style/homeScreenStyle';  // Import the styles
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation, setIsLoggedIn }) {
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('token');
+            Alert.alert('Logged out', 'You have been logged out successfully');
+
+            setIsLoggedIn(false);
+            navigation.replace('welcomePage');
+        } catch (error) {
+            console.error("Error logging out: ", error);
+            Alert.alert('Error', 'An error occurred while logging out');
+        }
+    };
+
     return (
         <View style={styles.container}>
             {/* Map Section */}
@@ -32,6 +46,12 @@ export default function HomeScreen({ navigation }) {
                         <Text style={styles.workText}>Electrician</Text>
                     </View>
                 </ScrollView>
+            </View>
+
+            <View style={styles.logoutContainer}>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                    <Text style={styles.logoutText}>Logout</Text>
+                </TouchableOpacity>
             </View>
 
             {/* Footer */}

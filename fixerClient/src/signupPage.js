@@ -5,6 +5,8 @@ import axios, {request} from 'axios';
 
 export default function SignUpPage({ navigation }) {
     const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -19,8 +21,10 @@ export default function SignUpPage({ navigation }) {
             return;
         } else {
             try {
-                const response = await axios.post('http://"<add your ip here>":3000/registerClient', {
+                const response = await axios.post('http://192.168.1.31:3000/client/register', {
                     email: email,
+                    firstName: firstName,
+                    lastName: lastName,
                     password: password
                 })
                 if (response.status !== 400) {
@@ -52,6 +56,20 @@ export default function SignUpPage({ navigation }) {
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
+                autoCapitalize="none"
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="First Name"
+                value={firstName}
+                onChangeText={setFirstName}
+                autoCapitalize="none"
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Last Name"
+                value={lastName}
+                onChangeText={setLastName}
                 autoCapitalize="none"
             />
             <TextInput

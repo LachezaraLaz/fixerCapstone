@@ -2,7 +2,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import WelcomePage from "./src/welcomePage";
+import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
 import {useEffect, useState} from "react";

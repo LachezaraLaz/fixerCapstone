@@ -51,14 +51,12 @@ export default function CreateIssue() {
     };
 
     const postIssue = async () => {
-
-        if (!title || !professionalNeeded || !description){
+        if (!title || !professionalNeeded || !description) {
             console.log("User is trying to submit without completing the title, description or professional needed field.");
             alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
             return;
         }
 
-        // Get the userID from the token
         const userID = await getUserIDFromToken();
         if (!userID) {
             alert("User ID is missing. Please log in again.");
@@ -66,19 +64,26 @@ export default function CreateIssue() {
         }
 
         const formData = new FormData();
-
         formData.append('title', title);
         formData.append('description', description);
         formData.append('professionalNeeded', professionalNeeded);
         formData.append('userID', userID);
 
+        if (image) {
+            formData.append('image', {
+                uri: image,
+                type: 'image/jpeg',
+                name: 'issue_image.jpg',
+            });
+        }
+
         try {
-            const response = await axios.post('http://192.168.2.22:3000/issue/create', formData, {
+            const response = await axios.post('http://192.168.0.19:3000/issue/create', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-    
+
             if (response.status === 201) {
                 alert('Issue posted successfully');
             } else {
@@ -94,7 +99,6 @@ export default function CreateIssue() {
             }
             alert('An error occurred. Please try again.');
         }
-
         // if (image == null) {
         //     console.log("User is trying to submit job without an image.");
         //     Alert.alert(
@@ -106,23 +110,23 @@ export default function CreateIssue() {
         //                 onPress: () => console.log("User answered 'No' and wants to add an image."),
         //                 style: "cancel"
         //             },
-        //             { 
-        //                 text: "Yes", 
+        //             {
+        //                 text: "Yes",
 
         //                 onPress: () => {
         //                     console.log("Form submitted without an image.");
         //                     // Add your logic here for submitting without an image
         //                 }
-                        
+
         //             }
         //         ],
         //         { cancelable: false }
         //     );
         // }
-        
+
         // console.log("Issue Posted:", { title, description, professionalNeeded, image });
         // alert("Issue posted successfully!");
-    };
+        };
 
     return (
         <View style={{ flex: 1, padding: 20 }}>

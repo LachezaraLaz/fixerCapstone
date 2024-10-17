@@ -1,4 +1,6 @@
 const { Issue } = require('../model/createIssueModel');
+const { uploadImageToCloudinary } = require('../services/cloudinaryService');
+
 // const multer = require('multer');
 
 // // Configure multer to save images to the server
@@ -15,6 +17,7 @@ const { Issue } = require('../model/createIssueModel');
 // const upload = multer({ storage: storage });
 
 // POST /issue/create route to handle issue creation
+
 const createIssue = async (req, res) => {
     console.log('Request body:', req.body);
 
@@ -26,14 +29,25 @@ const createIssue = async (req, res) => {
         return res.status(400).json({ message: 'Some fields are missing.' });
     }
 
+    let imageUrl = null;
+
+    // Upload image to Cloudinary if it exists
+    if (req.file) {
+        try {
+            imageUrl = await uploadImageToCloudinary(req.file.path);
+        } catch (error) {
+            return res.status(500).json({ message: 'Failed to upload image', error: error.message });
+        }
+    }
+
     // Create a new issue
     try {
         const newIssue = await Issue.create({
             title,
             description,
             professionalNeeded,
-            imageUrl: null,
-            userID: userID
+            imageUrl,  // Store the Cloudinary image URL
+            userID,
         });
         res.status(201).json({ message: 'Issue created successfully', issue: newIssue });
     } catch (error) {

@@ -60,3 +60,38 @@ test('handles sign-in correctly and navigates to HomeScreen', async () => {
         expect(mockNavigation.navigate).toHaveBeenCalledWith('HomeScreen');
     });
 });
+
+test('displays an error alert when email does not exist', async () => {
+    const setIsLoggedIn = jest.fn();
+    const mockNavigation = { navigate: jest.fn() };
+
+    // Mock the API response for a non-existent email scenario
+    axios.post.mockRejectedValueOnce({
+        response: {
+            status: 400,  // Assuming the API returns 400 for non-existent email or wrong credentials
+            data: { statusText: 'Wrong email or password' }
+        }
+    });
+
+    const { getByTestId, getByPlaceholderText } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />);
+
+    // Inputting an email that does not exist
+    fireEvent.changeText(getByPlaceholderText('Email'), 'nonexistent@example.com');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+    const signInButton = getByTestId('sign-in-button');
+    fireEvent.press(signInButton);
+
+    await waitFor(() => {
+        // Checking that the error message is displayed
+        expect(axios.post).toHaveBeenCalledWith('http://<"add-ip">:3000/client/signin/', {
+            email: 'nonexistent@example.com',
+            password: 'password123'
+        });
+        expect(Alert.alert).toHaveBeenCalledWith("Error", 'Wrong email or password');
+    });
+
+    // Ensuring no navigation or login state changes occurred
+    expect(setIsLoggedIn).not.toHaveBeenCalled();
+    expect(mockNavigation.navigate).not.toHaveBeenCalled();
+    expect(AsyncStorage.setItem).not.toHaveBeenCalled();
+});

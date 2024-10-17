@@ -63,3 +63,38 @@ test('successfully creates an account', async () => {
         expect(Alert.alert).toHaveBeenCalledWith("Account created successfully");
     });
 });
+
+test('displays "User already exists" alert when email is already in use', async () => {
+    const mockNavigation = { navigate: jest.fn() };
+    const { getByPlaceholderText, getByTestId } = render(<SignUpPage navigation={mockNavigation} />);
+
+    // Set up axios to mock a response for an existing email
+    axios.post.mockRejectedValueOnce({
+        response: {
+            status: 400,  // Status code for existing email as per the component
+            data: { message: 'User already exists' }
+        }
+    });
+
+    // Simulate user input
+    fireEvent.changeText(getByPlaceholderText('Email'), 'existing@example.com');
+    fireEvent.changeText(getByPlaceholderText('First Name'), 'Jane');
+    fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+    fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
+
+    // Attempt to sign up
+    const signUpButton = getByTestId('sign-up-button');
+    fireEvent.press(signUpButton);
+
+    // Assertions
+    await waitFor(() => {
+        expect(axios.post).toHaveBeenCalledWith('http://<"add-ip">:3000/professional/register', {
+            email: 'existing@example.com',
+            firstName: 'Jane',
+            lastName: 'Doe',
+            password: 'password123'
+        });
+        expect(Alert.alert).toHaveBeenCalledWith("Error", "User already exists");
+    });
+});

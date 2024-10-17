@@ -50,7 +50,7 @@ test('handles sign-in correctly and navigates to HomeScreen', async () => {
     fireEvent.press(signInButton)
 
     await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith('http://10.0.0.56:3000/professional/signin/', {
+        expect(axios.post).toHaveBeenCalledWith('http://<"add-ip">:3000/professional/signin/', {
             email: 'user@example.com',
             password: 'password123'
         });

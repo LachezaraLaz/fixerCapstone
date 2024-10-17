@@ -60,7 +60,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+            <TouchableOpacity style={styles.button} onPress={handleSignIn} testID={'sign-in-button'}>
                 <Text style={styles.buttonText}>Sign In</Text>
             </TouchableOpacity>
 

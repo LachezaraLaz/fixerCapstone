@@ -14,7 +14,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         }
 
         try {
-            const response = await axios.post('http://192.168.1.31:3000/client/signin/', {
+            const response = await axios.post('http://<"add-ip">:3000/client/signin/', {
                 email,
                 password
             });
@@ -60,7 +60,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+            <TouchableOpacity style={styles.button} onPress={handleSignIn} testID={'sign-in-button'}>
                 <Text style={styles.buttonText}>Sign In</Text>
             </TouchableOpacity>
 

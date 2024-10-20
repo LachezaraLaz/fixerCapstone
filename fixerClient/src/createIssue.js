@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useState, useEffect} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwt_decode from 'jwt-decode';
+
 
 export default function CreateIssue() {
     // List of fields in the page
@@ -12,22 +12,6 @@ export default function CreateIssue() {
     const [description, setDescription] = useState('');
     const [professionalNeeded, setProfessionalNeeded] = useState('');
     const [image, setImage] = useState(null);
-    // const [userID, setUserID] = useState(null); // State to store the userID
-
-    const getUserIDFromToken = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');  // Retrieve the token from storage
-            if (token) {
-                const decodedToken = jwt_decode(token);  // Decode the token
-                const userID = decodedToken.id;  // Extract the `id` (userID) from the token payload
-                return userID;
-            } else {
-                console.log("No token found");
-            }
-        } catch (error) {
-            console.error("Error decoding token", error);
-        }
-    };
 
     //backend 
     //backend to be able to pick an image 
@@ -57,17 +41,12 @@ export default function CreateIssue() {
             return;
         }
 
-        const userID = await getUserIDFromToken();
-        if (!userID) {
-            alert("User ID is missing. Please log in again.");
-            return;
-        }
-
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);
         formData.append('professionalNeeded', professionalNeeded);
-        formData.append('userID', userID);
+
+        console.log("hh");
 
         if (image) {
             formData.append('image', {
@@ -77,8 +56,19 @@ export default function CreateIssue() {
             });
         }
 
+        console.log("ll");
+
+        // // Assuming you have stored the user's email in AsyncStorage or have access to it in some way
+        // const email = await AsyncStorage.getItem('userEmail');
+        // if (email) {
+        //     console.log(email);
+        //     formData.append('email', email);  // Append email
+        // }
+
+        console.log("kk");
+
         try {
-            const response = await axios.post('http://192.168.0.19:3000/issue/create', formData, {
+            const response = await axios.post('http://192.168.2.22:3000/issue/create', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

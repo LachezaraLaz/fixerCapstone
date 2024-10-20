@@ -2,14 +2,14 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import WelcomePage from "./src/welcomePage";
 import DetailsScreen from "./src/detailsScreen";
 import ProfilePage from "./src/profilePage";
 import CreateIssue from './src/createIssue';
-import SignInPage from "./src/signinPage";
+import HomeScreen from "./src/homeScreen";
+import WelcomePage from "./src/screens/welcome/welcomePage";
+import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
 import {useEffect, useState} from "react";
-import HomeScreen from "./src/homeScreen";
 
 const Stack = createNativeStackNavigator();
 

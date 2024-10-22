@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, Text, TextInput, Button, Image, TouchableOpacity, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { useState, useEffect} from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';  // Import a JWT decode library
@@ -50,9 +50,8 @@ export default function CreateIssue() {
             });
         }
 
-        // Store the token in AsyncStorage
+        // Get the token from AsyncStorage
         const token = await AsyncStorage.getItem('token');
-        console.log(token);
 
         // Decode the token to extract the user's email
         const decodedToken = jwtDecode(token);

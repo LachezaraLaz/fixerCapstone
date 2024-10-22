@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useState, useEffect} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwtDecode from 'jwt-decode';  // Import a JWT decode library
 
 
 export default function CreateIssue() {
@@ -41,11 +42,6 @@ export default function CreateIssue() {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('professionalNeeded', professionalNeeded);
-
         if (image) {
             formData.append('image', {
                 uri: image,
@@ -58,10 +54,23 @@ export default function CreateIssue() {
         const token = await AsyncStorage.getItem('token');
         console.log(token);
 
+        // Decode the token to extract the user's email
+        const decodedToken = jwtDecode(token);
+        const userEmail = decodedToken.email; // Assuming the token contains the user's email
+
+        console.log("User's email from token:", userEmail);
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('professionalNeeded', professionalNeeded);
+        formData.append('email', userEmail);
+
         try {
             const response = await axios.post('http://192.168.2.22:3000/issue/create', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`, // Send the token in the headers for verification (if needed)
                 },
             });
 
@@ -80,7 +89,7 @@ export default function CreateIssue() {
             }
             alert('An error occurred. Please try again.');
         }
-        
+
         };
 
     return (

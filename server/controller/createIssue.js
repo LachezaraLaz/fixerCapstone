@@ -21,7 +21,7 @@ const { uploadImageToCloudinary } = require('../services/cloudinaryService'); //
 const createIssue = async (req, res) => {
     console.log('Request body:', req.body);
 
-    const { title, description, professionalNeeded} = req.body;
+    const { title, description, professionalNeeded, email} = req.body;
     // const imageUrl = req.file ? req.file.path : null;
 
     // Validate required fields
@@ -47,6 +47,7 @@ const createIssue = async (req, res) => {
             description,
             professionalNeeded,
             imageUrl,  // Store the Cloudinary image URL
+            userEmail: email,  // Store the user's email in the issue
         });
         res.status(201).json({ message: 'Issue created successfully', issue: newIssue });
     } catch (error) {

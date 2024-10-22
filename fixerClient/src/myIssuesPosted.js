@@ -65,6 +65,19 @@ export default function MyIssuesPosted() {
     //     );
     // }
 
+    // Define a mapping of statuses to colors
+    const statusColorMap = {
+        'open': '#1A8DEC',
+        'closed': 'red',
+        'in progress': 'orange',
+        'completed': 'green',
+    };
+
+     // Helper function to get color based on status
+     const getStatusColor = (status) => {
+        // Return the corresponding color or default to 'black' if status not found
+        return statusColorMap[status.toLowerCase()] || 'black';
+    };
 
     return (
         <ScrollView style={{ flex: 1, padding: 20 }}>
@@ -83,6 +96,7 @@ export default function MyIssuesPosted() {
                         padding: 10
                     }}>
                     <Text style={{ fontWeight: 'bold' }}>{job.title}</Text>
+                    <Text style={{ color: getStatusColor(job.status) }}>{job.status}</Text>
                     <Text>Professional Needed: {job.professionalNeeded}</Text>
                     <Text>{job.description}</Text>
                     {job.imageUrl && (
@@ -93,6 +107,7 @@ export default function MyIssuesPosted() {
         ) : (
             <Text style={{ textAlign: "center" }}>No jobs posted yet.</Text>
         )}
+
     </ScrollView>
     );
 }

@@ -61,6 +61,7 @@ export default function CreateIssue({ navigation }) {
         formData.append('description', description);
         formData.append('professionalNeeded', professionalNeeded);
         formData.append('email', userEmail);
+        formData.append('status', "Open");
 
         if (image) {
             formData.append('image', {

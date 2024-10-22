@@ -6,6 +6,7 @@ import DetailsScreen from "./src/detailsScreen";
 import ProfilePage from "./src/profilePage";
 import CreateIssue from './src/createIssue';
 import HomeScreen from "./src/homeScreen";
+import MyIssuesPosted from "./src/myIssuesPosted";
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
@@ -49,6 +50,7 @@ export default function App() {
                         <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
                         <Stack.Screen name="ProfilePage" component={ProfilePage} />
                         <Stack.Screen name="CreateIssue" component={CreateIssue} />
+                        <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
                     </>
                 ) : (
                     <>

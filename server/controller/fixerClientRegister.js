@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 const registerUser = async (req, res) => {
-    const { email, firstName, lastName, password } = req.body;
+    const { email, firstName, lastName, password, street, postalCode, provinceOrState, country } = req.body;
 
     // Check if user already exists
     const existedUser = await fixerClientObject.fixerClient.findOne({ email });
@@ -24,7 +24,11 @@ const registerUser = async (req, res) => {
             email,
             password: encryptedPassword,
             approved: false,
-            accountType: 'client'
+            accountType: 'client',
+            street,
+            postalCode,
+            provinceOrState,
+            country
         });
         res.send({ status: 'success', data: 'user created successfully' });
     } catch (e) {

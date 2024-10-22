@@ -21,7 +21,7 @@ export default function SignUpPage({ navigation }) {
             return;
         } else {
             try {
-                const response = await axios.post('http://"<add-ip>":3000/professional/register', {
+                const response = await axios.post('http://<"add-ip">:3000/professional/register', {
                     email: email,
                     firstName: firstName,
                     lastName: lastName,

@@ -2,11 +2,14 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import WelcomePage from "./src/welcomePage";
-import SignInPage from "./src/signinPage";
+import DetailsScreen from "./src/detailsScreen";
+import ProfilePage from "./src/profilePage";
+import CreateIssue from './src/createIssue';
+import HomeScreen from "./src/homeScreen";
+import WelcomePage from "./src/screens/welcome/welcomePage";
+import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
 import {useEffect, useState} from "react";
-import HomeScreen from "./src/homeScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +46,9 @@ export default function App() {
                         <Stack.Screen name="HomeScreen">
                             {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
                         </Stack.Screen>
+                        <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
+                        <Stack.Screen name="ProfilePage" component={ProfilePage} />
+                        <Stack.Screen name="CreateIssue" component={CreateIssue} />
                     </>
                 ) : (
                     <>

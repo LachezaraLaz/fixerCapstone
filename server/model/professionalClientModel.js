@@ -7,7 +7,9 @@ const professionalClientModel = new mongoose.Schema({
     password: String,
     approved: Boolean,
     approvedAt: Date,
-    accountType: String
+    accountType: String,
+    formComplete: Boolean,
+    idImage: String
 },{
     collection: 'fixerClientInfo'
 });

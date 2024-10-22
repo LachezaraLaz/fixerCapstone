@@ -7,7 +7,12 @@ const fixerClientModel = new mongoose.Schema({
     password: String,
     approved: Boolean,
     approvedAt: Date,
-    accountType: String
+    accountType: String,
+    street: String,
+    postalCode: String,
+    provinceOrState: String,
+    country: String
+    
 },{
     collection: 'fixerClientInfo'
 });

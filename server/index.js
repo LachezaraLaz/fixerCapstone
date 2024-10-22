@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const professionalClientRoute = require('./routes/professionalClientRoute');
 const fixerClientRoute = require('./routes/fixerClientRoute');
-const createIssueRoute = require('./routes/createIssueRoute')
+const createIssueRoute = require('./routes/createIssueRoute');
 const app = express();
 
 app.use(bodyParser.json());

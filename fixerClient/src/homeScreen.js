@@ -45,6 +45,9 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                     <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('CreateIssue')}>
                         <Text style={styles.workText}>New Job</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('MyIssuesPosted')}>
+                        <Text style={styles.workText}>See my Posted Jobs</Text>
+                    </TouchableOpacity>
                     <View style={styles.workBlock}>
                         <Text style={styles.workText}>Electrician</Text>
                     </View>

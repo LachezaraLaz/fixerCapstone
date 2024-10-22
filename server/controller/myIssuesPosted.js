@@ -3,7 +3,6 @@ const { Jobs } = require('../model/createIssueModel');
 // GET /jobs/user/:email route to fetch jobs for a specific user
 const getJobsByUser = async (req, res) => {
     const userEmail = req.params.email;
-    console.log("Fetching jobs for user:", userEmail); // Add this line for debugging
     try {
         const jobs = await Jobs.find({ userEmail });
         res.status(200).json({ jobs });

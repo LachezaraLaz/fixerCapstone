@@ -1,6 +1,6 @@
+// import list
 import * as React from 'react';
-import { View, Text, TextInput, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
-
+import { View, Text, Image, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,9 +8,11 @@ import jwtDecode from 'jwt-decode';  // Import a JWT decode library
 
 
 export default function MyIssuesPosted() {
+    // List of fields in the page
     const [jobs, setJobs] = useState([]);
     // const [loading, setLoading] = useState(true);
 
+    //backend
     // Function to fetch jobs for the current user
     const fetchJobsForUser = async () => {
         try {
@@ -29,14 +31,14 @@ export default function MyIssuesPosted() {
             console.log("User's email from token:", userEmail);
 
             // Fetch jobs from backend filtered by user's email
-            const response = await axios.get(`http://192.168.2.22:3000/issue/user/${userEmail}`, {
+            const response = await axios.get(`http://<"add-ip">:3000/issue/user/${userEmail}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,  // Send token in the headers if needed
+                    'Authorization': `Bearer ${token}`, 
                 }
             });
 
             if (response.status === 200) {
-                setJobs(response.data.jobs);  // Assuming your backend sends an array of jobs
+                setJobs(response.data.jobs); 
             } else {
                 alert('Failed to load jobs');
             }
@@ -84,7 +86,7 @@ export default function MyIssuesPosted() {
                     <Text>Professional Needed: {job.professionalNeeded}</Text>
                     <Text>{job.description}</Text>
                     {job.imageUrl && (
-                        <Image source={{ uri: job.imageUrl }} style={{ width: 200, height: 200, marginTop: 10 }} />
+                        <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
                     )}
                 </View>
             ))

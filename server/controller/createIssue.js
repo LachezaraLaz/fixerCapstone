@@ -34,5 +34,4 @@ const createIssue = async (req, res) => {
     }
 };
 
-// module.exports = { createIssue, upload };
 module.exports = { createIssue };

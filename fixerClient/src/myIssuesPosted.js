@@ -81,33 +81,33 @@ export default function MyIssuesPosted() {
 
     return (
         <ScrollView style={{ flex: 1, padding: 20 }}>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: "center" }}>My Jobs</Text>
+            <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: "center" }}>My Jobs</Text>
 
-        {jobs.length > 0 ? (
-            jobs.map((job, index) => (
-                <View
-                    key={index}
-                    style={{
-                        flexDirection: "column",
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        borderRadius: 5,
-                        margin: 5,
-                        padding: 10
-                    }}>
-                    <Text style={{ fontWeight: 'bold' }}>{job.title}</Text>
-                    <Text style={{ color: getStatusColor(job.status) }}>{job.status}</Text>
-                    <Text>Professional Needed: {job.professionalNeeded}</Text>
-                    <Text>{job.description}</Text>
-                    {job.imageUrl && (
-                        <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
-                    )}
-                </View>
-            ))
-        ) : (
-            <Text style={{ textAlign: "center" }}>No jobs posted yet.</Text>
-        )}
+            {jobs.length > 0 ? (
+                jobs.map((job, index) => (
+                    <View
+                        key={index}
+                        style={{
+                            flexDirection: "column",
+                            borderWidth: 1,
+                            borderColor: '#ccc',
+                            borderRadius: 5,
+                            margin: 5,
+                            padding: 10
+                        }}>
+                        <Text style={{ fontWeight: 'bold' }}>{job.title}</Text>
+                        <Text style={{ color: getStatusColor(job.status) }}>{job.status}</Text>
+                        <Text>Professional Needed: {job.professionalNeeded}</Text>
+                        <Text>{job.description}</Text>
+                        {job.imageUrl && (
+                            <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
+                        )}
+                    </View>
+                ))
+            ) : (
+                <Text style={{ textAlign: "center" }}>No jobs posted yet.</Text>
+            )}
 
-    </ScrollView>
+        </ScrollView>
     );
 }

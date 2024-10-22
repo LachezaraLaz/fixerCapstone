@@ -52,8 +52,17 @@ export default function CreateIssue({ navigation }) {
         // Decode the token to extract the user's email
         const decodedToken = jwtDecode(token);
         const userEmail = decodedToken.email;
+        const userStreet = decodedToken.street;
 
         console.log("User's email from token:", userEmail);
+
+        //tests if token carries the street information now 
+        //THIS DOES NOT WORK YET
+        console.log("User's street from token:", userStreet);
+        // If you want to print all other variables, you can loop through the object (if necessary)
+        Object.keys(decodedToken).forEach((key) => {
+            console.log(`${key}: ${decodedToken[key]}`);
+        });
 
         //adding all the necessary data to formData to then add to the job entry in the database
         const formData = new FormData();

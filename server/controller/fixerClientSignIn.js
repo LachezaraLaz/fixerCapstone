@@ -17,13 +17,22 @@ const signinUser = async (req, res) => {
         return res.status(400).send({ statusText: 'Invalid password' });
     }
 
-    // Create JWT token
-    const token = jwt.sign(
-        { id: user._id, email: user.email },
+     // Create JWT token with additional fields
+     const token = jwt.sign(
+        { 
+            id: user._id, 
+            email: user.email,
+            //TOKEN DOES NOT HOLD THESE YET BUT IT NEEDS TO
+            street: user.street,
+            postalCode: user.postalCode,  // Including postal code
+            provinceOrState: user.provinceOrState,  // Including province or state
+            country: user.country  // Including country
+        },
         process.env.JWT_SECRET,
-        { expiresIn: '7d' } // Token validation time
+        { expiresIn: '7d' } // Token expiration time
     );
 
+    console.log(token);
     res.send({ token });
 };
 

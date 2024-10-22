@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios, {request} from 'axios';
 
 
@@ -9,10 +9,15 @@ export default function SignUpPage({ navigation }) {
     const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [street, setStreet] = useState('');
+    const [postalCode, setPostalCode] = useState('');
+    const [provinceOrState, setProvinceOrState] = useState('');
+    const [country, setCountry] = useState('');
+
 
     //backend
     async function handleSignUp() {
-        if (!email || !password || !confirmPassword) {
+        if (!email || !password || !confirmPassword || !street || !postalCode || !provinceOrState || !country) {
             Alert.alert('Error', 'All fields are required');
             return;
         }
@@ -25,7 +30,11 @@ export default function SignUpPage({ navigation }) {
                     email: email,
                     firstName: firstName,
                     lastName: lastName,
-                    password: password
+                    password: password,
+                    street: street,
+                    postalCode: postalCode,
+                    provinceOrState: provinceOrState,
+                    country: country
                 })
                 if (response.status !== 400) {
                     Alert.alert("Account created successfully")
@@ -48,51 +57,81 @@ export default function SignUpPage({ navigation }) {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Sign Up</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="First Name"
-                value={firstName}
-                onChangeText={setFirstName}
-                autoCapitalize="none"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Last Name"
-                value={lastName}
-                onChangeText={setLastName}
-                autoCapitalize="none"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-            />
-            <TouchableOpacity style={styles.button} onPress={() => handleSignUp()} testID={'sign-up-button'}>
-                <Text style={styles.buttonText}>Sign Up</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
-                <Text style={styles.signInText}>Already have an account? Sign in</Text>
-            </TouchableOpacity>
-        </View>
+        <ScrollView style={{ flex: 1, padding: 20, marginBottom: 30 }}>
+            <View style={styles.container}>
+                <Text style={styles.title}>Sign Up</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="First Name"
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChangeText={setLastName}
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="House number and Street"
+                    value={street}
+                    onChangeText={setStreet}
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Postal Code"
+                    value={postalCode}
+                    onChangeText={setPostalCode}
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Province or State"
+                    value={provinceOrState}
+                    onChangeText={setProvinceOrState}
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Country"
+                    value={country}
+                    onChangeText={setCountry}
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                />
+                <TouchableOpacity style={styles.button} onPress={() => handleSignUp()} testID={'sign-up-button'}>
+                    <Text style={styles.buttonText}>Sign Up</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
+                    <Text style={styles.signInText}>Already have an account? Sign in</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
     );
 }
 
@@ -102,6 +141,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 20,
         backgroundColor: '#fff',
+        marginBottom: 300, // temporary large marginBottom until scrolling of page is improved
     },
     title: {
         fontSize: 32,

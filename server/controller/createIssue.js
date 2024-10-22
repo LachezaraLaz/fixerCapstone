@@ -4,8 +4,7 @@ const { uploadImageToCloudinary } = require('../services/cloudinaryService'); //
 const createIssue = async (req, res) => {
     console.log('Request body:', req.body);
 
-    const { title, description, professionalNeeded, email} = req.body;
-    // const imageUrl = req.file ? req.file.path : null;
+    const { title, description, professionalNeeded, email, image} = req.body;
 
     // Validate required fields
     if (!title || !description || !professionalNeeded) {
@@ -14,13 +13,10 @@ const createIssue = async (req, res) => {
 
     let imageUrl = null;
 
-    // Upload image to Cloudinary if it exists
+    // If multer successfully uploaded the image, its Cloudinary URL will be in req.file.path
     if (req.file) {
-        try {
-            imageUrl = await uploadImageToCloudinary(req.file.path);
-        } catch (error) {
-            return res.status(500).json({ message: 'Failed to upload image', error: error.message });
-        }
+        imageUrl = req.file.path;  // This is the Cloudinary URL
+        console.log('Uploaded image URL:', imageUrl);
     }
 
     // Create a new issue

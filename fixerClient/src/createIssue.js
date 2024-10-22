@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, TextInput, Button, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, Image, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import axios from 'axios';
@@ -30,8 +30,18 @@ export default function CreateIssue() {
             quality: 1,
         });
 
-        if (!result.canceled) {
-            setImage(result.uri);
+        console.log(result);
+
+        // if (!result.canceled) {
+        //     setImage(result.uri);
+        //     console.log("\n uri:"+result.uri);
+        // }
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            // Accessing the first image in the assets array
+            setImage(result.assets[0].uri);
+            console.log("\n uri:" + result.assets[0].uri);
+            console.log("\n type:" + result.assets[0].type);
+            console.log("\n name:" + result.assets[0].name);
         }
     };
 
@@ -40,14 +50,6 @@ export default function CreateIssue() {
             console.log("User is trying to submit without completing the title, description or professional needed field.");
             alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
             return;
-        }
-
-        if (image) {
-            formData.append('image', {
-                uri: image,
-                type: 'image/jpeg',
-                name: 'issue_image.jpg',
-            });
         }
 
         // Get the token from AsyncStorage
@@ -64,6 +66,14 @@ export default function CreateIssue() {
         formData.append('description', description);
         formData.append('professionalNeeded', professionalNeeded);
         formData.append('email', userEmail);
+        console.log(image);
+        if (image) {
+            formData.append('image', {
+                uri: image,
+                type: 'image/jpeg',
+                name: 'issue_image.jpg',
+            });
+        }
 
         try {
             const response = await axios.post('http://192.168.2.22:3000/issue/create', formData, {
@@ -92,6 +102,7 @@ export default function CreateIssue() {
         };
 
     return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={{ flex: 1, padding: 20 }}>
             <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Create New Issue</Text>
 
@@ -151,9 +162,14 @@ export default function CreateIssue() {
                 </View>
             </TouchableOpacity>
 
-            {image && <Image source={{ uri: image }} style={{ width: 200, height: 200, marginBottom: 15 }} />}
+            {image && (
+                <View style={{ alignItems: 'center', marginBottom: 15 }}>
+                    <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+                </View>
+            )}
 
             <Button title="Post Issue" onPress={postIssue} />
         </View>
+        </TouchableWithoutFeedback>
     );
 }

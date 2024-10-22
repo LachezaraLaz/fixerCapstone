@@ -46,8 +46,6 @@ export default function CreateIssue() {
         formData.append('description', description);
         formData.append('professionalNeeded', professionalNeeded);
 
-        console.log("hh");
-
         if (image) {
             formData.append('image', {
                 uri: image,
@@ -56,16 +54,9 @@ export default function CreateIssue() {
             });
         }
 
-        console.log("ll");
-
-        // // Assuming you have stored the user's email in AsyncStorage or have access to it in some way
-        // const email = await AsyncStorage.getItem('userEmail');
-        // if (email) {
-        //     console.log(email);
-        //     formData.append('email', email);  // Append email
-        // }
-
-        console.log("kk");
+        // Store the token in AsyncStorage
+        const token = await AsyncStorage.getItem('token');
+        console.log(token);
 
         try {
             const response = await axios.post('http://192.168.2.22:3000/issue/create', formData, {
@@ -89,33 +80,7 @@ export default function CreateIssue() {
             }
             alert('An error occurred. Please try again.');
         }
-        // if (image == null) {
-        //     console.log("User is trying to submit job without an image.");
-        //     Alert.alert(
-        //         "No Image",
-        //         "Are you sure you want to submit without an image?",
-        //         [
-        //             {
-        //                 text: "No",
-        //                 onPress: () => console.log("User answered 'No' and wants to add an image."),
-        //                 style: "cancel"
-        //             },
-        //             {
-        //                 text: "Yes",
-
-        //                 onPress: () => {
-        //                     console.log("Form submitted without an image.");
-        //                     // Add your logic here for submitting without an image
-        //                 }
-
-        //             }
-        //         ],
-        //         { cancelable: false }
-        //     );
-        // }
-
-        // console.log("Issue Posted:", { title, description, professionalNeeded, image });
-        // alert("Issue posted successfully!");
+        
         };
 
     return (

@@ -1,6 +1,5 @@
-const { Issue } = require('../model/createIssueModel');
-const { uploadImageToCloudinary } = require('../services/cloudinaryService');
-const { fixerClient } = require('../model/fixerClientModel');  // Import the ClientInfo model
+const { Jobs } = require('../model/createIssueModel');
+const { uploadImageToCloudinary } = require('../services/cloudinaryService'); // Import the ClientInfo model
 
 // const multer = require('multer');
 
@@ -22,7 +21,7 @@ const { fixerClient } = require('../model/fixerClientModel');  // Import the Cli
 const createIssue = async (req, res) => {
     console.log('Request body:', req.body);
 
-    const { title, description, professionalNeeded, email } = req.body;
+    const { title, description, professionalNeeded} = req.body;
     // const imageUrl = req.file ? req.file.path : null;
 
     // Validate required fields
@@ -41,20 +40,13 @@ const createIssue = async (req, res) => {
         }
     }
 
-    // Check if the user exists in the fixerClientInfo collection by their email
-    const user = await fixerClient.findOne({ email });
-    if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-    }
-
     // Create a new issue
     try {
-        const newIssue = await Issue.create({
+        const newIssue = await Jobs.create({
             title,
             description,
             professionalNeeded,
             imageUrl,  // Store the Cloudinary image URL
-            email  // Store user's email to relate this issue to the user
         });
         res.status(201).json({ message: 'Issue created successfully', issue: newIssue });
     } catch (error) {

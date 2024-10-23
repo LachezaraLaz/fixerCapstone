@@ -9,7 +9,8 @@ COPY professionalClient/package.json ./
 COPY professionalClient/package-lock.json ./
 
 # Install Expo CLI globally and other dependencies
-RUN npm install -g expo-cli@latest && \
+RUN npm install && \
+    npm install -g expo-cli@latest && \
     npm install --legacy-peer-deps && \
     npm install react-native-gesture-handler --legacy-peer-deps
 

@@ -15,7 +15,7 @@ jobs:
         run: npx github-actions-ctrf summary professionalClient/ctrf/ctrf-report.json
         if: always()
       - name: Publish CTRF pull request comment
-        run: npx github-actions-ctrf pull-request path-to-your-ctrf-report.json
+        run: npx github-actions-ctrf pull-request professionalClient/ctrf/ctrf-report.json
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

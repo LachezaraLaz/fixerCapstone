@@ -1,46 +1,36 @@
-const multer = require('multer');
-const path = require('path');
 const fixerClientObject = require('../model/professionalClientModel');
-
-// Set up multer for file storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Define the directory to store uploaded images
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Unique filename with original extension
-    }
-});
-
-const upload = multer({ storage: storage }).single('idImage'); // Handle 'idImage' field
 
 // Endpoint to handle image upload
 const professionalUploadID = async (req, res) => {
-    upload(req, res, async function (err) {
-        if (err) {
-            return res.status(500).json({ message: 'Error uploading file', err });
+    console.log('Received request for ID upload:', req.body);
+
+    // Check if the file was uploaded successfully to Cloudinary
+    if (!req.file || !req.file.path) {
+        console.error('File not uploaded or missing path');
+        return res.status(400).json({ message: 'No file uploaded or file path is missing' });
+    }
+
+    try {
+        // Log the Cloudinary URL of the uploaded image
+        const cloudinaryUrl = req.file.path;  // This is the Cloudinary URL
+        console.log('File uploaded to Cloudinary:', cloudinaryUrl);
+
+        // Update the user's record with the Cloudinary image URL and set formComplete to true
+        const user = await fixerClientObject.fixerClient.findByIdAndUpdate(
+            req.user.id,
+            { idImageUrl: cloudinaryUrl, formComplete: true },  // Store Cloudinary URL as idImageUrl in MongoDB
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'Professional not found' });
         }
 
-        // Find the user and associate the uploaded ID image and set formComplete to true
-        try {
-            const user = await fixerClientObject.fixerClient.findByIdAndUpdate(
-                req.user.id,
-                { idImage: req.file.filename, formComplete: true }, // Update idImage and set formComplete to true
-                { new: true }
-            );
-
-            if (!user) {
-                return res.status(404).json({ message: 'Professional not found' });
-            }
-
-            res.json({ message: 'ID image uploaded successfully and form is now complete', user });
-        } catch (error) {
-            console.error('Error uploading ID image:', error);
-            res.status(500).json({ message: 'Server error' });
-        }
-    });
+        res.json({ message: 'ID image uploaded successfully and form is now complete', user });
+    } catch (error) {
+        console.error('Error updating user with ID image:', error);
+        res.status(500).json({ message: 'Server error', error });
+    }
 };
 
 module.exports = { professionalUploadID };
-

@@ -3,6 +3,8 @@ name: main
 on:
   workflow_dispatch: # Allows the workflow to be run manually
   push:
+  pull_request:
+    types: [ opened, reopened, synchronize,  ]
 
 jobs:
   testing-windows:

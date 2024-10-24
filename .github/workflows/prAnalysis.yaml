@@ -15,9 +15,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'yarn'
+          cache: 'npm'
 
-      - run: yarn install
+      - run: npm install
         working-directory: professionalClient
 
       - name: Jest PR analysis

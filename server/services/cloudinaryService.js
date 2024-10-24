@@ -9,24 +9,26 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Set up multer and Cloudinary storage
-const storage = new CloudinaryStorage({
+// Set up multer and Cloudinary storage with a dynamic folder parameter
+const storage = (folder) => new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'issues',  // Folder name in Cloudinary
+        folder: folder,  // Use the folder dynamically
         allowed_formats: ['jpg', 'jpeg', 'png', 'heic', 'heif'],
     },
 });
 
-const upload = multer({ storage: storage });
+// Middleware function to upload images to a specific folder
+const upload = (folder) => multer({ storage: storage(folder) });
 
-const uploadImageToCloudinary = async (path) => {
+// Function to upload an image to a specific folder in Cloudinary
+const uploadImageToCloudinary = async (path, folder = 'issues') => {
     try {
         const result = await cloudinary.uploader.upload(path, {
-            folder: 'issues',
+            folder: folder,  // Dynamic folder for Cloudinary upload
             format: 'auto',
         });
-        return result.secure_url; // This is the URL of the uploaded image
+        return result.secure_url; // Return the URL of the uploaded image
     } catch (error) {
         console.error('Error uploading to Cloudinary:', error);
         throw error;
@@ -34,3 +36,4 @@ const uploadImageToCloudinary = async (path) => {
 };
 
 module.exports = { upload, uploadImageToCloudinary };
+

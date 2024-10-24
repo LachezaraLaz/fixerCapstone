@@ -5,18 +5,18 @@
     },
     "summary": {
       "tests": 9,
-      "passed": 7,
-      "failed": 2,
+      "passed": 8,
+      "failed": 1,
       "pending": 0,
       "skipped": 0,
       "other": 0,
-      "start": 1729728813646,
-      "stop": 1729728818299
+      "start": 1729783304440,
+      "stop": 1729783307048
     },
     "tests": [
       {
         "name": "WelcomePage Navigation navigates to SignInPage when the \"Sign In\" button is pressed",
-        "duration": 1241,
+        "duration": 789,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -27,7 +27,7 @@
       },
       {
         "name": "WelcomePage Navigation navigates to SignUpPage when the \"Sign Up\" button is pressed",
-        "duration": 6,
+        "duration": 4,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -37,8 +37,43 @@
         "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\welcome\\__tests__\\welcome.test.js > WelcomePage Navigation"
       },
       {
+        "name": "displays an error alert when sign in fields are empty",
+        "duration": 796,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js"
+      },
+      {
+        "name": "handles sign-in correctly and navigates to HomeScreen",
+        "duration": 64,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js"
+      },
+      {
+        "name": "displays an error alert when email does not exist",
+        "duration": 67,
+        "status": "failed",
+        "message": "Error: expect(jest.fn()).not.toHaveBeenCalled()\n\nExpected number of calls: 0\nReceived number of calls: 1\n\n1: \"token\", \"fake-token\"\n",
+        "trace": "at Object.toHaveBeenCalled (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js:96:38)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:3:17)\nat _next (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:17:9)\n\n[object Object]",
+        "rawStatus": "failed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js"
+      },
+      {
         "name": "shows \"All fields are required\" alert when fields are empty",
-        "duration": 1191,
+        "duration": 796,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -60,7 +95,7 @@
       },
       {
         "name": "successfully creates an account",
-        "duration": 93,
+        "duration": 70,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -79,43 +114,6 @@
         "retries": 0,
         "flaky": false,
         "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signup\\__tests__\\signupPage.test.js"
-      },
-      {
-        "name": "displays an error alert when sign in fields are empty",
-        "duration": 1210,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js"
-      },
-      {
-        "name": "handles sign-in correctly and navigates to HomeScreen",
-        "duration": 1063,
-        "status": "failed",
-        "message": "Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)\n\n- Expected\n+ Received\n\n- \"http://192.168.0.140:3000/professional/signin/\",\n+ \"http://undefined:3000/professional/signin/\",\n  {\"email\": \"user@example.com\", \"password\": \"password123\"},\n\nNumber of calls: 1\n",
-        "trace": "at Object.<anonymous> (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js:52:18)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:3:17)\nat _next (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:17:9)\nat C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:14:12)\nat Promise.then.completed (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-circus\\build\\utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-circus\\build\\utils.js:231:10)\nat _callCircusTest (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-circus\\build\\run.js:316:40)\nat _runTest (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-circus\\build\\run.js:252:3)\nat _runTestsForDescribeBlock (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-circus\\build\\run.js:126:9)\nat run (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-circus\\build\\run.js:71:3)\nat runAndTransformResultsToJestFormat (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-circus\\build\\legacy-code-todo-rewrite\\jestAdapterInit.js:122:21)\nat jestAdapter (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-circus\\build\\legacy-code-todo-rewrite\\jestAdapter.js:79:19)\nat runTestInternal (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-runner\\build\\runTest.js:367:16)\nat runTest (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-runner\\build\\runTest.js:444:34)\nat Object.worker (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\jest-runner\\build\\testWorker.js:106:12)\n\n[object Object]",
-        "rawStatus": "failed",
-        "type": "unit",
-        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js"
-      },
-      {
-        "name": "displays an error alert when email does not exist",
-        "duration": 89,
-        "status": "failed",
-        "message": "Error: expect(jest.fn()).not.toHaveBeenCalled()\n\nExpected number of calls: 0\nReceived number of calls: 1\n\n1: \"token\", \"fake-token\"\n",
-        "trace": "at Object.toHaveBeenCalled (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js:96:38)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:3:17)\nat _next (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:17:9)\n\n[object Object]",
-        "rawStatus": "failed",
-        "type": "unit",
-        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js"
       }
     ]
   }

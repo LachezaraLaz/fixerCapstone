@@ -6,7 +6,7 @@ const createIssueRouter = express.Router();
 
 
 // Route to create an issue
-createIssueRouter.post('/create', upload.single('image'), createIssue);
+createIssueRouter.post('/create', upload('issues').single('image'), createIssue);
 // Route to get the clients posted jobs
 createIssueRouter.get('/user/:email', getJobsByUser);
 

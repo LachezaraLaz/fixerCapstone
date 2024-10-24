@@ -6,8 +6,8 @@ services:
     ports:
       - "19001:19000"
     volumes:
-      - .:/app
-    command: npx expo start
+      - ./adminClient:/app
+    command: npx expo start --port 19000
 
   professional:
     build:
@@ -16,8 +16,8 @@ services:
     ports:
       - "19002:19000"
     volumes:
-      - .:/app
-    command: npx expo start
+      - ./professionalClient:/app
+    command: npx expo start --port 19000
 
   client:
     build:
@@ -26,5 +26,5 @@ services:
     ports:
       - "19003:19000"
     volumes:
-      - .:/app
-    command: npx expo start
+      - ./fixerClient:/app
+    command: npx expo start --port 19000

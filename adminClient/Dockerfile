@@ -17,8 +17,4 @@ RUN npm install && \
 # Copy the rest of the app
 COPY adminClient/. .
 
-# Expose the port Expo uses (default is 19000)
-EXPOSE 19000
-
-# Start the application using Expo
-CMD ["npx", "expo", "start"]
+#command and exposed ports are set up in the docker-compose.yml file

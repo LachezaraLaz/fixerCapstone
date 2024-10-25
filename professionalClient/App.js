@@ -7,6 +7,10 @@ import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
 import {useEffect, useState} from "react";
 import HomeScreen from "./src/homeScreen";
+import ProfileScreen from "./src/screens/profilePage/profilePage";
+import CredentialFormPage from "./src/screens/credentialFormPage/credentialFormPage";
+import UploadID from "./src/screens/uploadID/uploadID";
+import ThankYouPage from "./src/tyCredentialEnd";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +47,10 @@ export default function App() {
                         <Stack.Screen name="HomeScreen">
                             {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
                         </Stack.Screen>
+                        <Stack.Screen name="ProfilePage" component={ProfileScreen} />
+                        <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
+                        <Stack.Screen name="UploadID" component={UploadID} />
+                        <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
                     </>
                 ) : (
                     <>

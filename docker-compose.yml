@@ -4,27 +4,27 @@ services:
       context: .
       dockerfile: adminClient/Dockerfile
     ports:
-      - "19001:19000"
+      - "19001:19001"
     volumes:
-      - .:/app
-    command: npx expo start
+      - ./adminClient:/app
+    command: npx expo start --port 19001
 
   professional:
     build:
       context: .
       dockerfile: professionalClient/Dockerfile
     ports:
-      - "19002:19000"
+      - "19002:19002"
     volumes:
-      - .:/app
-    command: npx expo start
+      - ./professionalClient:/app
+    command: npx expo start --port 19002
 
   client:
     build:
       context: .
       dockerfile: fixerClient/Dockerfile
     ports:
-      - "19003:19000"
+      - "19003:19003"
     volumes:
-      - .:/app
-    command: npx expo start
+      - ./fixerClient:/app
+    command: npx expo start --port 19003

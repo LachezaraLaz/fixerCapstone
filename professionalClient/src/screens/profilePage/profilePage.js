@@ -52,7 +52,7 @@ const ProfilePage = () => {
         <View style={styles.container}>
             <View style={styles.header}>
                 {/* Profile Picture */}
-                <Image source={require('../assets/profile.jpg')} style={styles.profileImage} />
+                <Image source={require('../../../assets/profile.jpg')} style={styles.profileImage} />
 
                 {/* Name and Rating */}
                 <View style={styles.nameContainer}>

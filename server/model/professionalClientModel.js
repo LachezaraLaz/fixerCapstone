@@ -3,17 +3,20 @@ const mongoose = require('mongoose');
 const professionalClientModel = new mongoose.Schema({
     firstName: String,
     lastName: String,
-    email: {type: String, unique: true, required: true},
+    email: { type: String, unique: true, required: true },
     password: String,
     approved: Boolean,
     approvedAt: Date,
     accountType: String,
     formComplete: Boolean,
-    idImage: String
-},{
+    idImageUrl: String,
+}, {
     collection: 'fixerClientInfo'
 });
 
 const fixerClient = mongoose.model('fixerClientInfo', professionalClientModel);
 
-module.exports = {fixerClient};
+module.exports = { fixerClient };
+
+
+

@@ -1,0 +1,68 @@
+name: main
+
+on:
+  workflow_dispatch: # Allows the workflow to be run manually
+  push:
+  pull_request:
+    types: [ opened, reopened, synchronize,  ]
+
+jobs:
+  testing-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run CTRF annotations
+        run: npx github-actions-ctrf summary professionalClient/ctrf/ctrf-report.json
+        if: always()
+      - name: Publish CTRF pull request comment
+        run: npx github-actions-ctrf pull-request professionalClient/ctrf/ctrf-report.json
+        if: always()
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+
+
+
+
+
+
+
+
+
+#name: Run Tests
+#
+#on:
+#  pull_request:
+#    branches:
+#      - main
+#
+#jobs:
+#  test:
+#    runs-on: ${{ matrix.os }}
+#
+#    strategy:
+#      matrix:
+#        os: [ubuntu-latest, macos-latest, windows-latest]
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '20'
+#
+#      - name: Install dependencies
+#        run: npm install
+#
+#      - name: Run Jest tests
+#        run: npm test
+#
+#      - name: Jest coverage report
+#        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
+##        with:
+##          github_token: ${{ secrets.GITHUB_TOKEN }}

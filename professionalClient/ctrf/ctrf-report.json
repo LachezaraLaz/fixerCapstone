@@ -1,0 +1,120 @@
+{
+  "results": {
+    "tool": {
+      "name": "jest"
+    },
+    "summary": {
+      "tests": 9,
+      "passed": 8,
+      "failed": 1,
+      "pending": 0,
+      "skipped": 0,
+      "other": 0,
+      "start": 1729783304440,
+      "stop": 1729783307048
+    },
+    "tests": [
+      {
+        "name": "WelcomePage Navigation navigates to SignInPage when the \"Sign In\" button is pressed",
+        "duration": 789,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\welcome\\__tests__\\welcome.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\welcome\\__tests__\\welcome.test.js > WelcomePage Navigation"
+      },
+      {
+        "name": "WelcomePage Navigation navigates to SignUpPage when the \"Sign Up\" button is pressed",
+        "duration": 4,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\welcome\\__tests__\\welcome.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\welcome\\__tests__\\welcome.test.js > WelcomePage Navigation"
+      },
+      {
+        "name": "displays an error alert when sign in fields are empty",
+        "duration": 796,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js"
+      },
+      {
+        "name": "handles sign-in correctly and navigates to HomeScreen",
+        "duration": 64,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js"
+      },
+      {
+        "name": "displays an error alert when email does not exist",
+        "duration": 67,
+        "status": "failed",
+        "message": "Error: expect(jest.fn()).not.toHaveBeenCalled()\n\nExpected number of calls: 0\nReceived number of calls: 1\n\n1: \"token\", \"fake-token\"\n",
+        "trace": "at Object.toHaveBeenCalled (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js:96:38)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:3:17)\nat _next (C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\node_modules\\@babel\\runtime\\helpers\\asyncToGenerator.js:17:9)\n\n[object Object]",
+        "rawStatus": "failed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signin\\__tests__\\signin.test.js"
+      },
+      {
+        "name": "shows \"All fields are required\" alert when fields are empty",
+        "duration": 796,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signup\\__tests__\\signupPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signup\\__tests__\\signupPage.test.js"
+      },
+      {
+        "name": "shows \"Passwords do not match\" alert when passwords do not match",
+        "duration": 13,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signup\\__tests__\\signupPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signup\\__tests__\\signupPage.test.js"
+      },
+      {
+        "name": "successfully creates an account",
+        "duration": 70,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signup\\__tests__\\signupPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signup\\__tests__\\signupPage.test.js"
+      },
+      {
+        "name": "displays \"User already exists\" alert when email is already in use",
+        "duration": 79,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signup\\__tests__\\signupPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "C:\\Users\\nbbde\\WebstormProjects\\fixerCapstone\\professionalClient\\src\\screens\\signup\\__tests__\\signupPage.test.js"
+      }
+    ]
+  }
+}

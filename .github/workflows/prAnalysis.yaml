@@ -13,8 +13,9 @@ jobs:
       - run: npm install
         working-directory: professionalClient
 
-      - name: Jest PR analysis
-        uses: Manogel/jest-pr-analysis@v1.1.1
-
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Jest PR analysis
+        run: |
+          cd professionalClient
+          npx jest --ci --reporters=default --reporters=jest-pr-report --reporters=jest-junit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

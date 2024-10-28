@@ -15,5 +15,6 @@ jobs:
 
       - name: Jest PR analysis
         uses: Manogel/jest-pr-analysis@v1.1.1
+
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

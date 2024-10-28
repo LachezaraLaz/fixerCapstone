@@ -1,7 +1,7 @@
 name: PR analysis
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened]
 jobs:
   annotate-pr:
     runs-on: ubuntu-latest

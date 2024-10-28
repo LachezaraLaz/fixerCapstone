@@ -1,22 +1,29 @@
 name: coverage-report
+
 on:
   pull_request_target:
+
 jobs:
   coverage:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
 
       - name: Install dependencies
-        run: |
-          cd professionalClient
-          npm install
+        run: npm install
+        working-directory: professionalClient
 
-      - name: Run Jest Coverage Report
+      - name: Run tests and generate coverage report
+        run: npm run test-coverage
+        working-directory: professionalClient
+
+      - name: Upload coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2.3.1
         with:
           working-directory: professionalClient

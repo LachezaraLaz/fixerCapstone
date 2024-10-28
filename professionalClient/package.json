@@ -52,7 +52,6 @@
     ],
     "reporters": [
       "default",
-      "jest-pr-report",
       [
         "jest-ctrf-json-reporter",
         {}

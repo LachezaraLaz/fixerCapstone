@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - run: npx jest --json --outputFile=result.json --testLocationInResults
+      - run: jest --json --outputFile=result.json --testLocationInResults
         working-directory: professionalClient
       - uses: tanmen/jest-reporter@v1
         if: always()

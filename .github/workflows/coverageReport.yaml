@@ -6,10 +6,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-      - run: npx jest --json --outputFile=result.json --testLocationInResults
-        working-directory: professionalClient
-      - uses: tanmen/jest-reporter@v1
-        if: always()
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Jest Annotations & Coverage
+        uses: mattallty/jest-github-action@v1.0.3

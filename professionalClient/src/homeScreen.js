@@ -1,42 +1,42 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { styles } from '../style/homeScreenStyle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Hardcoded issues with location data
-const issues = [
-    {
-        id: 1,
-        title: 'Leaky Faucet',
-        description: 'Client has a leaky faucet in the kitchen.',
-        latitude: 37.78825,
-        longitude: -122.4324,
-    },
-    {
-        id: 2,
-        title: 'Electrical Problem',
-        description: 'Client reported frequent power outages.',
-        latitude: 37.78925,
-        longitude: -122.4314,
-    },
-    {
-        id: 3,
-        title: 'Clogged Drain',
-        description: 'Bathroom sink is clogged and not draining.',
-        latitude: 37.79025,
-        longitude: -122.4304,
-    },
-];
+import axios from 'axios';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
+    const [issues, setIssues] = React.useState([]);     //State to hold fetched issues
+    const [loading, setLoading] = React.useState(true);
+
+    // Fetch all issues from the backend
+    const fetchAllIssues = async () => {
+        try {
+            const response = await axios.get('http://192.168.2.16:3000/issues');
+            setIssues(response.data.jobs);
+        } catch (error) {
+            console.error('Error fetching issues:', error);
+            Alert.alert('Error', 'An error occurred while fetching issues.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch issues when the component mounts
+    React.useEffect(() => {
+        fetchAllIssues();
+    }, []);
+
+
+
+
     const handleLogout = async () => {
         try {
             await AsyncStorage.removeItem('token');
             Alert.alert('Logged out', 'You have been logged out successfully');
 
-            setIsLoggedIn(false);
-            navigation.replace('welcomePage');
+            setIsLoggedIn(false); // Update login state
+            navigation.replace('welcomePage'); // Navigate to welcome page
         } catch (error) {
             console.error("Error logging out: ", error);
             Alert.alert('Error', 'An error occurred while logging out');
@@ -46,6 +46,15 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const handleIssueClick = (issue) => {
         Alert.alert(issue.title, issue.description);
     };
+
+    // Show loading indicator while data is being fetched
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -72,7 +81,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 </MapView>
             </View>
 
-            {/* List of hardcoded issues */}
+            {/* List of issues */}
             <View style={styles.workBlocksContainer}>
                 <ScrollView contentContainerStyle={styles.workBlocks}>
                     {issues.map((issue) => (
@@ -94,8 +103,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             </View>
 
             <View style={styles.footer}>
-                <Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.
-                </Text>
+                <Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.</Text>
             </View>
         </View>
     );

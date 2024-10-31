@@ -1,4 +1,4 @@
-name: coverage-report
+name: global-coverage-report
 on:
   pull_request_target:
 jobs:

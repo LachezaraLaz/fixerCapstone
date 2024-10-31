@@ -4,6 +4,9 @@ on:
 jobs:
   coverage:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: [professionalClient, fixerClient]
     steps:
       - uses: actions/checkout@v4
       - name: Install Dependencies
@@ -17,4 +20,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          working-directory: professionalClient
+          working-directory: ${{ matrix.directory }}

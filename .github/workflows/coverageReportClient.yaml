@@ -1,4 +1,4 @@
-name: coverage-report
+name: coverage-report-client
 on:
   pull_request_target:
 jobs:

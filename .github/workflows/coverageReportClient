@@ -1,0 +1,20 @@
+name: coverage-report
+on:
+  pull_request_target:
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: npm install
+        working-directory: fixerClient
+      - name: List installed packages
+        run: npm list
+        working-directory: fixerClient
+      - name: Jest Annotations & Coverage
+        uses: mattallty/jest-github-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          working-directory: professionalClient

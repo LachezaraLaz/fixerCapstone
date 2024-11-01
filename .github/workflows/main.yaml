@@ -1,9 +1,10 @@
-name: test-counter
+name: main
 
 on:
   workflow_dispatch: # Allows the workflow to be run manually
+  push:
   pull_request:
-    types: [ opened, reopened, synchronize]
+    types: [opened, reopened, synchronize]
 
 jobs:
   testing-windows:
@@ -20,48 +21,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  run-tests:
+    runs-on: ubuntu-latest  # You can choose a default OS or specify multiple jobs
+    strategy:
+      matrix:
+        client: [professionalClient, fixerClient]  # Specify the clients here
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
+      - name: Install dependencies
+        run: npm install
+        working-directory: ${{ matrix.client }}  # Install in the respective client directory
 
+      - name: Run Jest tests
+        run: npm test
+        working-directory: ${{ matrix.client }}  # Run tests in the respective client directory
 
-
-
-
-
-
-
-#name: Run Tests
-#
-#on:
-#  pull_request:
-#    branches:
-#      - main
-#
-#jobs:
-#  test:
-#    runs-on: ${{ matrix.os }}
-#
-#    strategy:
-#      matrix:
-#        os: [ubuntu-latest, macos-latest, windows-latest]
-#
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v2
-#
-#      - name: Set up Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '20'
-#
-#      - name: Install dependencies
-#        run: npm install
-#
-#      - name: Run Jest tests
-#        run: npm test
-#
-#      - name: Jest coverage report
-#        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
-##        with:
-##          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Jest coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
+        with:
+          working-directory: ${{ matrix.client }}  # Specify the client directory for coverage report

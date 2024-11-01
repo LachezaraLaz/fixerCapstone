@@ -73,7 +73,7 @@ This is to make sure that all dependencies are installed for the project
 <br/><br/>
 
 **PAUSE. DO YOU HAVE EVERYTHING NEEDED?** <br/>
-At this point, we assume that you have downloaded the application called "Expo Go" on your personal device AND created a free account.
+At this point, we assume that you have downloaded the application called "Expo Go" on your personal device AND created a free account. <br/>
 ![Image 2024-11-01 at 6 12 PM](https://github.com/user-attachments/assets/c634d2fd-03f1-4f11-8bba-7e70d3a9a186)
 
 ### Step 7:

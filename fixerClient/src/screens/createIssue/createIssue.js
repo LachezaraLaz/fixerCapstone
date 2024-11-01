@@ -91,9 +91,9 @@ export default function CreateIssue({ navigation }) {
             });
 
             if (response.status === 201) {
+                navigation.navigate('HomeScreen');
                 Alert.alert('Job posted successfully');
                 console.log("Job has been posted successfully");
-                navigation.navigate('HomeScreen');
             } else {
                 Alert.alert('Failed to post the job');
                 console.log("Job posting failed");

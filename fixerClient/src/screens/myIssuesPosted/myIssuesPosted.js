@@ -1,6 +1,6 @@
 // import list
 import * as React from 'react';
-import { View, Text, Image, ScrollView, ActivityIndicator, Button } from 'react-native';
+import { View, Text, Image, ScrollView, ActivityIndicator, Button, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -22,7 +22,7 @@ export default function MyIssuesPosted() {
             const token = await AsyncStorage.getItem('token');
             
             if (!token) {
-                alert('You are not logged in');
+                Alert.alert('You are not logged in');
                 return;
             }
 
@@ -43,11 +43,11 @@ export default function MyIssuesPosted() {
                 setJobs(response.data.jobs); 
                 console.log("Successfully loaded all of users posted jobs");
             } else {
-                alert('Failed to load jobs');
+                Alert.alert('Failed to load jobs');
             }
         } catch (error) {
             console.error('Error fetching jobs:', error);
-            alert('An error occurred while fetching jobs');
+            Alert.alert('An error occurred while fetching jobs');
         } 
         finally {
             setLoading(false);  // Set loading to false once data is fetched
@@ -64,7 +64,7 @@ export default function MyIssuesPosted() {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
-                alert('You are not logged in');
+                Alert.alert('You are not logged in');
                 return;
             }
 
@@ -75,16 +75,16 @@ export default function MyIssuesPosted() {
             });
 
             if (response.status === 200) {
-                alert('Job deleted successfully');
-                console.log("Job deleted successfully");
                 fetchJobsForUser();
+                Alert.alert('Job deleted successfully');
+                console.log("Job deleted successfully");
             } else {
-                alert('Failed to delete the job');
+                Alert.alert('Failed to delete the job');
                 console.log("Job deletion failed");
             }
         } catch (error) {
             console.error('Error deleting job:', error);
-            alert('An error occurred while deleting the job');
+            Alert.alert('An error occurred while deleting the job');
         }
     };
 
@@ -92,7 +92,7 @@ export default function MyIssuesPosted() {
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator testID="ActivityIndicator" size="large" color="#0000ff" />
             </View>
         );
     }

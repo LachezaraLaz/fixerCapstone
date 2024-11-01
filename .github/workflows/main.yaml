@@ -9,6 +9,8 @@ on:
 jobs:
   testing-windows:
     runs-on: windows-latest
+    strategy:
+      matrix: { dir: [ professionalClient, fixerClient ] }
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

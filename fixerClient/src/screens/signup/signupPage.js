@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios, {request} from 'axios';
 
+import { IPAddress } from '../../../ipAddress';
+
 
 export default function SignUpPage({ navigation }) {
     const [email, setEmail] = useState('');
@@ -26,7 +28,7 @@ export default function SignUpPage({ navigation }) {
             return;
         } else {
             try {
-                const response = await axios.post('http://<"add-ip">:3000/client/register', {
+                const response = await axios.post(`http://${IPAddress}:3000/client/register`, {
                     email: email,
                     firstName: firstName,
                     lastName: lastName,

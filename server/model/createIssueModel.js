@@ -1,17 +1,19 @@
 const mongoose = require('mongoose');
 
-const creatIssueModel = new mongoose.Schema({
+const createIssueModel = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
     professionalNeeded: { type: String, required: true },
     imageUrl: { type: String }, // store the URL of the uploaded image
-    userEmail: { type: String, required: true }, 
+    userEmail: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     status: { type: String, default: 'open' }, // e.g., open, in-progress, closed
+    latitude: { type: Number }, // Latitude of the issue location
+    longitude: { type: Number }  // Longitude of the issue location
 }, {
     collection: 'jobs'
 });
 
-const Jobs = mongoose.model('Jobs', creatIssueModel);
+const Jobs = mongoose.model('Jobs', createIssueModel);
 
 module.exports = { Jobs };

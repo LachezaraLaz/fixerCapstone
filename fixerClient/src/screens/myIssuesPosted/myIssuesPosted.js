@@ -13,6 +13,7 @@ export default function MyIssuesPosted() {
     // List of fields in the page
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [deletingJobId, setDeletingJobId] = useState(null); // State to track the job being deleted
 
     //backend
     // Function to fetch jobs for the current user
@@ -61,6 +62,8 @@ export default function MyIssuesPosted() {
 
     // Function to delete an issue by ID
     const deleteIssue = async (jobId) => {
+        setDeletingJobId(jobId); // Start loading for this specific job
+
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
@@ -77,14 +80,14 @@ export default function MyIssuesPosted() {
             if (response.status === 200) {
                 fetchJobsForUser();
                 Alert.alert('Job deleted successfully');
-                console.log("Job deleted successfully");
             } else {
                 Alert.alert('Failed to delete the job');
-                console.log("Job deletion failed");
             }
         } catch (error) {
             console.error('Error deleting job:', error);
             Alert.alert('An error occurred while deleting the job');
+        } finally {
+            setDeletingJobId(null); // Stop loading
         }
     };
 
@@ -134,7 +137,11 @@ export default function MyIssuesPosted() {
                         {job.imageUrl && (
                             <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
                         )}
-                        <Button title="Delete Job" onPress={() => deleteIssue(job._id)} />
+                        {deletingJobId === job._id ? (
+                            <ActivityIndicator size="small" color="#0000ff" />
+                        ) : (
+                            <Button title="Delete Job" onPress={() => deleteIssue(job._id)} disabled={deletingJobId !== null} />
+                        )}
                     </View>
                 ))
             ) : (

@@ -4,7 +4,14 @@ import SignUpPage from '../signupPage'; // Adjust the import path as necessary
 import { Alert } from 'react-native';
 import axios from 'axios';
 
-// Mock the Alert.alert function
+import { IPAddress } from '../../../../ipAddress'; 
+
+// code to run only this file through the terminal:
+// npm run test ./src/screens/signup/__tests__/signup.test.js
+// or
+// npm run test-coverage ./src/screens/signup/__tests__/signup.test.js
+
+// Mock the Alert.alert function 
 jest.spyOn(Alert, 'alert');
 jest.mock('axios');
 
@@ -33,6 +40,10 @@ test('shows "Passwords do not match" alert when passwords do not match', async (
     const { getByPlaceholderText, getByTestId } = render(<SignUpPage />);
 
     fireEvent.changeText(getByPlaceholderText('Email'), 'test@example.com');
+    fireEvent.changeText(getByPlaceholderText('House number and Street'), '1234 Smith street');
+    fireEvent.changeText(getByPlaceholderText('Postal Code'), 'H6J6H7');
+    fireEvent.changeText(getByPlaceholderText('Province or State'), 'Quebec');
+    fireEvent.changeText(getByPlaceholderText('Country'), 'Canada');
     fireEvent.changeText(getByPlaceholderText('Password'), '123456');
     fireEvent.changeText(getByPlaceholderText('Confirm Password'), '654321');
     const signUpButton = getByTestId('sign-up-button');
@@ -51,6 +62,10 @@ test('successfully creates an account', async () => {
     fireEvent.changeText(getByPlaceholderText('Email'), 'user@example.com');
     fireEvent.changeText(getByPlaceholderText('First Name'), 'John');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
+    fireEvent.changeText(getByPlaceholderText('House number and Street'), '1234 Smith street');
+    fireEvent.changeText(getByPlaceholderText('Postal Code'), 'H6J6H7');
+    fireEvent.changeText(getByPlaceholderText('Province or State'), 'Quebec');
+    fireEvent.changeText(getByPlaceholderText('Country'), 'Canada');
     fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
     fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
 
@@ -80,6 +95,10 @@ test('displays "User already exists" alert when email is already in use', async 
     fireEvent.changeText(getByPlaceholderText('Email'), 'existing@example.com');
     fireEvent.changeText(getByPlaceholderText('First Name'), 'Jane');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
+    fireEvent.changeText(getByPlaceholderText('House number and Street'), '1234 Smith street');
+    fireEvent.changeText(getByPlaceholderText('Postal Code'), 'H6J6H7');
+    fireEvent.changeText(getByPlaceholderText('Province or State'), 'Quebec');
+    fireEvent.changeText(getByPlaceholderText('Country'), 'Canada');
     fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
     fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
 
@@ -89,12 +108,27 @@ test('displays "User already exists" alert when email is already in use', async 
 
     // Assertions
     await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith('http://<"add-ip">:3000/client/register', {
+        expect(axios.post).toHaveBeenCalledWith(`http://${IPAddress}:3000/client/register`, {
             email: 'existing@example.com',
             firstName: 'Jane',
             lastName: 'Doe',
+            street: '1234 Smith street',
+            postalCode: 'H6J6H7',
+            provinceOrState: 'Quebec',
+            country: 'Canada', 
             password: 'password123'
         });
         expect(Alert.alert).toHaveBeenCalledWith("Error", "User already exists");
     });
+    
+});
+
+test('navigates to SignInPage when "Sign in" link is pressed', () => {
+    const mockNavigation = { navigate: jest.fn() };
+    const { getByText } = render(<SignUpPage navigation={mockNavigation} setIsLoggedIn={jest.fn()} />);
+
+    const signInLink = getByText("Already have an account? Sign in");
+    fireEvent.press(signInLink);
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('SignInPage');
 });

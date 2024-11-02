@@ -10,7 +10,7 @@ const professionalClientModel = new mongoose.Schema({
     accountType: String,
     formComplete: Boolean,
     idImageUrl: String,
-    passwordResetToken: String,
+    passwordResetPin: String,
     passwordResetExpires: Date
 }, {
     collection: 'fixerClientInfo'

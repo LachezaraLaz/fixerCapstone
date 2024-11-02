@@ -1,17 +1,24 @@
-name: pr-coverage-report
+name: coverage-report
+
 on:
   pull_request_target:
+    types: [opened, synchronize, reopened] # Optional: specify events to trigger
+
 jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Install Dependencies
         run: npm install
         working-directory: professionalClient
-      - name: List installed packages
+
+      - name: List Installed Packages
         run: npm list
         working-directory: professionalClient
+
       - name: Jest Annotations & Coverage
         uses: ArtiomTr/jest-coverage-report-action@v2.3.1
         env:

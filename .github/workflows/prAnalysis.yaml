@@ -1,4 +1,4 @@
-name: PR
+name: pr-coverage-report
 on:
   pull_request_target:
 jobs:

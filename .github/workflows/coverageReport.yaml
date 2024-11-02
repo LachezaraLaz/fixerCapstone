@@ -1,12 +1,9 @@
-name: individual-coverage-report
+name: professional-coverage-report
 on:
   pull_request_target:
 jobs:
   coverage:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory: [professionalClient, fixerClient]
     steps:
       - uses: actions/checkout@v4
       - name: Install Dependencies

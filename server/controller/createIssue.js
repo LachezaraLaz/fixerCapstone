@@ -1,6 +1,6 @@
 const { Jobs } = require('../model/createIssueModel');
 const { fixerClient } = require('../model/fixerClientModel'); // Import the fixerClient model
-const { getCoordinates } = require('../services/geoCodingService'); // Import the geocoding function
+const { getCoordinatesFromAddress } = require('../services/geoCodingService'); // Import the geocoding function
 const { uploadImageToCloudinary } = require('../services/cloudinaryService'); // Import the Cloudinary service
 
 const createIssue = async (req, res) => {
@@ -33,7 +33,7 @@ const createIssue = async (req, res) => {
         console.log('Address to geocode:', address); // Log the address
 
         // Convert the address to latitude and longitude
-        const { latitude, longitude } = await getCoordinates(address);
+        const { latitude, longitude } = await getCoordinatesFromAddress(address);
 
         // Create a new issue with the geocoded coordinates
         const newIssue = await Jobs.create({

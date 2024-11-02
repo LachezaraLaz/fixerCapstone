@@ -1,12 +1,13 @@
 //Import list
 import * as React from 'react';
-import { View, Text, TextInput, Button, Image, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, Button, Image, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert, ActivityIndicator  } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode'; 
 
+import { IPAddress } from '../../../ipAddress';
 
 export default function CreateIssue({ navigation }) {
     // List of fields in the page
@@ -14,13 +15,14 @@ export default function CreateIssue({ navigation }) {
     const [description, setDescription] = useState('');
     const [professionalNeeded, setProfessionalNeeded] = useState('');
     const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     //backend 
     //backend to be able to pick an image 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (permissionResult.granted === false) {
-            alert('Permission to access images is required!');
+            Alert.alert('Permission to access images is required!');
             return;
         }
 
@@ -36,53 +38,35 @@ export default function CreateIssue({ navigation }) {
         }
     };
 
-    //backend to be post the job issue
     const postIssue = async () => {
-
-        //checking if all the mandatory fields are entered
         if (!title || !professionalNeeded || !description) {
-            console.log("User is trying to submit without completing the title, description or professional needed field.");
-            alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
+            Alert.alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
             return;
         }
 
-        // Get the token (users info) from AsyncStorage
-        const token = await AsyncStorage.getItem('token');
+        setLoading(true); // Start loading
 
-        // Decode the token to extract the user's email
-        const decodedToken = jwtDecode(token);
-        const userEmail = decodedToken.email;
-        const userStreet = decodedToken.street;
-
-        console.log("User's email from token:", userEmail);
-
-        //tests if token carries the street information now 
-        //THIS DOES NOT WORK YET
-        console.log("User's street from token:", userStreet);
-        // If you want to print all other variables, you can loop through the object (if necessary)
-        Object.keys(decodedToken).forEach((key) => {
-            console.log(`${key}: ${decodedToken[key]}`);
-        });
-
-        //adding all the necessary data to formData to then add to the job entry in the database
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('professionalNeeded', professionalNeeded);
-        formData.append('email', userEmail);
-        formData.append('status', "Open");
-
-        if (image) {
-            formData.append('image', {
-                uri: image,
-                type: 'image/jpeg',
-                name: 'issue_image.jpg',
-            });
-        }
-
-        //adding the entry in the job collection with error handling
         try {
-            const response = await axios.post('http://<"add-ip">:3000/issue/create', formData, {
+            const token = await AsyncStorage.getItem('token');
+            const decodedToken = jwtDecode(token);
+            const userEmail = decodedToken.email;
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('professionalNeeded', professionalNeeded);
+            formData.append('email', userEmail);
+            formData.append('status', "Open");
+
+            if (image) {
+                formData.append('image', {
+                    uri: image,
+                    type: 'image/jpeg',
+                    name: 'issue_image.jpg',
+                });
+            }
+
+            const response = await axios.post(`http://${IPAddress}:3000/issue/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -90,23 +74,18 @@ export default function CreateIssue({ navigation }) {
             });
 
             if (response.status === 201) {
-                alert('Issue posted successfully');
                 navigation.navigate('HomeScreen');
+                Alert.alert('Job posted successfully');
             } else {
-                alert('Failed to post the issue');
+                Alert.alert('Failed to post the job');
             }
         } catch (error) {
-            if (error.response) {
-                console.error("Response error:", error.response.data);
-            } else if (error.request) {
-                console.error("Request error:", error.request);
-            } else {
-                console.error("Error message:", error.message);
-            }
-            alert('An error occurred. Please try again.');
+            Alert.alert('An error occurred. Please try again.');
+        } finally {
+            setLoading(false); // Stop loading after completion
         }
+    };
 
-        };
     //frontend
     return (
         //possibility to dismiss the keyboard just by touching the screen
@@ -180,8 +159,11 @@ export default function CreateIssue({ navigation }) {
                     </View>
                 )}
 
-                {/* posting job field */}
-                <Button title="Post Job" onPress={postIssue} />
+                {loading ? (
+                    <ActivityIndicator size="large" color="#0000ff" />
+                ) : (
+                    <Button testID={'post-job-button'} title="Post Job" onPress={postIssue} disabled={loading} />
+                )}
             </View>
         </TouchableWithoutFeedback>
     );

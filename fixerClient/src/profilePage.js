@@ -4,6 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';  // To retrieve JWT
 
+import { IPAddress } from '../ipAddress'; 
+
 const ProfilePage = () => {
     const [client, setClient] = useState(null);  // State for client's data
     const [loading, setLoading] = useState(true);  // State to manage loading
@@ -16,7 +18,7 @@ const ProfilePage = () => {
                 const token = await AsyncStorage.getItem('token');
                 if (token) {
                     // Send request to the backend with the JWT token
-                    const response = await axios.get('http://<add-ip>:3000/client/profile', {
+                    const response = await axios.get('http://${IPAddress}:3000/client/profile', {
                         headers: {
                             Authorization: `Bearer ${token}`  // Send JWT in Authorization header
                         }

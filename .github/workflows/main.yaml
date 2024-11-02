@@ -1,4 +1,4 @@
-name: main
+name: tests count before current changes
 
 on:
   workflow_dispatch: # Allows the workflow to be run manually

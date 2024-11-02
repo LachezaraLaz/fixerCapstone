@@ -22,7 +22,7 @@ async function forgotPassword(req, res) {
     const user = await fixerClientObject.fixerClient.findOne({ email: req.body.email });
 
     if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'Could not find your account'});
     }
 
     const pin = generatePin();

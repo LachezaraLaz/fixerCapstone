@@ -19,7 +19,7 @@ export default function ResetPasswordPage({ route, navigation }) {
         }
 
         try {
-            const response = await axios.post('http://192.168.0.140:3000/reset/updatePassword', { email, newPassword });
+            const response = await axios.post('http://<"add-ip">:3000/reset/updatePassword', { email, newPassword });
 
             if (response.status === 200) {
                 Alert.alert('Success', 'Password has been reset successfully');

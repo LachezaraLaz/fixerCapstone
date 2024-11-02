@@ -13,7 +13,7 @@ export default function EnterPinPage({ route, navigation }) {
         }
 
         try {
-            const response = await axios.post('http://192.168.0.140:3000/reset/validatePin', { email, pin: pin.toString() });
+            const response = await axios.post('http://<"add-ip">:3000/reset/validatePin', { email, pin: pin.toString() });
 
             if (response.status === 200) {
                 Alert.alert('Success', 'PIN validated successfully');

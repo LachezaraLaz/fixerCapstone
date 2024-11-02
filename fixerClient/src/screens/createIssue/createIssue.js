@@ -8,6 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode'; 
 
 import { IPAddress } from '../../../ipAddress';
+import styles from '../../../designSystems/components.js';
+
 
 export default function CreateIssue({ navigation }) {
     // List of fields in the page
@@ -90,21 +92,15 @@ export default function CreateIssue({ navigation }) {
     return (
         //possibility to dismiss the keyboard just by touching the screen
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={{ flex: 1, padding: 20 }}>
-                <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Create New Issue</Text>
+            <View style={styles.container}>
+                <Text style={styles.header}>Create New Issue</Text>
 
                 {/* title field */}
                 <TextInput
                     placeholder="Title"
                     value={title}
                     onChangeText={setTitle}
-                    style={{
-                        borderWidth: 1, 
-                        borderColor: '#ccc',
-                        padding: 10,
-                        borderRadius: 5,
-                        marginBottom: 15
-                    }}
+                    style={styles.input}
                 />
 
                 {/* professional needed field */}
@@ -112,13 +108,7 @@ export default function CreateIssue({ navigation }) {
                     placeholder="Professional Needed"
                     value={professionalNeeded}
                     onChangeText={setProfessionalNeeded}
-                    style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        padding: 10,
-                        borderRadius: 5,
-                        marginBottom: 15
-                    }}
+                    style={styles.input}
                 />
 
                 {/* description field */}
@@ -127,34 +117,16 @@ export default function CreateIssue({ navigation }) {
                     value={description}
                     onChangeText={setDescription}
                     multiline
-                    style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        padding: 10,
-                        height: 100,
-                        textAlignVertical: 'top',
-                        borderRadius: 5,
-                        marginBottom: 15
-                    }}
+                    style={styles.textArea}
                 />
 
                 {/* uploading of image button */}
-                <TouchableOpacity onPress={pickImage} style={{ marginBottom: 15 }}>
-                    <View
-                        style={{
-                            backgroundColor: '#eee',
-                            padding: 10,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            borderRadius: 5,
-                        }}
-                    >
+                <TouchableOpacity onPress={pickImage} style={styles.imageButton}>
                         <Text>Upload Image</Text>
-                    </View>
                 </TouchableOpacity>
 
                 {image && (
-                    <View style={{ alignItems: 'center', marginBottom: 15 }}>
+                    <View style={styles.imagePreview}>
                         <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
                     </View>
                 )}

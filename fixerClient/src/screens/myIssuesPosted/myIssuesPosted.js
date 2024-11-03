@@ -5,8 +5,9 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';  // Import a JWT decode library
+import { useNavigation } from '@react-navigation/native';
 
-import { IPAddress } from '../../../ipAddress'; 
+import { IPAddress } from '../../../ipAddress';
 
 
 export default function MyIssuesPosted() {
@@ -14,6 +15,7 @@ export default function MyIssuesPosted() {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deletingJobId, setDeletingJobId] = useState(null); // State to track the job being deleted
+    const navigation = useNavigation();
 
     //backend
     // Function to fetch jobs for the current user
@@ -21,7 +23,7 @@ export default function MyIssuesPosted() {
         try {
             // Retrieve the token from AsyncStorage
             const token = await AsyncStorage.getItem('token');
-            
+
             if (!token) {
                 Alert.alert('You are not logged in');
                 return;
@@ -29,19 +31,19 @@ export default function MyIssuesPosted() {
 
             // Decode the token to get the user's email
             const decodedToken = jwtDecode(token);
-            const userEmail = decodedToken.email; 
-            
+            const userEmail = decodedToken.email;
+
             console.log("User's email from token:", userEmail);
 
             // Fetch jobs from backend filtered by user's email
             const response = await axios.get(`http://${IPAddress}:3000/issue/user/${userEmail}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`, 
+                    'Authorization': `Bearer ${token}`,
                 }
             });
 
             if (response.status === 200) {
-                setJobs(response.data.jobs); 
+                setJobs(response.data.jobs);
                 console.log("Successfully loaded all of users posted jobs");
             } else {
                 Alert.alert('Failed to load jobs');
@@ -49,7 +51,7 @@ export default function MyIssuesPosted() {
         } catch (error) {
             console.error('Error fetching jobs:', error);
             Alert.alert('An error occurred while fetching jobs');
-        } 
+        }
         finally {
             setLoading(false);  // Set loading to false once data is fetched
         }
@@ -73,7 +75,7 @@ export default function MyIssuesPosted() {
 
             const response = await axios.delete(`http://${IPAddress}:3000/issue/${jobId}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`, 
+                    'Authorization': `Bearer ${token}`,
                 }
             });
 
@@ -137,11 +139,14 @@ export default function MyIssuesPosted() {
                         {job.imageUrl && (
                             <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
                         )}
-                        {deletingJobId === job._id ? (
-                            <ActivityIndicator size="small" color="#0000ff" />
-                        ) : (
-                            <Button title="Delete Job" onPress={() => deleteIssue(job._id)} disabled={deletingJobId !== null} />
-                        )}
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                            <Button title="Edit" onPress={() => navigation.navigate('EditIssue', { jobId: job._id })} />
+                            {deletingJobId === job._id ? (
+                                <ActivityIndicator size="small" color="#0000ff" />
+                            ) : (
+                                <Button title="Delete Job" onPress={() => deleteIssue(job._id)} disabled={deletingJobId !== null} />
+                            )}
+                        </View>
                     </View>
                 ))
             ) : (

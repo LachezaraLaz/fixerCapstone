@@ -1,8 +1,6 @@
-name: main
+name: suite-folded-ctrf
 
 on:
-  workflow_dispatch: # Allows the workflow to be run manually
-  push:
   pull_request:
     types: [opened, reopened, synchronize]
 
@@ -14,6 +12,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Run CTRF annotations
         run: npx github-actions-ctrf summary professionalClient/ctrf/ctrf-report.json
+        if: always()
+      - name: Publish CTRF Suite Folded Summary
+        run: npx github-actions-ctrf suite-folded path-to-your-ctrf-report.json
         if: always()
       - name: Publish CTRF pull request comment
         run: npx github-actions-ctrf pull-request professionalClient/ctrf/ctrf-report.json

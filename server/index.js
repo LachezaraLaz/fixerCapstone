@@ -25,4 +25,3 @@ app.use('/professional', professionalClientRoute.professionalRouter);
 app.use('/client', fixerClientRoute.fixerClientRouter);
 app.use('/issue', createIssueRoute.createIssueRouter);
 app.use('/reset',resetPasswordRouter.resetPasswordRouter);
-app.use('/issue', createIssueRouter);

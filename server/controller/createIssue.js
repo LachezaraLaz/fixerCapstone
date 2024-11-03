@@ -1,10 +1,12 @@
 const { Jobs } = require('../model/createIssueModel');
-const { uploadImageToCloudinary } = require('../services/cloudinaryService'); // Import the ClientInfo model
+const { fixerClient } = require('../model/fixerClientModel'); // Import the fixerClient model
+const { getCoordinatesFromAddress } = require('../services/geoCodingService'); // Import the geocoding function
+const { uploadImageToCloudinary } = require('../services/cloudinaryService'); // Import the Cloudinary service
 
 const createIssue = async (req, res) => {
     console.log('Request body:', req.body);
 
-    const { title, description, professionalNeeded, email, image, status} = req.body;
+    const { title, description, professionalNeeded, email, image,status } = req.body;
 
     // Validate required fields
     if (!title || !description || !professionalNeeded) {
@@ -19,8 +21,21 @@ const createIssue = async (req, res) => {
         console.log('Uploaded image URL:', imageUrl);
     }
 
-    // Create a new issue
     try {
+        // Fetch client info from the database to get the address
+        const clientInfo = await fixerClient.findOne({ email });
+        if (!clientInfo) {
+            return res.status(404).json({ message: 'Client not found' });
+        }
+
+
+        const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
+        console.log('Address to geocode:', address);
+
+
+        const { latitude, longitude } = await getCoordinatesFromAddress(address);
+
+
         const newIssue = await Jobs.create({
             title,
             description,
@@ -28,9 +43,13 @@ const createIssue = async (req, res) => {
             imageUrl,  // Store the Cloudinary image URL
             userEmail: email,  // Store the user's email in the issue
             status,
+            latitude,
+            longitude
         });
+
         res.status(201).json({ message: 'Issue created successfully', issue: newIssue });
     } catch (error) {
+        console.error('Error creating issue:', error);
         res.status(500).json({ message: 'Failed to create issue', error: error.message });
     }
 };

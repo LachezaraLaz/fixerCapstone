@@ -11,8 +11,10 @@ const fixerClientModel = new mongoose.Schema({
     street: String,
     postalCode: String,
     provinceOrState: String,
-    country: String
-    
+    country: String,
+    passwordResetToken: String,
+    passwordResetExpires: Date
+
 },{
     collection: 'fixerClientInfo'
 });

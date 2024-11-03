@@ -6,10 +6,10 @@ const { uploadImageToCloudinary } = require('../services/cloudinaryService'); //
 const createIssue = async (req, res) => {
     console.log('Request body:', req.body);
 
-    const { title, description, professionalNeeded, email, status } = req.body;
+    const { title, description, professionalNeeded, email, image,status } = req.body;
 
     // Validate required fields
-    if (!title || !description || !professionalNeeded || !email) {
+    if (!title || !description || !professionalNeeded) {
         return res.status(400).json({ message: 'Some fields are missing.' });
     }
 

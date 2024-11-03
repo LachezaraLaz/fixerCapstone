@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test-coverage": "jest --coverage",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "dependencies": {
     "@expo/config": "^8.1.1",
@@ -25,6 +25,7 @@
     "expo-location": "^17.0.1",
     "expo-status-bar": "~1.12.1",
     "github-actions-ctrf": "^0.0.45",
+    "moment": "^2.30.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-native": "^0.75.4",

@@ -6,7 +6,8 @@ const professionalClientRoute = require('./routes/professionalClientRoute');
 const fixerClientRoute = require('./routes/fixerClientRoute');
 const createIssueRoute = require('./routes/createIssueRoute');
 const issueRoute = require('./routes/getIssuesRoute'); // Import the new issue route
-
+const resetPasswordRouter = require('./routes/passwordResetRoute');
+const createIssueRouter = require('./routes/createIssueRoute');
 const app = express();
 
 app.use(bodyParser.json());
@@ -25,3 +26,5 @@ app.use('/professional', professionalClientRoute.professionalRouter);
 app.use('/client', fixerClientRoute.fixerClientRouter);
 app.use('/issue', createIssueRoute.createIssueRouter);
 app.use('/issues', issueRoute.issueRouter);
+app.use('/reset',resetPasswordRouter.resetPasswordRouter);
+app.use('/issue', createIssueRouter);

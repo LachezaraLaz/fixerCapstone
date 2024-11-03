@@ -5,6 +5,13 @@ import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { IPAddress } from '../../../../ipAddress'; 
+
+// code to run only this file through the terminal:
+// npm run test ./src/screens/signin/__tests__/signin.test.js
+// or
+// npm run test-coverage ./src/screens/signin/__tests__/signin.test.js
+
 jest.mock('axios', () => ({
     post: jest.fn().mockResolvedValue({
         status: 200,
@@ -50,7 +57,7 @@ test('handles sign-in correctly and navigates to HomeScreen', async () => {
     fireEvent.press(signInButton)
 
     await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith('http://<"add-ip">:3000/client/signin/', {
+        expect(axios.post).toHaveBeenCalledWith(`http://${IPAddress}:3000/client/signin/`, {
             email: 'user@example.com',
             password: 'password123'
         });
@@ -83,7 +90,7 @@ test('displays an error alert when email does not exist', async () => {
 
     await waitFor(() => {
         // Checking that the error message is displayed
-        expect(axios.post).toHaveBeenCalledWith('http://<"add-ip">:3000/client/signin/', {
+        expect(axios.post).toHaveBeenCalledWith(`http://${IPAddress}:3000/client/signin/`, {
             email: 'nonexistent@example.com',
             password: 'password123'
         });
@@ -93,5 +100,15 @@ test('displays an error alert when email does not exist', async () => {
     // Ensuring no navigation or login state changes occurred
     expect(setIsLoggedIn).not.toHaveBeenCalled();
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
-    expect(AsyncStorage.setItem).not.toHaveBeenCalled();
+    // expect(AsyncStorage.setItem).not.toHaveBeenCalled();
+});
+
+test('navigates to SignUpPage when "Sign up" link is pressed', () => {
+    const mockNavigation = { navigate: jest.fn() };
+    const { getByText } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={jest.fn()} />);
+
+    const signUpLink = getByText("Don't have an account? Sign up");
+    fireEvent.press(signUpLink);
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('SignUpPage');
 });

@@ -5,14 +5,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
-import {useEffect, useState} from "react";
 import HomeScreen from "./src/homeScreen";
 import ProfileScreen from "./src/screens/profilePage/profilePage";
 import CredentialFormPage from "./src/screens/credentialFormPage/credentialFormPage";
 import UploadID from "./src/screens/uploadID/uploadID";
 import ThankYouPage from "./src/tyCredentialEnd";
+import ForgotPasswordPage from "./src/screens/signin/ForgotPasswordPage";
+import EnterPin from "./src/screens/signin/EnterPinPage";
+import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage"; // Import your ResetPasswordPage
+import { useEffect, useState } from "react";
 
 const Stack = createNativeStackNavigator();
+
+const linking = {
+    prefixes: ['yourapp://'], // Replace 'yourapp' with your actual app scheme
+    config: {
+        screens: {
+            ResetPasswordPage: 'resetPassword?token=:token',
+            // Add other screens as needed
+        },
+    },
+};
 
 export default function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,11 +49,11 @@ export default function App() {
     }, []);
 
     if (loading) {
-        return null; // Add a loading component here
+        return null; // Add a loading component here if desired
     }
 
     return (
-        <NavigationContainer>
+        <NavigationContainer linking={linking}>
             <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "welcomePage"}>
                 {isLoggedIn ? (
                     <>
@@ -59,6 +72,9 @@ export default function App() {
                             {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                         </Stack.Screen>
                         <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                        <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                        <Stack.Screen name="EnterPin" component={EnterPin} />
+                        <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
                     </>
                 )}
             </Stack.Navigator>

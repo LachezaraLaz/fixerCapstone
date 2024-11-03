@@ -1,4 +1,4 @@
-name: coverage-report
+name: file-coverage
 on:
   pull_request_target:
 jobs:
@@ -6,9 +6,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-      - run: jest --json --outputFile=result.json --testLocationInResults
-      - uses: tanmen/jest-reporter@v1
-        if: always()
+      - name: Install Dependencies
+        run: npm install
+        working-directory: professionalClient
+      - name: List installed packages
+        run: npm list
+        working-directory: professionalClient
+      - name: Jest Annotations & Coverage
+        uses: mattallty/jest-github-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: professionalClient

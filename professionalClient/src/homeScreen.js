@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 import { styles } from '../style/homeScreenStyle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import Constants from 'expo-constants';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
-    const [issues, setIssues] = React.useState([]);     //State to hold fetched issues
+    const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
+    const [currentLocation, setCurrentLocation] = React.useState(null);
 
     // Fetch all issues from the backend
     const fetchAllIssues = async () => {
@@ -22,21 +25,39 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }
     };
 
-    // Fetch issues when the component mounts
+    const getCurrentLocation = async () => {
+        try {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            console.log("Location permission status:", status);
+            if (status !== 'granted') {
+                Alert.alert('Permission to access location was denied');
+                return;
+            }
+
+            const location = await Location.getCurrentPositionAsync({});
+            console.log("Current location:", location);
+            setCurrentLocation({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+            });
+        } catch (error) {
+            console.error('Error getting location:', error);
+            Alert.alert('Error', 'Could not get your current location.');
+        }
+    };
+
+    // Fetch issues and location when the component mounts
     React.useEffect(() => {
         fetchAllIssues();
+        getCurrentLocation();
     }, []);
-
-
-
 
     const handleLogout = async () => {
         try {
             await AsyncStorage.removeItem('token');
             Alert.alert('Logged out', 'You have been logged out successfully');
-
-            setIsLoggedIn(false); // Update login state
-            navigation.replace('welcomePage'); // Navigate to welcome page
+            setIsLoggedIn(false);
+            navigation.replace('welcomePage');
         } catch (error) {
             console.error("Error logging out: ", error);
             Alert.alert('Error', 'An error occurred while logging out');
@@ -58,11 +79,17 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     return (
         <View style={styles.container}>
-            {/* Map with issue markers */}
             <View style={styles.mapContainer}>
                 <MapView
                     style={styles.map}
-                    initialRegion={{
+                    showsUserLocation={true} // Show the blue dot for current location
+                    followsUserLocation={true} // Center the map on the user's location
+                    region={currentLocation ? {
+                        latitude: currentLocation.latitude,
+                        longitude: currentLocation.longitude,
+                        latitudeDelta: 0.0122,
+                        longitudeDelta: 0.0121,
+                    } : {
                         latitude: 37.78825,
                         longitude: -122.4324,
                         latitudeDelta: 0.0122,
@@ -81,7 +108,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 </MapView>
             </View>
 
-            {/* List of issues */}
             <View style={styles.workBlocksContainer}>
                 <ScrollView contentContainerStyle={styles.workBlocks}>
                     {issues.map((issue) => (

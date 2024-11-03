@@ -1,4 +1,4 @@
-name: global-coverage-report
+name: global-coverage
 
 on:
   pull_request_target:

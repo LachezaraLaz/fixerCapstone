@@ -1,4 +1,4 @@
-name: suite-folded
+name: suite-folded-ctrf
 
 on:
   pull_request:

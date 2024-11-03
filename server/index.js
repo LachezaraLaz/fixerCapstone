@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const professionalClientRoute = require('./routes/professionalClientRoute');
 const fixerClientRoute = require('./routes/fixerClientRoute');
-const createIssueRoute = require('./routes/createIssueRoute');
+const createIssueRouter = require('./routes/createIssueRoute');
 const app = express();
 
 app.use(bodyParser.json());
@@ -21,4 +21,4 @@ const server = app.listen(PORT, () => {
 
 app.use('/professional', professionalClientRoute.professionalRouter);
 app.use('/client', fixerClientRoute.fixerClientRouter);
-app.use('/issue', createIssueRoute.createIssueRouter);
+app.use('/issue', createIssueRouter);

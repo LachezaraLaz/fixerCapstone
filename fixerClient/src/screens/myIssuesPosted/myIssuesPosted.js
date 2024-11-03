@@ -1,16 +1,19 @@
 // import list
 import * as React from 'react';
-import { View, Text, Image, ScrollView } from 'react-native';
+import { View, Text, Image, ScrollView, ActivityIndicator, Button, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';  // Import a JWT decode library
 
+import { IPAddress } from '../../../ipAddress'; 
+
 
 export default function MyIssuesPosted() {
     // List of fields in the page
     const [jobs, setJobs] = useState([]);
-    // const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [deletingJobId, setDeletingJobId] = useState(null); // State to track the job being deleted
 
     //backend
     // Function to fetch jobs for the current user
@@ -20,7 +23,7 @@ export default function MyIssuesPosted() {
             const token = await AsyncStorage.getItem('token');
             
             if (!token) {
-                alert('You are not logged in');
+                Alert.alert('You are not logged in');
                 return;
             }
 
@@ -31,7 +34,7 @@ export default function MyIssuesPosted() {
             console.log("User's email from token:", userEmail);
 
             // Fetch jobs from backend filtered by user's email
-            const response = await axios.get(`http://<"add-ip">:3000/issue/user/${userEmail}`, {
+            const response = await axios.get(`http://${IPAddress}:3000/issue/user/${userEmail}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`, 
                 }
@@ -39,16 +42,17 @@ export default function MyIssuesPosted() {
 
             if (response.status === 200) {
                 setJobs(response.data.jobs); 
+                console.log("Successfully loaded all of users posted jobs");
             } else {
-                alert('Failed to load jobs');
+                Alert.alert('Failed to load jobs');
             }
         } catch (error) {
             console.error('Error fetching jobs:', error);
-            alert('An error occurred while fetching jobs');
+            Alert.alert('An error occurred while fetching jobs');
         } 
-        // finally {
-        //     setLoading(false);  // Set loading to false once data is fetched
-        // }
+        finally {
+            setLoading(false);  // Set loading to false once data is fetched
+        }
     };
 
     // Use useEffect to fetch jobs on component mount
@@ -56,14 +60,45 @@ export default function MyIssuesPosted() {
         fetchJobsForUser();
     }, []);
 
-    // // Show a loading spinner while data is being fetched
-    // if (loading) {
-    //     return (
-    //         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    //             <ActivityIndicator size="large" color="#0000ff" />
-    //         </View>
-    //     );
-    // }
+    // Function to delete an issue by ID
+    const deleteIssue = async (jobId) => {
+        setDeletingJobId(jobId); // Start loading for this specific job
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('You are not logged in');
+                return;
+            }
+
+            const response = await axios.delete(`http://${IPAddress}:3000/issue/${jobId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, 
+                }
+            });
+
+            if (response.status === 200) {
+                fetchJobsForUser();
+                Alert.alert('Job deleted successfully');
+            } else {
+                Alert.alert('Failed to delete the job');
+            }
+        } catch (error) {
+            console.error('Error deleting job:', error);
+            Alert.alert('An error occurred while deleting the job');
+        } finally {
+            setDeletingJobId(null); // Stop loading
+        }
+    };
+
+    // Show a loading spinner while data is being fetched
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator testID="ActivityIndicator" size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     // Define a mapping of statuses to colors
     const statusColorMap = {
@@ -80,7 +115,7 @@ export default function MyIssuesPosted() {
     };
 
     return (
-        <ScrollView style={{ flex: 1, padding: 20 }}>
+        <ScrollView style={{ flex: 1, paddingBottom: 200 , marginBottom: 100}}>
             <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: "center" }}>My Jobs</Text>
 
             {jobs.length > 0 ? (
@@ -101,6 +136,11 @@ export default function MyIssuesPosted() {
                         <Text>{job.description}</Text>
                         {job.imageUrl && (
                             <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
+                        )}
+                        {deletingJobId === job._id ? (
+                            <ActivityIndicator size="small" color="#0000ff" />
+                        ) : (
+                            <Button title="Delete Job" onPress={() => deleteIssue(job._id)} disabled={deletingJobId !== null} />
                         )}
                     </View>
                 ))

@@ -1,24 +1,27 @@
-name: PR analysis
+name: coverage-report
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  pull_request_target:
+    types: [opened, synchronize, reopened] # Optional: specify events to trigger
 
 jobs:
-  annotate-pr:
+  coverage:
     runs-on: ubuntu-latest
-    name: Run tests on pull request
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - run: npm install
+      - name: Install Dependencies
+        run: npm install
         working-directory: professionalClient
 
-      - name: Jest PR analysis
-        uses: Manogel/jest-pr-analysis@v1.1.1
+      - name: List Installed Packages
+        run: npm list
+        working-directory: professionalClient
+
+      - name: Jest Annotations & Coverage
+        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          working-directory: professionalClient

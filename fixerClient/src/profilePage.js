@@ -1,29 +1,67 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';  // To retrieve JWT
+
+import { IPAddress } from '../ipAddress'; 
 
 const ProfilePage = () => {
-    // Hardcoded professional data
-    const professional = {
-        name: 'Thaneekan Thankarajah',
-        email: 'thaneekan@example.com',
-        profilePicture: require('../assets/profile.jpg'),
-        rating: 4.9,
-    };
+    const [client, setClient] = useState(null);  // State for client's data
+    const [loading, setLoading] = useState(true);  // State to manage loading
+    const navigation = useNavigation();
 
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            try {
+                // Get the JWT token from AsyncStorage
+                const token = await AsyncStorage.getItem('token');
+                if (token) {
+                    // Send request to the backend with the JWT token
+                    const response = await axios.get('http://${IPAddress}:3000/client/profile', {
+                        headers: {
+                            Authorization: `Bearer ${token}`  // Send JWT in Authorization header
+                        }
+                    });
+                    setClient(response.data);  // Set client data
+                } else {
+                    console.error('No token found');
+                }
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
+            } finally {
+                setLoading(false);  // Set loading to false after data fetch
+            }
+        };
+
+        fetchProfileData();
+    }, []);
+
+    if (loading) {
+        return <Text>Loading...</Text>;  // Show loading text while fetching
+    }
+
+    // const handleVerifyCredentials = () => {
+    //     navigation.navigate('CredentialFormPage');  // Navigate to the credential form page
+    // };
+
+    if (!client) {
+        return <Text>Error loading profile.</Text>;  // Handle error if profile is not found
+    }
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 {/* Profile Picture */}
-                <Image source={professional.profilePicture} style={styles.profileImage} />
+                <Image source={client.profilePicture} style={styles.profileImage} />
 
                 {/* Name and Rating */}
                 <View style={styles.nameContainer}>
-                    <Text style={styles.nameText}>{professional.name}</Text>
-                    <Text style={styles.ratingText}>⭐ {professional.rating}</Text>
+                    <Text style={styles.nameText}>{client.name}</Text>
+                    <Text style={styles.ratingText}>⭐ {client.rating}</Text>
                 </View>
 
                 {/* Email */}
-                <Text style={styles.emailText}>{professional.email}</Text>
+                <Text style={styles.emailText}>{client.email}</Text>
             </View>
 
             {/* Help Button */}

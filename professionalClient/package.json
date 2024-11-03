@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test-coverage": "jest --coverage",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "dependencies": {
     "@expo/config": "^8.1.1",

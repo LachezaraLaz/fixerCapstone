@@ -28,14 +28,14 @@ const createIssue = async (req, res) => {
             return res.status(404).json({ message: 'Client not found' });
         }
 
-        // Construct the full address from client info
-        const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
-        console.log('Address to geocode:', address); // Log the address
 
-        // Convert the address to latitude and longitude
+        const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
+        console.log('Address to geocode:', address);
+
+
         const { latitude, longitude } = await getCoordinatesFromAddress(address);
 
-        // Create a new issue with the geocoded coordinates
+
         const newIssue = await Jobs.create({
             title,
             description,
@@ -43,8 +43,8 @@ const createIssue = async (req, res) => {
             imageUrl,  // Store the Cloudinary image URL
             userEmail: email,  // Store the user's email in the issue
             status,
-            latitude,  // Latitude from geocoding
-            longitude  // Longitude from geocoding
+            latitude,
+            longitude
         });
 
         res.status(201).json({ message: 'Issue created successfully', issue: newIssue });

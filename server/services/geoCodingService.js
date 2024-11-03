@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const GOOGLE_MAPS_KEY = process.env.GOOGLE_MAPS_KEY;
 
-// Function to get latitude and longitude from an address
+
 const getCoordinatesFromAddress = async (address) => {
     try {
         const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {

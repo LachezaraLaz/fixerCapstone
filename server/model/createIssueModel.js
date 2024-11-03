@@ -8,8 +8,8 @@ const createIssueModel = new mongoose.Schema({
     userEmail: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     status: { type: String, default: 'open' }, // e.g., open, in-progress, closed
-    latitude: { type: Number }, // Latitude of the issue location
-    longitude: { type: Number }  // Longitude of the issue location
+    latitude: { type: Number },
+    longitude: { type: Number }
 }, {
     collection: 'jobs'
 });

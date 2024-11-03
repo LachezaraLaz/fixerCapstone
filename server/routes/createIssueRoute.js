@@ -16,4 +16,4 @@ createIssueRouter.put('/:jobId', updateJob);
 createIssueRouter.delete('/:id', deleteJob);
 
 // Export createIssueRouter directly
-module.exports = createIssueRouter;
+module.exports = {createIssueRouter};

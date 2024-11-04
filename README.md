@@ -43,7 +43,7 @@ This is to make sure that nodemon is installed for the project
 Enter the following command:
 
 ```
-npx nodemon
+npx nodemon index.js
 ```
 If you see that the terminal output shows: ``` Connected to MongoDB ``` then the server is now operating properly. 
 

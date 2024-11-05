@@ -78,6 +78,9 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         );
     }
 
+    const plumbingIssues = issues.filter(issue => issue.professionalNeeded === 'plumber');
+    const electricalIssues = issues.filter(issue => issue.professionalNeeded === 'electrician');
+
     return (
         <View style={styles.container}>
             <View style={styles.mapContainer}>
@@ -110,8 +113,21 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             </View>
 
             <View style={styles.workBlocksContainer}>
+                <Text style={styles.sectionTitle}>Plumbing Issues</Text>
                 <ScrollView contentContainerStyle={styles.workBlocks}>
-                    {issues.map((issue) => (
+                    {plumbingIssues.map((issue) => (
+                        <TouchableOpacity
+                            key={issue.id}
+                            style={styles.workBlock}
+                            onPress={() => handleIssueClick(issue)}
+                        >
+                            <Text style={styles.workText}>{issue.title}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+                <ScrollView contentContainerStyle={styles.workBlocks}>
+                    <Text style={styles.sectionTitle}>Electrical Issues</Text>
+                    {electricalIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue.id}
                             style={styles.workBlock}

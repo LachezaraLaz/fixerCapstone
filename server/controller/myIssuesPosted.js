@@ -35,19 +35,25 @@ const getJobById = async (req, res) => {
 };
 
 // DELETE /issue/:id route to delete a job by its ID
-const deleteJob = async (req, res) => {
+const deleteReopenJob = async (req, res) => {
     const jobId = req.params.id;
-    console.log('Deleting job with ID:', jobId);
+    const { status } = req.body;
+    console.log(`Updating job status with ID: ${jobId} to ${status}`);
 
     try {
-        const deletedJob = await Jobs.findByIdAndDelete(jobId);
-        if (!deletedJob) {
+        const deleteReopenJob = await Jobs.findByIdAndUpdate(
+            jobId,
+            { status },
+            { new: true } // Return the updated job document
+        );
+
+        if (!deleteReopenJob) {
             return res.status(404).json({ message: 'Job not found' });
         }
-        res.status(200).json({ message: 'Job deleted successfully' });
+        res.status(200).json({ message: `Job status updated to ${status}`, job: updatedJob });
     } catch (error) {
-        console.error('Error deleting job:', error);
-        res.status(500).json({ message: 'Failed to delete job', error: error.message });
+        console.error('Error updating job status:', error);
+        res.status(500).json({ message: 'Failed to update job status', error: error.message });
     }
 };
 
@@ -73,4 +79,4 @@ const updateJob = async (req, res) => {
     }
 };
 
-module.exports = { getJobsByUser, getJobById, deleteJob, updateJob };
+module.exports = { getJobsByUser, getJobById, deleteReopenJob, updateJob };

@@ -151,7 +151,9 @@ export default function CreateIssue({ navigation }) {
                         }}>
                             <Text style={styles.workText}>Leaky Pipes</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => setOther(true)}>
+                        <TouchableOpacity style={styles.workBlock} onPress={
+                            () => setOther(true)
+                        }>
                             <Text style={styles.workText}>Other</Text>
                         </TouchableOpacity>
                     </View>
@@ -174,7 +176,9 @@ export default function CreateIssue({ navigation }) {
                             }}>
                                 <Text style={styles.workText}>Faulty Switch</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.workBlock} onPress={() => setOther(true)}>
+                            <TouchableOpacity style={styles.workBlock} onPress={
+                                () => setOther(true)
+                            }>
                                 <Text style={styles.workText}>Other</Text>
                             </TouchableOpacity>
                         </View>

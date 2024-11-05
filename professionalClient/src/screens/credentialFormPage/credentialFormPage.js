@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';  // To retrieve JWT
+import { IPAddress } from '../../../ipAddress';
 
 const CredentialFormPage = () => {
     const [tradeLicense, setTradeLicense] = useState(''); // State for the trade license input
@@ -15,7 +16,7 @@ const CredentialFormPage = () => {
 
             if (token) {
                 // Submit the trade license to the backend with the token
-                await axios.post('http://<"add-ip">:3000/professional/verify', {
+                await axios.post(`http://${IPAddress}:3000/professional/verify`, {
                     tradeLicense,  // Send trade license in the request body
                 }, {
                     headers: {

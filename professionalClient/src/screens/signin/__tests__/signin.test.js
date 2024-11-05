@@ -4,6 +4,7 @@ import SignInPage from '../signinPage'; // Adjust the import path as necessary
 import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IPAddress } from '../../../../ipAddress';
 
 jest.mock('axios', () => ({
     post: jest.fn().mockResolvedValue({
@@ -50,7 +51,7 @@ test('handles sign-in correctly and navigates to HomeScreen', async () => {
     fireEvent.press(signInButton)
 
     await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith('http://<"add-ip">:3000/professional/signin/', {
+        expect(axios.post).toHaveBeenCalledWith(`http://${IPAddress}:3000/professional/signin/`, {
             email: 'user@example.com',
             password: 'password123'
         });
@@ -83,7 +84,7 @@ test('displays an error alert when email does not exist', async () => {
 
     await waitFor(() => {
         // Checking that the error message is displayed
-        expect(axios.post).toHaveBeenCalledWith('http://<"add-ip">:3000/professional/signin/', {
+        expect(axios.post).toHaveBeenCalledWith(`http://${IPAddress}:3000/professional/signin/`, {
             email: 'nonexistent@example.com',
             password: 'password123'
         });

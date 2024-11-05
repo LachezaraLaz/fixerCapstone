@@ -5,6 +5,7 @@ import * as Location from 'expo-location';
 import { styles } from '../style/homeScreenStyle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { IPAddress } from '../ipAddress';
 import Constants from 'expo-constants';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
@@ -15,7 +16,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     // Fetch all issues from the backend
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get('http://192.168.2.16:3000/issues');
+            const response = await axios.get(`http://${IPAddress}:3000/issues`);
             setIssues(response.data.jobs);
         } catch (error) {
             console.error('Error fetching issues:', error);

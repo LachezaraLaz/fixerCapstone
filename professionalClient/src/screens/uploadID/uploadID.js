@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IPAddress } from '../../../ipAddress';
 
 const UploadID = () => {
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -65,7 +66,7 @@ const UploadID = () => {
                 console.log("JWT Token:", token);
 
                 // Send the image and token to the backend
-                const response = await axios.post('http://<"add-ip">:3000/professional/uploadID', formData, {
+                const response = await axios.post(`http://${IPAddress}:3000/professional/uploadID`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${token}`,  // Fixed string interpolation

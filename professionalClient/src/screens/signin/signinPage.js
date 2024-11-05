@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from "axios";
+import { IPAddress } from '../../../ipAddress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignInPage({ navigation, setIsLoggedIn }) {
@@ -14,7 +15,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         }
 
         try {
-            const response = await axios.post('http://<"add-ip">:3000/professional/signin/', {
+            const response = await axios.post(`http://${IPAddress}:3000/professional/signin/`, {
                 email,
                 password
             });

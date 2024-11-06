@@ -11,6 +11,7 @@ import EditIssue from './src/screens/editIssue/editIssue';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
+import NavBar from './src/NavBarComponent';
 import {useEffect, useState} from "react";
 
 const Stack = createNativeStackNavigator();

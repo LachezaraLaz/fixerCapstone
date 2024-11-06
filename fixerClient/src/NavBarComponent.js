@@ -17,7 +17,7 @@ export default function NavBar() {
                 if (route.name === 'Home') {
                     iconName = focused ? 'home' : 'home-outline';
                 } else if (route.name === 'JobsPosted') {
-                    iconName = focused ? 'jobs' : 'job-outline';
+                    iconName = focused ? 'hammer' : 'hammer-outline';
                 }
                 else if (route.name === 'CreateIssue') {
                     iconName = focused ? 'add' : 'add-outline';
@@ -26,7 +26,7 @@ export default function NavBar() {
                     iconName = focused ? 'chat' : 'chatbubble-outline';
                 }
                 else if (route.name === 'Settings') {
-                    iconName = focused ? 'hammer' : 'hammer-outline';
+                    iconName = focused ? 'settings' : 'settings-outline';
                 }
 
                 return <Ionicons name={iconName} size={size} color={color} />;

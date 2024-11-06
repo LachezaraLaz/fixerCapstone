@@ -5,6 +5,7 @@ import * as Location from 'expo-location';
 import { styles } from '../style/homeScreenStyle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { IPAddress } from '../ipAddress';
 import Constants from 'expo-constants';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
@@ -15,7 +16,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     // Fetch all issues from the backend
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get('http://192.168.2.16:3000/issues');
+            const response = await axios.get(`http://${IPAddress}:3000/issues`);
             setIssues(response.data.jobs);
         } catch (error) {
             console.error('Error fetching issues:', error);
@@ -77,6 +78,9 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         );
     }
 
+    const plumbingIssues = issues.filter(issue => issue.professionalNeeded === 'plumber');
+    const electricalIssues = issues.filter(issue => issue.professionalNeeded === 'electrician');
+
     return (
         <View style={styles.container}>
             <View style={styles.mapContainer}>
@@ -109,8 +113,21 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             </View>
 
             <View style={styles.workBlocksContainer}>
+                <Text style={styles.sectionTitle}>Plumbing Issues</Text>
                 <ScrollView contentContainerStyle={styles.workBlocks}>
-                    {issues.map((issue) => (
+                    {plumbingIssues.map((issue) => (
+                        <TouchableOpacity
+                            key={issue.id}
+                            style={styles.workBlock}
+                            onPress={() => handleIssueClick(issue)}
+                        >
+                            <Text style={styles.workText}>{issue.title}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+                <ScrollView contentContainerStyle={styles.workBlocks}>
+                    <Text style={styles.sectionTitle}>Electrical Issues</Text>
+                    {electricalIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue.id}
                             style={styles.workBlock}

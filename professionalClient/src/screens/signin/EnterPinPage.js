@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
+import { IPAddress } from '../../../ipAddress';
 
 export default function EnterPinPage({ route, navigation }) {
     const { email } = route.params; // Get the email from the previous page
@@ -13,7 +14,7 @@ export default function EnterPinPage({ route, navigation }) {
         }
 
         try {
-            const response = await axios.post('http://<"add-ip">:3000/reset/validatePin', { email, pin: pin.toString() });
+            const response = await axios.post(`http://${IPAddress}:3000/reset/validatePin`, { email, pin: pin.toString() });
 
             if (response.status === 200) {
                 Alert.alert('Success', 'PIN validated successfully');

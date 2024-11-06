@@ -1,6 +1,18 @@
 //Import list
 import * as React from 'react';
-import { View, Text, TextInput, Button, Image, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert, ActivityIndicator  } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    Image,
+    TouchableOpacity,
+    Keyboard,
+    TouchableWithoutFeedback,
+    Alert,
+    ActivityIndicator,
+    StyleSheet
+} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import axios from 'axios';
@@ -16,6 +28,8 @@ export default function CreateIssue({ navigation }) {
     const [professionalNeeded, setProfessionalNeeded] = useState('');
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [other, setOther] = useState(false);
+
 
     //backend 
     //backend to be able to pick an image 
@@ -99,20 +113,6 @@ export default function CreateIssue({ navigation }) {
                     value={title}
                     onChangeText={setTitle}
                     style={{
-                        borderWidth: 1, 
-                        borderColor: '#ccc',
-                        padding: 10,
-                        borderRadius: 5,
-                        marginBottom: 15
-                    }}
-                />
-
-                {/* professional needed field */}
-                <TextInput
-                    placeholder="Professional Needed"
-                    value={professionalNeeded}
-                    onChangeText={setProfessionalNeeded}
-                    style={{
                         borderWidth: 1,
                         borderColor: '#ccc',
                         padding: 10,
@@ -121,22 +121,88 @@ export default function CreateIssue({ navigation }) {
                     }}
                 />
 
-                {/* description field */}
-                <TextInput
-                    placeholder="Describe the issue..."
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline
-                    style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        padding: 10,
-                        height: 100,
-                        textAlignVertical: 'top',
-                        borderRadius: 5,
-                        marginBottom: 15
-                    }}
-                />
+                {/* Work Blocks Section */}
+                <View style={styles.workBlocksContainer}>
+                    <Text style={styles.sectionTitle}>Professional Needed</Text>
+                    <View style={styles.workBlocks}>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('plumber')}>
+                            <Text style={styles.workText}>Plumber</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('electrician')}>
+                            <Text style={styles.workText}>Electrician</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <Text style={styles.sectionTitle}>Issue Description</Text>
+                    {professionalNeeded === 'plumber' && (
+                    <View style={styles.workBlocks}>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => {
+                            setDescription('Dripping Faucets'); setOther(false)
+                        }}>
+                            <Text style={styles.workText}>Dripping Faucets</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => {
+                            setDescription('Clogged Drains'); setOther(false)
+                        }}>
+                            <Text style={styles.workText}>Clogged Drains</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => {
+                            setDescription('Leaky Pipes'); setOther(false)
+                        }}>
+                            <Text style={styles.workText}>Leaky Pipes</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={
+                            () => setOther(true)
+                        }>
+                            <Text style={styles.workText}>Other</Text>
+                        </TouchableOpacity>
+                    </View>
+                    )}
+
+                    {professionalNeeded === 'electrician' && (
+                        <View style={styles.workBlocks}>
+                            <TouchableOpacity style={styles.workBlock} onPress={() => {
+                                setDescription('Flickering Lights'); setOther(false)
+                            }}>
+                                <Text style={styles.workText}>Flickering Lights</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.workBlock} onPress={() => {
+                                setDescription('Dead Outlets'); setOther(false)
+                            }}>
+                                <Text style={styles.workText}>Dead Outlets</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.workBlock} onPress={() => {
+                                setDescription('Faulty Switch'); setOther(false)
+                            }}>
+                                <Text style={styles.workText}>Faulty Switch</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.workBlock} onPress={
+                                () => setOther(true)
+                            }>
+                                <Text style={styles.workText}>Other</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
+                </View>
+
+                {other === true && (
+                    <TextInput
+                        placeholder="Describe the issue..."
+                        value={description}
+                        onChangeText={setDescription}
+                        multiline
+                        style={{
+                            borderWidth: 1,
+                            borderColor: '#ccc',
+                            padding: 10,
+                            height: 100,
+                            textAlignVertical: 'top',
+                            borderRadius: 5,
+                            marginBottom: 15
+                        }}
+                    />
+                )}
 
                 {/* uploading of image button */}
                 <TouchableOpacity onPress={pickImage} style={{ marginBottom: 15 }}>
@@ -168,3 +234,81 @@ export default function CreateIssue({ navigation }) {
         </TouchableWithoutFeedback>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+    },
+    workBlocksContainer: {
+        paddingHorizontal: 16,
+        marginVertical: 16,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 8,
+    },
+    workBlocks: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+    workBlock: {
+        backgroundColor: '#f0f0f0',
+        width: '48%',
+        padding: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginVertical: 8,
+    },
+    selectedButton: {
+        backgroundColor: '#4CAF50', // Highlight color for selected button
+    },
+    workText: {
+        fontSize: 16,
+        color: '#333',
+        textAlign: 'center',
+    },
+    helpSection: {
+        paddingHorizontal: 16,
+        marginVertical: 16,
+    },
+    helpButton: {
+        backgroundColor: '#e0e0e0',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    helpButtonText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    logoutContainer: {
+        paddingHorizontal: 16,
+        marginVertical: 16,
+    },
+    logoutButton: {
+        backgroundColor: '#ffdddd',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    logoutText: {
+        fontSize: 16,
+        color: '#d9534f',
+        fontWeight: 'bold',
+    },
+    footer: {
+        padding: 16,
+        alignItems: 'center',
+        borderTopWidth: 1,
+        borderColor: '#e0e0e0',
+        marginTop: 16,
+    },
+    footerText: {
+        fontSize: 12,
+        color: '#666',
+    },
+});

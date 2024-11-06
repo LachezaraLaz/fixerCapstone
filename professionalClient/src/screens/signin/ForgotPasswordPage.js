@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from "axios";
+import { IPAddress } from '../../../ipAddress';
 
 export default function ForgotPasswordPage({ navigation }) {
     const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ export default function ForgotPasswordPage({ navigation }) {
         }
 
         try {
-            const response = await axios.post('http://<"add-ip">:3000/reset/requestPasswordReset', { email });
+            const response = await axios.post(`http://${IPAddress}:3000/reset/requestPasswordReset`, { email });
 
             if (response.status === 200) {
                 Alert.alert("Success", "Check your email for a PIN to reset your password");

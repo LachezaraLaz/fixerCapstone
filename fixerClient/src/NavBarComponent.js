@@ -23,7 +23,7 @@ export default function NavBar() {
                     iconName = focused ? 'add' : 'add-outline';
                 }
                 else if (route.name === 'Chat') {
-                    iconName = focused ? 'chat' : 'chatbubble-outline';
+                    iconName = focused ? 'chatbubble' : 'chatbubble-outline';
                 }
                 else if (route.name === 'Settings') {
                     iconName = focused ? 'settings' : 'settings-outline';

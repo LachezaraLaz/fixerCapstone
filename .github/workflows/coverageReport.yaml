@@ -9,6 +9,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
         working-directory: "professionalClient"
+      - name: npx jest runner
+        run: npx jest
+        working-directory: "professionalClient"
       - name: List installed packages
         run: npm list
         working-directory: "professionalClient"

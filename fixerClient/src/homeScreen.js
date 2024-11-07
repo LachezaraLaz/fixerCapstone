@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet } from 'react-native';
-import MapView from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CardComponent from './CardComponent'; // Adjust path if needed
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const handleLogout = async () => {
@@ -18,36 +19,46 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     return (
         <ScrollView style={styles.container}>
-            {/* Map Section */}
-            <View style={styles.mapContainer}>
-                <MapView
-                    style={styles.map}
-                    initialRegion={{
-                        latitude: 37.78825,
-                        longitude: -122.4324,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
+            {/* Header with Profile and Notifications Icons */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
+                    <Ionicons name="person-circle" size={32} color="#333" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => Alert.alert('Notifications', 'No new notifications')}>
+                    <Ionicons name="notifications-outline" size={28} color="#333" />
+                </TouchableOpacity>
+            </View>
+
+            {/* Current Jobs Requested Section */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Current Jobs Requested</Text>
+                <CardComponent
+                    title="Plumbing Repair"
+                    status="In Progress"
+                    professionalName="John Doe"
+                />
+                <CardComponent
+                    title="Electrical Work"
+                    status="Pending"
+                    professionalName="Jane Smith"
                 />
             </View>
 
-            {/* Work Blocks Section */}
-            <View style={styles.workBlocksContainer}>
-                <Text style={styles.sectionTitle}>Quick Actions</Text>
-                <View style={styles.workBlocks}>
-                    <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('ProfilePage')}>
-                        <Text style={styles.workText}>Profile Page</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('DetailsScreen')}>
-                        <Text style={styles.workText}>Detail Screen</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('CreateIssue')}>
-                        <Text style={styles.workText}>New Job</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.workBlock} onPress={() => navigation.navigate('MyIssuesPosted')}>
-                        <Text style={styles.workText}>See My Posted Jobs</Text>
-                    </TouchableOpacity>
-                </View>
+            {/* Outstanding Payments Section */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Outstanding Payments</Text>
+                <CardComponent
+                    title="Invoice #1234"
+                    status="Overdue"
+                    showProgress={false}
+                    showProfessional={false}
+                />
+                <CardComponent
+                    title="Invoice #5678"
+                    status="Due Soon"
+                    showProgress={false}
+                    showProfessional={false}
+                />
             </View>
 
             {/* Help Button */}
@@ -77,42 +88,30 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
     },
-    mapContainer: {
-        height: 200,
-        borderRadius: 10,
-        overflow: 'hidden',
-        margin: 16,
-    },
-    map: {
-        ...StyleSheet.absoluteFillObject,
-    },
-    workBlocksContainer: {
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         paddingHorizontal: 16,
-        marginVertical: 16,
+        paddingVertical: 12,
+        backgroundColor: '#f8f8f8',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+    },
+    headerTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    section: {
+        marginBottom: 24,
+        paddingHorizontal: 16,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 8,
-    },
-    workBlocks: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    workBlock: {
-        backgroundColor: '#f0f0f0',
-        width: '48%',
-        padding: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    workText: {
-        fontSize: 16,
-        color: '#333',
-        textAlign: 'center',
     },
     helpSection: {
         paddingHorizontal: 16,

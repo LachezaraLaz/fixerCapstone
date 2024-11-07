@@ -39,7 +39,7 @@ export default function SignUpPage({ navigation }) {
                     country: country
                 })
                 if (response.status !== 400) {
-                    Alert.alert("Account created successfully")
+                    Alert.alert("Account created successfully. An email was sent to verify your email.")
                 }
             } catch (error) {
                 if (error.response) {

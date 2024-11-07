@@ -4,8 +4,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 const {verify} = require("jsonwebtoken");
-const fs = require('fs');
-const path = require('path');
+
 
 dotenv.config();
 

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { fixerClient } = require('../model/professionalClientModel'); // Adjust path as necessary
+const { fixerClient } = require('../model/fixerClientModel');  // Updated model import
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -15,7 +15,7 @@ async function verifyEmail(req, res) {
     try {
         // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decoded.userId;
+        const userId = decoded.userId;  // Updated to use 'id' field from the token
 
         // Find the user by ID
         const user = await fixerClient.findById(userId);

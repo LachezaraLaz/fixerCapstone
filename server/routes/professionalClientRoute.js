@@ -6,7 +6,7 @@ const { verifyCredentials } = require('../controller/professionalClientVerifyCre
 const { professionalUploadID } = require('../controller/professionalUploadID');
 const { upload } = require('../services/cloudinaryService');  // Import the Cloudinary upload service
 const { forgotPassword, resetPassword } = require('../controller/resetController');
-const { verifyEmail } = require('../controller/professionalClientVerifyEmail');
+const { verifyEmail } = require('../controller/VerifyEmailForProfessional');
 const professionalRouter = express.Router();
 
 // Register user route

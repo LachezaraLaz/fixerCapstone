@@ -7,7 +7,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function SignInPage({ navigation, setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
     const handleSignIn = async () => {
         if (!email || !password) {
             Alert.alert('Error', 'Both fields are required');
@@ -20,7 +19,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 password
             });
 
-            if (response.status === 200) {
+             if (response.status === 200) {
                 const token = response.data.token;
 
                 // Store the token in AsyncStorage
@@ -34,6 +33,8 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         } catch (error) {
             if (error.response && error.response.status === 400) {
                 Alert.alert("Error", error.response.data.statusText || 'Wrong email or password');
+            } else if(error.response.status === 403) {
+                Alert.alert('Please verify your email before logging in.');
             } else {
                 Alert.alert("Error", 'An unexpected error occurred');
             }

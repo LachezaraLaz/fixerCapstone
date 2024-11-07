@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { IPAddress } from '../../../ipAddress';  
+import { IPAddress } from '../../../ipAddress';
 
 export default function SignInPage({ navigation, setIsLoggedIn }) {
     const [email, setEmail] = useState('');
@@ -35,6 +34,8 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         } catch (error) {
             if (error.response && error.response.status === 400) {
                 Alert.alert("Error", error.response.data.statusText || 'Wrong email or password');
+            } else if (error.response && error.response.status === 403) {
+                Alert.alert('Please verify your email before logging in.');
             } else {
                 Alert.alert("Error", 'An unexpected error occurred');
             }

@@ -29,13 +29,13 @@ export default function SignUpPage({ navigation }) {
                     password: password
                 })
                 if (response.status !== 400) {
-                    Alert.alert("Account created successfully")
+                    Alert.alert("Account created successfully. An email was sent to verify your email.")
                 }
-            } catch (error) {
+            } catch (error){
                 if (error.response) {
                     // Check if the response indicates the user already exists
                     if (error.response.status === 400) {
-                        Alert.alert("Error", "User already exists");
+                        Alert.alert("Error", "Account already exists");
                     } else {
                         Alert.alert("Error", error.response.data.message || 'An unexpected error occurred');
                     }

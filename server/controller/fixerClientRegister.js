@@ -4,6 +4,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
+const {IPAddress} = require("../ipAddress");
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ async function sendVerificationEmail(user, token) {
         },
     });
 
-    const verificationUrl = `http://192.168.0.140:3000/client/verify-email?token=${token}`;
+    const verificationUrl = `http://${IPAddress}:3000/client/verify-email?token=${token}`;
 
     const mailOptions = {
         from: 'fixit9337@gmail.com',

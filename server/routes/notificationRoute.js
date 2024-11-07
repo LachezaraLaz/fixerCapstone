@@ -12,6 +12,6 @@ notificationRouter.get('/', authenticateJWT, getNotifications);
 notificationRouter.patch('/:id/read', authenticateJWT, markAsRead);
 
 // Route to create a new notification (this could be triggered by an event)
-notificationRouter.post('/create', authenticateJWT, createNotification);
+notificationRouter.post('/send', authenticateJWT, createNotification); //authenticateJWT,
 
 module.exports = notificationRouter;

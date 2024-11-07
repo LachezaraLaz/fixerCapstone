@@ -8,6 +8,7 @@ const createIssueRoute = require('./routes/createIssueRoute');
 const issueRoute = require('./routes/getIssuesRoute'); 
 const resetPasswordRouter = require('./routes/passwordResetRoute');
 const createIssueRouter = require('./routes/createIssueRoute');
+const notificationRouter = require('./routes/notificationRoute');
 const app = express();
 
 app.use(bodyParser.json());
@@ -27,3 +28,4 @@ app.use('/client', fixerClientRoute.fixerClientRouter);
 app.use('/issue', createIssueRoute.createIssueRouter);
 // app.use('/issues', issueRoute.issueRouter);
 app.use('/reset',resetPasswordRouter.resetPasswordRouter);
+app.use('/notification', notificationRouter);

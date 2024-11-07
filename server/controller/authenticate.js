@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { fixerClient } = require('../model/fixerClientModel');
-const { professionalClient } = require('../model/professionalClientModel'); 
+const { professionalClient } = require('../model/professionalClientModel');
 
 const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;

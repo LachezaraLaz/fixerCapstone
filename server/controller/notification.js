@@ -1,27 +1,27 @@
-const Notification = require('../model/notificationModel'); // Notification model
+const Notification = require('../model/notificationModel'); 
 
 // Controller to get all notifications for the authenticated user
 const getNotifications = async (req, res) => {
     try {
         // Fetch notifications for the user from the Notification model
         const notifications = await Notification.find({ userId: req.user.id }).sort({ createdAt: -1 });
-
-        res.json({ notifications });
+        res.json(notifications);
     } catch (error) {
         console.error('Error fetching notifications:', error);
         res.status(500).json({ message: 'Failed to fetch notifications' });
     }
 };
 
+
 // Controller to mark a notification as read
 const markAsRead = async (req, res) => {
-    const { id } = req.params; // Assuming notification ID is passed in the route parameter
+    const { id } = req.params;
 
     try {
         // Update the notification's read status
         const notification = await Notification.findByIdAndUpdate(
             id,
-            { read: true },
+            { isRead: true },
             { new: true }
         );
 
@@ -36,15 +36,16 @@ const markAsRead = async (req, res) => {
     }
 };
 
+
 // Optional controller to create a notification if needed
 const createNotification = async (req, res) => {
-    const { userId, message } = req.body; // Example fields for creating a notification
+    const { userId, message } = req.body;
 
     try {
         const notification = new Notification({
             userId,
             message,
-            read: false,
+            isRead: false,  // Corrected field name
             createdAt: new Date(),
         });
 
@@ -56,5 +57,6 @@ const createNotification = async (req, res) => {
         res.status(500).json({ message: 'Failed to create notification' });
     }
 };
+
 
 module.exports = { getNotifications, markAsRead, createNotification };

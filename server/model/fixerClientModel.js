@@ -13,7 +13,9 @@ const fixerClientModel = new mongoose.Schema({
     provinceOrState: String,
     country: String,
     passwordResetToken: String,
-    passwordResetExpires: Date
+    passwordResetExpires: Date,
+    verified: { type: Boolean, default: false },
+    verificationToken: String,
 
 },{
     collection: 'fixerClientInfo'

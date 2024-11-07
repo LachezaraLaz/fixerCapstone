@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios, {request} from 'axios';
+import MapView, { Marker } from 'react-native-maps';
 
 import { IPAddress } from '../../../ipAddress';
-
 
 export default function SignUpPage({ navigation }) {
     const [email, setEmail] = useState('');
@@ -16,6 +16,8 @@ export default function SignUpPage({ navigation }) {
     const [provinceOrState, setProvinceOrState] = useState('');
     const [country, setCountry] = useState('');
 
+    const [coordinates, setCoordinates] = useState(null);
+    const [isAddressValid, setIsAddressValid] = useState(false);
 
     //backend
     async function handleSignUp() {
@@ -57,6 +59,32 @@ export default function SignUpPage({ navigation }) {
             }
         }
     }
+
+    const handleVerifyAddress = async () => {
+        try {
+            const response = await axios.post(`http://${IPAddress}:3000/client/verifyAddress`, {
+                street: street,
+                postalCode: postalCode,
+            })
+            if (response.status === 'success') {
+                Alert.alert("Address verified successfully from client")
+            }
+
+            const { isAddressValid, coordinates } = response.data;
+
+            setIsAddressValid(isAddressValid);
+            setCoordinates(coordinates);
+
+        } catch (error) {
+            if (error.response) {
+                Alert.alert("Error", error.response.data.message || 'An unexpected error occurred Ad.Ver.');
+            } else if (error.request) {
+                Alert.alert("Error", "Network error Ad.Ver.");
+            } else {
+                Alert.alert("Error", "An unexpected error occurred Ad.Ver.");
+            }
+        }
+    };
 
     return (
         <ScrollView style={{ flex: 1, padding: 20, marginBottom: 30 }}>
@@ -112,6 +140,31 @@ export default function SignUpPage({ navigation }) {
                     onChangeText={setCountry}
                     autoCapitalize="none"
                 />
+                <TouchableOpacity style={styles.button} onPress={handleVerifyAddress}>
+                    <Text style={styles.buttonText}>Verify Address</Text>
+                </TouchableOpacity>
+
+                {isAddressValid && (
+                    <View>
+                        <TextInput style={styles.text}>Valid Address entered</TextInput>
+                        <TextInput style={styles.text}>Does it match to the marker on the map?</TextInput>
+                    </View>
+                )}
+
+                {coordinates && (
+                    <MapView
+                        style={styles.map}
+                        initialRegion={{
+                            latitude: coordinates.latitude,
+                            longitude: coordinates.longitude,
+                            latitudeDelta: 0.01,
+                            longitudeDelta: 0.01,
+                        }}
+                    >
+                        <Marker coordinate={coordinates} />
+                    </MapView>
+                )}
+
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
@@ -126,7 +179,7 @@ export default function SignUpPage({ navigation }) {
                     onChangeText={setConfirmPassword}
                     secureTextEntry
                 />
-                <TouchableOpacity style={styles.button} onPress={() => handleSignUp()} testID={'sign-up-button'}>
+                <TouchableOpacity style={styles.button} onPress={() => handleSignUp()} testID={'sign-up-button'} disabled={!isAddressValid}>
                     <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
@@ -151,6 +204,9 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
+    text: {
+        margin: 5,
+    },
     input: {
         height: 50,
         borderColor: '#ddd',
@@ -164,6 +220,8 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
+        marginBottom: 15,
+
     },
     buttonText: {
         color: '#fff',
@@ -174,5 +232,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 15,
         fontSize: 16,
+    },
+    map: {
+        width: '100%',
+        height: 200,
+        marginTop: 20,
+        marginBottom: 20,
     },
 });

@@ -6,6 +6,7 @@ const { verifyCredentials } = require('../controller/professionalClientVerifyCre
 const { professionalUploadID } = require('../controller/professionalUploadID');
 const { upload } = require('../services/cloudinaryService');  // Import the Cloudinary upload service
 const { forgotPassword, resetPassword } = require('../controller/resetController');
+const { verifyEmail } = require('../controller/professionalClientVerifyEmail');
 const professionalRouter = express.Router();
 
 // Register user route
@@ -14,8 +15,12 @@ professionalRouter.post('/signin', signinUser);
 professionalRouter.get('/profile', authenticateJWT, profile);
 professionalRouter.post('/verify', authenticateJWT, verifyCredentials);
 
+// Email verification route
+professionalRouter.get('/verify-email', verifyEmail);  // New route for email verification
+
+
 // Password reset routes
-//professionalRouter.post('/reset/resetPassword', resetPassword); // Route to reset the password
+professionalRouter.post('/reset/resetPassword', resetPassword); // Route to reset the password
 
 // Upload middleware before calling the controller
 professionalRouter.post('/uploadID', authenticateJWT, upload('professional_ids').single('idImage'), professionalUploadID);

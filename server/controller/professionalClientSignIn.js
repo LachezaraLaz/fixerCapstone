@@ -11,6 +11,10 @@ const signinUser = async (req, res) => {
         return res.status(400).send({ statusText: 'User not found' });
     }
 
+    if(!user.verified){
+        return res.status(403).send({ statusText: 'Account not verified yet' });
+    }
+
     // Compare password
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {

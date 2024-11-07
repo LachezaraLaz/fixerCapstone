@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from "axios";
+import { IPAddress } from '../../../ipAddress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignInPage({ navigation, setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
     const handleSignIn = async () => {
         if (!email || !password) {
             Alert.alert('Error', 'Both fields are required');
@@ -14,12 +14,12 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         }
 
         try {
-            const response = await axios.post('http://<"add-ip">:3000/professional/signin/', {
+            const response = await axios.post(`http://${IPAddress}:3000/professional/signin/`, {
                 email,
                 password
             });
 
-            if (response.status === 200) {
+             if (response.status === 200) {
                 const token = response.data.token;
 
                 // Store the token in AsyncStorage
@@ -33,6 +33,8 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         } catch (error) {
             if (error.response && error.response.status === 400) {
                 Alert.alert("Error", error.response.data.statusText || 'Wrong email or password');
+            } else if(error.response.status === 403) {
+                Alert.alert('Please verify your email before logging in.');
             } else {
                 Alert.alert("Error", 'An unexpected error occurred');
             }

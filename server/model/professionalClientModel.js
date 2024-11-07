@@ -11,7 +11,9 @@ const professionalClientModel = new mongoose.Schema({
     formComplete: Boolean,
     idImageUrl: String,
     passwordResetPin: String,
-    passwordResetExpires: Date
+    passwordResetExpires: Date,
+    verified: { type: Boolean, default: false },
+    verificationToken: String,
 }, {
     collection: 'fixerClientInfo'
 });

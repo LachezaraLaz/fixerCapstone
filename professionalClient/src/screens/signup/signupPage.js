@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios, {request} from 'axios';
+import { IPAddress } from '../../../ipAddress';
 
 
 export default function SignUpPage({ navigation }) {
@@ -21,20 +22,20 @@ export default function SignUpPage({ navigation }) {
             return;
         } else {
             try {
-                const response = await axios.post('http://<"add-ip">:3000/professional/register', {
+                const response = await axios.post(`http://${IPAddress}:3000/professional/register`, {
                     email: email,
                     firstName: firstName,
                     lastName: lastName,
                     password: password
                 })
                 if (response.status !== 400) {
-                    Alert.alert("Account created successfully")
+                    Alert.alert("Account created successfully. An email was sent to verify your email.")
                 }
-            } catch (error) {
+            } catch (error){
                 if (error.response) {
                     // Check if the response indicates the user already exists
                     if (error.response.status === 400) {
-                        Alert.alert("Error", "User already exists");
+                        Alert.alert("Error", "Account already exists");
                     } else {
                         Alert.alert("Error", error.response.data.message || 'An unexpected error occurred');
                     }

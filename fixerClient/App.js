@@ -11,6 +11,7 @@ import EditIssue from './src/screens/editIssue/editIssue';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
+import NavBar from './src/NavBarComponent';
 import {useEffect, useState} from "react";
 
 const Stack = createNativeStackNavigator();
@@ -42,11 +43,13 @@ export default function App() {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "welcomePage"}>
+            <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
                 {isLoggedIn ? (
                     <>
-                        <Stack.Screen name="HomeScreen">
-                            {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+                        <Stack.Screen name="MainTabs"
+                        options={{headerShown: false}}
+                        >
+                            {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
                         </Stack.Screen>
                         <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
                         <Stack.Screen name="ProfilePage" component={ProfilePage} />

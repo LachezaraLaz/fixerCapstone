@@ -10,9 +10,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: npx jest
+        run: npx jest
       - name: Run CTRF annotations
         run: npx github-actions-ctrf summary professionalClient/ctrf/ctrf-report.json
         if: always()
+      - name: Jest coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
+        with:
+          working-directory: professionalClient 
       - name: Publish CTRF Suite Folded Summary
         run: npx github-actions-ctrf suite-folded path-to-your-ctrf-report.json
         if: always()
@@ -21,31 +27,3 @@ jobs:
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  run-tests:
-    runs-on: ubuntu-latest  # You can choose a default OS or specify multiple jobs
-    strategy:
-      matrix:
-        client: [professionalClient, fixerClient]  # Specify the clients here
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-        working-directory: ${{ matrix.client }}  # Install in the respective client directory
-
-      - name: Run Jest tests
-        run: npm test
-        working-directory: ${{ matrix.client }}  # Run tests in the respective client directory
-
-      - name: Jest coverage report
-        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
-        with:
-          working-directory: ${{ matrix.client }}  # Specify the client directory for coverage report

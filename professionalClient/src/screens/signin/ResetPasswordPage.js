@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
+import { IPAddress } from '../../../ipAddress';
 
 export default function ResetPasswordPage({ route, navigation }) {
     const { email } = route.params; // Get the email from the previous page
@@ -19,7 +20,7 @@ export default function ResetPasswordPage({ route, navigation }) {
         }
 
         try {
-            const response = await axios.post('http://<"add-ip">:3000/reset/updatePassword', { email, newPassword });
+            const response = await axios.post(`http://${IPAddress}:3000/reset/updatePassword`, { email, newPassword });
 
             if (response.status === 200) {
                 Alert.alert('Success', 'Password has been reset successfully');

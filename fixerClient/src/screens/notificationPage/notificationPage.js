@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import { IPAddress } from '../../../ipAddress';
-
 
 const NotificationPage = () => {
     const [notifications, setNotifications] = useState([]);
+    const navigation = useNavigation(); // Use the navigation hook
 
     useEffect(() => {
         fetchNotifications();
@@ -16,7 +16,7 @@ const NotificationPage = () => {
     const fetchNotifications = async () => {
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get(`https://${IPAddress}:3000/notification`, {
+            const response = await axios.get(`http://${IPAddress}:3000/notification`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setNotifications(response.data);
@@ -28,7 +28,7 @@ const NotificationPage = () => {
     const toggleReadStatus = async (id, isRead) => {
         const token = await AsyncStorage.getItem('token');
         try {
-            await axios.patch(`https://${IPAddress}:3000/notification/${id}`, { isRead: !isRead }, {
+            await axios.patch(`http://${IPAddress}:3000/notification/${id}/read`, { isRead: !isRead }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchNotifications();  // Refresh list after update
@@ -38,7 +38,12 @@ const NotificationPage = () => {
     };
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity onPress={() => toggleReadStatus(item._id, item.isRead)}>
+        <TouchableOpacity
+            onPress={() => {
+                toggleReadStatus(item._id, item.isRead); // Mark as read
+                navigation.navigate('NotificationDetail', { notification: item }); // Navigate to detail page
+            }}
+        >
             <View style={[styles.notification, item.isRead ? styles.read : styles.unread]}>
                 <Text style={styles.message}>{item.message}</Text>
                 <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>

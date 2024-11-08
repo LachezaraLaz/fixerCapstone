@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../style/homeScreenStyle';
 import { IPAddress } from '../ipAddress';
+import * as Location from 'expo-location';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
+    const [currentLocation, setCurrentLocation] = React.useState(null);
 
     // Fetch all issues from the backend
     const fetchAllIssues = async () => {
@@ -22,9 +25,28 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }
     };
 
-    // Fetch issues when the component mounts
+    // Fetch current location
+    const getCurrentLocation = async () => {
+        try {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission to access location was denied');
+                return;
+            }
+            const location = await Location.getCurrentPositionAsync({});
+            setCurrentLocation({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+            });
+        } catch (error) {
+            console.error('Error getting location:', error);
+            Alert.alert('Error', 'Could not get your current location.');
+        }
+    };
+
     React.useEffect(() => {
         fetchAllIssues();
+        getCurrentLocation();
     }, []);
 
     const handleLogout = async () => {
@@ -57,14 +79,44 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     return (
         <View style={styles.container}>
-            {/* Display sections for Plumbing and Electrical Issues */}
-            <View style={styles.workBlocksContainer}>
+            {/* Map Section */}
+            <View style={styles.mapContainer}>
+                <MapView
+                    style={styles.map}
+                    showsUserLocation={true}
+                    followsUserLocation={true}
+                    region={currentLocation ? {
+                        latitude: currentLocation.latitude,
+                        longitude: currentLocation.longitude,
+                        latitudeDelta: 0.0122,
+                        longitudeDelta: 0.0121,
+                    } : {
+                        latitude: 37.78825,
+                        longitude: -122.4324,
+                        latitudeDelta: 0.0122,
+                        longitudeDelta: 0.0121,
+                    }}
+                >
+                    {issues.map((issue) => (
+                        <Marker
+                            key={issue.id}
+                            coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
+                            title={issue.title}
+                            description={issue.description}
+                            onPress={() => handleIssueClick(issue)}
+                        />
+                    ))}
+                </MapView>
+            </View>
+
+            {/* Plumbing Issues Section */}
+            <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Plumbing Issues</Text>
                 <ScrollView contentContainerStyle={styles.workBlocks}>
                     {plumbingIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue.id}
-                            style={styles.card} // Updated styling for card look
+                            style={styles.card}
                             onPress={() => handleIssueClick(issue)}
                         >
                             <Text style={styles.cardTitle}>{issue.title}</Text>
@@ -72,13 +124,16 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
+            </View>
 
+            {/* Electrical Issues Section */}
+            <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Electrical Issues</Text>
                 <ScrollView contentContainerStyle={styles.workBlocks}>
                     {electricalIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue.id}
-                            style={styles.card} // Updated styling for card look
+                            style={styles.card}
                             onPress={() => handleIssueClick(issue)}
                         >
                             <Text style={styles.cardTitle}>{issue.title}</Text>

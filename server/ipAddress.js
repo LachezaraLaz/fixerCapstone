@@ -1,1 +1,2 @@
-export const IPAddress = 'add';
+const IPAddress = 'add';
+module.exports = IPAddress;

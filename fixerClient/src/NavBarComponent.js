@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {Alert, TouchableOpacity} from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 import HomeScreen from './homeScreen';
 import CreateIssue from './screens/createIssue/createIssue';
 import MyIssuesPosted from "./screens/myIssuesPosted/myIssuesPosted";
@@ -8,9 +8,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Tab = createBottomTabNavigator();
 
-export default function NavBar() {
+export default function NavBar({ setIsLoggedIn }) {  // Receive setIsLoggedIn as a prop
     return (
-        <Tab.Navigator  screenOptions={({ route }) => ({
+        <Tab.Navigator screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
 
@@ -31,18 +31,21 @@ export default function NavBar() {
 
                 return <Ionicons name={iconName} size={size} color={color} />;
             },
-            tabBarActiveTintColor: 'blue',   // Color for active tab
-            tabBarInactiveTintColor: 'gray',   // Color for inactive tab
+            tabBarActiveTintColor: 'blue',
+            tabBarInactiveTintColor: 'gray',
         })}
         >
-            <Tab.Screen name="Home" component={HomeScreen} />
+            {/* Pass setIsLoggedIn to HomeScreen */}
+            <Tab.Screen name="Home">
+                {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+            </Tab.Screen>
             <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
             <Tab.Screen name="CreateIssue" component={CreateIssue} />
 
             {/* Chat Tab - Intercept press and show alert */}
             <Tab.Screen
                 name="Chat"
-                component={HomeScreen} // So it doesn't navigate to screen
+                component={HomeScreen}
                 options={{
                     tabBarButton: (props) => (
                         <TouchableOpacity
@@ -56,7 +59,7 @@ export default function NavBar() {
             {/* Settings Tab - Intercepts press to show alert */}
             <Tab.Screen
                 name="Settings"
-                component={HomeScreen} // So it doesn't navigate to screen
+                component={HomeScreen}
                 options={{
                     tabBarButton: (props) => (
                         <TouchableOpacity
@@ -66,7 +69,6 @@ export default function NavBar() {
                     ),
                 }}
             />
-
         </Tab.Navigator>
     );
 }

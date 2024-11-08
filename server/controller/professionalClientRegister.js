@@ -19,10 +19,10 @@ async function sendVerificationEmail(user, token) {
         },
     });
 
-    const verificationUrl = `http://${IPAddress}:3000/professional/verify-email?token=${token}`;
+    const verificationUrl = `https://fixercapstone-production.up.railway.app/professional/verify-email?token=${token}`;
 
     const mailOptions = {
-        from: process.env.EMAIL,
+        from: 'fixit9337@gmail.com',
         to: user.email,
         subject: 'Email Verification',
         html: `<p>Click <a href="${verificationUrl}">here</a> to verify your email address.</p>`,

@@ -3,35 +3,74 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#ffffff',
     },
 
+    // Explicitly set height for mapContainer to ensure visibility
     mapContainer: {
-        flex: 1, // Map takes half of the screen height
+        height: 200, // Adjust height as needed
+        borderRadius: 10,
+        overflow: 'hidden',
+        margin: 16,
     },
     map: {
         ...StyleSheet.absoluteFillObject,
     },
-    workBlocksContainer: {
-        flex: 1, // Work blocks take the other half
-        backgroundColor: '#f1f1f1',
-        padding: 10,
+    sectionContainer: {
+        backgroundColor: '#f8f8f8',
+        padding: 15,
+        marginVertical: 10,
+        marginHorizontal: 16,
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3, // For Android shadow
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 10,
     },
     workBlocks: {
         flexGrow: 1,
         justifyContent: 'space-around',
     },
-    workBlock: {
-        height: 80,
-        backgroundColor: 'grey',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 10,
+    card: {
+        backgroundColor: '#fff',
+        padding: 16,
+        marginVertical: 8,
         borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 3,
     },
-    workText: {
-        color: 'white',
-        fontSize: 18,
+    cardTitle: {
+        fontSize: 16,
         fontWeight: 'bold',
+        color: '#333',
+    },
+    cardSubtitle: {
+        fontSize: 14,
+        color: '#666',
+    },
+    logoutContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    logoutButton: {
+        backgroundColor: '#FF6347',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 5,
+    },
+    logoutText: {
+        color: '#fff',
+        fontSize: 18,
     },
     footer: {
         height: 50,
@@ -43,19 +82,4 @@ export const styles = StyleSheet.create({
         color: 'white',
         fontSize: 11,
     },
-
-    logoutContainer: {
-        alignItems: 'center',
-        marginBottom: 20, // Add some spacing
-    },
-    logoutButton: {
-        backgroundColor: '#FF6347',
-        paddingVertical: 10,
-        paddingHorizontal: 40,
-        borderRadius: 5,
-    },
-    logoutText: {
-        color: '#fff',
-        fontSize: 18,
-    }
 });

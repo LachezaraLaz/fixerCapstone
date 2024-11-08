@@ -12,7 +12,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
 
-    // Fetch all issues from the backend
     const fetchAllIssues = async () => {
         try {
             const response = await axios.get(`http://${IPAddress}:3000/issues`);
@@ -25,7 +24,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }
     };
 
-    // Fetch current location
     const getCurrentLocation = async () => {
         try {
             const { status } = await Location.requestForegroundPermissionsAsync();
@@ -65,7 +63,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         Alert.alert(issue.title, issue.description);
     };
 
-    // Show loading indicator while data is being fetched
     if (loading) {
         return (
             <View style={styles.container}>
@@ -79,40 +76,41 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     return (
         <View style={styles.container}>
-            {/* Map Section */}
-            <View style={styles.mapContainer}>
-                <MapView
-                    style={styles.map}
-                    showsUserLocation={true}
-                    followsUserLocation={true}
-                    region={currentLocation ? {
-                        latitude: currentLocation.latitude,
-                        longitude: currentLocation.longitude,
-                        latitudeDelta: 0.0122,
-                        longitudeDelta: 0.0121,
-                    } : {
-                        latitude: 37.78825,
-                        longitude: -122.4324,
-                        latitudeDelta: 0.0122,
-                        longitudeDelta: 0.0121,
-                    }}
-                >
-                    {issues.map((issue) => (
-                        <Marker
-                            key={issue.id}
-                            coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
-                            title={issue.title}
-                            description={issue.description}
-                            onPress={() => handleIssueClick(issue)}
-                        />
-                    ))}
-                </MapView>
-            </View>
+            {/* Scrollable content */}
+            <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+                {/* Map Section */}
+                <View style={styles.mapContainer}>
+                    <MapView
+                        style={styles.map}
+                        showsUserLocation={true}
+                        followsUserLocation={true}
+                        region={currentLocation ? {
+                            latitude: currentLocation.latitude,
+                            longitude: currentLocation.longitude,
+                            latitudeDelta: 0.0122,
+                            longitudeDelta: 0.0121,
+                        } : {
+                            latitude: 37.78825,
+                            longitude: -122.4324,
+                            latitudeDelta: 0.0122,
+                            longitudeDelta: 0.0121,
+                        }}
+                    >
+                        {issues.map((issue) => (
+                            <Marker
+                                key={issue.id}
+                                coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
+                                title={issue.title}
+                                description={issue.description}
+                                onPress={() => handleIssueClick(issue)}
+                            />
+                        ))}
+                    </MapView>
+                </View>
 
-            {/* Plumbing Issues Section */}
-            <View style={styles.sectionContainer}>
-                <Text style={styles.sectionTitle}>Plumbing Issues</Text>
-                <ScrollView contentContainerStyle={styles.workBlocks}>
+                {/* Plumbing Issues Section */}
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Plumbing Issues</Text>
                     {plumbingIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue.id}
@@ -123,13 +121,11 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                             <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>
                         </TouchableOpacity>
                     ))}
-                </ScrollView>
-            </View>
+                </View>
 
-            {/* Electrical Issues Section */}
-            <View style={styles.sectionContainer}>
-                <Text style={styles.sectionTitle}>Electrical Issues</Text>
-                <ScrollView contentContainerStyle={styles.workBlocks}>
+                {/* Electrical Issues Section */}
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Electrical Issues</Text>
                     {electricalIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue.id}
@@ -140,20 +136,21 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                             <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>
                         </TouchableOpacity>
                     ))}
-                </ScrollView>
-            </View>
+                </View>
 
-            {/* Logout Button */}
-            <View style={styles.logoutContainer}>
-                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                    <Text style={styles.logoutText}>Logout</Text>
-                </TouchableOpacity>
-            </View>
+                {/* Logout Button */}
+                <View style={styles.logoutContainer}>
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                        <Text style={styles.logoutText}>Logout</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
 
-            {/* Footer */}
+            {/* Footer - Stays above the navbar */}
             <View style={styles.footer}>
                 <Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.</Text>
             </View>
         </View>
     );
 }
+

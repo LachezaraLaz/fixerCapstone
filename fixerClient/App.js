@@ -11,8 +11,10 @@ import EditIssue from './src/screens/editIssue/editIssue';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
-import NavBar from './src/NavBarComponent';
-import {useEffect, useState} from "react";
+import NotificationPage from "./src/screens/notificationPage/notificationPage";
+import NotificationDetail from "./src/screens/notificationDetail/notificationDetail";
+import NavBar from './src/NavBarComponent'; 
+import { useEffect, useState } from "react";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,19 +48,33 @@ export default function App() {
             <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
                 {isLoggedIn ? (
                     <>
-                        <Stack.Screen name="MainTabs"
-                        options={{headerShown: false}}
+                        {/* MainTabs with NavBar as the default screen */}
+                        <Stack.Screen
+                            name="MainTabs"
+                            options={{ headerShown: false }}
                         >
                             {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                        </Stack.Screen>
+
+
+                        {/* Additional screens accessible from MainTabs */}
+                        <Stack.Screen
+                            name="HomeScreen"
+                            options={{ headerShown: false }} // Remove header for HomeScreen
+                        >
+                            {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
                         </Stack.Screen>
                         <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
                         <Stack.Screen name="ProfilePage" component={ProfilePage} />
                         <Stack.Screen name="CreateIssue" component={CreateIssue} />
                         <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
                         <Stack.Screen name="EditIssue" component={EditIssue} />
+                        <Stack.Screen name="NotificationPage" component={NotificationPage} />
+                        <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
                     </>
                 ) : (
                     <>
+                        {/* Screens accessible when the user is not logged in */}
                         <Stack.Screen name="welcomePage" component={WelcomePage} />
                         <Stack.Screen name="SignInPage">
                             {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}

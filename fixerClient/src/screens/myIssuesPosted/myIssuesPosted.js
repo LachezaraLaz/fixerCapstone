@@ -42,7 +42,7 @@ export default function MyIssuesPosted() {
             const userEmail = decodedToken.email;
             console.log("User's email from token:", userEmail);
 
-            const response = await axios.get(`http://${IPAddress}:3000/issue/user/${userEmail}`, {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
@@ -76,7 +76,7 @@ export default function MyIssuesPosted() {
 
             const newStatus = currentStatus.toLowerCase() === 'open' ? 'Closed' : 'Open';
 
-            const response = await axios.put(`http://${IPAddress}:3000/issue/${jobId}`, {
+            const response = await axios.put(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, {
                 status: newStatus
             }, {
                 headers: { 'Authorization': `Bearer ${token}` },

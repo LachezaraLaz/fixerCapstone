@@ -16,7 +16,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`http://${IPAddress}:3000/issues`);
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
             setIssues(response.data.jobs);
         } catch (error) {
             console.error('Error fetching issues:', error);

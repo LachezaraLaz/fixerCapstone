@@ -82,7 +82,7 @@ export default function CreateIssue({ navigation }) {
                 });
             }
 
-            const response = await axios.post(`http://${IPAddress}:3000/issue/create`, formData, {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/issue/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`

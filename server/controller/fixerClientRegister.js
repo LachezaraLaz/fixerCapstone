@@ -21,7 +21,7 @@ async function sendVerificationEmail(user, token) {
         },
     });
 
-    const verificationUrl = `http://${IPAddress}:3000/client/verify-email?token=${token}`;
+    const verificationUrl = `https://fixercapstone-production.up.railway.app/client/verify-email?token=${token}`;
 
     const mailOptions = {
         from: 'fixit9337@gmail.com',

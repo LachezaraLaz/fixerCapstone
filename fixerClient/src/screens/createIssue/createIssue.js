@@ -90,7 +90,7 @@ export default function CreateIssue({ navigation }) {
             });
 
             if (response.status === 201) {
-                navigation.navigate('HomeScreen');
+                navigation.goBack();
                 Alert.alert('Job posted successfully');
             } else {
                 Alert.alert('Failed to post the job');

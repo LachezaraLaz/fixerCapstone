@@ -1,6 +1,7 @@
 //Import list
 import * as React from 'react';
 import {
+    ScrollView,
     View,
     Text,
     TextInput,
@@ -17,7 +18,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode'; 
+import jwtDecode from 'jwt-decode';
+import { CommonActions } from '@react-navigation/native';
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -104,7 +106,7 @@ export default function CreateIssue({ navigation }) {
     return (
         //possibility to dismiss the keyboard just by touching the screen
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={{ flex: 1, padding: 20 }}>
+            <ScrollView style={{ flexGrow: 1, padding: 20}}>
                 <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Create New Issue</Text>
 
                 {/* title field */}
@@ -230,7 +232,8 @@ export default function CreateIssue({ navigation }) {
                 ) : (
                     <Button testID={'post-job-button'} title="Post Job" onPress={postIssue} disabled={loading} />
                 )}
-            </View>
+                <View style={{ height: 30 }} />
+            </ScrollView>
         </TouchableWithoutFeedback>
     );
 }

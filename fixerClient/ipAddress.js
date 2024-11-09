@@ -1,2 +1,2 @@
 
-export const IPAddress = 'your ip address';
+export const IPAddress = '192.168.0.19';

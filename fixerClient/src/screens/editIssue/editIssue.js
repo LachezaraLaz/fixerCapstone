@@ -1,85 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    Alert,
+    ActivityIndicator,
+    TouchableOpacity,
+    Image,
+    StyleSheet,
+    ScrollView,
+} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
 import { IPAddress } from '../../../ipAddress';
 
 export default function EditIssue({ route, navigation }) {
-    const { jobId } = route.params; // Get jobId from route parameters
+    const { jobId } = route.params;
 
-    // Define state for the job fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [professionalNeeded, setProfessionalNeeded] = useState('');
+    const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [other, setOther] = useState(false);
 
-    // Fetch the issue details to populate the form fields
     const fetchJobDetails = async () => {
-        console.log('Starting fetchJobDetails function'); // Start of function
-
         try {
             const token = await AsyncStorage.getItem('token');
-            console.log('Token retrieved from AsyncStorage:', token); // Log token
-
-            // Ensure the token exists and jobId is valid before making the request
-            if (!token) {
-                Alert.alert('You are not logged in');
-                navigation.goBack(); // Redirect user if not logged in
-                return;
-            }
-
-            if (!jobId) {
-                Alert.alert('Invalid job ID');
+            if (!token || !jobId) {
+                Alert.alert('Invalid session or job ID');
                 navigation.goBack();
                 return;
             }
 
-            // Log the full URL and jobId to verify it's correct
-            const fullUrl = `http://${IPAddress}:3000/issue/${jobId}`;
-            console.log('Full URL being requested:', fullUrl);
-            console.log('Job ID:', jobId); // Log jobId to confirm it is correct
-
-            // Make the axios request
-            const response = await axios.get(fullUrl, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
+            const response = await axios.get(`http://${IPAddress}:3000/issue/${jobId}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
             });
 
-            // Log the status of the response
-            console.log('Response status:', response.status);
-
-            // Check if the response is OK (status 200-299)
             if (response.status === 200) {
-                const { title, description, professionalNeeded } = response.data;
-                console.log('Data received from server:', response.data); // Log data received
-
+                const { title, description, professionalNeeded, image } = response.data;
                 setTitle(title);
                 setDescription(description);
                 setProfessionalNeeded(professionalNeeded);
-                console.log('Data set in state successfully'); // Confirm state update
+                setImage(image);
+                setOther(!["Dripping Faucets", "Clogged Drains", "Leaky Pipes", "Flickering Lights", "Dead Outlets", "Faulty Switch"].includes(description));
             } else {
-                console.log('Failed to fetch job details with status:', response.status); // Log failure status
                 Alert.alert('Failed to load job details');
             }
         } catch (error) {
-            if (error.response) {
-                // The server responded with a status other than 2xx
-                console.error('Server responded with an error:', error.response.data);
-                Alert.alert(`Error: ${error.response.data.message || 'Failed to load job details'}`);
-            } else if (error.request) {
-                // The request was made but no response was received
-                console.error('No response received:', error.request);
-                Alert.alert('No response from server. Please try again later.');
-            } else {
-                // Other errors
-                console.error('Error in fetchJobDetails function:', error.message);
-                Alert.alert('An error occurred while loading job details');
-            }
+            Alert.alert('An error occurred while loading job details');
         } finally {
-            setLoading(false); // Stop loading indicator
-            console.log('Loading set to false'); // Confirm loading indicator stopped
+            setLoading(false);
         }
     };
 
@@ -87,28 +60,66 @@ export default function EditIssue({ route, navigation }) {
         fetchJobDetails();
     }, []);
 
-    // Function to handle updating the issue
+    const pickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permissionResult.granted) {
+            Alert.alert('Permission to access images is required!');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            setImage(result.assets[0].uri);
+        }
+    };
+
     const updateJob = async () => {
+        if (!title || !professionalNeeded || !description) {
+            Alert.alert("Please complete all fields for the professional to provide an accurate quote.");
+            return;
+        }
+
+        setLoading(true);
+
         try {
             const token = await AsyncStorage.getItem('token');
-
-            // Ensure the token exists before making the update request
             if (!token) {
                 Alert.alert('You are not logged in');
                 return;
             }
 
-            const response = await axios.put(`http://${IPAddress}:3000/issue/${jobId}`, {
-                title,
-                description,
-                professionalNeeded,
-            }, {
-                headers: { 'Authorization': `Bearer ${token}` },
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('professionalNeeded', professionalNeeded);
+            formData.append('status', "Open");
+
+            if (image) {
+                formData.append('image', {
+                    uri: image,
+                    type: 'image/jpeg',
+                    name: 'issue_image.jpg',
+                });
+            }
+
+            const response = await axios.put(`http://${IPAddress}:3000/issue/${jobId}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
             });
+
+            console.log('Response from server:', response.data); // Debugging line
 
             if (response.status === 200) {
                 Alert.alert('Job updated successfully');
-                navigation.goBack(); // Navigate back to MyIssuesPosted
+                navigation.goBack();
             } else {
                 Alert.alert('Failed to update job');
             }
@@ -123,8 +134,11 @@ export default function EditIssue({ route, navigation }) {
                 console.error('Error updating job:', error.message);
                 Alert.alert('An error occurred while updating the job');
             }
+        } finally {
+            setLoading(false);
         }
     };
+
 
     if (loading) {
         return (
@@ -135,7 +149,7 @@ export default function EditIssue({ route, navigation }) {
     }
 
     return (
-        <View style={{ padding: 20 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20 }}>
             <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Edit Job</Text>
             <TextInput
                 placeholder="Title"
@@ -143,20 +157,107 @@ export default function EditIssue({ route, navigation }) {
                 onChangeText={setTitle}
                 style={{ borderBottomWidth: 1, marginBottom: 10 }}
             />
-            <TextInput
-                placeholder="Description"
-                value={description}
-                onChangeText={setDescription}
-                style={{ borderBottomWidth: 1, marginBottom: 10 }}
-                multiline
-            />
-            <TextInput
-                placeholder="Professional Needed"
-                value={professionalNeeded}
-                onChangeText={setProfessionalNeeded}
-                style={{ borderBottomWidth: 1, marginBottom: 10 }}
-            />
+
+            {/* Professional selection options */}
+            <View style={styles.workBlocksContainer}>
+                <Text style={styles.sectionTitle}>Professional Needed</Text>
+                <View style={styles.workBlocks}>
+                    <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('plumber')}>
+                        <Text style={styles.workText}>Plumber</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('electrician')}>
+                        <Text style={styles.workText}>Electrician</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <Text style={styles.sectionTitle}>Issue Description</Text>
+                {professionalNeeded === 'plumber' && (
+                    <View style={styles.workBlocks}>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Dripping Faucets'); setOther(false); }}>
+                            <Text style={styles.workText}>Dripping Faucets</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Clogged Drains'); setOther(false); }}>
+                            <Text style={styles.workText}>Clogged Drains</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Leaky Pipes'); setOther(false); }}>
+                            <Text style={styles.workText}>Leaky Pipes</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => setOther(true)}>
+                            <Text style={styles.workText}>Other</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                {professionalNeeded === 'electrician' && (
+                    <View style={styles.workBlocks}>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Flickering Lights'); setOther(false); }}>
+                            <Text style={styles.workText}>Flickering Lights</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Dead Outlets'); setOther(false); }}>
+                            <Text style={styles.workText}>Dead Outlets</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Faulty Switch'); setOther(false); }}>
+                            <Text style={styles.workText}>Faulty Switch</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.workBlock} onPress={() => setOther(true)}>
+                            <Text style={styles.workText}>Other</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            </View>
+
+            {other && (
+                <TextInput
+                    placeholder="Describe the issue..."
+                    value={description}
+                    onChangeText={setDescription}
+                    multiline
+                    style={{ borderBottomWidth: 1, height: 100, textAlignVertical: 'top', marginBottom: 10 }}
+                />
+            )}
+
+            {/* Image upload */}
+            <TouchableOpacity onPress={pickImage} style={{ marginBottom: 15 }}>
+                <View style={{ backgroundColor: '#eee', padding: 10, alignItems: 'center', borderRadius: 5 }}>
+                    <Text>Upload Image</Text>
+                </View>
+            </TouchableOpacity>
+
+            {image && (
+                <View style={{ alignItems: 'center', marginBottom: 15 }}>
+                    <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+                </View>
+            )}
+
             <Button title="Save Changes" onPress={updateJob} />
-        </View>
+        </ScrollView>
     );
 }
+
+const styles = StyleSheet.create({
+    workBlocksContainer: {
+        paddingHorizontal: 16,
+        marginVertical: 16,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    workBlocks: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+    workBlock: {
+        backgroundColor: '#f0f0f0',
+        width: '48%',
+        padding: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginVertical: 8,
+    },
+    workText: {
+        fontSize: 16,
+        textAlign: 'center',
+    },
+});

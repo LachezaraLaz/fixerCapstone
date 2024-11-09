@@ -8,7 +8,8 @@ const getCoordinatesFromAddress = async (address) => {
     try {
         const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
             params: {
-                address: encodeURIComponent(address),
+                //address: encodeURIComponent(address),
+                address,
                 key: GOOGLE_MAPS_KEY,
             },
         });
@@ -21,7 +22,13 @@ const getCoordinatesFromAddress = async (address) => {
             throw new Error('Failed to fetch coordinates');
         }
     } catch (error) {
-        console.error('Error in geocoding request:', error);
+        if (error.response) {
+            console.error('Geocoding request failed:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+        }
         throw error;
     }
 };

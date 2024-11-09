@@ -59,8 +59,9 @@ export const styles = StyleSheet.create({
         color: '#666',
     },
     logoutContainer: {
+        justifyContent: 'flex-end',
         alignItems: 'center',
-        marginBottom: 20,
+        marginTop: 40
     },
     logoutButton: {
         backgroundColor: '#FF6347',
@@ -73,6 +74,9 @@ export const styles = StyleSheet.create({
         fontSize: 18,
     },
     footer: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
         height: 50,
         backgroundColor: 'grey',
         justifyContent: 'center',

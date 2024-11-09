@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../style/homeScreenStyle';
 import { IPAddress } from '../ipAddress';
 import * as Location from 'expo-location';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
@@ -75,7 +76,17 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const electricalIssues = issues.filter(issue => issue.professionalNeeded === 'electrician');
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            {/* Header with Profile and Notification Icons */}
+            <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16 }]}>
+                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
+                    <Ionicons name="person-circle" size={32} color="#333" />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <Ionicons name="notifications-outline" size={28} color="#333" />
+                </TouchableOpacity>
+            </View>
+
             {/* Scrollable content */}
             <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
                 {/* Map Section */}
@@ -150,6 +161,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             <View style={styles.footer}>
                 <Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.</Text>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
+

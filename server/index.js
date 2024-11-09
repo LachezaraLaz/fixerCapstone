@@ -26,7 +26,7 @@ const server = app.listen(PORT, () => {
 app.use('/professional', professionalClientRoute.professionalRouter);
 app.use('/client', fixerClientRoute.fixerClientRouter);
 app.use('/issue', createIssueRoute.createIssueRouter);
-// app.use('/issues', issueRoute.issueRouter);
+app.use('/issues', issueRoute.issueRouter);
 app.use('/reset',resetPasswordRouter.resetPasswordRouter);
 // Email verification route
 app.use('/verify-email', professionalClientRoute.professionalRouter);

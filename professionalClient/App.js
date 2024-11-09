@@ -13,6 +13,8 @@ import ForgotPasswordPage from "./src/screens/signin/ForgotPasswordPage";
 import EnterPin from "./src/screens/signin/EnterPinPage";
 import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage";
 import ProfessionalNavBar from './src/ProfessionalNavBarComponent';
+import NotificationPage from './src/screens/notificationPage/notificationPage';
+import NotificationDetail from './src/screens/notificationDetail/notificationDetail';
 import { useEffect, useState } from "react";
 
 const Stack = createNativeStackNavigator();
@@ -69,6 +71,8 @@ export default function App() {
                         <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
                         <Stack.Screen name="UploadID" component={UploadID} />
                         <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
+                        <Stack.Screen name="NotificationPage" component={NotificationPage} />
+                        <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
                     </>
                 ) : (
                     <>

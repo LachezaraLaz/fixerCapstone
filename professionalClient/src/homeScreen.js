@@ -1,17 +1,18 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../style/homeScreenStyle';
 import { IPAddress } from '../ipAddress';
 import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
+    const scrollY = React.useRef(new Animated.Value(0)).current;
 
     const fetchAllIssues = async () => {
         try {
@@ -75,9 +76,16 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const plumbingIssues = issues.filter(issue => issue.professionalNeeded === 'plumber');
     const electricalIssues = issues.filter(issue => issue.professionalNeeded === 'electrician');
 
+
+    const mapHeight = scrollY.interpolate({
+        inputRange: [0, 500], // Interval of scrolling
+        outputRange: [400, 150], // Height of map from 400 to 150
+        extrapolate: 'clamp' // dont let surpass limit
+    });
+
     return (
         <SafeAreaView style={styles.container}>
-            {/* Header with Profile and Notification Icons */}
+            {/* Header */}
             <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16 }]}>
                 <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
                     <Ionicons name="person-circle" size={32} color="#333" />
@@ -87,10 +95,17 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 </TouchableOpacity>
             </View>
 
-            {/* Scrollable content */}
-            <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-                {/* Map Section */}
-                <View style={styles.mapContainer}>
+            {/* Scrollable Map */}
+            <Animated.ScrollView
+                contentContainerStyle={{ paddingBottom: 100 }}
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],  // Mise à jour du scrollY
+                    { useNativeDriver: false } // Désactivation du native driver pour éviter des erreurs
+                )}
+                scrollEventThrottle={16}  // Améliore la réactivité du défilement
+            >
+                {/* Section map */}
+                <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
                     <MapView
                         style={styles.map}
                         showsUserLocation={true}
@@ -117,7 +132,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                             />
                         ))}
                     </MapView>
-                </View>
+                </Animated.View>
 
                 {/* Plumbing Issues Section */}
                 <View style={styles.sectionContainer}>
@@ -155,13 +170,12 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         <Text style={styles.logoutText}>Logout</Text>
                     </TouchableOpacity>
                 </View>
-            </ScrollView>
 
-            {/* Footer - Stays above the navbar */}
-            <View style={styles.footer}>
-                <Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.</Text>
-            </View>
+                {/* Footer - Stays above the navbar */}
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.</Text>
+                </View>
+            </Animated.ScrollView>
         </SafeAreaView>
     );
 }
-

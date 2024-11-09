@@ -11,9 +11,8 @@ createIssueRouter.get('/user/:email', getJobsByUser);
 // Route to fetch a single job by ID
 createIssueRouter.get('/:jobId', getJobById);
 // Route to update an issue by ID
-createIssueRouter.put('/:jobId', updateJob);
+createIssueRouter.put('/:jobId', upload('issues').single('image'), updateJob);
 // Route to delete a job by ID
 createIssueRouter.delete('/:id', deleteReopenJob);
 
-// Export createIssueRouter directly
-module.exports = {createIssueRouter};
+module.exports = { createIssueRouter };

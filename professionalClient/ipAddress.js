@@ -1,2 +1,2 @@
 
-export const IPAddress = 'YOUR_IP_ADDRESS';
+export const IPAddress = 'IP-ADDRESS';

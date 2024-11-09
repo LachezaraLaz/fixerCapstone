@@ -13,6 +13,7 @@ import ForgotPasswordPage from "./src/screens/signin/ForgotPasswordPage";
 import EnterPin from "./src/screens/signin/EnterPinPage";
 import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage";
 import ProfessionalNavBar from './src/ProfessionalNavBarComponent';
+import HomeScreen from "./src/homeScreen";
 import NotificationPage from './src/screens/notificationPage/notificationPage';
 import NotificationDetail from './src/screens/notificationDetail/notificationDetail';
 import { useEffect, useState } from "react";
@@ -66,7 +67,14 @@ export default function App() {
                             {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
                         </Stack.Screen>
 
+                        <Stack.Screen
+                            name="HomeScreen"
+                            options={{ headerShown: false }} // Remove header for HomeScreen
+                        >
+                            {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+                        </Stack.Screen>
                         {/* Additional screens accessible from MainTabs */}
+
                         <Stack.Screen name="ProfilePage" component={ProfileScreen} />
                         <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
                         <Stack.Screen name="UploadID" component={UploadID} />

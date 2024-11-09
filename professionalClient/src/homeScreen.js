@@ -85,6 +85,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         <View style={styles.container}>
             <View style={styles.mapContainer}>
                 <MapView
+                    testID="map"
                     style={styles.map}
                     showsUserLocation={true} // Show the blue dot for current location
                     followsUserLocation={true} // Center the map on the user's location

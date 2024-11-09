@@ -6,6 +6,7 @@ import { styles } from '../style/homeScreenStyle';
 import { IPAddress } from '../ipAddress';
 import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
@@ -89,7 +90,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
                     <Ionicons name="person-circle" size={32} color="#333" />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
                     <Ionicons name="notifications-outline" size={28} color="#333" />
                 </TouchableOpacity>
             </View>

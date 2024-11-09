@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
 
     // Explicitly set height for mapContainer to ensure visibility
     mapContainer: {
-        height: 200, // Adjust height as needed
+        height: 350, // Adjust height as needed
         borderRadius: 10,
         overflow: 'hidden',
         margin: 16,

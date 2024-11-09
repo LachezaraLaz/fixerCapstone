@@ -1,19 +1,18 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
-import { styles } from '../style/homeScreenStyle';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
+import { styles } from '../style/homeScreenStyle';
 import { IPAddress } from '../ipAddress';
-import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
 
-    // Fetch all issues from the backend
     const fetchAllIssues = async () => {
         try {
             const response = await axios.get(`http://${IPAddress}:3000/issues`);
@@ -29,14 +28,11 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const getCurrentLocation = async () => {
         try {
             const { status } = await Location.requestForegroundPermissionsAsync();
-            console.log("Location permission status:", status);
             if (status !== 'granted') {
                 Alert.alert('Permission to access location was denied');
                 return;
             }
-
             const location = await Location.getCurrentPositionAsync({});
-            console.log("Current location:", location);
             setCurrentLocation({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
@@ -47,7 +43,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }
     };
 
-    // Fetch issues and location when the component mounts
     React.useEffect(() => {
         fetchAllIssues();
         getCurrentLocation();
@@ -69,7 +64,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         Alert.alert(issue.title, issue.description);
     };
 
-    // Show loading indicator while data is being fetched
     if (loading) {
         return (
             <View style={styles.container}>
@@ -82,73 +76,92 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const electricalIssues = issues.filter(issue => issue.professionalNeeded === 'electrician');
 
     return (
-        <View style={styles.container}>
-            <View style={styles.mapContainer}>
-                <MapView
-                    testID="map"
-                    style={styles.map}
-                    showsUserLocation={true} // Show the blue dot for current location
-                    followsUserLocation={true} // Center the map on the user's location
-                    region={currentLocation ? {
-                        latitude: currentLocation.latitude,
-                        longitude: currentLocation.longitude,
-                        latitudeDelta: 0.0122,
-                        longitudeDelta: 0.0121,
-                    } : {
-                        latitude: 37.78825,
-                        longitude: -122.4324,
-                        latitudeDelta: 0.0122,
-                        longitudeDelta: 0.0121,
-                    }}
-                >
-                    {issues.map((issue) => (
-                        <Marker
-                            key={issue.id}
-                            coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
-                            title={issue.title}
-                            description={issue.description}
-                            onPress={() => handleIssueClick(issue)}
-                        />
-                    ))}
-                </MapView>
+        <SafeAreaView style={styles.container}>
+            {/* Header with Profile and Notification Icons */}
+            <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16 }]}>
+                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
+                    <Ionicons name="person-circle" size={32} color="#333" />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <Ionicons name="notifications-outline" size={28} color="#333" />
+                </TouchableOpacity>
             </View>
 
-            <View style={styles.workBlocksContainer}>
-                <Text style={styles.sectionTitle}>Plumbing Issues</Text>
-                <ScrollView contentContainerStyle={styles.workBlocks}>
+            {/* Scrollable content */}
+            <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+                {/* Map Section */}
+                <View style={styles.mapContainer}>
+                    <MapView
+                        style={styles.map}
+                        showsUserLocation={true}
+                        followsUserLocation={true}
+                        region={currentLocation ? {
+                            latitude: currentLocation.latitude,
+                            longitude: currentLocation.longitude,
+                            latitudeDelta: 0.0122,
+                            longitudeDelta: 0.0121,
+                        } : {
+                            latitude: 37.78825,
+                            longitude: -122.4324,
+                            latitudeDelta: 0.0122,
+                            longitudeDelta: 0.0121,
+                        }}
+                    >
+                        {issues.map((issue) => (
+                            <Marker
+                                key={issue.id}
+                                coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
+                                title={issue.title}
+                                description={issue.description}
+                                onPress={() => handleIssueClick(issue)}
+                            />
+                        ))}
+                    </MapView>
+                </View>
+
+                {/* Plumbing Issues Section */}
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Plumbing Issues</Text>
                     {plumbingIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue.id}
-                            style={styles.workBlock}
+                            style={styles.card}
                             onPress={() => handleIssueClick(issue)}
                         >
-                            <Text style={styles.workText}>{issue.title}</Text>
+                            <Text style={styles.cardTitle}>{issue.title}</Text>
+                            <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>
                         </TouchableOpacity>
                     ))}
-                </ScrollView>
-                <ScrollView contentContainerStyle={styles.workBlocks}>
+                </View>
+
+                {/* Electrical Issues Section */}
+                <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Electrical Issues</Text>
                     {electricalIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue.id}
-                            style={styles.workBlock}
+                            style={styles.card}
                             onPress={() => handleIssueClick(issue)}
                         >
-                            <Text style={styles.workText}>{issue.title}</Text>
+                            <Text style={styles.cardTitle}>{issue.title}</Text>
+                            <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>
                         </TouchableOpacity>
                     ))}
-                </ScrollView>
-            </View>
+                </View>
 
-            <View style={styles.logoutContainer}>
-                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                    <Text style={styles.logoutText}>Logout</Text>
-                </TouchableOpacity>
-            </View>
+                {/* Logout Button */}
+                <View style={styles.logoutContainer}>
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                        <Text style={styles.logoutText}>Logout</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
 
+            {/* Footer - Stays above the navbar */}
             <View style={styles.footer}>
                 <Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.</Text>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
+

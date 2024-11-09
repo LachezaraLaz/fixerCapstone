@@ -5,14 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
-import HomeScreen from "./src/homeScreen";
 import ProfileScreen from "./src/screens/profilePage/profilePage";
 import CredentialFormPage from "./src/screens/credentialFormPage/credentialFormPage";
 import UploadID from "./src/screens/uploadID/uploadID";
 import ThankYouPage from "./src/tyCredentialEnd";
 import ForgotPasswordPage from "./src/screens/signin/ForgotPasswordPage";
 import EnterPin from "./src/screens/signin/EnterPinPage";
-import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage"; // Import your ResetPasswordPage
+import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage";
+import ProfessionalNavBar from './src/ProfessionalNavBarComponent';
 import { useEffect, useState } from "react";
 
 const Stack = createNativeStackNavigator();
@@ -22,7 +22,6 @@ const linking = {
     config: {
         screens: {
             ResetPasswordPage: 'resetPassword?token=:token',
-            // Add other screens as needed
         },
     },
 };
@@ -49,17 +48,23 @@ export default function App() {
     }, []);
 
     if (loading) {
-        return null; // Add a loading component here if desired
+        return null; // Placeholder for a loading screen if desired
     }
 
     return (
         <NavigationContainer linking={linking}>
-            <Stack.Navigator initialRouteName={isLoggedIn ? "HomeScreen" : "welcomePage"}>
+            <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
                 {isLoggedIn ? (
                     <>
-                        <Stack.Screen name="HomeScreen">
-                            {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+                        {/* MainTabs with ProfessionalNavBar */}
+                        <Stack.Screen
+                            name="MainTabs"
+                            options={{ headerShown: false }}
+                        >
+                            {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
                         </Stack.Screen>
+
+                        {/* Additional screens accessible from MainTabs */}
                         <Stack.Screen name="ProfilePage" component={ProfileScreen} />
                         <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
                         <Stack.Screen name="UploadID" component={UploadID} />
@@ -75,6 +80,7 @@ export default function App() {
                         <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
                         <Stack.Screen name="EnterPin" component={EnterPin} />
                         <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
+
                     </>
                 )}
             </Stack.Navigator>

@@ -30,4 +30,4 @@ app.use('/issue', createIssueRoute.createIssueRouter);
 app.use('/reset',resetPasswordRouter.resetPasswordRouter);
 // Email verification route
 app.use('/verify-email', professionalClientRoute.professionalRouter);
-app.use('/notification', notificationRoute);
+app.use('/notification', notificationRouter);

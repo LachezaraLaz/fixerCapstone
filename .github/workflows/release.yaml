@@ -2,8 +2,24 @@ name: Release Notes
 
 on:
   release:
+    types:
+      - created
+      - published
 
-# Overall summary section
+jobs:
+  generate-release-notes:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Generate release notes
+      run: |
+        # Here, you can add the command to generate release notes, like using a GitHub Action or a custom script.
+        # For example, you might use a tool like 'release-drafter' or your own custom process.
+        echo "Generating release notes..."
+
 changelog:
   exclude:
     labels:
@@ -21,6 +37,17 @@ changelog:
     - title: Breakdown by Individual 🧑‍💻
       labels:
         - individual-contributions
+    - title: Breaking Changes 🛠
+      labels:
+        - Semver-Major
+        - breaking-change
+    - title: Exciting New Features 🎉
+      labels:
+        - Semver-Minor
+        - enhancement
+    - title: Other Changes
+      labels:
+        - "*"
 
 # This section will generate a summary for the release notes
 notes:
@@ -55,21 +82,7 @@ contributors:
       - Summary of contributor2's contributions in this release.
       - Key tasks or features worked on by contributor2.
 
-# Labels associated with the categories (example)
-categories:
-  - title: Breaking Changes 🛠
-    labels:
-      - Semver-Major
-      - breaking-change
-  - title: Exciting New Features 🎉
-    labels:
-      - Semver-Minor
-      - enhancement
-  - title: Other Changes
-    labels:
-      - "*"
-
-# Include metadat a for release notes generation
+# Include metadata for release notes generation
 generate_release_notes:
   enabled: true
   include:

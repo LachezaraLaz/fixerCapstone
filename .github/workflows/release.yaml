@@ -1,4 +1,4 @@
-name: Release Notes
+name: Generate Release Notes
 
 on:
   release:
@@ -14,22 +14,62 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Node.js
+    - name: Set up Node.js (for custom scripting or tools)
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Or your preferred Node.js version
+        node-version: '16'  # Or whatever version fits your needs
 
-    - name: Install release drafter
+    - name: Generate custom release notes
       run: |
-        npm install -g release-drafter
+        # This is a placeholder script; you can replace it with any script to generate custom release notes
+        echo "Generating custom release notes..." > RELEASE_NOTES.md
 
-    - name: Generate release notes using Release Drafter
-      run: |
-        release-drafter --token ${{ secrets.GITHUB_TOKEN }} --output-file RELEASE_NOTES.md
+        # Add Iteration and Release Notes Section
+        echo "## Iteration and Release Notes" >> RELEASE_NOTES.md
+        echo "### Overall Summary" >> RELEASE_NOTES.md
+        echo "- Main achievements of this iteration: [Briefly summarize the key accomplishments]." >> RELEASE_NOTES.md
+        echo "- Key features added, bugs fixed, or performance improvements achieved." >> RELEASE_NOTES.md
+        echo "- Major challenges or roadblocks overcome." >> RELEASE_NOTES.md
+        echo "- Next steps or actions for the future release." >> RELEASE_NOTES.md
+
+        echo "### How to make a release on GitHub" >> RELEASE_NOTES.md
+        echo "- Navigate to the 'Releases' tab of your GitHub repository." >> RELEASE_NOTES.md
+        echo "- Click 'Draft a new release' and provide the release tag and title." >> RELEASE_NOTES.md
+        echo "- You can attach binary files or artifacts here before publishing the release." >> RELEASE_NOTES.md
+        echo "- Once ready, click 'Publish release'." >> RELEASE_NOTES.md
+
+        # Add Velocity and Contractor Estimate Section
+        echo "## Velocity and Contractor Estimate" >> RELEASE_NOTES.md
+        echo "- Did you accomplish what you thought you would? What slipped in the iteration?" >> RELEASE_NOTES.md
+        echo "- Estimate the charge for this iteration: [Enter your estimate, based on hours or deliverables]." >> RELEASE_NOTES.md
+
+        # Add Changelog Section with Categories
+        echo "## Changelog" >> RELEASE_NOTES.md
+        echo "### Breaking Changes 🛠" >> RELEASE_NOTES.md
+        echo "- Changes that could break backward compatibility." >> RELEASE_NOTES.md
+        echo "### Exciting New Features 🎉" >> RELEASE_NOTES.md
+        echo "- New features added to improve the user experience." >> RELEASE_NOTES.md
+        echo "### Other Changes" >> RELEASE_NOTES.md
+        echo "- Miscellaneous changes that do not fit into other categories." >> RELEASE_NOTES.md
+
+        # Append a Summary of Contributors
+        echo "## Contributors" >> RELEASE_NOTES.md
+        echo "- **octocat**: Worked on the new features and bug fixes." >> RELEASE_NOTES.md
+        echo "- **contributor1**: Contributed to the testing and integration of new features." >> RELEASE_NOTES.md
+
+        # Print the result to check
         cat RELEASE_NOTES.md
 
-    - name: Upload release notes as artifact
+    - name: Upload Release Notes as Artifact
       uses: actions/upload-artifact@v3
       with:
         name: release-notes
         path: RELEASE_NOTES.md
+
+    - name: Create Release Notes on GitHub Release
+      run: |
+        # Use GitHub CLI to update the release with the generated notes
+        gh release edit ${{ github.event.release.tag_name }} \
+          --notes-file RELEASE_NOTES.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

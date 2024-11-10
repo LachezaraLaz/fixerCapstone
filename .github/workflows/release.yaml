@@ -1,5 +1,8 @@
 name: Release Notes
 
+on:
+  release:
+
 # Overall summary section
 changelog:
   exclude:

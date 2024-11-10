@@ -168,6 +168,66 @@ This will start the project and output a QR code. Scan this QR code with your ph
 
 ## Programming Languages
 
+## Security
+![image](https://github.com/user-attachments/assets/b3d33b72-08a4-4016-8a3b-79f08e4b2bfb)
+
+#### Notification Example:
+
+**1. User Login**
+```javascript
+const signinUser = async (req, res) => {
+    const { email, password } = req.body;
+    const user = await fixerClientObject.fixerClient.findOne({ email });
+    // Verifies password, checks user roles, etc.
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.send({ token });
+};
+```
+
+**2. Token Issued**
+```javascript
+const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+```
+
+**3. Token Sent with Requests**
+```javascript
+const fetchNotifications = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`http://${IPAddress}:3000/notification`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+};
+```
+
+**4. Token Verification on Backend**
+```javascript
+const authenticateJWT = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Unauthorized' });
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+        if (err) return res.status(403).json({ message: 'Forbidden' });
+        req.user = await fixerClientObject.fixerClient.findById(decodedToken.id);
+        next();
+    });
+};
+```
+
+**5. Accessing Protected EndPoints**
+```javascript
+const getNotifications = async (req, res) => {
+    const notifications = await Notification.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    res.json({ notifications });
+};
+```
+
+**6. Response Sent to Client**
+```javascript
+res.json({ notifications });
+```
+
 
 ## License
 The application is under the MIT License. See [LICENSE](https://github.com/LachezaraLaz/fixerCapstone/blob/f393faf9eeabf8ae4c7be99b558427e7161d3b41/LICENSE) for more details.
+
+
+

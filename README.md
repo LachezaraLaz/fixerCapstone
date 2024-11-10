@@ -167,7 +167,7 @@ This will start the project and output a QR code. Scan this QR code with your ph
   <tr>
     <td>Thaneekan Thankarajah</td>
     <td>40192306</td>
-    <td>thaneekan</td>
+    <td><a href="https://github.com/thaneekan">thaneekan</a></td>
   </tr>
 </table>
 

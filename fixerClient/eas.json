@@ -14,7 +14,10 @@
     "production": {
       "autoIncrement": true,
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "credentials": {
+          "androidKeystore": null
+        }
       }
     }
   },

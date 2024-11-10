@@ -9,6 +9,7 @@ let coordinates;
 
 const verifyAddress = async (req, res) => {
     const { street, postalCode } = req.body;
+
     try {
         const response = await axios.post(
             `https://addressvalidation.googleapis.com/v1:validateAddress?key=${GOOGLE_API_KEY}`,
@@ -19,23 +20,22 @@ const verifyAddress = async (req, res) => {
                 },
             }
         );
-        console.log(response.data);
+        console.log(response.data)
 
         if (response.data.result.verdict.addressComplete === true) {
+            //Get coordinates for the verified address
             const fullAddress = `${street}, ${postalCode}`;
             await getCoordinates(fullAddress);
-            res.status(200).send({
-                status: 'success',
-                data: 'Address verified successfully from server',
+
+            res.send({ status: 'success', data: 'Address verified successfully from server',
                 isAddressValid: true,
-                coordinates: coordinates
-            });
+                coordinates: coordinates});
         } else {
-            res.status(400).send({ status: 'error', data: 'Address verification failed from server' });
+            res.send({ status: 'error', data: 'address verification failed from server 1' });
         }
     } catch (err) {
         console.error(err);
-        res.status(500).send({ status: 'error', data: 'Address verification failed from server' });
+        res.send({ status: 'error', data: 'address verification failed from server 2' });
     }
 };
 

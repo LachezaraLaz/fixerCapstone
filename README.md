@@ -3,6 +3,11 @@ A mobile app for small contracts from professionals
 
 ## Description
 
+## Equity and Diversity
+At Fixr, our commitment is building an all inclusive platform, where a number of different people can interact with one another, people from all backgrounds, abilities, and experience.     
+
+These individual each equally important should have equal access to high-quality, reliable services and opportunities. This is why Fixr strives to help clients and professionnels by creating an environment where regardless of age, gender, race, location, everyone can connect and benefit from local services in a safe and respectful environment.
+
 
 ## Getting Started
 

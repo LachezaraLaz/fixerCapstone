@@ -1,0 +1,76 @@
+name: Release Notes
+
+# Overall summary section
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - octocat
+
+  categories:
+    - title: Iteration and Release Notes 🚀
+      labels:
+        - iteration-summary
+    - title: Velocity and Contractor Estimate 💵
+      labels:
+        - velocity-summary
+    - title: Breakdown by Individual 🧑‍💻
+      labels:
+        - individual-contributions
+
+# This section will generate a summary for the release notes
+notes:
+  overall-summary: |
+    - Main achievements of this iteration: [Summarize your key accomplishments here].
+    - Key features added, bugs fixed, or performance improvements achieved during the iteration.
+    - Major challenges or roadblocks overcome.
+    - Future actions or next steps after this release.
+
+# Velocity and Contractor Estimate Section
+velocity_and_estimate:
+  did_you_achieve_goals: |
+    - Did you accomplish what you thought you would?
+    - What slipped in the iteration?
+    - Was anything done earlier than expected?
+
+  contractor_estimate: |
+    - Estimated cost for this iteration: [Provide an estimate based on hours or deliverables].
+
+# Breakdown by Individual
+contributors:
+  - name: "octocat"
+    contribution_summary: |
+      - Summary of octocat's contributions in this release.
+      - Key tasks or features worked on by octocat.
+  - name: "contributor1"
+    contribution_summary: |
+      - Summary of contributor1's contributions in this release.
+      - Key tasks or features worked on by contributor1.
+  - name: "contributor2"
+    contribution_summary: |
+      - Summary of contributor2's contributions in this release.
+      - Key tasks or features worked on by contributor2.
+
+# Labels associated with the categories (example)
+categories:
+  - title: Breaking Changes 🛠
+    labels:
+      - Semver-Major
+      - breaking-change
+  - title: Exciting New Features 🎉
+    labels:
+      - Semver-Minor
+      - enhancement
+  - title: Other Changes
+    labels:
+      - "*"
+
+# Include metadat a for release notes generation
+generate_release_notes:
+  enabled: true
+  include:
+    - version
+    - date
+    - changes
+    - contributors

@@ -1,7 +1,28 @@
+# Releases
+## Release 1:
+Video:
+https://drive.google.com/file/d/1WhXXtFP5O8dtVwtxiwycaVndRdlPdeiS/view?usp=drive_link
+
+Top 5 files:  
+- [fixerClient/src/screens/createIssue/createIssue.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/createIssue/createIssue.js)
+- [fixerClient/src/NavBarComponent.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/NavBarComponent.js)
+- [professionalClient/src/homeScreen.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/homeScreen.js)
+- [professionalClient/src/screens/signin/signinPage.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/signin/signinPage.js)
+- [fixerClient/src/screens/editIssue/editIssue.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/editIssue/editIssue.js)
+
+Top 5 testing files:
+- [fixerClient/src/screens/createIssue/__tests__/createIssue.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/createIssue/__tests__/createIssue.test.js)
+- [fixerClient/src/screens/signup/__tests__/signup.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/signup/__tests__/signup.test.js)
+- [fixerClient/src/screens/editIssue/__tests__/editIssue.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/editIssue/__tests__/editIssue.test.js)
+- [professionalClient/src/screens/map-view/__tests__/homeScreen.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/map-view/__tests__/homeScreen.test.js)
+- [professionalClient/src/screens/signin/__tests__/signin.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/signin/__tests__/signin.test.js)
+
 # Project Title
 A mobile app for small contracts from professionals
 
 ## Description
+
+Fixr is an application to connect professionals like plumber and electrician to their clients in current needs. Clients post their issues on the application and professionals will see the newly posted job on the map. They will upload a quotation for the user to evaluate and then choose which professional they want to come and help them. Payment and contracts are all done through Fixr to help all users.
 
 ## Equity and Diversity
 At Fixr, our commitment is building an all inclusive platform, where a number of different people can interact with one another, people from all backgrounds, abilities, and experience.     

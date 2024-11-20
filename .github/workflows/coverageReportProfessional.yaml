@@ -9,12 +9,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
         working-directory: "professionalClient"
-      - name: npx jest runner
-        run: npx jest
-        working-directory: "professionalClient"
-      - name: List installed packages
-        run: npm list
-        working-directory: "professionalClient"
       - name: Jest Annotations & Coverage
         uses: mattallty/jest-github-action@v1.0.3
         env:

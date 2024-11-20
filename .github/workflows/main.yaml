@@ -1,6 +1,7 @@
 name: suite-folded-ctrf
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, reopened, synchronize]
 

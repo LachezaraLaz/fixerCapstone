@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
-import HomeScreen from '../../../homeScreen';
+import HomeScreen from './homeScreen';
 import axios from 'axios';
 import * as Location from 'expo-location';
 import { Alert } from 'react-native';  // Import the Alert module

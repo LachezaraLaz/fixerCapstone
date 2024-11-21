@@ -11,6 +11,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: npm install
+        working-directory: professionalClient
+      - name: List Installed Packages
+        run: npm list
+        working-directory: professionalClient
       - name: npx jest
         run: npx jest
         working-directory: professionalClient

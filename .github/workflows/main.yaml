@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: npx jest
+        run: npx jest
+        working-directory: professionalClient
       - name: Publish CTRF Suite Folded Summary
         run: npx github-actions-ctrf suite-folded path-to-your-ctrf-report.json
         if: always()

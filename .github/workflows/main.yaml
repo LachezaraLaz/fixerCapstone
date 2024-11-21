@@ -11,10 +11,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Jest coverage report
-        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
-        with:
-          working-directory: <professionalClient>
       - name: Publish CTRF Suite Folded Summary
         run: npx github-actions-ctrf suite-folded path-to-your-ctrf-report.json
         if: always()

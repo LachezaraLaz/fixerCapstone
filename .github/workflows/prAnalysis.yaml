@@ -20,8 +20,8 @@ jobs:
         run: npm list
         working-directory: professionalClient
 
-      - name: npx jest
-        run: npx jest || true
+      - name: npx jest professionalClient
+        run: npx jest professionalClient || true
         working-directory: professionalClient
 
       - name: Jest Annotations & Coverage

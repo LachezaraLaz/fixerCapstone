@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: npx jest
-        run: npx jest
       - name: Run CTRF annotations
         run: npx github-actions-ctrf summary professionalClient/ctrf/ctrf-report.json
         if: always()

@@ -46,9 +46,6 @@
     "mongodb": "^6.10.0"
   },
   "jest": {
-    "transformIgnorePatterns": [
-      "node_modules/(?!(react-navigation|@react-navigation|react-native)/)"
-    ],
     "collectCoverageFrom": [],
     "coverageThreshold": {
       "global": {

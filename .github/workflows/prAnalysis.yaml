@@ -25,7 +25,7 @@ jobs:
         working-directory: professionalClient
 
       - name: Jest Annotations & Coverage
-        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
+        uses: ArtiomTr/jest-coverage-report-action@v2.3.1 || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

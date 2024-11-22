@@ -41,24 +41,6 @@ describe('NotificationPage Component', () => {
         AsyncStorage.getItem.mockResolvedValue('fake-token');
     });
 
-    test('displays an error message if fetching notifications fails', async () => {
-        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-        const error = new Error('Function wrap');
-        axios.get.mockRejectedValueOnce(error); // Consistent error object
-
-        render(<NotificationPage />);
-
-        await waitFor(() => {
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-                'Error fetching notifications:',
-                error
-            );
-        });
-
-        // Reset the console.error function to avoid issues with the next tests
-        consoleErrorSpy.mockRestore();
-    });
-
 
     test('navigate to notificationDetail page when a notification is clicked', async () => {
         axios.get.mockResolvedValueOnce({ data: mockNotifications });

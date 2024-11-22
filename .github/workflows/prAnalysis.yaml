@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }} # Use the current branch
 
       - name: Install Dependencies
         run: npm install
@@ -20,7 +22,7 @@ jobs:
         run: npm list
         working-directory: professionalClient
 
-      - name: npx jest
+      - name: Run Jest Tests
         run: npx jest || true
         working-directory: professionalClient
         continue-on-error: true

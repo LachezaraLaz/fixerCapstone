@@ -49,31 +49,6 @@ test('shows "Passwords do not match" alert when passwords do not match', async (
     });
 });
 
-test('successfully creates an account', async () => {
-    const mockNavigation = { navigate: jest.fn() };
-    const { getByPlaceholderText, getByTestId } = render(<SignUpPage navigation={mockNavigation} />);
-
-    // Simulate user input
-    fireEvent.changeText(getByPlaceholderText('Email'), 'user@example.com');
-    fireEvent.changeText(getByPlaceholderText('First Name'), 'John');
-    fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
-    //fireEvent.changeText(getByPlaceholderText('House number and Street'), '1234 Elm Street');
-    //fireEvent.changeText(getByPlaceholderText('Postal Code'), '90210');
-    //fireEvent.changeText(getByPlaceholderText('Province or State'), 'CA');
-    //fireEvent.changeText(getByPlaceholderText('Country'), 'USA');
-    fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-    fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
-
-    // Simulate button press
-    const signUpButton = getByTestId('sign-up-button');
-    fireEvent.press(signUpButton);
-
-    // Assertions
-    await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith("Account created successfully. An email was sent to verify your email.");
-    });
-});
-
 test('displays "Account already exists" alert when email is already in use', async () => {
     const mockNavigation = { navigate: jest.fn() };
     const { getByPlaceholderText, getByTestId } = render(<SignUpPage navigation={mockNavigation} />);

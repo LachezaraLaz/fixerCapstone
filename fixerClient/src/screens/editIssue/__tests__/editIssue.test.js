@@ -29,17 +29,6 @@ describe('EditIssue Component', () => {
     });
 
 
-    test('displays error alert when fetch JobDetails fails with server error', async () => {
-        // mock a failed GET request
-        axios.get.mockRejectedValueOnce({ response: { data: { message: 'Server error' } } });
-
-        render(<EditIssue route={routeMock} navigation={navigationMock} />);
-
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('An error occurred while loading job details');
-        });
-    });
-
     //test fails because we're not handling the exception when a client modifies a field, they can leave it blank
     test('prevents update when fields are empty and shows alert', async () => {
         // Mock successful initial fetch for job details

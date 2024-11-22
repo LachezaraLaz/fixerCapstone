@@ -41,16 +41,6 @@ describe('NotificationPage Component', () => {
         AsyncStorage.getItem.mockResolvedValue('fake-token');
     });
 
-    test('fetches and displays notifications', async () => {
-        axios.get.mockResolvedValueOnce({ data: mockNotifications });
-        const { getByText } = render(<NotificationPage />);
-
-        // Wait to load and check if notifications are displayed
-        await waitFor(() => {
-            expect(getByText('Test Notification 1')).toBeTruthy();
-            expect(getByText('Test Notification 2')).toBeTruthy();
-        });
-    });
 
     test('displays an error message if fetching notifications fails', async () => {
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();

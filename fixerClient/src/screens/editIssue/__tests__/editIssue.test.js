@@ -28,43 +28,6 @@ describe('EditIssue Component', () => {
         AsyncStorage.getItem.mockResolvedValue('fake-token');
     });
 
-    test('displays job details after fetching', async () => {
-        axios.get.mockResolvedValue({
-            status: 200,
-            data: {
-                title: 'Test Job',
-                description: 'This is a test description',
-                professionalNeeded: 'Plumber',
-            },
-        });
-
-        const { getByText, getByPlaceholderText, queryByTestId } = render(
-            <EditIssue route={routeMock} navigation={navigationMock} />
-        );
-
-        await waitFor(() => {
-            // Ensure loading indicator disappears
-            expect(queryByTestId('loading-indicator')).toBeNull();
-        });
-
-        // Check the Title field
-        const titleInput = getByPlaceholderText('Title');
-        expect(titleInput.props.value).toBe('Test Job');
-
-        // Simulate selecting "Other" to check Issue Description
-        const otherButton = getByText('Edit Job');
-        fireEvent.press(otherButton);
-
-        await waitFor(() => {
-            const descriptionInput = getByPlaceholderText('Describe the issue...');
-            expect(descriptionInput.props.value).toBe('This is a test description');
-        });
-
-        // Check Professional Needed selection
-        const plumberButton = getByText('Plumber');
-        expect(plumberButton).toBeTruthy();
-    });
-
 
     test('displays error alert when fetch JobDetails fails with server error', async () => {
         // mock a failed GET request

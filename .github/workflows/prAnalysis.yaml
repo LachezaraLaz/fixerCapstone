@@ -23,7 +23,6 @@ jobs:
       - name: npx jest
         run: npx jest || true
         working-directory: professionalClient
-        continue-on-error: true
 
       - name: Jest Annotations & Coverage
         uses: ArtiomTr/jest-coverage-report-action@v2.3.1
@@ -31,4 +30,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           working-directory: professionalClient
-          continue-on-error: true
+          annotations: none

@@ -1,0 +1,36 @@
+name: client-global-coverage
+
+on:
+  workflow_dispatch:
+  pull_request_target:
+    types: [opened, synchronize, reopened] # Optional: specify events to trigger
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }} # Use the current branch
+
+      - name: Install Dependencies
+        run: npm install
+        working-directory: fixerClient
+
+      - name: List Installed Packages
+        run: npm list
+        working-directory: fixerClient
+
+      - name: Run Jest Tests
+        run: npx jest || true
+        working-directory: fixerClient
+        continue-on-error: true
+
+      - name: Jest Annotations & Coverage
+        uses: ArtiomTr/jest-coverage-report-action@v2.3.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          working-directory: fixerClient
+          continue-on-error: true

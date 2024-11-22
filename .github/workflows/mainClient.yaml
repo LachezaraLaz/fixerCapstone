@@ -1,4 +1,4 @@
-name: suite-folded-ctrf
+name: suite-client-folded-ctrf
 
 on:
   workflow_dispatch:

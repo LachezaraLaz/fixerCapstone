@@ -11,19 +11,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }} # Use the current branch
+
       - name: Install Dependencies
         run: npm install
         working-directory: professionalClient
+
       - name: List Installed Packages
         run: npm list
         working-directory: professionalClient
-      - name: npx jest
+
+      - name: Run Jest Tests
         run: npx jest || true
         working-directory: professionalClient
+
       - name: Publish CTRF Suite Folded Summary
-        run: npx github-actions-ctrf suite-folded path-to-your-ctrf-report.json
+        run: npx github-actions-ctrf suite-folded professionalClient/ctrf/ctrf-report.json
         if: always()
-      - name: Publish CTRF pull request comment
+
+      - name: Publish CTRF Pull Request Comment
         run: npx github-actions-ctrf pull-request professionalClient/ctrf/ctrf-report.json
         if: always()
         env:

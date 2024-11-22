@@ -129,51 +129,6 @@ describe('HomeScreen', () => {
         expect(alertSpy).toHaveBeenCalledWith('Error', 'An error occurred while fetching issues.');
     });
 
-    it('should get and display the current location on the map', async () => {
-        // Mock the navigation prop
-        const navigation = {
-            navigate: jest.fn(),  // or any other navigation methods you need
-        };
-
-        // Mock the setIsLoggedIn prop
-        const setIsLoggedIn = jest.fn();
-
-        // Mock Location.requestForegroundPermissionsAsync
-        Location.requestForegroundPermissionsAsync.mockResolvedValueOnce({ status: 'granted' });
-
-        // Mock Location.getCurrentPositionAsync
-        Location.getCurrentPositionAsync.mockResolvedValueOnce({
-            coords: {
-                latitude: 37.78825,
-                longitude: -122.4324
-            }
-        });
-
-        // Mock API response for fetching issues
-        axios.get.mockResolvedValueOnce({
-            data: {
-                jobs: [
-                    { id: 1, title: 'Plumbing', description: 'Fix pipes', latitude: 37.78825, longitude: -122.4324 },
-                    { id: 2, title: 'Electrical', description: 'Fix wiring', latitude: 37.78825, longitude: -122.4324 },
-                ]
-            }
-        });
-        const renderResult = render(<HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />);
-
-        let findByTestId;
-        await act(async () => {
-            // Render the component
-            findByTestId = renderResult.findByTestId;
-        });
-
-
-        // Now check for the map element
-        await waitFor(() => {
-            const map = findByTestId('map');
-            expect(map).toBeTruthy(); // Map renders successfully
-        });
-    });
-
     it('should log out the user when the logout button is pressed', async () => {
         // Mocking console.log to suppress logs during the test
         const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});

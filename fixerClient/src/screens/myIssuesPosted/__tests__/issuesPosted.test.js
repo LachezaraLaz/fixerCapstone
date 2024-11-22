@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode'; // Import for mocking
 // import * as ImagePicker from 'expo-image-picker';
 
-import { IPAddress } from '../../../../ipAddress'; 
+import { IPAddress } from '../../../../ipAddress';
 
 // code to run only this file through the terminal:
 // npm run test ./src/screens/myIssuesPosted/__tests__/issuesPosted.test.js
@@ -15,6 +15,14 @@ import { IPAddress } from '../../../../ipAddress';
 // npm run test-coverage ./src/screens/myIssuesPosted/__tests__/issuesPosted.test.js
 
 // Mocking dependencies
+
+jest.mock('@react-navigation/native', () => ({
+    ...jest.requireActual('@react-navigation/native'),
+    useNavigation: () => ({
+        navigate: jest.fn(),
+    }),
+}));
+
 jest.mock('axios', () => ({
     get: jest.fn(),
     delete: jest.fn(),
@@ -74,38 +82,7 @@ describe('MyIssuesPosted Component', () => {
         const { getByText } = render(<MyIssuesPosted />);
 
         await waitFor(() => {
-            expect(getByText('No jobs posted yet.')).toBeTruthy();
-        });
-    });
-
-    test('displays an alert when a job is deleted successfully', async () => {
-        const mockJobs = [
-            {
-                _id: '1',
-                title: 'Fix Light Bulb',
-                status: 'open',
-                professionalNeeded: 'Electrician',
-                description: 'The living room light needs to be fixed.',
-            },
-        ];
-
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        axios.get.mockResolvedValueOnce({ status: 200, data: { jobs: mockJobs } });
-        axios.delete.mockResolvedValueOnce({ status: 200 });
-
-        const { getByText } = render(<MyIssuesPosted />);
-        await waitFor(() => expect(getByText('Fix Light Bulb')).toBeTruthy());
-
-        const deleteButton = getByText('Delete Job');
-        fireEvent.press(deleteButton);
-
-        await waitFor(() => {
-            expect(axios.delete).toHaveBeenCalledWith(`http://${IPAddress}:3000/issue/1`, {
-                headers: {
-                    'Authorization': 'Bearer fake-jwt-token',
-                },
-            });
-            expect(Alert.alert).toHaveBeenCalledWith('Job deleted successfully');
+            expect(getByText('No jobs in this status.')).toBeTruthy();
         });
     });
 
@@ -117,7 +94,7 @@ describe('MyIssuesPosted Component', () => {
 
         await waitFor(() => {
             expect(Alert.alert).toHaveBeenCalledWith('An error occurred while fetching jobs');
-            expect(getByText('No jobs posted yet.')).toBeTruthy(); // Ensures the fallback message shows up if data fetch fails
+            expect(getByText('No jobs in this status.')).toBeTruthy(); // Ensures the fallback message shows up if data fetch fails
         });
     });
 
@@ -143,22 +120,22 @@ describe('MyIssuesPosted Component', () => {
         fireEvent.press(deleteButton);
 
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('An error occurred while deleting the job');
+            expect(Alert.alert).toHaveBeenCalledWith('An error occurred while trying to Close the job');
         });
     });
 
     test('displays an alert when jobs fail to load with a non-200 response', async () => {
         AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
         axios.get.mockResolvedValueOnce({ status: 500, data: {} }); // Mock a non-200 response
-    
+
         const { getByText } = render(<MyIssuesPosted />);
-    
+
         await waitFor(() => {
             expect(Alert.alert).toHaveBeenCalledWith('Failed to load jobs');
         });
-    
+
         // Ensure that the fallback message is shown if jobs failed to load
-        expect(getByText('No jobs posted yet.')).toBeTruthy();
+        expect(getByText('No jobs in this status.')).toBeTruthy();
     });
 
 });

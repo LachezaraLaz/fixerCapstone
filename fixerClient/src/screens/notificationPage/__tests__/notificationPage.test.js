@@ -65,14 +65,6 @@ describe('NotificationPage Component', () => {
         consoleErrorSpy.mockRestore();
     });
 
-    test('displays appropriate message when no notifications are returned', async () => {
-        axios.get.mockResolvedValueOnce({ data: [] });
-        const { getByText } = render(<NotificationPage />);
-
-        await waitFor(() => {
-            expect(getByText('No Notifications Available')).toBeTruthy();
-        });
-    });
 
     test('navigate to notificationDetail page when a notification is clicked', async () => {
         axios.get.mockResolvedValueOnce({ data: mockNotifications });

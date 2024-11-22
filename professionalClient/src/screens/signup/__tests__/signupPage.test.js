@@ -35,10 +35,10 @@ test('shows "Passwords do not match" alert when passwords do not match', async (
     fireEvent.changeText(getByPlaceholderText('Email'), 'test@example.com');
     fireEvent.changeText(getByPlaceholderText('First Name'), 'John');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
-    fireEvent.changeText(getByPlaceholderText('House number and Street'), '1234 Elm Street');
-    fireEvent.changeText(getByPlaceholderText('Postal Code'), '90210');
-    fireEvent.changeText(getByPlaceholderText('Province or State'), 'CA');
-    fireEvent.changeText(getByPlaceholderText('Country'), 'USA');
+    //fireEvent.changeText(getByPlaceholderText('House number and Street'), '1234 Elm Street');
+    //fireEvent.changeText(getByPlaceholderText('Postal Code'), '90210');
+    //fireEvent.changeText(getByPlaceholderText('Province or State'), 'CA');
+    //fireEvent.changeText(getByPlaceholderText('Country'), 'USA');
     fireEvent.changeText(getByPlaceholderText('Password'), '123456');
     fireEvent.changeText(getByPlaceholderText('Confirm Password'), '654321');
     const signUpButton = getByTestId('sign-up-button');
@@ -57,10 +57,10 @@ test('successfully creates an account', async () => {
     fireEvent.changeText(getByPlaceholderText('Email'), 'user@example.com');
     fireEvent.changeText(getByPlaceholderText('First Name'), 'John');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
-    fireEvent.changeText(getByPlaceholderText('House number and Street'), '1234 Elm Street');
-    fireEvent.changeText(getByPlaceholderText('Postal Code'), '90210');
-    fireEvent.changeText(getByPlaceholderText('Province or State'), 'CA');
-    fireEvent.changeText(getByPlaceholderText('Country'), 'USA');
+    //fireEvent.changeText(getByPlaceholderText('House number and Street'), '1234 Elm Street');
+    //fireEvent.changeText(getByPlaceholderText('Postal Code'), '90210');
+    //fireEvent.changeText(getByPlaceholderText('Province or State'), 'CA');
+    //fireEvent.changeText(getByPlaceholderText('Country'), 'USA');
     fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
     fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
 
@@ -70,11 +70,11 @@ test('successfully creates an account', async () => {
 
     // Assertions
     await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith("Account created successfully");
+        expect(Alert.alert).toHaveBeenCalledWith("Account created successfully. An email was sent to verify your email.");
     });
 });
 
-test('displays "User already exists" alert when email is already in use', async () => {
+test('displays "Account already exists" alert when email is already in use', async () => {
     const mockNavigation = { navigate: jest.fn() };
     const { getByPlaceholderText, getByTestId } = render(<SignUpPage navigation={mockNavigation} />);
 
@@ -82,7 +82,7 @@ test('displays "User already exists" alert when email is already in use', async 
     axios.post.mockRejectedValueOnce({
         response: {
             status: 400,  // Status code for existing email as per the component
-            data: { message: 'User already exists' }
+            data: { message: 'Account already exists' }
         }
     });
 
@@ -92,10 +92,10 @@ test('displays "User already exists" alert when email is already in use', async 
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
     fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
     fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
-    fireEvent.changeText(getByPlaceholderText('House number and Street'), '4321 Pine Street');
-    fireEvent.changeText(getByPlaceholderText('Postal Code'), '30004');
-    fireEvent.changeText(getByPlaceholderText('Province or State'), 'GA');
-    fireEvent.changeText(getByPlaceholderText('Country'), 'USA');
+    //fireEvent.changeText(getByPlaceholderText('House number and Street'), '4321 Pine Street');
+    //fireEvent.changeText(getByPlaceholderText('Postal Code'), '30004');
+    //fireEvent.changeText(getByPlaceholderText('Province or State'), 'GA');
+    //fireEvent.changeText(getByPlaceholderText('Country'), 'USA');
 
     // Attempt to sign up
     const signUpButton = getByTestId('sign-up-button');
@@ -103,16 +103,12 @@ test('displays "User already exists" alert when email is already in use', async 
 
     // Assertions
     await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith('http://10.0.0.56:3000/client/register', {
+        expect(axios.post).toHaveBeenCalledWith('http://IP-ADDRESS:3000/professional/register', {
             email: 'existing@example.com',
             firstName: 'Jane',
             lastName: 'Doe',
-            password: 'password123',
-            street: '4321 Pine Street',
-            postalCode: '30004',
-            provinceOrState: 'GA',
-            country: 'USA'
+            password: 'password123'
         });
-        expect(Alert.alert).toHaveBeenCalledWith("Error", "User already exists");
+        expect(Alert.alert).toHaveBeenCalledWith("Error", "Account already exists");
     });
 });

@@ -17,6 +17,10 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 jest.spyOn(Alert, 'alert');
 
+beforeEach(() => {
+    jest.clearAllMocks();
+});
+
 test('displays an error alert when sign in fields are empty', async () => {
     const setIsLoggedIn = jest.fn();
     const mockNavigation = { navigate: jest.fn() };

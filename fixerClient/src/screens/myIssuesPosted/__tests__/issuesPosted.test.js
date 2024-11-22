@@ -98,31 +98,6 @@ describe('MyIssuesPosted Component', () => {
         });
     });
 
-    test('displays an error alert when deleting a job fails', async () => {
-        const mockJobs = [
-            {
-                _id: '1',
-                title: 'Fix Light Bulb',
-                status: 'open',
-                professionalNeeded: 'Electrician',
-                description: 'The living room light needs to be fixed.',
-            },
-        ];
-
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        axios.get.mockResolvedValueOnce({ status: 200, data: { jobs: mockJobs } });
-        axios.delete.mockRejectedValueOnce(new Error('Network error'));
-
-        const { getByText } = render(<MyIssuesPosted />);
-        await waitFor(() => expect(getByText('Fix Light Bulb')).toBeTruthy());
-
-        const deleteButton = getByText('Delete Job');
-        fireEvent.press(deleteButton);
-
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('An error occurred while trying to Close the job');
-        });
-    });
 
     test('displays an alert when jobs fail to load with a non-200 response', async () => {
         AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');

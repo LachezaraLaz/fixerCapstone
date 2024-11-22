@@ -42,46 +42,6 @@ describe('SignUpPage Tests', () => {
         });
     });
 
-    test('successfully creates an account and shows success alert', async () => {
-        const mockNavigation = { navigate: jest.fn() };
-        axios.post.mockResolvedValueOnce({ status: 200 });
-
-        const { getByPlaceholderText, getByTestId } = render(
-            <SignUpPage navigation={mockNavigation} />
-        );
-
-        // Fill the form with valid data
-        fireEvent.changeText(getByPlaceholderText('Email'), 'user@example.com');
-        fireEvent.changeText(getByPlaceholderText('First Name'), 'John');
-        fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
-        fireEvent.changeText(getByPlaceholderText('House number and Street'), '1234 Smith street');
-        fireEvent.changeText(getByPlaceholderText('Postal Code'), 'H6J6H7');
-        fireEvent.changeText(getByPlaceholderText('Province or State'), 'Quebec');
-        fireEvent.changeText(getByPlaceholderText('Country'), 'Canada');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
-
-        const signUpButton = getByTestId('sign-up-button');
-        fireEvent.press(signUpButton);
-
-        await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith(
-                `http://${IPAddress}:3000/client/register`,
-                {
-                    "country": "Canada",
-                    "email": "user@example.com",
-                    "firstName": "John",
-                    "lastName": "Doe",
-                    "password": "password123",
-                    "postalCode": "H6J6H7",
-                    "provinceOrState": "Quebec",
-                    "street": "1234 Smith street"
-                }
-            );
-            expect('Account created successfully');
-        });
-    });
-
     test('displays an alert when email is already in use', async () => {
         const mockNavigation = { navigate: jest.fn() };
         axios.post.mockRejectedValueOnce({

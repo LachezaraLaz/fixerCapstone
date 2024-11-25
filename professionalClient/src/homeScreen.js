@@ -62,7 +62,17 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     };
 
     const handleIssueClick = (issue) => {
-        Alert.alert(issue.title, issue.description);
+        Alert.alert(
+            issue.title,
+            issue.description,
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "See More",
+                    onPress: () => navigation.navigate('contractOffer', { issue })
+                }
+            ]
+        );
     };
 
     if (loading) {

@@ -161,7 +161,7 @@ This will start the project and output a QR code. Scan this QR code with your ph
     <td><a href="https://github.com/KarinSarkis">KarinSarkis</a></td>
   </tr>
   <tr>
-    <td>Kassem </td>
+    <td>Kassem El-Zoghbi</td>
     <td>40174145</td>
     <td>NvmKassem</td>
   </tr>

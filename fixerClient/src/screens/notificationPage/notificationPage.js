@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 const NotificationPage = () => {
-    const [notifications, setNotifications] = useState([]);  // Store notifications
-    const [loading, setLoading] = useState(false);           // Track loading state
-    const [hasMore, setHasMore] = useState(true);             // Track if there are more notifications to load
-    const [page, setPage] = useState(1);                      // Track current page
-    const navigation = useNavigation();                       // Navigation hook
+    const [notifications, setNotifications] = useState([]); // Store notifications
+    const [loading, setLoading] = useState(false);          // Track loading state
+    const [hasMore, setHasMore] = useState(true);           // Track if more notifications are available
+    const [page, setPage] = useState(1);                    // Current page for "Load More"
+    const navigation = useNavigation();                     // Navigation hook
 
-    // Fetch initial notifications
     useEffect(() => {
         fetchNotifications();
     }, []);
 
-    // Fetch initial set of notifications
     const fetchNotifications = async () => {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
@@ -32,39 +30,53 @@ const NotificationPage = () => {
         }
     };
 
-    // Fetch more notifications (load more functionality)
     const fetchMoreNotifications = async () => {
-        if (loading || !hasMore) return;  // Prevent multiple clicks and if no more notifications to load
-        setLoading(true);
+        if (loading || !hasMore) return;
 
+        setLoading(true);
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get(
-                `http://192.168.1.143:3000/notification/history`,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
+            const response = await axios.get('http://192.168.1.143:3000/notification/history', {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { page, limit: 5 }, // Fetch 5 notifications at a time
+            });
 
-            if (response.data.length > 0) {
-                // If we receive new notifications, append them to the list
-                setNotifications(prevNotifications => [
-                    ...prevNotifications,
-                    ...response.data,
-                ]);
-                setPage(prevPage => prevPage + 1);  // Increment page number for next fetch
+            if (Array.isArray(response.data) && response.data.length > 0) {
+                const newNotifications = response.data.filter(
+                    (newNotification) => !notifications.some((notif) => notif._id === newNotification._id)
+                );
+                setNotifications((prevNotifications) => [...prevNotifications, ...newNotifications]);
+                setPage((prevPage) => prevPage + 1);
             } else {
-                setHasMore(false);  // No more notifications to load
+                setHasMore(false); // No more notifications
             }
         } catch (error) {
             console.error('Error fetching more notifications:', error.message);
+            setHasMore(false);
         } finally {
             setLoading(false);
         }
     };
 
-    // Render each notification
-    const renderItem = ({ item }) => (
+    const toggleReadStatus = async (id, isRead) => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+            await axios.patch(
+                `http://192.168.1.143:3000/notification/${id}/read`,
+                { isRead: !isRead },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setNotifications((prevNotifications) =>
+                prevNotifications.map((notification) =>
+                    notification._id === id ? { ...notification, isRead: !isRead } : notification
+                )
+            );
+        } catch (error) {
+            console.error('Error updating notification status:', error.message);
+        }
+    };
+
+    const renderNotification = ({ item }) => (
         <TouchableOpacity
             onPress={() => {
                 toggleReadStatus(item._id, item.isRead);
@@ -78,25 +90,6 @@ const NotificationPage = () => {
         </TouchableOpacity>
     );
 
-    // Mark notification as read/unread
-    const toggleReadStatus = async (id, isRead) => {
-        const token = await AsyncStorage.getItem('token');
-        try {
-            await axios.patch(
-                `http://192.168.1.143:3000/notification/${id}/read`,
-                { isRead: !isRead },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            setNotifications(prevNotifications =>
-                prevNotifications.map(notification =>
-                    notification._id === id ? { ...notification, isRead: !isRead } : notification
-                )
-            );
-        } catch (error) {
-            console.error('Error updating notification status:', error);
-        }
-    };
-
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Notifications</Text>
@@ -106,24 +99,23 @@ const NotificationPage = () => {
                 <FlatList
                     data={notifications}
                     keyExtractor={(item) => item._id}
-                    renderItem={renderItem}
+                    renderItem={renderNotification}
+                    ListFooterComponent={
+                        hasMore ? (
+                            <TouchableOpacity
+                                style={styles.loadMoreButton}
+                                onPress={fetchMoreNotifications}
+                                disabled={loading}
+                            >
+                                <Text style={styles.loadMoreText}>
+                                    {loading ? 'Loading...' : 'Load More'}
+                                </Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <Text style={styles.noMoreNotifications}>No more notifications</Text>
+                        )
+                    }
                 />
-            )}
-
-            {hasMore && (
-                <TouchableOpacity
-                    style={styles.loadMoreButton}
-                    onPress={fetchMoreNotifications}
-                    disabled={loading}
-                >
-                    <Text style={styles.loadMoreText}>
-                        {loading ? 'Loading...' : 'Load More'}
-                    </Text>
-                </TouchableOpacity>
-            )}
-
-            {!hasMore && (
-                <Text style={styles.noMoreNotifications}>No more notifications</Text>
             )}
         </View>
     );

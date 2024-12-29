@@ -18,7 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { CommonActions } from '@react-navigation/native';
 
 import { IPAddress } from '../../../ipAddress';
@@ -82,7 +82,7 @@ export default function CreateIssue({ navigation }) {
                 });
             }
 
-            const response = await axios.post(`http://${IPAddress}:3000/issue/create`, formData, {
+            const response = await axios.post(`http://192.168.1.143:3000/issue/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`

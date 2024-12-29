@@ -9,6 +9,8 @@ const issueRoute = require('./routes/getIssuesRoute');
 const resetPasswordRouter = require('./routes/passwordResetRoute');
 const createIssueRouter = require('./routes/createIssueRoute');
 const notificationRouter = require('./routes/notificationRoute');
+const contractOfferRouter = require('./routes/contractOfferRoute');
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -27,6 +29,7 @@ app.use('/professional', professionalClientRoute.professionalRouter);
 app.use('/client', fixerClientRoute.fixerClientRouter);
 app.use('/issue', createIssueRoute.createIssueRouter);
 app.use('/issues', issueRoute.issueRouter);
+app.use('/professional/contractOffer', contractOfferRouter.contractOfferRouter);
 app.use('/reset',resetPasswordRouter.resetPasswordRouter);
 // Email verification route
 app.use('/verify-email', professionalClientRoute.professionalRouter);

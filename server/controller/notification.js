@@ -1,9 +1,9 @@
-const Notification = require('../model/notificationModel'); 
+const NotificationHistory = require('../model/notificationHistoryModel');
+const Notification = require('../model/notificationModel');
 
-// Controller to get all notifications for the authenticated user
+// Existing controller to get current notifications
 const getNotifications = async (req, res) => {
     try {
-        // Fetch notifications for the user from the Notification model
         const notifications = await Notification.find({ userId: req.user.id }).sort({ createdAt: -1 });
         res.json(notifications);
     } catch (error) {
@@ -12,13 +12,36 @@ const getNotifications = async (req, res) => {
     }
 };
 
+// Controller to get more notifications from notificationHistory with pagination
+const getNotificationHistory = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
 
-// Controller to mark a notification as read
+    try {
+        const notifications = await NotificationHistory.find({ userId: req.user.id })
+            .skip(skip)
+            .limit(parseInt(limit))
+            .sort({ createdAt: -1 });
+
+        console.log('Notifications fetched:', notifications); // Debugging log
+
+        if (notifications.length === 0) {
+            return res.status(200).json({ message: 'No more notifications' });
+        }
+
+        res.status(200).json(notifications);
+    } catch (error) {
+        console.error('Error fetching notifications history:', error);
+        res.status(500).json({ message: 'Failed to fetch notifications history' });
+    }
+};
+
+
+// Existing controller to mark a notification as read
 const markAsRead = async (req, res) => {
     const { id } = req.params;
 
     try {
-        // Update the notification's read status
         const notification = await Notification.findByIdAndUpdate(
             id,
             { isRead: true },
@@ -36,7 +59,6 @@ const markAsRead = async (req, res) => {
     }
 };
 
-
 // Optional controller to create a notification if needed
 const createNotification = async (req, res) => {
     const { userId, message } = req.body;
@@ -45,7 +67,7 @@ const createNotification = async (req, res) => {
         const notification = new Notification({
             userId,
             message,
-            isRead: false,  // Corrected field name
+            isRead: false,
             createdAt: new Date(),
         });
 
@@ -58,5 +80,4 @@ const createNotification = async (req, res) => {
     }
 };
 
-
-module.exports = { getNotifications, markAsRead, createNotification };
+module.exports = { getNotifications, markAsRead, createNotification, getNotificationHistory };

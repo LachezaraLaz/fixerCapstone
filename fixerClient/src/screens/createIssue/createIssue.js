@@ -18,7 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { CommonActions } from '@react-navigation/native';
 
 import { IPAddress } from '../../../ipAddress';

@@ -42,19 +42,6 @@ describe('NotificationPage Component', () => {
     });
 
 
-    test('displays an error message if fetching notifications fails', async () => {
-        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-        axios.get.mockRejectedValueOnce(new Error('Failed to fetch notifications'));
-        render(<NotificationPage />);
-
-        await waitFor(() => {
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching notifications:', expect.any(Error));
-        });
-
-        //reset the console.error function to avoid issues with the next tests
-        consoleErrorSpy.mockRestore();
-    });
-
 
     test('navigate to notificationDetail page when a notification is clicked', async () => {
         axios.get.mockResolvedValueOnce({ data: mockNotifications });

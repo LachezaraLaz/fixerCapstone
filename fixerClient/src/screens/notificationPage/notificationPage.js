@@ -19,7 +19,7 @@ const NotificationPage = () => {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get('http://192.168.1.143:3000/notification', {
+            const response = await axios.get('http://${IPAddress}:3000/notification', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setNotifications(response.data);
@@ -36,7 +36,7 @@ const NotificationPage = () => {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get('http://192.168.1.143:3000/notification/history', {
+            const response = await axios.get('http://${IPAddress}:3000/notification/history', {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { page, limit: 5 }, // Fetch 5 notifications at a time
             });
@@ -62,7 +62,7 @@ const NotificationPage = () => {
         const token = await AsyncStorage.getItem('token');
         try {
             await axios.patch(
-                `http://192.168.1.143:3000/notification/${id}/read`,
+                `http://${IPAddress}:3000/notification/${id}/read`,
                 { isRead: !isRead },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

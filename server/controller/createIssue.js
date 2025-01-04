@@ -1,34 +1,27 @@
+const Notification = require('../model/notificationModel');
 const { Jobs } = require('../model/createIssueModel');
-const { fixerClient } = require('../model/fixerClientModel'); // Import the fixerClient model
-const { getCoordinatesFromAddress } = require('../services/geoCodingService'); // Import the geocoding function
+const { fixerClient } = require('../model/fixerClientModel');
+const { getCoordinatesFromAddress } = require('../services/geoCodingService');
 
-// Function to create a new issue
 const createIssue = async (req, res) => {
-    console.log('Received request body:', req.body);
-
     const { title, description, professionalNeeded, email, status = 'open' } = req.body;
     let imageUrl = null;
 
-    // Validate required fields
     if (!title || !description || !professionalNeeded) {
         return res.status(400).json({ message: 'Some required fields are missing.' });
     }
 
     if (req.file) {
-        imageUrl = req.file.path;  // This is the Cloudinary URL from multer
-        console.log('Uploaded image URL:', imageUrl);
+        imageUrl = req.file.path;
     }
 
     try {
-        // Fetch client info to obtain address for geolocation
         const clientInfo = await fixerClient.findOne({ email });
         if (!clientInfo) {
             return res.status(404).json({ message: 'Client information not found' });
         }
 
         const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
-        console.log('Address for geocoding:', address);
-
         const { latitude, longitude } = await getCoordinatesFromAddress(address);
 
         const newIssue = await Jobs.create({
@@ -42,7 +35,14 @@ const createIssue = async (req, res) => {
             longitude
         });
 
-        console.log('Issue created successfully:', newIssue);
+        // Create a notification for the issue creator
+        const notification = new Notification({
+            userId: clientInfo._id,  // Use the client's ID
+            message: `Your issue titled "${title}" has been created successfully.`,
+            isRead: false
+        });
+        await notification.save();
+
         res.status(201).json({ message: 'Issue created successfully', issue: newIssue });
     } catch (error) {
         console.error('Error occurred while creating issue:', error);

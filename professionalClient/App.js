@@ -14,6 +14,7 @@ import EnterPin from "./src/screens/signin/EnterPinPage";
 import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage";
 import ProfessionalNavBar from './src/ProfessionalNavBarComponent';
 import HomeScreen from "./src/homeScreen";
+import ContractOffer from "./src/screens/contractOffer/contractOffer";
 import NotificationPage from './src/screens/notificationPage/notificationPage';
 import NotificationDetail from './src/screens/notificationDetail/notificationDetail';
 import { useEffect, useState } from "react";
@@ -76,6 +77,7 @@ export default function App() {
                         {/* Additional screens accessible from MainTabs */}
 
                         <Stack.Screen name="ProfilePage" component={ProfileScreen} />
+                        <Stack.Screen name="ContractOffer" component={ContractOffer} />
                         <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
                         <Stack.Screen name="UploadID" component={UploadID} />
                         <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />

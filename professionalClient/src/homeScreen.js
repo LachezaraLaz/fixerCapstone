@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Modal, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../style/homeScreenStyle';
-import { IPAddress } from '../ipAddress';
+// import { IPAddress } from '../ipAddress';
 import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,12 +12,22 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
+    const [selectedIssue, setSelectedIssue] = React.useState(null);
+    const [isModalVisible, setIsModalVisible] = React.useState(false);
+    const [price, setPrice] = React.useState('');
+    const [selectedFilters, setSelectedFilters] = React.useState([]);
+    const [typesOfWork, setTypesOfWork] = React.useState([]);
     const scrollY = React.useRef(new Animated.Value(0)).current;
 
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`http://${IPAddress}:3000/issues`);
+            const response = await axios.get(`http://192.168.2.16:3000/issues`);
             setIssues(response.data.jobs);
+
+            const uniqueTypes = [
+                ...new Set(response.data.jobs.map((issue) => issue.professionalNeeded)),
+            ];
+            setTypesOfWork(uniqueTypes);
         } catch (error) {
             console.error('Error fetching issues:', error);
             Alert.alert('Error', 'An error occurred while fetching issues.');
@@ -49,6 +59,14 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         getCurrentLocation();
     }, []);
 
+    const handleFilterSelect = (type) => {
+        if (selectedFilters.includes(type)) {
+            setSelectedFilters(selectedFilters.filter((filter) => filter !== type));
+        } else {
+            setSelectedFilters([...selectedFilters, type]);
+        }
+    };
+
     const handleLogout = async () => {
         try {
             await AsyncStorage.removeItem('token');
@@ -62,18 +80,70 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     };
 
     const handleIssueClick = (issue) => {
-        Alert.alert(
-            issue.title,
-            issue.description,
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "See More",
-                    onPress: () => navigation.navigate('contractOffer', { issue })
-                }
-            ]
-        );
+        setSelectedIssue(issue);
+        setIsModalVisible(true);
     };
+
+    const closeModal = () => {
+        setSelectedIssue(null);
+        setPrice('');
+        setIsModalVisible(false);
+    };
+
+    const submitQuote = async () => {
+        if (!price) {
+            Alert.alert('Error', 'Please enter a price before submitting the quote.');
+            return;
+        }
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('Error', 'User token not found.');
+                return;
+            }
+            console.log('selectedIssue:', selectedIssue);
+
+            if (!selectedIssue || !selectedIssue.userEmail) {
+                console.log('clientEmail is null or undefined');
+                Alert.alert('Error', 'Unable to retrieve client email from the selected issue.');
+                return;
+            }
+
+            const clientEmail = selectedIssue.userEmail; // Use userEmail from the schema
+            const issueId = selectedIssue._id;
+
+            const response = await axios.post(
+                `http://192.168.2.16:3000/quotes/create`,
+                { clientEmail, price, issueId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 201) {
+                Alert.alert('Success', 'Quote submitted successfully!');
+                closeModal();
+            } else {
+                Alert.alert('Error', 'Failed to submit the quote.');
+            }
+        } catch (error) {
+            console.error('Error submitting quote:', error);
+            Alert.alert('Error', 'An error occurred while submitting the quote.');
+        }
+    };
+
+
+
+
+    const navigateToIssueDetails = () => {
+        if (selectedIssue) {
+            closeModal();
+            navigation.navigate('ContractOffer', { issue: selectedIssue });
+        }
+    };
+
+    const filteredIssues = selectedFilters.length > 0
+        ? issues.filter(issue => selectedFilters.includes(issue.professionalNeeded))
+        : issues;
 
     if (loading) {
         return (
@@ -83,19 +153,14 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         );
     }
 
-    const plumbingIssues = issues.filter(issue => issue.professionalNeeded === 'plumber');
-    const electricalIssues = issues.filter(issue => issue.professionalNeeded === 'electrician');
-
-
     const mapHeight = scrollY.interpolate({
-        inputRange: [0, 500], // Interval of scrolling
-        outputRange: [400, 150], // Height of map from 400 to 150
-        extrapolate: 'clamp' // dont let surpass limit
+        inputRange: [0, 500],
+        outputRange: [400, 150],
+        extrapolate: 'clamp',
     });
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* Header */}
             <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16 }]}>
                 <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
                     <Ionicons name="person-circle" size={32} color="#333" />
@@ -105,16 +170,66 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 </TouchableOpacity>
             </View>
 
-            {/* Scrollable Map */}
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.filterContainer}>
+                {typesOfWork.map((type, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        onPress={() => handleFilterSelect(type)}
+                        style={[
+                            styles.filterButton,
+                            selectedFilters.includes(type) && styles.filterButtonSelected,
+                        ]}
+                    >
+                        <Text style={styles.filterButtonText}>{type}</Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+
+            <Modal
+                visible={isModalVisible}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={closeModal}
+            >
+                <View style={styles.overlay}>
+                    <View style={styles.modalContainer}>
+                        <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                            <Ionicons name="close-outline" size={24} color="#333" />
+                        </TouchableOpacity>
+                        <Text style={styles.modalTitle}>{selectedIssue?.title}</Text>
+                        <Text style={styles.modalDescription}>{selectedIssue?.description}</Text>
+                        <Text style={styles.modalStatus}>Status: {selectedIssue?.status}</Text>
+                        <TextInput
+                            style={styles.priceInput}
+                            placeholder="Enter price for this issue"
+                            keyboardType="numeric"
+                            value={price}
+                            onChangeText={setPrice}
+                        />
+
+                        <View style={styles.buttonsContainer}>
+                            <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
+                                <Text style={styles.buttonText}>Submit</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={navigateToIssueDetails} style={styles.moreInfoButton}>
+                                <Text style={styles.buttonText}>More Info</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
             <Animated.ScrollView
                 contentContainerStyle={{ paddingBottom: 100 }}
                 onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],  // Mise à jour du scrollY
-                    { useNativeDriver: false } // Désactivation du native driver pour éviter des erreurs
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                    { useNativeDriver: false }
                 )}
-                scrollEventThrottle={16}  // Améliore la réactivité du défilement
+                scrollEventThrottle={16}
             >
-                {/* Section map */}
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
                     <MapView
                         style={styles.map}
@@ -132,7 +247,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
-                        {issues.map((issue) => (
+                        {filteredIssues.map((issue) => (
                             <Marker
                                 key={issue.id}
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
@@ -144,10 +259,9 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                     </MapView>
                 </Animated.View>
 
-                {/* Plumbing Issues Section */}
                 <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Plumbing Issues</Text>
-                    {plumbingIssues.map((issue) => (
+                    <Text style={styles.sectionTitle}>Issues</Text>
+                    {filteredIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue.id}
                             style={styles.card}
@@ -159,31 +273,10 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                     ))}
                 </View>
 
-                {/* Electrical Issues Section */}
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Electrical Issues</Text>
-                    {electricalIssues.map((issue) => (
-                        <TouchableOpacity
-                            key={issue.id}
-                            style={styles.card}
-                            onPress={() => handleIssueClick(issue)}
-                        >
-                            <Text style={styles.cardTitle}>{issue.title}</Text>
-                            <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-
-                {/* Logout Button */}
                 <View style={styles.logoutContainer}>
                     <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                         <Text style={styles.logoutText}>Logout</Text>
                     </TouchableOpacity>
-                </View>
-
-                {/* Footer - Stays above the navbar */}
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.</Text>
                 </View>
             </Animated.ScrollView>
         </SafeAreaView>

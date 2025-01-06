@@ -5,7 +5,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';  // To retrieve JWT
 import { IPAddress } from '../../../ipAddress';
 
-const contractOffer = ( issue ) => {
+const ContractOffer = ( issue ) => {
     // const [contract, setContract] = useState('');
     const [fee, setFee] = useState('');
     const navigation = useNavigation();
@@ -68,4 +68,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default contractOffer;
+export default ContractOffer;

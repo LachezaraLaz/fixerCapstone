@@ -7,8 +7,13 @@ import { styles } from '../../../style/contractOffer/contractOfferStyle';
 export default function ContractOffer({ route, navigation }) {
     const { issue } = route.params;
     const [price, setPrice] = React.useState('');
-    const [selectedIssue] = React.useState(null);
+    const [selectedIssue, setSelectedIssue] = React.useState(null);
 
+    React.useEffect(() => {
+        if (issue) {
+            setSelectedIssue(issue);
+        }
+    }, [issue]);
 
     const submitQuote = async () => {
         if (!price) {

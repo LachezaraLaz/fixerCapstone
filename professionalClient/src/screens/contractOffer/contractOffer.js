@@ -39,7 +39,7 @@ export default function ContractOffer({ route, navigation }) {
             const issueId = selectedIssue._id;
 
             const response = await axios.post(
-                `http://192.168.2.16:3000/quotes/create`,
+                `http://${IPAddress}:3000/quotes/create`,
                 { clientEmail, price, issueId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -46,6 +46,7 @@ export default function ContractOffer({ route, navigation }) {
                 <TextInput
                     placeholder="Enter price for this issue"
                     value={price}
+                    keyboardType="numeric"
                     onChangeText={setPrice}
                     style={styles.input}
                 />

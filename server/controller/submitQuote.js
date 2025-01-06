@@ -48,6 +48,12 @@ const submitQuote = async (req, res) => {
             return res.status(400).json({ message: 'Professional email not found.' });
         }
 
+        // Check if a quote already exists
+        const existingQuote = await Quotes.findOne({ issueId, professionalEmail });
+        if (existingQuote) {
+            return res.status(400).json({ message: 'You have already submitted a quote for this issue.' });
+        }
+
         const newQuote = await Quotes.create({
             professionalEmail,
             clientEmail,

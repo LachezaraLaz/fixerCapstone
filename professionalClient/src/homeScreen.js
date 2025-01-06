@@ -126,12 +126,14 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 Alert.alert('Error', 'Failed to submit the quote.');
             }
         } catch (error) {
-            console.error('Error submitting quote:', error);
-            Alert.alert('Error', 'An error occurred while submitting the quote.');
+            if (error.response?.status === 400) {
+                Alert.alert('Error', 'You have already submitted a quote for this issue.');
+            } else {
+                console.error('Error submitting quote:', error);
+                Alert.alert('Error', 'An error occurred while submitting the quote.');
+            }
         }
     };
-
-
 
 
     const navigateToIssueDetails = () => {

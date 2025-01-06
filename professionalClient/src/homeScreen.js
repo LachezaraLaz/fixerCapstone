@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Modal, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
-import { styles } from '../style/homeScreenStyle';
+import { styles } from '../style/homescreen/homeScreenStyle';
 // import { IPAddress } from '../ipAddress';
 import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -213,11 +213,11 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         />
 
                         <View style={styles.buttonsContainer}>
-                            <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
-                                <Text style={styles.buttonText}>Submit</Text>
-                            </TouchableOpacity>
                             <TouchableOpacity onPress={navigateToIssueDetails} style={styles.moreInfoButton}>
                                 <Text style={styles.buttonText}>More Info</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
+                                <Text style={styles.buttonText}>Submit</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

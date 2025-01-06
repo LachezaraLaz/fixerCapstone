@@ -138,7 +138,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row', // Align buttons horizontally
         justifyContent: 'space-between', // Space the buttons apart
         width: '100%', // Make buttons take full width
-        marginTop: 20, // Add some space between buttons and input
+        marginTop: 12, // Add some space between buttons and input
     },
     closeButton: {
         position: 'absolute',
@@ -166,7 +166,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 5,
         flex: 1, // Allow button to take equal space
-        marginRight: 5, // Add space between the buttons
+        marginRight: 7, // Add space between the buttons
     },
 
     submitButton: {
@@ -175,7 +175,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 5,
         flex: 1, // Allow button to take equal space
-        marginLeft: 5, // Add space between the buttons
+        marginLeft: 7, // Add space between the buttons
     },
     buttonText: {
         color: '#fff',

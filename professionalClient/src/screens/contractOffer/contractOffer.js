@@ -1,10 +1,59 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert} from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { styles } from '../../../style/contractOffer/contractOfferStyle';
 
 export default function ContractOffer({ route, navigation }) {
     const { issue } = route.params;
     const [price, setPrice] = React.useState('');
+    const [selectedIssue] = React.useState(null);
 
+
+    const submitQuote = async () => {
+        if (!price) {
+            Alert.alert('Error', 'Please enter a price before submitting the quote.');
+            return;
+        }
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('Error', 'User token not found.');
+                return;
+            }
+            console.log('selectedIssue:', selectedIssue);
+
+            if (!selectedIssue || !selectedIssue.userEmail) {
+                console.log('clientEmail is null or undefined');
+                Alert.alert('Error', 'Unable to retrieve client email from the selected issue.');
+                return;
+            }
+
+            const clientEmail = selectedIssue.userEmail; // Use userEmail from the schema
+            const issueId = selectedIssue._id;
+
+            const response = await axios.post(
+                `http://192.168.2.16:3000/quotes/create`,
+                { clientEmail, price, issueId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 201) {
+                Alert.alert('Success', 'Quote submitted successfully!');
+
+            } else {
+                Alert.alert('Error', 'Failed to submit the quote.');
+            }
+        } catch (error) {
+            if (error.response?.status === 400) {
+                Alert.alert('Error', 'You have already submitted a quote for this issue.');
+            } else {
+                console.error('Error submitting quote:', error);
+                Alert.alert('Error', 'An error occurred while submitting the quote.');
+            }
+        }
+    };
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>{issue.title}</Text>
@@ -41,6 +90,12 @@ export default function ContractOffer({ route, navigation }) {
                 </Text>
             </View>
 
+            {/* Placeholder for Images/Documents */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Related Images/Documents</Text>
+                <Text style={styles.sectionContent}>No attachments provided for this issue.</Text>
+            </View>
+
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Fee</Text>
                 <TextInput
@@ -52,102 +107,16 @@ export default function ContractOffer({ route, navigation }) {
                 />
             </View>
 
-            {/* Placeholder for Images/Documents */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Related Images/Documents</Text>
-                <Text style={styles.sectionContent}>No attachments provided for this issue.</Text>
-            </View>
-
             {/* Go Back Button */}
-            <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
-                <Text style={styles.buttonText}>Go Back</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonsContainer}>
+                <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
+                    <Text style={styles.buttonText}>Go Back</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
+                    <Text style={styles.buttonText}>Submit</Text>
+                </TouchableOpacity>
+            </View>
         </ScrollView>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-        backgroundColor: '#f9f9f9',
-        padding: 20,
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        textAlign: 'center',
-        color: '#333',
-    },
-    subtitle: {
-        fontSize: 20,
-        fontWeight: '600',
-        marginBottom: 20,
-        color: '#555',
-    },
-    infoContainer: {
-        width: '100%',
-        marginBottom: 20,
-        backgroundColor: '#fff',
-        padding: 15,
-        borderRadius: 8,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 5,
-    },
-    value: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 15,
-    },
-    section: {
-        width: '100%',
-        marginBottom: 20,
-        backgroundColor: '#fff',
-        padding: 15,
-        borderRadius: 8,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 10,
-    },
-    sectionContent: {
-        fontSize: 14,
-        color: '#666',
-    },
-    goBackButton: {
-        backgroundColor: '#007BFF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        marginTop: 20,
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    input:{
-        width: '70%',
-        height: 40,
-        borderColor: '#ccc',
-        borderWidth: 2,
-        borderRadius: 8,
-        marginBottom: 15,
-        paddingHorizontal: 10,
-    },
-});

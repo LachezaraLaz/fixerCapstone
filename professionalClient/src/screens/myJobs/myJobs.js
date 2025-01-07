@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { styles } from '../../../style/myJobs/myJobsStyle';
 
 
 export default function MyJobsProfessional() {
     const [jobs, setJobs] = useState({ done: [], pending: [], active: [] });
     const [loading, setLoading] = useState(true);
+    const [selectedTab, setSelectedTab] = useState('active'); // State to track the selected tab
 
     const fetchJobs = async () => {
         try {
@@ -16,7 +18,7 @@ export default function MyJobsProfessional() {
                 return;
             }
 
-            const response = await axios.get('http://192.168.2.16:3000/myJobs/get', {
+            const response = await axios.get('http://${IPAddress}:3000/myJobs/get', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -41,51 +43,43 @@ export default function MyJobsProfessional() {
         );
     }
 
+    // Function to render the job list based on the selected tab
+    const renderJobs = (status) => {
+        const jobList = jobs[status] || [];
+        return jobList.map((job, index) => (
+            <View key={index} style={styles.jobCard}>
+                <Text style={styles.jobTitle}>{job.title}</Text>
+                <Text style={styles.jobDescription}>{job.description}</Text>
+                <Text style={styles.jobPrice}>Price: ${job.price}</Text>
+            </View>
+        ));
+    };
+
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.column}>
-                <Text style={styles.columnTitle}>Done</Text>
-                {jobs.done.map((job, index) => (
-                    <View key={index} style={styles.jobCard}>
-                        <Text style={styles.jobTitle}>{job.title}</Text>
-                        <Text style={styles.jobDescription}>{job.description}</Text>
-                        <Text style={styles.jobPrice}>Price: ${job.price}</Text>
-                    </View>
-                ))}
+        <View style={styles.container}>
+            {/* Tabs for Active, Pending, Done */}
+            <View style={styles.tabsContainer}>
+                <TouchableOpacity
+                    style={[styles.tab, selectedTab === 'active' && styles.selectedTab]}
+                    onPress={() => setSelectedTab('active')}>
+                    <Text style={styles.tabText}>Active</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.tab, selectedTab === 'pending' && styles.selectedTab]}
+                    onPress={() => setSelectedTab('pending')}>
+                    <Text style={styles.tabText}>Pending</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.tab, selectedTab === 'done' && styles.selectedTab]}
+                    onPress={() => setSelectedTab('done')}>
+                    <Text style={styles.tabText}>Done</Text>
+                </TouchableOpacity>
             </View>
 
-            <View style={styles.column}>
-                <Text style={styles.columnTitle}>Pending</Text>
-                {jobs.pending.map((job, index) => (
-                    <View key={index} style={styles.jobCard}>
-                        <Text style={styles.jobTitle}>{job.title}</Text>
-                        <Text style={styles.jobDescription}>{job.description}</Text>
-                        <Text style={styles.jobPrice}>Price: ${job.price}</Text>
-                    </View>
-                ))}
-            </View>
-
-            <View style={styles.column}>
-                <Text style={styles.columnTitle}>Active</Text>
-                {jobs.active.map((job, index) => (
-                    <View key={index} style={styles.jobCard}>
-                        <Text style={styles.jobTitle}>{job.title}</Text>
-                        <Text style={styles.jobDescription}>{job.description}</Text>
-                        <Text style={styles.jobPrice}>Price: ${job.price}</Text>
-                    </View>
-                ))}
-            </View>
-        </ScrollView>
+            {/* Conditionally render jobs based on selected tab */}
+            <ScrollView style={styles.jobsContainer}>
+                {renderJobs(selectedTab)}
+            </ScrollView>
+        </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
-    column: { marginBottom: 24 },
-    columnTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
-    jobCard: { backgroundColor: '#fff', padding: 12, marginBottom: 8, borderRadius: 8 },
-    jobTitle: { fontSize: 16, fontWeight: 'bold' },
-    jobDescription: { fontSize: 14, color: '#555' },
-    jobPrice: { fontSize: 14, color: '#333', marginTop: 4 },
-    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-});

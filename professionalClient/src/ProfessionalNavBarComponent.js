@@ -29,7 +29,7 @@ export default function ProfessionalNavBar({ setIsLoggedIn }) {  // Receive setI
 
                 return <Ionicons name={iconName} size={size} color={color} />;
             },
-            tabBarActiveTintColor: 'blue',
+            tabBarActiveTintColor: 'orange',
             tabBarInactiveTintColor: 'gray',
         })}
         >
@@ -38,10 +38,10 @@ export default function ProfessionalNavBar({ setIsLoggedIn }) {  // Receive setI
                 {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
             </Tab.Screen>
 
-            {/* Current Jobs Tab - Intercept press and show alert */}
+            {/* Current Jobs Tab */}
             <Tab.Screen
                 name="CurrentJobs"
-                component={MyJobsProfessional} // Use the new component here
+                component={MyJobsProfessional}
             />
 
             {/* Chat Tab - Intercept press and show alert */}

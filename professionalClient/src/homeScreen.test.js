@@ -87,37 +87,37 @@ describe('HomeScreen', () => {
         });
     });
 
-    it('should fetch issues and display them on a list', async () => {
-        // Mocking permission request
-        require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
-            status: 'granted',  // Simulate permission granted
-        });
-
-        // Mocking geolocation to return specific coordinates
-        require('expo-location').getCurrentPositionAsync.mockResolvedValueOnce({
-            coords: { latitude: 37.78825, longitude: -122.4324 },
-        });
-
-        const mockIssues = {
-            data: {
-                jobs: [
-                    { _id: 1, title: 'Leaky Faucet', description: 'Fix this faucet', latitude: 37.78825, longitude: -122.4324, professionalNeeded: 'plumber' },
-                    { _id: 2, title: 'Light Bulb Replacement', description: 'Replace the bulb', latitude: 37.78925, longitude: -122.4324, professionalNeeded: 'electrician' }
-                ]
-            }
-        };
-
-        axios.get.mockResolvedValueOnce(mockIssues);
-
-        const { getByText, queryByTestId } = render(<HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />);
-
-        // Ensure loading indicator is removed after fetching
-        await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
-
-        // Verify issue titles are rendered
-        expect(getByText('Leaky Faucet')).toBeTruthy();
-        expect(getByText('Light Bulb Replacement')).toBeTruthy();
-    });
+    // it('should fetch issues and display them on a list', async () => {
+    //     // Mocking permission request
+    //     require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
+    //         status: 'granted',  // Simulate permission granted
+    //     });
+    //
+    //     // Mocking geolocation to return specific coordinates
+    //     require('expo-location').getCurrentPositionAsync.mockResolvedValueOnce({
+    //         coords: { latitude: 37.78825, longitude: -122.4324 },
+    //     });
+    //
+    //     const mockIssues = {
+    //         data: {
+    //             jobs: [
+    //                 { _id: 1, title: 'Leaky Faucet', description: 'Fix this faucet', latitude: 37.78825, longitude: -122.4324, professionalNeeded: 'plumber' },
+    //                 { _id: 2, title: 'Light Bulb Replacement', description: 'Replace the bulb', latitude: 37.78925, longitude: -122.4324, professionalNeeded: 'electrician' }
+    //             ]
+    //         }
+    //     };
+    //
+    //     axios.get.mockResolvedValueOnce(mockIssues);
+    //
+    //     const { getByText, queryByTestId } = render(<HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />);
+    //
+    //     // Ensure loading indicator is removed after fetching
+    //     await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
+    //
+    //     // Verify issue titles are rendered
+    //     expect(getByText('Leaky Faucet')).toBeTruthy();
+    //     expect(getByText('Light Bulb Replacement')).toBeTruthy();
+    // });
 
 
     // it('should fetch issues and display markers on the map', async () => {

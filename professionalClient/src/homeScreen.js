@@ -21,7 +21,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`http://${IPAddress}:3000/issues`);
+            const response = await axios.get(`http://192.168.2.16:3000/issues`);
             setIssues(response.data.jobs);
 
             const uniqueTypes = [
@@ -114,7 +114,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             const issueId = selectedIssue._id;
 
             const response = await axios.post(
-                `http://${IPAddress}:3000/quotes/create`,
+                `http://192.168.2.16:3000/quotes/create`,
                 { clientEmail, price, issueId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

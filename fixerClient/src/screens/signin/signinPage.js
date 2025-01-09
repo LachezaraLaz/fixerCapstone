@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { IPAddress } from '../../../ipAddress';
+//import { IPAddress } from '../../../ipAddress';
 
 export default function SignInPage({ navigation, setIsLoggedIn }) {
     const [email, setEmail] = useState('');
@@ -15,7 +15,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         }
 
         try {
-            const response = await axios.post(`http://${IPAddress}:3000/client/signin/`, {
+            const response = await axios.post(`http://192.168.0.19:3000/client/signin/`, {
                 email,
                 password
             });
@@ -29,7 +29,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 Alert.alert("Signed in successfully");
 
                 setIsLoggedIn(true);
-                navigation.navigate('HomeScreen');
+                navigation.navigate('MainTabs');
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {

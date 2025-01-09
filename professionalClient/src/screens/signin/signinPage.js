@@ -28,7 +28,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 Alert.alert("Signed in successfully");
 
                 setIsLoggedIn(true);
-                navigation.navigate('HomeScreen');
+                navigation.navigate('MainTabs');
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {

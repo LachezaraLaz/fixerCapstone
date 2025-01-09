@@ -11,6 +11,8 @@ const createIssueRouter = require('./routes/createIssueRoute');
 const notificationRouter = require('./routes/notificationRoute');
 const quoteRouter = require('./routes/quoteRoute');
 // const contractOfferRouter = require('./routes/contractOfferRoute');
+const getMyProfessionalJobsRouter = require('./routes/getMyProfessionalJobsRoute'); // Import the new route
+
 
 const app = express();
 
@@ -33,6 +35,8 @@ app.use('/issues', issueRoute.issueRouter);
 //app.use('/professional/contractOffer', contractOfferRouter.contractOfferRouter);
 app.use('/reset',resetPasswordRouter.resetPasswordRouter);
 app.use('/quotes', quoteRouter.quoteRouter);
+// New route for getting professional's jobs
+app.use('/myJobs', getMyProfessionalJobsRouter.getMyProfessionalJobsRouter); // Mount the new route for jobs
 
 // Email verification route
 app.use('/verify-email', professionalClientRoute.professionalRouter);

@@ -4,6 +4,9 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: professionalClient
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3

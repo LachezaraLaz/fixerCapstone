@@ -4,9 +4,6 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: professionalClient
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
@@ -21,7 +18,7 @@ jobs:
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
-          token: ${{ secrets.RIGLAR_EXPO_TOKEN }}
+          token: ${{ secrets.EXPO_TOKEN }}
 
 
       - name: 📦 Install dependencies
@@ -36,7 +33,7 @@ jobs:
       - name: Moropo - Trigger Mobile App Test Run
         uses: moropo-com/action-trigger-test-run@v2
         with:
-          api_key: ${{ secrets.RIGLAR_MOROPO_API_KEY }}
+          api_key: ${{ secrets.MOROPO_API_KEY }}
           scheduled_test_id: ee71749e-a0b6-4620-bcbc-74ee02353c5e
           sync: true
           expo_release_channel: https://u.expo.dev/2946827b-9037-4f1b-866f-9dd9ea93edab?channel-name=${{ github.event.pull_request.head.ref }}&runtime-version=1.0.0&platform=android

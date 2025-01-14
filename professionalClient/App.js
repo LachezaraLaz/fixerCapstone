@@ -22,11 +22,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Chat, OverlayProvider, useCreateChatClient } from 'stream-chat-expo';
 import { chatApiKey, chatUserId, chatUserName, chatUserToken } from './src/screens/chat/chatConfig';
+import { StreamChat } from "stream-chat";
 import { ChatProvider } from "./src/screens/chat/chatContext";
+import ChatListPage from "./src/screens/chat/chatListPage";
 import { Text } from "react-native";
 
 
 const Stack = createNativeStackNavigator();
+const chatClient = StreamChat.getInstance(chatApiKey);
 
 const linking = {
     prefixes: ['yourapp://'], // Replace 'yourapp' with your actual app scheme
@@ -114,6 +117,7 @@ export default function App() {
                                         <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
                                         <Stack.Screen name="NotificationPage" component={NotificationPage} />
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
+                                        <Stack.Screen name="ChatListPage" component={ChatListPage} />
                                     </>
                                 ) : (
                                     <>

@@ -19,7 +19,7 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
-          working-directory: fixerClient
+          cache-dependency-path: fixerClient/yarn.lock
           node-version: 20.18.0
           cache: yarn
 

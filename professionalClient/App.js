@@ -22,6 +22,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCreateChatClient } from 'stream-chat-expo';
 import { chatApiKey, chatUserId, chatUserName, chatUserToken } from './src/screens/chat/chatConfig';
+import { ChatProvider } from "./src/screens/chat/chatContext";
 import { Text } from "react-native";
 
 
@@ -78,49 +79,51 @@ export default function App() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1 }}>
-                <NavigationContainer linking={linking}>
-                    <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
-                        {isLoggedIn ? (
-                            <>
-                                {/* MainTabs with ProfessionalNavBar */}
-                                <Stack.Screen
-                                    name="MainTabs"
-                                    options={{ headerShown: false }}
-                                >
-                                    {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                </Stack.Screen>
+                <ChatProvider>
+                    <NavigationContainer linking={linking}>
+                        <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
+                            {isLoggedIn ? (
+                                <>
+                                    {/* MainTabs with ProfessionalNavBar */}
+                                    <Stack.Screen
+                                        name="MainTabs"
+                                        options={{ headerShown: false }}
+                                    >
+                                        {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                    </Stack.Screen>
 
-                                <Stack.Screen
-                                    name="HomeScreen"
-                                    options={{ headerShown: false }} // Remove header for HomeScreen
-                                >
-                                    {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                </Stack.Screen>
-                                {/* Additional screens accessible from MainTabs */}
+                                    <Stack.Screen
+                                        name="HomeScreen"
+                                        options={{ headerShown: false }} // Remove header for HomeScreen
+                                    >
+                                        {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                    </Stack.Screen>
+                                    {/* Additional screens accessible from MainTabs */}
 
-                                <Stack.Screen name="ProfilePage" component={ProfileScreen} />
-                                <Stack.Screen name="ContractOffer" component={ContractOffer} />
-                                <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
-                                <Stack.Screen name="UploadID" component={UploadID} />
-                                <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
-                                <Stack.Screen name="NotificationPage" component={NotificationPage} />
-                                <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
-                            </>
-                        ) : (
-                            <>
-                                <Stack.Screen name="welcomePage" component={WelcomePage} />
-                                <Stack.Screen name="SignInPage">
-                                    {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                </Stack.Screen>
-                                <Stack.Screen name="SignUpPage" component={SignUpPage} />
-                                <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
-                                <Stack.Screen name="EnterPin" component={EnterPin} />
-                                <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
+                                    <Stack.Screen name="ProfilePage" component={ProfileScreen} />
+                                    <Stack.Screen name="ContractOffer" component={ContractOffer} />
+                                    <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
+                                    <Stack.Screen name="UploadID" component={UploadID} />
+                                    <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
+                                    <Stack.Screen name="NotificationPage" component={NotificationPage} />
+                                    <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
+                                </>
+                            ) : (
+                                <>
+                                    <Stack.Screen name="welcomePage" component={WelcomePage} />
+                                    <Stack.Screen name="SignInPage">
+                                        {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                    </Stack.Screen>
+                                    <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                    <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                    <Stack.Screen name="EnterPin" component={EnterPin} />
+                                    <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
 
-                            </>
-                        )}
-                    </Stack.Navigator>
-                </NavigationContainer>
+                                </>
+                            )}
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                </ChatProvider>
             </SafeAreaView>
         </GestureHandlerRootView>
     );

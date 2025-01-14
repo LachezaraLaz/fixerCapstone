@@ -4274,7 +4274,7 @@ expo-font@~12.0.10:
 
 expo-image-loader@~4.7.0:
   version "4.7.0"
-  resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-4.7.0.tgz#d403106822de80bda12d644c82b7a3b7983c0f0b"
+  resolved "https://registry.npmjs.org/expo-image-loader/-/expo-image-loader-4.7.0.tgz"
   integrity sha512-cx+MxxsAMGl9AiWnQUzrkJMJH4eNOGlu7XkLGnAXSJrRoIiciGaKqzeaD326IyCTV+Z1fXvIliSgNW+DscvD8g==
 
 expo-image-loader@~5.0.0:
@@ -4284,7 +4284,7 @@ expo-image-loader@~5.0.0:
 
 expo-image-manipulator@~12.0.5:
   version "12.0.5"
-  resolved "https://registry.yarnpkg.com/expo-image-manipulator/-/expo-image-manipulator-12.0.5.tgz#e3dd2810d27025705f73523cd4ba47b0d091a662"
+  resolved "https://registry.npmjs.org/expo-image-manipulator/-/expo-image-manipulator-12.0.5.tgz"
   integrity sha512-zJ8yINjckYw/yfoSuICt4yJ9xr112+W9e5QVXwK3nCAHr7sv45RQ5sxte0qppf594TPl+UoV6Tjim7WpoKipRQ==
   dependencies:
     expo-image-loader "~4.7.0"
@@ -7325,7 +7325,7 @@ react-native-markdown-package@1.8.2:
 
 react-native-reanimated@~3.10.1:
   version "3.10.1"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.10.1.tgz#3c37d1100bbba0065df39c96aab0c1ff1b50c0fa"
+  resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.10.1.tgz"
   integrity sha512-sfxg6vYphrDc/g4jf/7iJ7NRi+26z2+BszPmvmk0Vnrz6FL7HYljJqTf531F1x6tFmsf+FEAmuCtTUIXFLVo9w==
   dependencies:
     "@babel/plugin-transform-arrow-functions" "^7.0.0-0"
@@ -8044,6 +8044,21 @@ stream-chat@8.46.0:
   version "8.46.0"
   resolved "https://registry.npmjs.org/stream-chat/-/stream-chat-8.46.0.tgz"
   integrity sha512-HQVCRVldrfQFAvsBOHiHR0TKYf+wpsg/cAzRojeZY+buy1vG6eoqk09h6Fl4k2eG3zFLoA0G9W6o7o45jyFE1g==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@types/jsonwebtoken" "~9.0.0"
+    "@types/ws" "^7.4.0"
+    axios "^1.6.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "~9.0.0"
+    ws "^7.5.10"
+
+stream-chat@^8.49.0:
+  version "8.49.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-8.49.0.tgz#e95ecbbc15cb7bd15ae9a34897982d1fcf26aacd"
+  integrity sha512-Qje0VrKUGcI7ZGyKqlTMfF46I1dAb9YSL/yw1YN/QgQ8uK1rMd+ugckZzsgotDXFxjfzZ33TTJWZjRijZ2VM3Q==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "~9.0.0"

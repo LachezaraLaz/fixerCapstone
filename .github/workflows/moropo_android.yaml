@@ -13,10 +13,13 @@ jobs:
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
+        with:
+          working-directory: fixerClient
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
+          working-directory: fixerClient
           node-version: 20.18.0
           cache: yarn
 

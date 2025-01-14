@@ -22,6 +22,7 @@ import { chatApiKey, chatUserId, chatUserName, chatUserToken } from './src/scree
 import { StreamChat } from "stream-chat";
 import { ChatProvider } from "./src/screens/chat/chatContext";
 import ChatListPage from "./src/screens/chat/chatListPage";
+import ChatPage from "./src/screens/chat/chatPage";
 
 import { Text } from "react-native";
 
@@ -107,6 +108,7 @@ export default function App() {
                                             <Stack.Screen name="NotificationPage" component={NotificationPage} />
                                             <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
                                             <Stack.Screen name="ChatListPage" component={ChatListPage} />
+                                            <Stack.Screen name="ChatPage" component={ChatPage} />
                                         </>
                                     ) : (
                                         <>

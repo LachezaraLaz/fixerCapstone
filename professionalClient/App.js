@@ -25,6 +25,7 @@ import { chatApiKey, chatUserId, chatUserName, chatUserToken } from './src/scree
 import { StreamChat } from "stream-chat";
 import { ChatProvider } from "./src/screens/chat/chatContext";
 import ChatListPage from "./src/screens/chat/chatListPage";
+import ChatPage from "./src/screens/chat/chatPage";
 import { Text } from "react-native";
 
 
@@ -90,50 +91,53 @@ export default function App() {
             <SafeAreaView style={{ flex: 1 }}>
                 <ChatProvider>
                     <OverlayProvider>
-                        <NavigationContainer linking={linking}>
-                            <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
-                                {isLoggedIn ? (
-                                    <>
-                                        {/* MainTabs with ProfessionalNavBar */}
-                                        <Stack.Screen
-                                            name="MainTabs"
-                                            options={{ headerShown: false }}
-                                        >
-                                            {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                        </Stack.Screen>
+                        <Chat client={chatClient}>
+                            <NavigationContainer linking={linking}>
+                                <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
+                                    {isLoggedIn ? (
+                                        <>
+                                            {/* MainTabs with ProfessionalNavBar */}
+                                            <Stack.Screen
+                                                name="MainTabs"
+                                                options={{ headerShown: false }}
+                                            >
+                                                {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                            </Stack.Screen>
 
-                                        <Stack.Screen
-                                            name="HomeScreen"
-                                            options={{ headerShown: false }} // Remove header for HomeScreen
-                                        >
-                                            {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                        </Stack.Screen>
-                                        {/* Additional screens accessible from MainTabs */}
+                                            <Stack.Screen
+                                                name="HomeScreen"
+                                                options={{ headerShown: false }} // Remove header for HomeScreen
+                                            >
+                                                {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                            </Stack.Screen>
+                                            {/* Additional screens accessible from MainTabs */}
 
-                                        <Stack.Screen name="ProfilePage" component={ProfileScreen} />
-                                        <Stack.Screen name="ContractOffer" component={ContractOffer} />
-                                        <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
-                                        <Stack.Screen name="UploadID" component={UploadID} />
-                                        <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
-                                        <Stack.Screen name="NotificationPage" component={NotificationPage} />
-                                        <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
-                                        <Stack.Screen name="ChatListPage" component={ChatListPage} />
-                                    </>
-                                ) : (
-                                    <>
-                                        <Stack.Screen name="welcomePage" component={WelcomePage} />
-                                        <Stack.Screen name="SignInPage">
-                                            {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                        </Stack.Screen>
-                                        <Stack.Screen name="SignUpPage" component={SignUpPage} />
-                                        <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
-                                        <Stack.Screen name="EnterPin" component={EnterPin} />
-                                        <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
+                                            <Stack.Screen name="ProfilePage" component={ProfileScreen} />
+                                            <Stack.Screen name="ContractOffer" component={ContractOffer} />
+                                            <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
+                                            <Stack.Screen name="UploadID" component={UploadID} />
+                                            <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
+                                            <Stack.Screen name="NotificationPage" component={NotificationPage} />
+                                            <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
+                                            <Stack.Screen name="ChatListPage" component={ChatListPage} />
+                                            <Stack.Screen name="ChatPage" component={ChatPage} />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Stack.Screen name="welcomePage" component={WelcomePage} />
+                                            <Stack.Screen name="SignInPage">
+                                                {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                            </Stack.Screen>
+                                            <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                            <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                            <Stack.Screen name="EnterPin" component={EnterPin} />
+                                            <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
 
-                                    </>
-                                )}
-                            </Stack.Navigator>
-                        </NavigationContainer>
+                                        </>
+                                    )}
+                                </Stack.Navigator>
+                            </NavigationContainer>
+                        </Chat>
                     </OverlayProvider>
                 </ChatProvider>
             </SafeAreaView>

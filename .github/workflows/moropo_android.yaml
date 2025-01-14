@@ -13,6 +13,7 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
+          working-directory: fixerClient  # Explicitly point to fixerClient
           node-version: 20.18.0
           cache: yarn
 

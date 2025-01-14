@@ -40,10 +40,24 @@ export default function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    // Stream Chat Client Initialization
+    const user = {
+        id: chatUserId,
+        name: chatUserName,
+    };
+
+    const chatClient = useCreateChatClient({
+        apiKey: chatApiKey,
+        userData: user,
+        tokenOrProvider: chatUserToken,
+    });
+
     useEffect(() => {
         const checkToken = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
+
+                console.log(user);
                 if (token) {
                     setIsLoggedIn(true);
                 }

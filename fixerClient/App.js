@@ -27,6 +27,17 @@ export default function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    // Stream Chat Client Initialization
+    const user = {
+        id: chatUserId,
+        name: chatUserName,
+    };
+
+    const chatClient = useCreateChatClient({
+        apiKey: chatApiKey,
+        userData: user,
+        tokenOrProvider: chatUserToken,
+    });
 
     useEffect(() => {
         const checkToken = async () => {
@@ -45,8 +56,15 @@ export default function App() {
         checkToken();
     }, []);
 
-    if (loading) {
-        return null; // Add a loading component here
+    // Show loading screen if chat client is not ready or token check is in progress
+    if (loading || !chatClient) {
+        return (
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text>Loading app...</Text>
+                </SafeAreaView>
+            </GestureHandlerRootView>
+        );
     }
 
     return (

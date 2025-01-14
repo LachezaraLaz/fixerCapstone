@@ -15,6 +15,7 @@ import NotificationPage from "./src/screens/notificationPage/notificationPage";
 import NotificationDetail from "./src/screens/notificationDetail/notificationDetail";
 import NavBar from './src/NavBarComponent'; 
 import { useEffect, useState } from "react";
+import "react-native-gesture-handler";
 
 const Stack = createNativeStackNavigator();
 

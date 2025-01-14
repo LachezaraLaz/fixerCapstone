@@ -18,6 +18,7 @@ import ContractOffer from "./src/screens/contractOffer/contractOffer";
 import NotificationPage from './src/screens/notificationPage/notificationPage';
 import NotificationDetail from './src/screens/notificationDetail/notificationDetail';
 import { useEffect, useState } from "react";
+import "react-native-gesture-handler";
 
 const Stack = createNativeStackNavigator();
 

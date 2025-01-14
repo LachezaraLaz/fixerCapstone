@@ -6,6 +6,10 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Mobile folder working directory.
+        working-directory: fixerClient
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
@@ -13,7 +17,6 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
-          working-directory: fixerClient  # Explicitly point to fixerClient
           node-version: 20.18.0
           cache: yarn
 

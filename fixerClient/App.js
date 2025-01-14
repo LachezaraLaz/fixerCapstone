@@ -15,13 +15,18 @@ import NotificationPage from "./src/screens/notificationPage/notificationPage";
 import NotificationDetail from "./src/screens/notificationDetail/notificationDetail";
 import NavBar from './src/NavBarComponent'; 
 import { useEffect, useState } from "react";
-import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useCreateChatClient } from 'stream-chat-expo';
+import { chatApiKey, chatUserId, chatUserName, chatUserToken } from './src/screens/chat/chatConfig';
+import { Text } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
         const checkToken = async () => {
@@ -45,45 +50,49 @@ export default function App() {
     }
 
     return (
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
-                {isLoggedIn ? (
-                    <>
-                        {/* MainTabs with NavBar as the default screen */}
-                        <Stack.Screen
-                            name="MainTabs"
-                            options={{ headerShown: false }}
-                        >
-                            {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
-                        </Stack.Screen>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1 }}>
+                <NavigationContainer>
+                    <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
+                        {isLoggedIn ? (
+                            <>
+                                {/* MainTabs with NavBar as the default screen */}
+                                <Stack.Screen
+                                    name="MainTabs"
+                                    options={{ headerShown: false }}
+                                >
+                                    {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                </Stack.Screen>
 
 
-                        {/* Additional screens accessible from MainTabs */}
-                        <Stack.Screen
-                            name="HomeScreen"
-                            options={{ headerShown: false }} // Remove header for HomeScreen
-                        >
-                            {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
-                        </Stack.Screen>
-                        <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
-                        <Stack.Screen name="ProfilePage" component={ProfilePage} />
-                        <Stack.Screen name="CreateIssue" component={CreateIssue} />
-                        <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
-                        <Stack.Screen name="EditIssue" component={EditIssue} />
-                        <Stack.Screen name="NotificationPage" component={NotificationPage} />
-                        <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
-                    </>
-                ) : (
-                    <>
-                        {/* Screens accessible when the user is not logged in */}
-                        <Stack.Screen name="welcomePage" component={WelcomePage} />
-                        <Stack.Screen name="SignInPage">
-                            {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
-                        </Stack.Screen>
-                        <Stack.Screen name="SignUpPage" component={SignUpPage} />
-                    </>
-                )}
-            </Stack.Navigator>
-        </NavigationContainer>
+                                {/* Additional screens accessible from MainTabs */}
+                                <Stack.Screen
+                                    name="HomeScreen"
+                                    options={{ headerShown: false }} // Remove header for HomeScreen
+                                >
+                                    {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                </Stack.Screen>
+                                <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
+                                <Stack.Screen name="ProfilePage" component={ProfilePage} />
+                                <Stack.Screen name="CreateIssue" component={CreateIssue} />
+                                <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
+                                <Stack.Screen name="EditIssue" component={EditIssue} />
+                                <Stack.Screen name="NotificationPage" component={NotificationPage} />
+                                <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
+                            </>
+                        ) : (
+                            <>
+                                {/* Screens accessible when the user is not logged in */}
+                                <Stack.Screen name="welcomePage" component={WelcomePage} />
+                                <Stack.Screen name="SignInPage">
+                                    {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                </Stack.Screen>
+                                <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                            </>
+                        )}
+                    </Stack.Navigator>
+                </NavigationContainer>
+            </SafeAreaView>
+        </GestureHandlerRootView>
     );
 }

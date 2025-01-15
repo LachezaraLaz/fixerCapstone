@@ -103,7 +103,7 @@ test('displays "Account already exists" alert when email is already in use', asy
 
     // Assertions
     await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith('http://192.168.0.19:3000/professional/register', {
+        expect(axios.post).toHaveBeenCalledWith('http://IP-ADDRESS:3000/professional/register', {
             email: 'existing@example.com',
             firstName: 'Jane',
             lastName: 'Doe',

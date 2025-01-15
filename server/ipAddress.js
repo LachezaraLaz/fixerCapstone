@@ -1,2 +1,2 @@
-const IPAddress = '192.168.0.19';
+const IPAddress = 'IP-ADDRESS';
 module.exports = IPAddress;

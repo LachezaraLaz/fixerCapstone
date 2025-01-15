@@ -6,7 +6,6 @@ import {
     Image,
     ScrollView,
     ActivityIndicator,
-    Button,
     Alert,
     TouchableOpacity,
     RefreshControl
@@ -14,7 +13,7 @@ import {
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode';  // Import a JWT decode library
+import {jwtDecode} from 'jwt-decode'; // Import a JWT decode library
 import { useNavigation } from '@react-navigation/native';
 
 import { IPAddress } from '../../../ipAddress';

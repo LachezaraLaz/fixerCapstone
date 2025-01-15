@@ -172,7 +172,7 @@ export default function MyIssuesPosted() {
                                 borderColor: getStatusColor(job.status),
                                 borderRadius: 5,
                                 margin: 5,
-                                padding: 10
+                                padding: 10,
                             }}
                         >
                             <Text style={{ fontWeight: 'bold' }}>{job.title}</Text>
@@ -213,6 +213,19 @@ export default function MyIssuesPosted() {
                                     </TouchableOpacity>
                                 )}
                             </View>
+                            {/* Add View Offers Button */}
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('OffersPage', { jobId: job._id })}
+                                style={{
+                                    marginTop: 10,
+                                    backgroundColor: '#1A8DEC',
+                                    borderRadius: 5,
+                                    padding: 10,
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>View Offers</Text>
+                            </TouchableOpacity>
                         </View>
                     ))
                 ) : (

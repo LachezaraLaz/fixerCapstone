@@ -13,6 +13,7 @@ import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
 import NotificationPage from "./src/screens/notificationPage/notificationPage";
 import NotificationDetail from "./src/screens/notificationDetail/notificationDetail";
+import OffersPage from './src/screens/OffersPage/OffersPage';
 import NavBar from './src/NavBarComponent'; 
 import { useEffect, useState } from "react";
 
@@ -71,6 +72,7 @@ export default function App() {
                         <Stack.Screen name="EditIssue" component={EditIssue} />
                         <Stack.Screen name="NotificationPage" component={NotificationPage} />
                         <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
+                        <Stack.Screen name="OffersPage" component={OffersPage} />
                     </>
                 ) : (
                     <>

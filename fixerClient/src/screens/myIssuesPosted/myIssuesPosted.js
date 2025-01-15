@@ -130,8 +130,8 @@ export default function MyIssuesPosted() {
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                style={{ padding: 0, margin: 0 }}
-                contentContainerStyle={{ flexDirection: 'row', alignItems: 'center' }}
+                style={{ padding: 0, marginVertical: -250 }} // Margin to reduce unnecessary space above and below
+                contentContainerStyle={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 0 }}
             >
                 {['all', 'open', 'in progress', 'completed', 'closed'].map((status, index) => (
                     <TouchableOpacity
@@ -157,7 +157,7 @@ export default function MyIssuesPosted() {
                 ))}
             </ScrollView>
             <ScrollView
-                style={{ flex: 1, paddingBottom: 600, marginBottom: 30 }}
+                style={{ flex: 1, paddingBottom: 0, marginBottom: 0 }}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }

@@ -8,7 +8,7 @@ const signinUser = async (req, res) => {
 
     // Check if user exists and is a client
     const user = await fixerClientObject.fixerClient.findOne({ email });
-    console.log('User found:', user);
+
     if (!user || user.accountType !== 'client') {
         return res.status(400).send({ statusText: 'User not found' });
     }
@@ -47,7 +47,12 @@ const signinUser = async (req, res) => {
     });
 
     const streamToken = serverClient.createToken(user._id.toString());
-    res.send({ token, streamToken });
+    res.send({
+        token,
+        streamToken,
+        userId: user._id.toString(),
+        userName: `${user.firstName} ${user.lastName}`
+    });
 };
 
 module.exports = { signinUser };

@@ -4,8 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CardComponent from './CardComponent';
 import { useEffect } from 'react';
+import { useChatContext } from './screens/chat/chatContext';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
+
+    const { chatClient } = useChatContext();
+
     useEffect(() => {
         navigation.setOptions({
             headerShown: false,
@@ -14,10 +18,17 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     const handleLogout = async () => {
         try {
+            if (chatClient) {
+                await chatClient.disconnectUser();
+            }
+
             await AsyncStorage.removeItem('token');
+            await AsyncStorage.removeItem('streamToken');
+            await AsyncStorage.removeItem('userId');
+            await AsyncStorage.removeItem('userName');
+
             Alert.alert('Logged out', 'You have been logged out successfully');
             setIsLoggedIn(false);
-            navigation.replace('welcomePage');
         } catch (error) {
             console.error("Error logging out: ", error);
             Alert.alert('Error', 'An error occurred while logging out');

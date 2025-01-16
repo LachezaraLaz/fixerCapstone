@@ -1,0 +1,49 @@
+on: [pull_request]
+permissions:
+  pull-requests: write
+  id-token: write
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Mobile folder working directory.
+        working-directory: fixerClient
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+        with:
+          working-directory: fixerClient
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v3
+        with:
+          cache-dependency-path: fixerClient/yarn.lock
+          node-version: 20.18.0
+          cache: yarn
+
+      - name: 📦 Install dependencies
+        run: yarn install
+        working-directory: fixerClient  # Explicitly point to fixerClient
+
+      - name: 🏗 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+          working-directory: fixerClient  # Explicitly point to fixerClient
+
+      - name: 🚀 Create preview
+        uses: expo/expo-github-action/preview@v8
+        with:
+          command: eas update --auto --branch ${{ github.event.pull_request.head.ref }}
+          working-directory: fixerClient  # Explicitly point to fixerClient
+
+      - name: Moropo - Trigger Mobile App Test Run
+        uses: moropo-com/action-trigger-test-run@v2
+        with:
+          api_key: ${{ secrets.MOROPO_API_KEY }}
+          scheduled_test_id: ee71749e-a0b6-4620-bcbc-74ee02353c5e
+          sync: true
+          expo_release_channel: https://u.expo.dev/2946827b-9037-4f1b-866f-9dd9ea93edab?channel-name=${{ github.event.pull_request.head.ref }}&runtime-version=1.0.0&platform=android

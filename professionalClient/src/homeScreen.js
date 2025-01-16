@@ -7,6 +7,7 @@ import { styles } from '../style/homescreen/homeScreenStyle';
 import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useChatContext } from './screens/chat/chatContext';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
@@ -18,6 +19,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [typesOfWork, setTypesOfWork] = React.useState([]);
     const scrollY = React.useRef(new Animated.Value(0)).current;
+    const { chatClient } = useChatContext();
 
     const fetchAllIssues = async () => {
         try {
@@ -69,10 +71,17 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     const handleLogout = async () => {
         try {
+            if (chatClient) {
+                await chatClient.disconnectUser();
+            }
+
             await AsyncStorage.removeItem('token');
+            await AsyncStorage.removeItem('streamToken');
+            await AsyncStorage.removeItem('userId');
+            await AsyncStorage.removeItem('userName');
+
             Alert.alert('Logged out', 'You have been logged out successfully');
             setIsLoggedIn(false);
-            navigation.replace('welcomePage');
         } catch (error) {
             console.error("Error logging out: ", error);
             Alert.alert('Error', 'An error occurred while logging out');

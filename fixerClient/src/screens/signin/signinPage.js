@@ -30,7 +30,6 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 await AsyncStorage.setItem('userName', userName);
 
                 Alert.alert("Signed in successfully");
-                console.log('Response from server:', response.data);
                 setIsLoggedIn(true);
                 navigation.navigate('HomeScreen');
             }

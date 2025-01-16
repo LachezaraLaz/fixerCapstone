@@ -118,7 +118,6 @@ export default function App() {
                                 </OverlayProvider>
                             </ChatProvider>
                         ) : (
-
                             <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                             <>
                                 {/* Screens accessible when the user is not logged in */}

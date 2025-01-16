@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Chat, OverlayProvider, useCreateChatClient } from 'stream-chat-expo';
-import { chatApiKey, chatUserId, chatUserName, chatUserToken } from './src/screens/chat/chatConfig';
+import { STREAM_API_KEY } from './src/screens/chat/chatConfig';
 import { StreamChat } from "stream-chat";
 import { ChatProvider } from "./src/screens/chat/chatContext";
 import ChatListPage from "./src/screens/chat/chatListPage";
@@ -30,7 +30,7 @@ import { Text } from "react-native";
 
 
 const Stack = createNativeStackNavigator();
-const chatClient = StreamChat.getInstance(chatApiKey);
+const chatClient = StreamChat.getInstance(STREAM_API_KEY);
 
 const linking = {
     prefixes: ['yourapp://'], // Replace 'yourapp' with your actual app scheme
@@ -44,24 +44,13 @@ const linking = {
 export default function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    // Stream Chat Client Initialization
-    const user = {
-        id: chatUserId,
-        name: chatUserName,
-    };
-
-    const chatClient = useCreateChatClient({
-        apiKey: chatApiKey,
-        userData: user,
-        tokenOrProvider: chatUserToken,
-    });
+    const [chatClient, setChatClient] = useState(null);
 
     useEffect(() => {
         const checkToken = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
-                console.log(token);
+
                 if (token) {
                     setIsLoggedIn(true);
                 }
@@ -73,6 +62,21 @@ export default function App() {
         };
 
         checkToken();
+    }, []);
+
+    // Initialize the StreamChat client
+    useEffect(() => {
+        const initChatClient = async () => {
+            try {
+                // Use your public API key here
+                const client = StreamChat.getInstance(STREAM_API_KEY);
+                setChatClient(client);
+            } catch (err) {
+                console.log("Error creating StreamChat client:", err);
+            }
+        };
+
+        initChatClient();
     }, []);
 
     // Show loading screen if chat client is not ready or token check is in progress
@@ -89,12 +93,12 @@ export default function App() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1 }}>
-                <ChatProvider>
-                    <OverlayProvider>
-                        <Chat client={chatClient}>
-                            <NavigationContainer linking={linking}>
-                                <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
-                                    {isLoggedIn ? (
+                <NavigationContainer>
+                    {isLoggedIn ? (
+                        <ChatProvider>
+                            <OverlayProvider>
+                                <Chat client={chatClient}>
+                                    <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                                         <>
                                             {/* MainTabs with ProfessionalNavBar */}
                                             <Stack.Screen
@@ -122,25 +126,27 @@ export default function App() {
                                             <Stack.Screen name="ChatListPage" component={ChatListPage} />
                                             <Stack.Screen name="ChatPage" component={ChatPage} />
                                         </>
-                                    ) : (
-                                        <>
-                                            <Stack.Screen name="welcomePage" component={WelcomePage} />
-                                            <Stack.Screen name="SignInPage">
-                                                {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                            </Stack.Screen>
-                                            <Stack.Screen name="SignUpPage" component={SignUpPage} />
-                                            <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
-                                            <Stack.Screen name="EnterPin" component={EnterPin} />
-                                            <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
-
-                                        </>
-                                    )}
-                                </Stack.Navigator>
-                            </NavigationContainer>
-                        </Chat>
-                    </OverlayProvider>
-                </ChatProvider>
+                                    </Stack.Navigator>
+                                </Chat>
+                            </OverlayProvider>
+                        </ChatProvider>
+                    ) : (
+                        <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
+                            <>
+                                <Stack.Screen name="welcomePage" component={WelcomePage} />
+                                <Stack.Screen name="SignInPage">
+                                    {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                </Stack.Screen>
+                                <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                <Stack.Screen name="EnterPin" component={EnterPin} />
+                                <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
+                            </>
+                        </Stack.Navigator>
+                    )}
+                </NavigationContainer>
             </SafeAreaView>
         </GestureHandlerRootView>
     );
 }
+

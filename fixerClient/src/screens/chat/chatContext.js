@@ -60,7 +60,6 @@ export const ChatProvider = ({ children }) => {
         // Cleanup on unmount or user switch
         return () => {
             if (chatClient) {
-                console.log("Byeeee");
                 chatClient.disconnectUser();
             }
         };

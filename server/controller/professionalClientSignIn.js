@@ -41,7 +41,12 @@ const signinUser = async (req, res) => {
     });
 
     const streamToken = serverClient.createToken(user._id.toString());
-    res.send({ token, streamToken });
+    res.send({
+        token,
+        streamToken,
+        userId: user._id.toString(),
+        userName: `${user.firstName} ${user.lastName}`
+    });
 };
 
 module.exports = { signinUser };

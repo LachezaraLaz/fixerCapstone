@@ -21,13 +21,16 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
             });
 
             if (response.status === 200) {
-                const token = response.data.token;
+                const { token, streamToken, userId, userName } = response.data;
 
                 // Store the token in AsyncStorage
                 await AsyncStorage.setItem('token', token);
+                await AsyncStorage.setItem('streamToken', streamToken);
+                await AsyncStorage.setItem('userId', userId);
+                await AsyncStorage.setItem('userName', userName);
 
                 Alert.alert("Signed in successfully");
-
+                console.log('Response from server:', response.data);
                 setIsLoggedIn(true);
                 navigation.navigate('HomeScreen');
             }

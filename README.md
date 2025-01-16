@@ -44,6 +44,8 @@ CLOUDINARY_API_KEY=126996845455117
 CLOUDINARY_API_SECRET=QHzagCadTLyem0edek0l5X0aEDM
 GOOGLE_MAPS_KEY=AIzaSyBsGtM6ZfPiJ1uSg5gsX2DYacogWq_1Ksg
 PASS_RESET='gmzg blbr jvev ghlb'
+STREAM_API_KEY=ut27s54hv26w
+STREAM_API_SECRET=wqwnt3c933uqfsgfrjf5xh37cuwzqkyj5hegvwn42mdn6gtyfvgz4pr6hmru6733
 ```
 **WARNING, the ".env" file must never be pushed to main. EVER.**
 

@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { serverClient } = require('../services/streamClient');
 const fixerClientObject = require('../model/professionalClientModel');
 
 const signinUser = async (req, res) => {
@@ -23,12 +24,24 @@ const signinUser = async (req, res) => {
 
     // Create JWT token
     const token = jwt.sign(
-        { id: user._id, email: user.email },
+        {
+            id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName
+        },
         process.env.JWT_SECRET,
         { expiresIn: '7d' } // Token validation time
     );
 
-    res.send({ token });
+    await serverClient.upsertUser({
+        id: user._id.toString(),
+        role: 'user',
+        name: `${user.firstName} ${user.lastName}`,
+    });
+
+    const streamToken = serverClient.createToken(user._id.toString());
+    res.send({ token, streamToken });
 };
 
 module.exports = { signinUser };

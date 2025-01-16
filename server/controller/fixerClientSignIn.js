@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { serverClient } = require('../services/streamClient');
 const fixerClientObject = require('../model/professionalClientModel');
 
 const signinUser = async (req, res) => {
@@ -7,6 +8,7 @@ const signinUser = async (req, res) => {
 
     // Check if user exists and is a client
     const user = await fixerClientObject.fixerClient.findOne({ email });
+    console.log('User found:', user);
     if (!user || user.accountType !== 'client') {
         return res.status(400).send({ statusText: 'User not found' });
     }
@@ -27,6 +29,8 @@ const signinUser = async (req, res) => {
         {
             id: user._id,
             email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
             street: user.street,  // Including street address
             postalCode: user.postalCode,  // Including postal code
             provinceOrState: user.provinceOrState,  // Including province or state
@@ -36,8 +40,14 @@ const signinUser = async (req, res) => {
         { expiresIn: '7d' } // Token expiration time
     );
 
-    console.log(token);
-    res.send({ token });
+    await serverClient.upsertUser({
+        id: user._id.toString(),
+        role: 'user',
+        name: `${user.firstName} ${user.lastName}`,
+    });
+
+    const streamToken = serverClient.createToken(user._id.toString());
+    res.send({ token, streamToken });
 };
 
 module.exports = { signinUser };

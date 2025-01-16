@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const fixerClientObject = require('../model/professionalClientModel');
+const {logger} = require("../utils/logger");
 
 const signinUser = async (req, res) => {
     const { email, password } = req.body;
@@ -36,7 +37,7 @@ const signinUser = async (req, res) => {
         { expiresIn: '7d' } // Token expiration time
     );
 
-    console.log(token);
+    logger.emergency(token);
     res.send({ token });
 };
 

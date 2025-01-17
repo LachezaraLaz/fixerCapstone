@@ -15,7 +15,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         }
 
         try {
-            const response = await axios.post(`http://IP-ADDRESS:3000/client/signin/`, {
+            const response = await axios.post(`http://${IPAddress}:3000/client/signin/`, {
                 email,
                 password
             });

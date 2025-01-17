@@ -28,8 +28,6 @@ export const ChatProvider = ({ children }) => {
                 const storedUserName = await AsyncStorage.getItem('userName');
                 const storedStreamToken = await AsyncStorage.getItem('streamToken');
 
-                console.log(storedUserId);
-
                 if (!storedUserId || !storedStreamToken) {
                     console.log('No user credentials found, skipping chat init');
                     return;

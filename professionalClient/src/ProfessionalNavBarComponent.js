@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Alert, TouchableOpacity } from 'react-native';
 import HomeScreen from './homeScreen';
 import MyJobsProfessional from '../src/screens/myJobs/myJobs';
+import ChatListPage from '../src/screens/chat/chatListPage';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Tab = createBottomTabNavigator();
@@ -47,15 +48,7 @@ export default function ProfessionalNavBar({ setIsLoggedIn }) {  // Receive setI
             {/* Chat Tab - Intercept press and show alert */}
             <Tab.Screen
                 name="Chat"
-                component={HomeScreen}
-                options={{
-                    tabBarButton: (props) => (
-                        <TouchableOpacity
-                            {...props}
-                            onPress={() => Alert.alert("Sorry, this feature isn't available yet.")}
-                        />
-                    ),
-                }}
+                component={ChatListPage}
             />
 
             {/* Settings Tab - Intercepts press to show alert */}

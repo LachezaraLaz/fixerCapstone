@@ -39,7 +39,8 @@
     "react-dom": "^18.3.1",
     "react-native": "^0.75.4",
     "react-native-gesture-handler": "^2.20.0",
-    "react-native-maps": "^1.18.1"
+    "react-native-maps": "^1.18.1",
+    "stream-chat": "^8.50.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

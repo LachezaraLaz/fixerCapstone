@@ -12,7 +12,7 @@ const notificationRouter = require('./routes/notificationRoute');
 const quoteRouter = require('./routes/quoteRoute');
 // const contractOfferRouter = require('./routes/contractOfferRoute');
 const getMyProfessionalJobsRouter = require('./routes/getMyProfessionalJobsRoute'); // Import the new route
-
+const { serverClient } = require('./services/streamClient');
 
 const app = express();
 

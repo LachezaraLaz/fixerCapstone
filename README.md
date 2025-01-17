@@ -46,6 +46,8 @@ GOOGLE_MAPS_KEY=AIzaSyBsGtM6ZfPiJ1uSg5gsX2DYacogWq_1Ksg
 PASS_RESET='gmzg blbr jvev ghlb'
 PINO_LOG_LEVEL='info'
 BETTER_STACK_TOKEN='aJkWYiLMUV6RTSeJ2H8dNiwy'
+STREAM_API_KEY=ut27s54hv26w
+STREAM_API_SECRET=wqwnt3c933uqfsgfrjf5xh37cuwzqkyj5hegvwn42mdn6gtyfvgz4pr6hmru6733
 ```
 **WARNING, the ".env" file must never be pushed to main. EVER.**
 

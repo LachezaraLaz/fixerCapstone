@@ -1,2 +1,2 @@
-const IPAddress = 'IP-ADDRESS';
+const IPAddress = '${IPAddress}';
 module.exports = IPAddress;

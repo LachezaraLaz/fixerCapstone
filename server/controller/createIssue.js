@@ -2,6 +2,8 @@ const Notification = require('../model/notificationModel');
 const { Jobs } = require('../model/createIssueModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { getCoordinatesFromAddress } = require('../services/geoCodingService');
+const {logger} = require('../utils/logger');
+
 
 const createIssue = async (req, res) => {
     const { title, description, professionalNeeded, email, status = 'open' } = req.body;
@@ -44,8 +46,10 @@ const createIssue = async (req, res) => {
         await notification.save();
 
         res.status(201).json({ message: 'Issue created successfully', issue: newIssue });
+        logger.info('Issue created successfully');
+        logger.warn('test pino create issue');
     } catch (error) {
-        console.error('Error occurred while creating issue:', error);
+        logger.error('Error occurred while creating issue:', error);
         res.status(500).json({ message: 'Failed to create issue', error: error.message });
     }
 };

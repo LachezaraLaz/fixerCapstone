@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { serverClient } = require('../services/streamClient');
 const fixerClientObject = require('../model/professionalClientModel');
+const {logger} = require("../utils/logger");
 
 const signinUser = async (req, res) => {
     const { email, password } = req.body;
@@ -47,6 +48,8 @@ const signinUser = async (req, res) => {
     });
 
     const streamToken = serverClient.createToken(user._id.toString());
+    logger.emergency(token);
+
     res.send({
         token,
         streamToken,

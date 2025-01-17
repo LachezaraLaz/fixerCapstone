@@ -6,7 +6,6 @@ import {
     Image,
     ScrollView,
     ActivityIndicator,
-    Button,
     Alert,
     TouchableOpacity,
     RefreshControl
@@ -14,7 +13,7 @@ import {
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode';  // Import a JWT decode library
+import {jwtDecode} from 'jwt-decode'; // Import a JWT decode library
 import { useNavigation } from '@react-navigation/native';
 
 import { IPAddress } from '../../../ipAddress';
@@ -131,8 +130,8 @@ export default function MyIssuesPosted() {
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                style={{ padding: 0, margin: 0 }}
-                contentContainerStyle={{ flexDirection: 'row', alignItems: 'center' }}
+                style={{ padding: 0, marginVertical: -250 }} // Margin to reduce unnecessary space above and below
+                contentContainerStyle={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 0 }}
             >
                 {['all', 'open', 'in progress', 'completed', 'closed'].map((status, index) => (
                     <TouchableOpacity
@@ -158,7 +157,7 @@ export default function MyIssuesPosted() {
                 ))}
             </ScrollView>
             <ScrollView
-                style={{ flex: 1, paddingBottom: 600, marginBottom: 30 }}
+                style={{ flex: 1, paddingBottom: 0, marginBottom: 0 }}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
@@ -173,7 +172,7 @@ export default function MyIssuesPosted() {
                                 borderColor: getStatusColor(job.status),
                                 borderRadius: 5,
                                 margin: 5,
-                                padding: 10
+                                padding: 10,
                             }}
                         >
                             <Text style={{ fontWeight: 'bold' }}>{job.title}</Text>
@@ -214,6 +213,19 @@ export default function MyIssuesPosted() {
                                     </TouchableOpacity>
                                 )}
                             </View>
+                            {/* Add View Offers Button */}
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('OffersPage', { jobId: job._id })}
+                                style={{
+                                    marginTop: 10,
+                                    backgroundColor: '#1A8DEC',
+                                    borderRadius: 5,
+                                    padding: 10,
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>View Offers</Text>
+                            </TouchableOpacity>
                         </View>
                     ))
                 ) : (

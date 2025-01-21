@@ -75,7 +75,7 @@
     },
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|react-native-vector-icons|@react-native|expo-location|react-native-maps)/)"
+      "node_modules/(?!(react-native|react-native-vector-icons|@react-native|expo-location|react-native-maps|react-native-reanimated|stream-chat-expo)/)"
     ],
     "reporters": [
       "default",

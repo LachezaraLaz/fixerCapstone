@@ -16,7 +16,7 @@ const NotificationPage = () => {
     const fetchNotifications = async () => {
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get(`http://${IPAddress}:3000/notification`, {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setNotifications(response.data);
@@ -28,7 +28,7 @@ const NotificationPage = () => {
     const toggleReadStatus = async (id, isRead) => {
         const token = await AsyncStorage.getItem('token');
         try {
-            await axios.patch(`http://${IPAddress}:3000/notification/${id}/read`, { isRead: !isRead }, {
+            await axios.patch(`https://fixercapstone-production.up.railway.app/notification/${id}/read`, { isRead: !isRead }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchNotifications();  // Refresh list after update

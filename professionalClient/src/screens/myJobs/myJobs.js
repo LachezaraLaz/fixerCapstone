@@ -18,7 +18,7 @@ export default function MyJobsProfessional() {
                 return;
             }
 
-            const response = await axios.get('http://${IPAddress}:3000/myJobs/get', {
+            const response = await axios.get('https://fixercapstone-production.up.railway.app/myJobs/get', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

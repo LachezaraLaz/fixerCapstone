@@ -14,7 +14,7 @@ export default function ForgotPasswordPage({ navigation }) {
         }
 
         try {
-            const response = await axios.post(`http://${IPAddress}:3000/reset/requestPasswordReset`, { email });
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/reset/requestPasswordReset`, { email });
 
             if (response.status === 200) {
                 Alert.alert("Success", "Check your email for a PIN to reset your password");

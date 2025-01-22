@@ -22,7 +22,7 @@ export default function SignUpPage({ navigation }) {
             return;
         } else {
             try {
-                const response = await axios.post(`http://${IPAddress}:3000/professional/register`, {
+                const response = await axios.post(`https://fixercapstone-production.up.railway.app/professional/register`, {
                     email: email,
                     firstName: firstName,
                     lastName: lastName,

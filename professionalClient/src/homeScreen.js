@@ -23,7 +23,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`http://${IPAddress}:3000/issues`);
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
             setIssues(response.data.jobs);
 
             const uniqueTypes = [
@@ -123,7 +123,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             const issueId = selectedIssue._id;
 
             const response = await axios.post(
-                `http://${IPAddress}:3000/quotes/create`,
+                `https://fixercapstone-production.up.railway.app/quotes/create`,
                 { clientEmail, price, issueId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

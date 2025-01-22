@@ -16,7 +16,7 @@ const CredentialFormPage = () => {
 
             if (token) {
                 // Submit the trade license to the backend with the token
-                await axios.post(`http://${IPAddress}:3000/professional/verify`, {
+                await axios.post(`https://fixercapstone-production.up.railway.app/professional/verify`, {
                     tradeLicense,  // Send trade license in the request body
                 }, {
                     headers: {

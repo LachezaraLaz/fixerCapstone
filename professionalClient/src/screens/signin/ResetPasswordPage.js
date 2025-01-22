@@ -20,7 +20,7 @@ export default function ResetPasswordPage({ route, navigation }) {
         }
 
         try {
-            const response = await axios.post(`http://${IPAddress}:3000/reset/updatePassword`, { email, newPassword });
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/reset/updatePassword`, { email, newPassword });
 
             if (response.status === 200) {
                 Alert.alert('Success', 'Password has been reset successfully');

@@ -15,7 +15,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         }
 
         try {
-            const response = await axios.post(`http://${IPAddress}:3000/client/signin/`, {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/signin/`, {
                 email,
                 password
             });

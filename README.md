@@ -228,7 +228,7 @@ const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECR
 ```javascript
 const fetchNotifications = async () => {
     const token = await AsyncStorage.getItem('token');
-    const response = await axios.get(`http://${IPAddress}:3000/notification`, {
+    const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
         headers: { Authorization: `Bearer ${token}` },
     });
 };

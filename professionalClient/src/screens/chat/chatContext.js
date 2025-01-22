@@ -23,7 +23,6 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         const initChat = async () => {
             try {
-
                 const storedUserId = await AsyncStorage.getItem('userId');
                 const storedUserName = await AsyncStorage.getItem('userName');
                 const storedStreamToken = await AsyncStorage.getItem('streamToken');
@@ -34,7 +33,8 @@ export const ChatProvider = ({ children }) => {
                 }
 
                 // Create a single instance of the Stream client
-                const client = StreamChat.getInstance(STREAM_API_KEY);
+                // const client = StreamChat.getInstance(STREAM_API_KEY);
+                const client = new StreamChat(STREAM_API_KEY); // Seems to work better for professional
 
                 // Connect user with the retrieved credentials
                 await client.connectUser(

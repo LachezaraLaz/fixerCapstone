@@ -28,9 +28,7 @@ import ChatListPage from "./src/screens/chat/chatListPage";
 import ChatPage from "./src/screens/chat/chatPage";
 import { Text } from "react-native";
 
-
 const Stack = createNativeStackNavigator();
-const chatClient = StreamChat.getInstance(STREAM_API_KEY);
 
 const linking = {
     prefixes: ['yourapp://'], // Replace 'yourapp' with your actual app scheme
@@ -50,7 +48,6 @@ export default function App() {
         const checkToken = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
-
                 if (token) {
                     setIsLoggedIn(true);
                 }

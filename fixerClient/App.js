@@ -24,7 +24,6 @@ import { StreamChat } from "stream-chat";
 import { ChatProvider } from "./src/screens/chat/chatContext";
 import ChatListPage from "./src/screens/chat/chatListPage";
 import ChatPage from "./src/screens/chat/chatPage";
-
 import { Text } from "react-native";
 
 const Stack = createNativeStackNavigator();
@@ -81,11 +80,11 @@ export default function App() {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1 }}>
                 <NavigationContainer>
-                        {isLoggedIn ? (
-                            <ChatProvider>
-                                <OverlayProvider>
-                                    <Chat client={chatClient}>
-                                        <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
+                    {isLoggedIn ? (
+                        <ChatProvider>
+                            <OverlayProvider>
+                                <Chat client={chatClient}>
+                                    <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                                         <>
                                             {/* MainTabs with NavBar as the default screen */}
                                             <Stack.Screen
@@ -94,7 +93,6 @@ export default function App() {
                                             >
                                                 {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
                                             </Stack.Screen>
-
 
                                             {/* Additional screens accessible from MainTabs */}
                                             <Stack.Screen
@@ -114,13 +112,12 @@ export default function App() {
                                             <Stack.Screen name="ChatListPage" component={ChatListPage} />
                                             <Stack.Screen name="ChatPage" component={ChatPage} />
                                         </>
-
-                                            </Stack.Navigator>
-                                    </Chat>
-                                </OverlayProvider>
-                            </ChatProvider>
-                        ) : (
-                            <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
+                                    </Stack.Navigator>
+                                </Chat>
+                            </OverlayProvider>
+                        </ChatProvider>
+                    ) : (
+                        <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                             <>
                                 {/* Screens accessible when the user is not logged in */}
                                 <Stack.Screen name="welcomePage" component={WelcomePage} />
@@ -129,9 +126,8 @@ export default function App() {
                                 </Stack.Screen>
                                 <Stack.Screen name="SignUpPage" component={SignUpPage} />
                             </>
-
-                                </Stack.Navigator>
-                        )}
+                        </Stack.Navigator>
+                    )}
                 </NavigationContainer>
             </SafeAreaView>
         </GestureHandlerRootView>

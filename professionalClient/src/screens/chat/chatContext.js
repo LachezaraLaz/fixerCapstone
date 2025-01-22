@@ -33,8 +33,8 @@ export const ChatProvider = ({ children }) => {
                 }
 
                 // Create a single instance of the Stream client
-                // const client = StreamChat.getInstance(STREAM_API_KEY);
-                const client = new StreamChat(STREAM_API_KEY); // Seems to work better for professional
+                const client = StreamChat.getInstance(STREAM_API_KEY);
+                // const client = new StreamChat(STREAM_API_KEY); // Seems to work better for professional
 
                 // Connect user with the retrieved credentials
                 await client.connectUser(

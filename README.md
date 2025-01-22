@@ -194,6 +194,11 @@ This will start the project and output a QR code. Scan this QR code with your ph
     <td>40192306</td>
     <td><a href="https://github.com/thaneekan">thaneekan</a></td>
   </tr>
+  <tr>
+    <td>Ishaï Cohen</td>
+    <td>40188880</td>
+    <td><a href="https://github.com/L3CH3R0">L3CH3R0</a></td>
+  </tr>
 </table>
 
 ## Programming Languages

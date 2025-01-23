@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert} from 'react-native';
+import React, { useState } from 'react';
+import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Modal, Image, StyleSheet} from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
@@ -8,6 +8,7 @@ export default function ContractOffer({ route, navigation }) {
     const { issue } = route.params;
     const [price, setPrice] = React.useState('');
     const [selectedIssue, setSelectedIssue] = React.useState(null);
+    const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
 
     React.useEffect(() => {
         if (issue) {
@@ -45,14 +46,17 @@ export default function ContractOffer({ route, navigation }) {
             );
 
             if (response.status === 201) {
-                Alert.alert('Success', 'Quote submitted successfully!');
-
+                Alert.alert('Success', 'Quote submitted successfully!', [
+                    { text: 'OK', onPress: () => navigation.goBack() }
+                ]);
             } else {
                 Alert.alert('Error', 'Failed to submit the quote.');
             }
         } catch (error) {
             if (error.response?.status === 400) {
-                Alert.alert('Error', 'You have already submitted a quote for this issue.');
+                Alert.alert('Error', 'You have already submitted a quote for this issue.', [
+                    { text: 'OK', onPress: () => navigation.goBack() }
+            ]);
             } else {
                 console.error('Error submitting quote:', error);
                 Alert.alert('Error', 'An error occurred while submitting the quote.');
@@ -98,8 +102,38 @@ export default function ContractOffer({ route, navigation }) {
             {/* Placeholder for Images/Documents */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Related Images/Documents</Text>
-                <Text style={styles.sectionContent}>No attachments provided for this issue.</Text>
+                {issue.imageUrl ? (
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                        <Text style={[styles.sectionContent, { color: 'blue', textDecorationLine: 'underline' }]}>
+                            Image 1
+                        </Text>
+                    </TouchableOpacity>
+                ) : (
+                    <Text style={styles.sectionContent}>No attachments provided for this issue.</Text>
+                )}
             </View>
+
+            {/* Modal for Image */}
+            <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={modalStyles.modalContainer}>
+                    <Image
+                        source={{ uri: issue.imageUrl }}
+                        style={modalStyles.image}
+                        resizeMode="contain"
+                    />
+                    <TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        style={modalStyles.closeButton}
+                    >
+                        <Text style={modalStyles.closeButtonText}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
 
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Fee</Text>
@@ -124,4 +158,29 @@ export default function ContractOffer({ route, navigation }) {
         </ScrollView>
     );
 }
+
+
+const modalStyles = StyleSheet.create({
+    modalContainer: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    image: {
+        width: '90%',
+        height: '70%',
+    },
+    closeButton: {
+        marginTop: 20,
+        padding: 10,
+        backgroundColor: '#fff',
+        borderRadius: 5,
+    },
+    closeButtonText: {
+        color: 'black',
+        fontWeight: 'bold',
+    },
+});
+
 

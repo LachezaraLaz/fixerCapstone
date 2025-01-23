@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';  // Import icons
-
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const ProfilePage = () => {
     const [client, setClient] = useState(null);
@@ -42,6 +41,15 @@ const ProfilePage = () => {
         return <Text>Error loading profile.</Text>;
     }
 
+    // Function to show alert when pencil icon is tapped
+    const handleEditPress = () => {
+        Alert.alert(
+            "Feature Unavailable",
+            "The editing feature is not available yet, but please keep an eye out for future updates!",
+            [{ text: "OK", onPress: () => console.log("Alert closed") }]
+        );
+    };
+
     return (
         <View style={styles.container}>
             {/* Custom Header */}
@@ -52,8 +60,8 @@ const ProfilePage = () => {
 
                 <Text style={styles.headerTitle}>ProfilePage</Text>
 
-                {/* Pencil Icon (Does Nothing for Now) */}
-                <TouchableOpacity>
+                {/* Pencil Icon (Shows Alert When Tapped) */}
+                <TouchableOpacity onPress={handleEditPress}>
                     <MaterialIcons name="edit" size={24} color="black" />
                 </TouchableOpacity>
             </View>
@@ -81,7 +89,7 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between', // Space between back button, title, and edit button
+        justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingVertical: 12,
         backgroundColor: '#fff',
@@ -118,4 +126,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfilePage;
-

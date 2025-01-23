@@ -1,17 +1,15 @@
-import  React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';  // Import icons
-import { IPAddress } from '../../../ipAddress';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const ProfilePage = () => {
     const [professional, setProfessional] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
-    // Fetch the professional's profile data
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
@@ -44,7 +42,6 @@ const ProfilePage = () => {
         return <Text>Error loading profile.</Text>;
     }
 
-    // Function to show alert when pencil icon is tapped
     const handleEditPress = () => {
         Alert.alert(
             "Feature Unavailable",
@@ -73,13 +70,20 @@ const ProfilePage = () => {
                 </TouchableOpacity>
             </View>
 
-            {/* Profile Details */}
-            <View style={styles.header}>
+            {/* Profile Details Section */}
+            <View style={styles.profileContainer}>
+                {/* Profile Picture */}
                 <Image source={require('../../../assets/profile.jpg')} style={styles.profileImage} />
+
+                {/* Name & Rating */}
                 <View style={styles.nameContainer}>
                     <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
-                    <Text style={styles.ratingText}>⭐ {professional.rating || 0}</Text>
+                    {professional.rating !== undefined && (
+                        <Text style={styles.ratingText}> ⭐ {professional.rating || 0}</Text>
+                    )}
                 </View>
+
+                {/* Email */}
                 <Text style={styles.emailText}>{professional.email}</Text>
             </View>
 
@@ -105,11 +109,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
         padding: 16,
+        alignItems: 'center', // Ensure everything is centered
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between', // Space between back button, title, and edit button
+        justifyContent: 'space-between',
+        width: '100%',
         paddingHorizontal: 16,
         paddingVertical: 12,
         backgroundColor: '#fff',
@@ -118,30 +124,36 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
+    profileContainer: {
+        alignItems: 'center',
+        marginTop: 20,
+        width: '100%', // Ensure full width for alignment
+    },
     profileImage: {
         width: 100,
         height: 100,
         borderRadius: 50,
-        marginBottom: 16,
+        marginBottom: 10, // Extra space to separate from name
     },
     nameContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 4,
+        justifyContent: 'center',
     },
     nameText: {
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: 'bold',
         color: '#333333',
-        marginRight: 8,
     },
     ratingText: {
         fontSize: 18,
         color: '#FFD700',
+        marginLeft: 6, // Add space between name and star
     },
     emailText: {
         fontSize: 16,
         color: '#666666',
+        marginTop: 6, // Space between name and email
     },
     verifiedText: {
         fontSize: 20,
@@ -159,6 +171,7 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         borderRadius: 8,
         alignItems: 'center',
+        width: '90%',
     },
     sectionText: {
         fontSize: 18,
@@ -167,4 +180,5 @@ const styles = StyleSheet.create({
 });
 
 export default ProfilePage;
+
 

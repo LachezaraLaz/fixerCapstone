@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const adminRouter = require('./routes/fixerAdminRoutes');
 const professionalClientRoute = require('./routes/professionalClientRoute');
 const fixerClientRoute = require('./routes/fixerClientRoute');
 const createIssueRoute = require('./routes/createIssueRoute');
@@ -28,6 +29,7 @@ const server = app.listen(PORT, () => {
   console.log("server is running on port", server.address().port);
 });
 
+app.use('/admin', adminRouter);
 app.use('/professional', professionalClientRoute.professionalRouter);
 app.use('/client', fixerClientRoute.fixerClientRouter);
 app.use('/issue', createIssueRoute.createIssueRouter);

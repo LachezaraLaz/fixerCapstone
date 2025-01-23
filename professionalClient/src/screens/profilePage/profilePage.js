@@ -1,36 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, Button } from 'react-native';
+import  React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, Button, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';  // To retrieve JWT
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';  // Import icons
 import { IPAddress } from '../../../ipAddress';
 
 const ProfilePage = () => {
-    const [professional, setProfessional] = useState(null);  // State for professional's data
-    const [loading, setLoading] = useState(true);  // State to manage loading
+    const [professional, setProfessional] = useState(null);
+    const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
     // Fetch the professional's profile data
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                // Get the JWT token from AsyncStorage
                 const token = await AsyncStorage.getItem('token');
                 if (token) {
-                    // Send request to the backend with the JWT token
                     const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/profile`, {
                         headers: {
-                            Authorization: `Bearer ${token}`  // Send JWT in Authorization header
+                            Authorization: `Bearer ${token}`
                         }
                     });
-                    setProfessional(response.data);  // Set professional data
+                    setProfessional(response.data);
                 } else {
                     console.error('No token found');
                 }
             } catch (error) {
                 console.error('Error fetching profile data:', error);
             } finally {
-                setLoading(false);  // Set loading to false after data fetch
+                setLoading(false);
             }
         };
 
@@ -38,42 +37,58 @@ const ProfilePage = () => {
     }, []);
 
     if (loading) {
-        return <Text>Loading...</Text>;  // Show loading text while fetching
+        return <Text>Loading...</Text>;
     }
-
-    const handleVerifyCredentials = () => {
-        navigation.navigate('CredentialFormPage');  // Navigate to the credential form page
-    };
 
     if (!professional) {
-        return <Text>Error loading profile.</Text>;  // Handle error if profile is not found
+        return <Text>Error loading profile.</Text>;
     }
+
+    // Function to show alert when pencil icon is tapped
+    const handleEditPress = () => {
+        Alert.alert(
+            "Feature Unavailable",
+            "The editing feature is not available yet, but please keep an eye out for future updates!",
+            [{ text: "OK", onPress: () => console.log("Alert closed") }]
+        );
+    };
+
+    const handleVerifyCredentials = () => {
+        navigation.navigate('CredentialFormPage');
+    };
 
     return (
         <View style={styles.container}>
+            {/* Custom Header */}
             <View style={styles.header}>
-                {/* Profile Picture */}
-                <Image source={require('../../../assets/profile.jpg')} style={styles.profileImage} />
+                <TouchableOpacity onPress={() => navigation.navigate('MainTabs')}>
+                    <Ionicons name="arrow-back" size={28} color="#333" />
+                </TouchableOpacity>
 
-                {/* Name and Rating */}
+                <Text style={styles.headerTitle}>ProfilePage</Text>
+
+                {/* Pencil Icon (Shows Alert When Tapped) */}
+                <TouchableOpacity onPress={handleEditPress}>
+                    <MaterialIcons name="edit" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
+
+            {/* Profile Details */}
+            <View style={styles.header}>
+                <Image source={require('../../../assets/profile.jpg')} style={styles.profileImage} />
                 <View style={styles.nameContainer}>
                     <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
                     <Text style={styles.ratingText}>⭐ {professional.rating || 0}</Text>
                 </View>
-
-                {/* Email */}
                 <Text style={styles.emailText}>{professional.email}</Text>
             </View>
 
             {/* CONDITIONAL VIEWS BASED ON formComplete AND approved */}
             {!professional.formComplete ? (
-                // First view: Form not completed
                 <Button title="Verify Credentials" onPress={handleVerifyCredentials} />
             ) : professional.approved ? (
-                // Third view: Credentials verified
                 <Text style={styles.verifiedText}>Credentials Verified!</Text>
             ) : (
-                // Second view: Form completed, waiting for approval
                 <Text style={styles.waitingText}>Credential Verification Status: Waiting...</Text>
             )}
 
@@ -92,13 +107,21 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     header: {
+        flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 24,
+        justifyContent: 'space-between', // Space between back button, title, and edit button
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
     },
     profileImage: {
         width: 100,
         height: 100,
-        borderRadius: 50,  // Circular profile image
+        borderRadius: 50,
         marginBottom: 16,
     },
     nameContainer: {
@@ -144,3 +167,4 @@ const styles = StyleSheet.create({
 });
 
 export default ProfilePage;
+

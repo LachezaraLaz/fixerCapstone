@@ -194,6 +194,22 @@ export default function MyIssuesPosted() {
                                 >
                                     <Text style={{ color: '#1A8DEC' }}>Edit</Text>
                                 </TouchableOpacity>
+
+
+                                {(job.status.toLowerCase() === 'completed' || job.status.toLowerCase() === 'closed') && (
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('addReview', { jobId: job._id })}
+                                        style={{
+                                            borderColor: '#1A8DEC',
+                                            borderWidth: 1,
+                                            borderRadius: 5,
+                                            padding: 5,
+                                        }}
+                                    >
+                                        <Text style={{ color: '#1A8DEC' }}>Add a Review</Text>
+                                    </TouchableOpacity>
+                                )}
+
                                 {deletingJobId === job._id ? (
                                     <ActivityIndicator size="small" color="#0000ff" />
                                 ) : (

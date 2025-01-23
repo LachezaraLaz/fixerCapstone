@@ -1,6 +1,6 @@
 // ChannelScreen.js
 import React from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { Channel, MessageList, MessageInput } from "stream-chat-expo";
 import { useChatContext } from "./chatContext"; // Import AppContext hook
 

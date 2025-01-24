@@ -49,6 +49,11 @@ export default function SignInPage() {
     };
 
     return (
+        <div style={{ fontFamily: "'Poppins', sans-serif" }}>
+            {/* Header */}
+            <header style={styles.header}>
+                <h1 style={styles.headerText}>Fixer Admin</h1>
+            </header>
         <div style={styles.container}>
             <h1 style={styles.title}>Sign In</h1>
             <form onSubmit={handleSubmit} style={styles.form}>
@@ -87,14 +92,35 @@ export default function SignInPage() {
                 </span>
             </p>
         </div>
+    </div>
     );
 }
 
 // Inline styles
 const styles = {
+    header: {
+        backgroundColor: "#f4f4f4",
+        padding: "20px 0px",
+        textAlign: "left",
+        width: "100%",
+        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        zIndex: 1000,
+    },
+    headerText: {
+        fontFamily: "'Poppins', sans-serif",
+        fontSize: "28px",
+        fontWeight: "700",
+        margin: 0,
+        color: "#333",
+        padding: "0 20px",
+    },
+
     container: {
         maxWidth: "400px",
-        margin: "50px auto",
+        margin: "120px auto",
         padding: "20px",
         border: "1px solid #ddd",
         borderRadius: "10px",
@@ -110,13 +136,15 @@ const styles = {
         display: "flex",
         flexDirection: "column",
         gap: "10px",
+        alignItems: "center",
     },
     input: {
-        width: "100%",
+        width: "80%",
         padding: "10px",
         margin: "5px 0",
         border: "1px solid #ccc",
         borderRadius: "5px",
+        boxSizing: "border-box",
     },
     button: {
         backgroundColor: "#007bff",
@@ -125,6 +153,7 @@ const styles = {
         border: "none",
         borderRadius: "5px",
         cursor: "pointer",
+        width: "80%",
     },
     error: {
         color: "red",

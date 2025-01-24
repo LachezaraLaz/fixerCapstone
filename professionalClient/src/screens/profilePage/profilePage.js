@@ -1,36 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, Button } from 'react-native';
+import { View, Text, Image, StyleSheet, Button, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';  // To retrieve JWT
-import { IPAddress } from '../../../ipAddress';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const ProfilePage = () => {
-    const [professional, setProfessional] = useState(null);  // State for professional's data
-    const [loading, setLoading] = useState(true);  // State to manage loading
+    const [professional, setProfessional] = useState(null);
+    const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
-    // Fetch the professional's profile data
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                // Get the JWT token from AsyncStorage
                 const token = await AsyncStorage.getItem('token');
                 if (token) {
-                    // Send request to the backend with the JWT token
                     const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/profile`, {
                         headers: {
-                            Authorization: `Bearer ${token}`  // Send JWT in Authorization header
+                            Authorization: `Bearer ${token}`
                         }
                     });
-                    setProfessional(response.data);  // Set professional data
+                    setProfessional(response.data);
                 } else {
                     console.error('No token found');
                 }
             } catch (error) {
                 console.error('Error fetching profile data:', error);
             } finally {
-                setLoading(false);  // Set loading to false after data fetch
+                setLoading(false);
             }
         };
 
@@ -38,27 +35,52 @@ const ProfilePage = () => {
     }, []);
 
     if (loading) {
-        return <Text>Loading...</Text>;  // Show loading text while fetching
+        return <Text>Loading...</Text>;
     }
-
-    const handleVerifyCredentials = () => {
-        navigation.navigate('CredentialFormPage');  // Navigate to the credential form page
-    };
 
     if (!professional) {
-        return <Text>Error loading profile.</Text>;  // Handle error if profile is not found
+        return <Text>Error loading profile.</Text>;
     }
+
+    const handleEditPress = () => {
+        Alert.alert(
+            "Feature Unavailable",
+            "The editing feature is not available yet, but please keep an eye out for future updates!",
+            [{ text: "OK", onPress: () => console.log("Alert closed") }]
+        );
+    };
+
+    const handleVerifyCredentials = () => {
+        navigation.navigate('CredentialFormPage');
+    };
 
     return (
         <View style={styles.container}>
+            {/* Custom Header */}
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.navigate('MainTabs')}>
+                    <Ionicons name="arrow-back" size={28} color="#333" />
+                </TouchableOpacity>
+
+                <Text style={styles.headerTitle}>ProfilePage</Text>
+
+                {/* Pencil Icon (Shows Alert When Tapped) */}
+                <TouchableOpacity onPress={handleEditPress}>
+                    <MaterialIcons name="edit" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
+
+            {/* Profile Details Section */}
+            <View style={styles.profileContainer}>
                 {/* Profile Picture */}
                 <Image source={require('../../../assets/profile.jpg')} style={styles.profileImage} />
 
-                {/* Name and Rating */}
+                {/* Name & Rating */}
                 <View style={styles.nameContainer}>
                     <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
-                    <Text style={styles.ratingText}>⭐ {professional.rating || 0}</Text>
+                    {professional.rating !== undefined && (
+                        <Text style={styles.ratingText}> ⭐ {professional.rating || 0}</Text>
+                    )}
                 </View>
 
                 {/* Email */}
@@ -67,13 +89,10 @@ const ProfilePage = () => {
 
             {/* CONDITIONAL VIEWS BASED ON formComplete AND approved */}
             {!professional.formComplete ? (
-                // First view: Form not completed
                 <Button title="Verify Credentials" onPress={handleVerifyCredentials} />
             ) : professional.approved ? (
-                // Third view: Credentials verified
                 <Text style={styles.verifiedText}>Credentials Verified!</Text>
             ) : (
-                // Second view: Form completed, waiting for approval
                 <Text style={styles.waitingText}>Credential Verification Status: Waiting...</Text>
             )}
 
@@ -90,35 +109,51 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
         padding: 16,
+        alignItems: 'center', // Ensure everything is centered
     },
     header: {
+        flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 24,
+        justifyContent: 'space-between',
+        width: '100%',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    profileContainer: {
+        alignItems: 'center',
+        marginTop: 20,
+        width: '100%', // Ensure full width for alignment
     },
     profileImage: {
         width: 100,
         height: 100,
-        borderRadius: 50,  // Circular profile image
-        marginBottom: 16,
+        borderRadius: 50,
+        marginBottom: 10, // Extra space to separate from name
     },
     nameContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 4,
+        justifyContent: 'center',
     },
     nameText: {
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: 'bold',
         color: '#333333',
-        marginRight: 8,
     },
     ratingText: {
         fontSize: 18,
         color: '#FFD700',
+        marginLeft: 6, // Add space between name and star
     },
     emailText: {
         fontSize: 16,
         color: '#666666',
+        marginTop: 6, // Space between name and email
     },
     verifiedText: {
         fontSize: 20,
@@ -136,6 +171,7 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         borderRadius: 8,
         alignItems: 'center',
+        width: '90%',
     },
     sectionText: {
         fontSize: 18,
@@ -144,3 +180,5 @@ const styles = StyleSheet.create({
 });
 
 export default ProfilePage;
+
+

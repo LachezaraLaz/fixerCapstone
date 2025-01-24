@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
-import ProfileScreen from "./src/screens/profilePage/profilePage";
+import ProfilePage from "./src/screens/profilePage/profilePage";
 import CredentialFormPage from "./src/screens/credentialFormPage/credentialFormPage";
 import UploadID from "./src/screens/uploadID/uploadID";
 import ThankYouPage from "./src/tyCredentialEnd";
@@ -116,7 +116,11 @@ export default function App() {
                                             </Stack.Screen>
                                             {/* Additional screens accessible from MainTabs */}
 
-                                            <Stack.Screen name="ProfilePage" component={ProfileScreen} />
+                                            <Stack.Screen
+                                                name="ProfilePage"
+                                                component={ProfilePage}
+                                                options={{ headerShown: false }}  // This hides the default navigation header
+                                            />
                                             <Stack.Screen name="ContractOffer" component={ContractOffer} />
                                             <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
                                             <Stack.Screen name="UploadID" component={UploadID} />

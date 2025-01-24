@@ -1,4 +1,5 @@
-const { Jobs } = require('../model/createIssueModel'); // Import the Jobs model
+const { Jobs } = require('../model/createIssueModel');
+const { fixerClient } = require('../model/professionalClientModel');
 
 exports.addReview = async (req, res) => {
     const { jobId, rating, comment } = req.body;
@@ -10,24 +11,38 @@ exports.addReview = async (req, res) => {
     try {
         // Find the job by ID
         const job = await Jobs.findById(jobId);
-
         if (!job) {
             return res.status(404).json({ message: 'Job not found.' });
         }
 
-        // Only allow reviews for completed jobs
-        if (job.status.toLowerCase() !== 'closed' && job.status.toLowerCase() !== 'completed') {
+        // Ensure the job is completed or closed
+        if (job.status !== 'Closed' && job.status !== 'Completed') {
             return res.status(400).json({ message: 'Reviews can only be added to completed jobs.' });
         }
 
-        // Add the review
+        // Update the job with the review
         job.rating = rating;
         job.comment = comment;
-
-        // Save the updated job
         await job.save();
 
-        res.status(200).json({ message: 'Review added successfully!', job });
+        // Get professional from job
+        const proEmail = job.professionalEmail;
+        if (!proEmail) {
+            return res.status(404).json({ message: 'Professional email not found in the job.' });
+        }
+
+        // Find the professional account
+        const professional = await fixerClient.findOne({ email: proEmail });
+        if (!professional) {
+            return res.status(404).json({ message: 'Professional not found.' });
+        }
+
+        // Update fields
+        professional.totalRating = ((professional.totalRating * professional.reviewCount) + rating) / (professional.reviewCount + 1);
+        professional.reviewCount += 1;
+        await professional.save();
+
+        res.status(200).json({ message: 'Review added successfully!', job, professional });
     } catch (error) {
         console.error('Error adding review:', error);
         res.status(500).json({ message: 'Internal server error.' });

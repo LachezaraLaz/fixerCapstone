@@ -179,6 +179,9 @@ export default function MyIssuesPosted() {
                             <Text style={{ color: getStatusColor(job.status) }}>{job.status}</Text>
                             <Text>Professional Needed: {job.professionalNeeded}</Text>
                             <Text style={{ marginBottom: 10 }}>{job.description}</Text>
+                            {job.rating && (
+                                <Text style={{ marginBottom: 10 }}>You Rated this Job a  {job.rating}</Text>
+                            )}
                             {job.imageUrl && (
                                 <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
                             )}
@@ -206,7 +209,7 @@ export default function MyIssuesPosted() {
                                             padding: 5,
                                         }}
                                     >
-                                        <Text style={{ color: '#1A8DEC' }}>Add a Review</Text>
+                                        <Text style={{ color: '#1A8DEC' }}>Add or Modify a Review</Text>
                                     </TouchableOpacity>
                                 )}
 

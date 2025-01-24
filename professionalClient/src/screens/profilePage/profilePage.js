@@ -58,7 +58,7 @@ const ProfilePage = () => {
                 {/* Name and Rating */}
                 <View style={styles.nameContainer}>
                     <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
-                    <Text style={styles.ratingText}>⭐ {professional.rating || 0}</Text>
+                    <Text style={styles.ratingText}>⭐ {professional.totalRating || 0}</Text>
                 </View>
 
                 {/* Email */}

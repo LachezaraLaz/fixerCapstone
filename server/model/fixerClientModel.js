@@ -23,4 +23,4 @@ const fixerClientModel = new mongoose.Schema({
 
 const fixerClient = mongoose.model('ClientInfo', fixerClientModel);
 
-module.exports = {fixerClient};
+module.exports = { fixerClient };

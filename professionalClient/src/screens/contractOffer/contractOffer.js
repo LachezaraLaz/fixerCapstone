@@ -1,18 +1,59 @@
 import React, { useState } from 'react';
 import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Modal, Image, StyleSheet} from 'react-native';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
+import { IPAddress } from '../../../ipAddress';
 
 export default function ContractOffer({ route, navigation }) {
     const { issue } = route.params;
     const [price, setPrice] = React.useState('');
     const [selectedIssue, setSelectedIssue] = React.useState(null);
     const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
+    const [userAddress, setUserAddress] = useState(null);
+
+    const fetchUserProfile = async (email) => {
+        try {
+            console.log('Fetching profile for email:', email);
+    
+            const token = await AsyncStorage.getItem('token');
+
+            const response = await axios.get(`http://${IPAddress}:3000/users/user/${email}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+    
+            // Log the response data for debugging
+            console.log('Response data:', response.data);
+    
+            // Handle a successful response
+            if (response.status === 200) {
+                setUserAddress({
+                    street: response.data.street,
+                    postalCode: response.data.postalCode,
+                    provinceOrState: response.data.provinceOrState,
+                    country: response.data.country,
+                });
+            }
+        } catch (error) {
+            // Log detailed error information for debugging
+            console.error(
+                'Error fetching user profile:',
+                error.response?.data || error.message
+            );
+    
+            // Show an error alert to the user
+            Alert.alert(
+                'Error',
+                error.response?.data?.message || 'Unable to fetch user address.'
+            );
+        }
+    };
+    
 
     React.useEffect(() => {
         if (issue) {
             setSelectedIssue(issue);
+            fetchUserProfile(issue.userEmail);
         }
     }, [issue]);
 
@@ -78,17 +119,17 @@ export default function ContractOffer({ route, navigation }) {
                 <Text style={styles.label}>Professional Needed:</Text>
                 <Text style={styles.value}>{issue.professionalNeeded}</Text>
 
-                {issue.address && (
-                    <>
-                        <Text style={styles.label}>Address:</Text>
-                        <Text style={styles.value}>{issue.address}</Text>
-                    </>
-                )}
-
                 <Text style={styles.label}>Coordinates:</Text>
-                <Text style={styles.value}>
-                    Latitude: {issue.latitude}, Longitude: {issue.longitude}
-                </Text>
+                {userAddress && (
+                    <View >
+                        <Text style={styles.value}>Street: {userAddress.street || 'N/A'}</Text>
+                        <Text style={styles.value}>Postal Code: {userAddress.postalCode || 'N/A'}</Text>
+                        <Text style={styles.value}>Province/State: {userAddress.provinceOrState || 'N/A'}</Text>
+                        <Text style={styles.value}>Country: {userAddress.country || 'N/A'}</Text>
+                        <Text style={styles.value}>Latitude: {issue.latitude}</Text>
+                        <Text style={styles.value}>Longitude: {issue.longitude}</Text>
+                    </View>
+                )}
             </View>
 
             {/* Additional Section */}

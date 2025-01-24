@@ -14,6 +14,12 @@ const AddReview = ({ navigation, route }) => {
             Alert.alert('Error', 'Please provide both a rating and a comment.');
             return;
         }
+        const numericRating = parseInt(rating, 10);
+
+        if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
+            Alert.alert('Error', 'Rating must be a number between 1 and 5.');
+            return;
+        }
 
         try {
             // Send the review data to the backend

@@ -12,6 +12,7 @@ const createIssueModel = new mongoose.Schema({
     longitude: { type: Number },
     rating: { type: Number, min: 1, max: 5 },
     comment: { type: String },
+    professionalEmail: { type: String },
 }, {
     collection: 'jobs'
 });

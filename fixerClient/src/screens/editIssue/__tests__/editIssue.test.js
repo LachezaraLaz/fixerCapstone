@@ -11,7 +11,6 @@ jest.mock('expo-image-picker', () => ({
         Promise.resolve({ canceled: false, assets: [{ uri: 'test-image-uri' }] })
     ),
 }));
-
 jest.mock('@react-native-async-storage/async-storage', () => ({
     getItem: jest.fn(),
 }));
@@ -33,31 +32,71 @@ describe('EditIssue Component', () => {
             data: { title: 'Test Job', description: 'A test description.', professionalNeeded: 'Plumber', image: null },
         });
 
-        const { getByPlaceholderText } = render(<EditIssue navigation={mockNavigation} route={route} />);
+        const { getByPlaceholderText, queryByTestId } = render(<EditIssue navigation={mockNavigation} route={route} />);
 
-        await waitFor(() => expect(getByPlaceholderText('Title').props.value).toBe('Test Job'));
+        // Wait for the loading indicator to disappear
+        await waitFor(() => expect(queryByTestId('ActivityIndicator')).toBeNull());
+
+        // Check if the fetched title is displayed in the input field
+        expect(getByPlaceholderText('Title').props.value).toBe('Test Job');
     });
 
     test('updates job successfully', async () => {
         AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
         axios.put.mockResolvedValueOnce({ status: 200 });
 
-        const { getByPlaceholderText, getByText } = render(<EditIssue navigation={mockNavigation} route={route} />);
+        const { getByPlaceholderText, getByText, queryByTestId } = render(
+            <EditIssue navigation={mockNavigation} route={route} />
+        );
+
+        // Wait for the loading indicator to disappear
+        await waitFor(() => expect(queryByTestId('ActivityIndicator')).toBeNull());
+
+        // Simulate selecting "Plumber" for Professional Needed
+        fireEvent.press(getByText('Plumber'));
+
+        // Simulate selecting "Other" to set `other = true`
+        fireEvent.press(getByText('Other'));
+
+        // Wait for the issue description input to appear
+        await waitFor(() => expect(getByPlaceholderText('Describe the issue...')).toBeTruthy());
+
+        // Update the inputs
         fireEvent.changeText(getByPlaceholderText('Title'), 'Updated Job Title');
+        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'Updated description');
+
+        // Verify the inputs have updated
+        expect(getByPlaceholderText('Title').props.value).toBe('Updated Job Title');
+        expect(getByPlaceholderText('Describe the issue...').props.value).toBe('Updated description');
+
+        // Trigger the save changes button
         fireEvent.press(getByText('Save Changes'));
 
+        // Wait for axios.put to be called
         await waitFor(() => expect(axios.put).toHaveBeenCalledTimes(1));
+
+        // Verify success alert and navigation
         expect(Alert.alert).toHaveBeenCalledWith('Job updated successfully');
         expect(mockNavigation.goBack).toHaveBeenCalled();
     });
+
+
 
     test('shows an error alert if update fails', async () => {
         AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
         axios.put.mockRejectedValueOnce(new Error('Network error'));
 
-        const { getByText } = render(<EditIssue navigation={mockNavigation} route={route} />);
+        const { getByText, queryByTestId } = render(<EditIssue navigation={mockNavigation} route={route} />);
+
+        // Wait for the loading indicator to disappear
+        await waitFor(() => expect(queryByTestId('ActivityIndicator')).toBeNull());
+
+        // Attempt to save changes
         fireEvent.press(getByText('Save Changes'));
 
-        await waitFor(() => expect(Alert.alert).toHaveBeenCalledWith('An error occurred while updating the job'));
+        // Verify the error alert
+        await waitFor(() =>
+            expect(Alert.alert).toHaveBeenCalledWith('An error occurred while updating the job')
+        );
     });
 });

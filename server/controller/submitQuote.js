@@ -149,6 +149,9 @@ const updateQuoteStatus = async (req, res) => {
                 return res.status(404).json({ message: 'Failed to update the quote.' });
             }
 
+            // Update the status of the associated issue to "in progress"
+            await Jobs.findByIdAndUpdate(quote.issueId, { status: 'In progress' });
+
             // Automatically reject all other quotes for the same job
             await Quotes.updateMany(
                 { issueId: quote.issueId, _id: { $ne: quoteId } },
@@ -166,7 +169,7 @@ const updateQuoteStatus = async (req, res) => {
             // Notify the professional whose quote was accepted
             const notification = new Notification({
                 userId: professional._id, // Professional's ID
-                message: `Your quote for the job titled "${issue.title}" has been accepted.`,
+                message: `Your quote for the job titled "${issue.title}" has been accepted. The job is now in progress.`,
                 isRead: false,
             });
             await notification.save();
@@ -189,7 +192,7 @@ const updateQuoteStatus = async (req, res) => {
                 }
             }
 
-            res.status(200).json({ message: `Quote accepted and others rejected.`, quote: updatedQuote });
+            res.status(200).json({ message: `Quote accepted, others rejected and job updated to "in progress".`, quote: updatedQuote });
         } else if (status === 'rejected') {
             // Handle manual rejection of a quote
             const updatedQuote = await Quotes.findByIdAndUpdate(

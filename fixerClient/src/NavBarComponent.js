@@ -7,6 +7,7 @@ import MyIssuesPosted from "./screens/myIssuesPosted/myIssuesPosted";
 import ChatListPage from '../src/screens/chat/chatListPage';
 import { Ionicons } from '@expo/vector-icons';
 
+
 const Tab = createBottomTabNavigator();
 
 export default function NavBar({ setIsLoggedIn }) {  // Receive setIsLoggedIn as a prop
@@ -43,24 +44,15 @@ export default function NavBar({ setIsLoggedIn }) {  // Receive setIsLoggedIn as
             <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
             <Tab.Screen name="CreateIssue" component={CreateIssue} />
 
-            {/* Chat Tab - Intercept press and show alert */}
             <Tab.Screen
                 name="Chat"
                 component={ChatListPage}
             />
 
             {/* Settings Tab - Intercepts press to show alert */}
-            <Tab.Screen
-                name="Settings"
-                component={HomeScreen}
-                options={{
-                    tabBarButton: (props) => (
-                        <TouchableOpacity
-                            {...props}
-                            onPress={() => Alert.alert("Sorry, this feature isn't available yet.")}
-                        />
-                    ),
-                }}
+            <Tab.Screen name="Settings"
+                        component={SettingsPage}
+                        options={{ headerShown: false }}
             />
         </Tab.Navigator>
     );

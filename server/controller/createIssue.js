@@ -44,7 +44,6 @@ const createIssue = async (req, res) => {
             isRead: false
         });
         await notification.save();
-        console.log("notification", notification);
 
         res.status(201).json({ message: 'Issue created successfully', issue: newIssue });
         logger.info('Issue created successfully');

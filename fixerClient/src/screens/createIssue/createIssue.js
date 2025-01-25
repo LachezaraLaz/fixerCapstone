@@ -54,6 +54,7 @@ export default function CreateIssue({ navigation }) {
         }
     };
 
+    // posting the issue by the user
     const postIssue = async () => {
         if (!title || !professionalNeeded || !description) {
             Alert.alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");

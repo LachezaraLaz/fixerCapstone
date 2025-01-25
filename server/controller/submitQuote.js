@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
-const { Quotes } = require('../model/quoteModel');
 const mongoose = require('mongoose');
+const { Quotes } = require('../model/quoteModel');
 const Notification = require('../model/notificationModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { Jobs } = require('../model/createIssueModel');
+const { logger } = require('../utils/logger');
 
 // Middleware to authenticate JWT
 const authenticateJWT = (req, res, next) => {
@@ -32,7 +33,7 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-// Function to create a new quote
+// POST /quotes/create route to create a new quote
 const submitQuote = async (req, res) => {
     console.log('User data in submitQuote:', req.user); // Log the user data
 
@@ -55,6 +56,7 @@ const submitQuote = async (req, res) => {
             return res.status(400).json({ message: 'You have already submitted a quote for this issue.' });
         }
 
+        // Fetch client information
         const clientInfo = await fixerClient.findOne({ email: clientEmail });
         if (!clientInfo) {
             return res.status(404).json({ message: 'Client information not found' });
@@ -79,7 +81,8 @@ const submitQuote = async (req, res) => {
             message: `Your issue titled "${issue.title}" has received a new quote.`,
             isRead: false
         });
-        await notification.save();        
+        await notification.save();
+        logger.info("new quote has been created for issue number:", issueId, "and a notification has been sent to the client");        
 
         res.status(201).json({ message: 'Quote created successfully', quote: newQuote });
     } catch (error) {
@@ -88,7 +91,8 @@ const submitQuote = async (req, res) => {
     }
 };
 
-// Function to fetch quotes for a specific job
+
+// GET /quotes/job/:jobId route to fetch quotes for a specific job
 const getQuotesByJob = async (req, res) => {
     const { jobId } = req.params;
 
@@ -120,8 +124,7 @@ const getQuotesByJob = async (req, res) => {
     }
 };
 
-
-// Function to update quotes status
+// GET /quotes/:quoteId route to update quotes status
 const updateQuoteStatus = async (req, res) => {
     const { quoteId } = req.params;
     const { status } = req.body;
@@ -151,12 +154,14 @@ const updateQuoteStatus = async (req, res) => {
 
             // Update the status of the associated issue to "in progress"
             await Jobs.findByIdAndUpdate(quote.issueId, { status: 'In progress' });
+            logger.info("issue number", issueId, "has been updated to in progress because the client accepted a quote");
 
             // Automatically reject all other quotes for the same job
             await Quotes.updateMany(
                 { issueId: quote.issueId, _id: { $ne: quoteId } },
                 { status: 'rejected' }
             );
+            logger.info("all other quotes were rejected");
 
             // Fetch related information for notification
             const professional = await fixerClient.findOne({ email: updatedQuote.professionalEmail });
@@ -173,6 +178,7 @@ const updateQuoteStatus = async (req, res) => {
                 isRead: false,
             });
             await notification.save();
+            logger.info("the accepted quote recieved a notification");
 
             // Notify other professionals whose quotes were rejected
             const otherProfessionals = await Quotes.find({
@@ -192,6 +198,7 @@ const updateQuoteStatus = async (req, res) => {
                 }
             }
 
+            logger.info("the rejected quotes recieved a notification");
             res.status(200).json({ message: `Quote accepted, others rejected and job updated to "in progress".`, quote: updatedQuote });
         } else if (status === 'rejected') {
             // Handle manual rejection of a quote
@@ -219,6 +226,8 @@ const updateQuoteStatus = async (req, res) => {
                 isRead: false,
             });
             await notification.save();
+
+            logger.info("a rejected quote recieved a notification for issue number", issueId);
 
             res.status(200).json({ message: `Quote rejected successfully.`, quote: updatedQuote });
         }

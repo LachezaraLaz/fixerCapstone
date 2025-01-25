@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { IPAddress } from '../../../ipAddress';
 
 const NotificationPage = () => {
     const [notifications, setNotifications] = useState([]); // Store notifications
@@ -19,7 +20,7 @@ const NotificationPage = () => {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get('https://fixercapstone-production.up.railway.app/notification', {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setNotifications(response.data);

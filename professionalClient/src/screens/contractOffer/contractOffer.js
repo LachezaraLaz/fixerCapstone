@@ -18,7 +18,7 @@ export default function ContractOffer({ route, navigation }) {
     
             const token = await AsyncStorage.getItem('token');
 
-            const response = await axios.get(`http://${IPAddress}:3000/users/user/${email}`, {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/users/user/${email}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
     

@@ -2,7 +2,7 @@ const Notification = require('../model/notificationModel');
 const { Jobs } = require('../model/createIssueModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { getCoordinatesFromAddress } = require('../services/geoCodingService');
-const {logger} = require('../utils/logger');
+const { logger } = require('../utils/logger');
 
 
 const createIssue = async (req, res) => {
@@ -44,6 +44,7 @@ const createIssue = async (req, res) => {
             isRead: false
         });
         await notification.save();
+        console.log("notification", notification);
 
         res.status(201).json({ message: 'Issue created successfully', issue: newIssue });
         logger.info('Issue created successfully');

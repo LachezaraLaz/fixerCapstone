@@ -5,7 +5,7 @@ import HomeScreen from './homeScreen';
 import CreateIssue from './screens/createIssue/createIssue';
 import MyIssuesPosted from "./screens/myIssuesPosted/myIssuesPosted";
 import ChatListPage from '../src/screens/chat/chatListPage';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 

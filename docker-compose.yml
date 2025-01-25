@@ -28,15 +28,3 @@ services:
     volumes:
       - ./fixerClient:/app
     command: npx expo start --port 19003
-
-  server:
-    build:
-      context: .
-      dockerfile: server/Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./server:/server
-      - /server/node_modules
-    command: sh -c "npm install && npx nodemon index.js"
-

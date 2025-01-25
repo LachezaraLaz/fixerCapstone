@@ -72,12 +72,15 @@ const ProfilePage = () => {
 
             {/* CONDITIONAL VIEWS BASED ON formComplete AND approved */}
             {!professional.formComplete ? (
+                // First view: Form not completed
                 <View style={styles.buttonContainer}>
                     <Button title="Verify Credentials" onPress={handleVerifyCredentials} />
                 </View>
             ) : professional.approved ? (
+                // Third view: Credentials verified
                 <Text style={styles.verifiedText}>Credentials Verified!</Text>
             ) : (
+                // Second view: Form completed, waiting for approval
                 <Text style={styles.waitingText}>Credential Verification Status: Waiting...</Text>
             )}
 
@@ -86,7 +89,7 @@ const ProfilePage = () => {
                 <Button title="View Reviews" onPress={handleViewReviews} />
             </View>
 
-            {/* Help Section */}
+            {/* Help Button  */}
             <View style={styles.section}>
                 <Text style={styles.sectionText}>Help</Text>
             </View>

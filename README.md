@@ -1,3 +1,12 @@
+
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=react,express,mongodb,jest,figma&perline=5" alt="Technology Used" title="Technology Used" />
+  <img src="https://github.com/user-attachments/assets/482a8a51-4554-4ce2-89cb-19ebd0540f56" alt="expo" width="48" />
+  <img src="https://github.com/user-attachments/assets/20bc70c7-1d8a-4e6e-a4e1-68832a376dce" alt="pino" width="50" />
+  <img src="https://github.com/user-attachments/assets/124d7d43-eb55-4ec5-913f-956fdb787538" alt="better-stack" width="85" height="50"/>
+  <img src="https://github.com/user-attachments/assets/7fc6a0fa-e1f9-428d-ae1f-cbd6ce642642" alt="moropo" width="50" />
+</div>
+
 # Releases
 ## Release 1:
 Video:

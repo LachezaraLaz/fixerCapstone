@@ -1,0 +1,2 @@
+# Exclude dependencies and temporary files
+node_modules

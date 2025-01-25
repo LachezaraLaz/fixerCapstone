@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert} from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,19 +7,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function SettingsPage() {
     const navigation = useNavigation();
 
+    // Function to show "Feature Not Available" alert
+    const showFeatureUnavailableAlert = (featureName) => {
+        Alert.alert("Feature Unavailable", `${featureName} is not available yet.`);
+    };
+
     const handleLogout = async () => {
         try {
-            if (chatClient) {
-                await chatClient.disconnectUser();
-            }
-
             await AsyncStorage.removeItem('token');
             await AsyncStorage.removeItem('streamToken');
             await AsyncStorage.removeItem('userId');
             await AsyncStorage.removeItem('userName');
 
             Alert.alert('Logged out', 'You have been logged out successfully');
-            setIsLoggedIn(false);
         } catch (error) {
             console.error("Error logging out: ", error);
             Alert.alert('Error', 'An error occurred while logging out');
@@ -37,31 +37,31 @@ export default function SettingsPage() {
             </View>
 
             <ScrollView contentContainerStyle={styles.container}>
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Account Settings")}>
                     <Text style={styles.optionText}>Account Settings</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Appearance")}>
                     <Text style={styles.optionText}>Appearance</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Language")}>
                     <Text style={styles.optionText}>Language</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Wallet")}>
                     <Text style={styles.optionText}>Wallet</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Notifications")}>
                     <Text style={styles.optionText}>Notifications</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Privacy Policy")}>
                     <Text style={styles.optionText}>Privacy Policy</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Terms & Conditions")}>
                     <Text style={styles.optionText}>Terms & Conditions</Text>
                 </TouchableOpacity>
 
@@ -137,3 +137,4 @@ const styles = {
         color: '#777',
     },
 };
+

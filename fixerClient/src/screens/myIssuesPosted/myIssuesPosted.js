@@ -180,8 +180,14 @@ export default function MyIssuesPosted() {
                             <Text>Professional Needed: {job.professionalNeeded}</Text>
                             <Text style={{ marginBottom: 10 }}>{job.description}</Text>
                             {job.rating && (
-                                <Text style={{ marginBottom: 10 }}>You Rated this Job a  {job.rating}</Text>
+                                <Text style={{ marginBottom: 10 }}>
+                                    You Rated this Job a {' '}
+                                    <Text style={{
+                                        color: '#FFD700'
+                                    }}>{job.rating}⭐ </Text>
+                                </Text>
                             )}
+
                             {job.imageUrl && (
                                 <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
                             )}

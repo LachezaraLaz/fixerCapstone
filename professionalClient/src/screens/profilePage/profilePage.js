@@ -45,6 +45,10 @@ const ProfilePage = () => {
         navigation.navigate('CredentialFormPage');  // Navigate to the credential form page
     };
 
+    const handleViewReviews = () => {
+        navigation.navigate('ReviewsPage', { professionalEmail: professional.email });
+    };
+
     if (!professional) {
         return <Text>Error loading profile.</Text>;  // Handle error if profile is not found
     }
@@ -58,7 +62,8 @@ const ProfilePage = () => {
                 {/* Name and Rating */}
                 <View style={styles.nameContainer}>
                     <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
-                    <Text style={styles.ratingText}>⭐ {professional.totalRating || 0}</Text>
+                    <Text style={styles.ratingText}>⭐ {professional.totalRating || 0} </Text>
+                    <Text style={styles.emailText}> ({professional.reviewCount} reviews)</Text>
                 </View>
 
                 {/* Email */}
@@ -67,17 +72,21 @@ const ProfilePage = () => {
 
             {/* CONDITIONAL VIEWS BASED ON formComplete AND approved */}
             {!professional.formComplete ? (
-                // First view: Form not completed
-                <Button title="Verify Credentials" onPress={handleVerifyCredentials} />
+                <View style={styles.buttonContainer}>
+                    <Button title="Verify Credentials" onPress={handleVerifyCredentials} />
+                </View>
             ) : professional.approved ? (
-                // Third view: Credentials verified
                 <Text style={styles.verifiedText}>Credentials Verified!</Text>
             ) : (
-                // Second view: Form completed, waiting for approval
                 <Text style={styles.waitingText}>Credential Verification Status: Waiting...</Text>
             )}
 
-            {/* Help Button */}
+            {/* Button to View Reviews */}
+            <View style={styles.buttonContainer}>
+                <Button title="View Reviews" onPress={handleViewReviews} />
+            </View>
+
+            {/* Help Section */}
             <View style={styles.section}>
                 <Text style={styles.sectionText}>Help</Text>
             </View>
@@ -129,6 +138,9 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'orange',
         marginTop: 20,
+    },
+    buttonContainer: {
+        marginVertical: 10,
     },
     section: {
         backgroundColor: '#f0f0f0',

@@ -54,14 +54,14 @@ const ProfilePage = () => {
         <View style={styles.container}>
             {/* Custom Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('MainTabs')}>
+                <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} accessibilityLabel="back button">
                     <Ionicons name="arrow-back" size={28} color="#333" />
                 </TouchableOpacity>
 
                 <Text style={styles.headerTitle}>ProfilePage</Text>
 
                 {/* Pencil Icon (Shows Alert When Tapped) */}
-                <TouchableOpacity onPress={handleEditPress}>
+                <TouchableOpacity onPress={handleEditPress}  accessibilityLabel="edit button">
                     <MaterialIcons name="edit" size={24} color="black" />
                 </TouchableOpacity>
             </View>

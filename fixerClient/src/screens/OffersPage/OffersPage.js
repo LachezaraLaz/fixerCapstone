@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IPAddress } from '../../../ipAddress';
+import { useNavigation } from '@react-navigation/native';
 
 export default function OffersPage({ route }) {
     const { jobId } = route.params; // Extract jobId from route.params
@@ -10,6 +11,7 @@ export default function OffersPage({ route }) {
     // State for storing offers and loading state
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigation = useNavigation();   
 
     // Function to fetch offers from the database
     const fetchOffers = async () => {
@@ -52,7 +54,7 @@ export default function OffersPage({ route }) {
             );
             if (response.status === 200) {
                 Alert.alert('Offer Accepted', 'You have accepted the offer.');
-                fetchOffers();
+                navigation.navigate('MyIssuesPosted'); // Navigate back to refresh jobs
             } else {
                 Alert.alert('Failed to accept the offer.');
             }
@@ -114,8 +116,11 @@ export default function OffersPage({ route }) {
                             }}
                         >
                             <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>
-                                Professional: {offer.professionalEmail}
+                                Professional:
                             </Text>
+                            <Text >{offer.professionalFullName || offer.professionalEmail}</Text>
+                            <Text >{offer.professionalEmail}</Text>
+                            <Text ></Text>
                             <Text>Price: ${offer.price}</Text>
                             <Text>Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}</Text>
                             {offer.status === 'pending' && (
@@ -150,6 +155,7 @@ export default function OffersPage({ route }) {
                                     </TouchableOpacity>
                                 </View>
                             )}
+                            <Text style={styles.date}>Quote made on: { new Date(offer.createdAt).toLocaleString() }</Text>
                         </View>
                     ))
                 ) : (
@@ -161,3 +167,13 @@ export default function OffersPage({ route }) {
         </View>
     );
 }
+
+
+const styles = StyleSheet.create({
+    date: { 
+        fontSize: 12, 
+        color: 'gray',
+        paddingTop: 10
+    },
+});
+

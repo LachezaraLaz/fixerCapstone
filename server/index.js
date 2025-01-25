@@ -7,9 +7,10 @@ const fixerClientRoute = require('./routes/fixerClientRoute');
 const createIssueRoute = require('./routes/createIssueRoute');
 const issueRoute = require('./routes/getIssuesRoute'); 
 const resetPasswordRouter = require('./routes/passwordResetRoute');
-const createIssueRouter = require('./routes/createIssueRoute');
+// const createIssueRouter = require('./routes/createIssueRoute');
 const notificationRouter = require('./routes/notificationRoute');
 const quoteRouter = require('./routes/quoteRoute');
+const userRouter = require('./routes/userRoute');
 // const contractOfferRouter = require('./routes/contractOfferRoute');
 const getMyProfessionalJobsRouter = require('./routes/getMyProfessionalJobsRoute'); // Import the new route
 const { serverClient } = require('./services/streamClient');
@@ -35,11 +36,14 @@ app.use('/issues', issueRoute.issueRouter);
 //app.use('/professional/contractOffer', contractOfferRouter.contractOfferRouter);
 app.use('/reset',resetPasswordRouter.resetPasswordRouter);
 app.use('/quotes', quoteRouter.quoteRouter);
+
 // New route for getting professional's jobs
 app.use('/myJobs', getMyProfessionalJobsRouter.getMyProfessionalJobsRouter); // Mount the new route for jobs
 
 // Email verification route
 app.use('/verify-email', professionalClientRoute.professionalRouter);
 app.use('/notification', notificationRouter);
+
+app.use('/users', userRouter.userRouter);
 
 module.exports = app;

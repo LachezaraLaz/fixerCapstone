@@ -14,7 +14,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode'; // Import a JWT decode library
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -26,6 +26,13 @@ export default function MyIssuesPosted() {
     const [selectedStatus, setSelectedStatus] = useState('all');
     const [refreshing, setRefreshing] = useState(false); // New state for pull-to-refresh
     const navigation = useNavigation();
+    const isFocused = useIsFocused(); 
+
+    useEffect(() => {
+        if (isFocused) {
+            fetchJobsForUser(); // Refresh job data when screen comes into focus
+        }
+    }, [isFocused]);
 
     // Function to fetch jobs for the current user
     const fetchJobsForUser = async () => {
@@ -36,18 +43,39 @@ export default function MyIssuesPosted() {
                 Alert.alert('You are not logged in');
                 return;
             }
-
+    
             const decodedToken = jwtDecode(token);
             const userEmail = decodedToken.email;
             console.log("User's email from token:", userEmail);
-
+    
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-
+    
             if (response.status === 200) {
-                setJobs(response.data.jobs);
-                console.log("Successfully loaded all of users posted jobs");
+                const jobsWithOffers = await Promise.all(
+                    response.data.jobs.map(async (job) => {
+                        try {
+                            const offersResponse = await axios.get(`https://fixercapstone-production.up.railway.app/quotes/job/${job._id}`, {
+                                headers: { 'Authorization': `Bearer ${token}` },
+                            });
+    
+                            return {
+                                ...job,
+                                offerCount: offersResponse.data.offers.length || 0, // Add the number of offers
+                            };
+                        } catch (error) {
+                            console.error(`Error fetching offers for job ${job._id}:`, error);
+                            return {
+                                ...job,
+                                offerCount: 0, // Default to 0 if fetching offers fails
+                            };
+                        }
+                    })
+                );
+    
+                setJobs(jobsWithOffers);
+                console.log("Successfully loaded all of user's posted jobs with offer counts");
             } else {
                 Alert.alert('Failed to load jobs');
             }
@@ -58,7 +86,7 @@ export default function MyIssuesPosted() {
             setLoading(false);
             setRefreshing(false); // Stop the refresh control indicator
         }
-    };
+    };    
 
     useEffect(() => {
         fetchJobsForUser();
@@ -179,9 +207,9 @@ export default function MyIssuesPosted() {
                             <Text style={{ color: getStatusColor(job.status) }}>{job.status}</Text>
                             <Text>Professional Needed: {job.professionalNeeded}</Text>
                             <Text style={{ marginBottom: 10 }}>{job.description}</Text>
-                            {job.imageUrl && (
+                            {/* {job.imageUrl && (
                                 <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
-                            )}
+                            )} */}
                             <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                                 <TouchableOpacity
                                     onPress={() => navigation.navigate('EditIssue', { jobId: job._id })}
@@ -215,17 +243,34 @@ export default function MyIssuesPosted() {
                             </View>
                             {/* Add View Offers Button */}
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('OffersPage', { jobId: job._id })}
+                                onPress={() => {
+                                    if (job.offerCount > 0) {
+                                        navigation.navigate('OffersPage', { jobId: job._id });
+                                    }
+                                }}
                                 style={{
                                     marginTop: 10,
-                                    backgroundColor: '#1A8DEC',
+                                    backgroundColor:
+                                        job.offerCount === 0
+                                            ? '#ccc' // Gray color for disabled button
+                                            : job.status.toLowerCase() === 'in progress'
+                                            ? 'green'
+                                            : '#1A8DEC', // Blue color for other statuses
                                     borderRadius: 5,
                                     padding: 10,
                                     alignItems: 'center',
                                 }}
+                                disabled={job.offerCount === 0} // Disable the button if no offers are available
                             >
-                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>View Offers</Text>
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                                    {job.offerCount === 0
+                                        ? 'No Offers Yet' // Show "No Offers Yet" when there are no offers
+                                        : job.status.toLowerCase() === 'in progress'
+                                        ? 'View Contract' // Show "View Contract" for jobs in progress
+                                        : `View ${job.offerCount} Offer${job.offerCount === 1 ? '' : 's'}`}
+                                </Text>
                             </TouchableOpacity>
+
                         </View>
                     ))
                 ) : (

@@ -23,7 +23,8 @@ const quoteSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, // Reference to the _id of the issue
         ref: 'Jobs',  // The reference to the 'Jobs' collection
         required: true,
-    }
+    },
+    createdAt: { type: Date, default: Date.now }
 }, {
     collection: 'quotes'
 });

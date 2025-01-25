@@ -5,7 +5,7 @@ const { fixerClient } = require('../model/fixerClientModel');
 const { getCoordinatesFromAddress } = require('../services/geoCodingService');
 
 
-// GET /jobs/user/:email route to fetch jobs for a specific user
+// GET /issue/user/:email route to fetch jobs for a specific user
 const getJobsByUser = async (req, res) => {
     const userEmail = req.params.email;
     console.log(`Fetching jobs for userEmail: ${userEmail}`);

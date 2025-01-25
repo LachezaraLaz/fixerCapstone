@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Saf
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../style/homescreen/homeScreenStyle';
-// import { IPAddress } from '../ipAddress';
+import { IPAddress } from '../ipAddress';
 import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -143,7 +143,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             }
         }
     };
-
 
     const navigateToIssueDetails = () => {
         if (selectedIssue) {

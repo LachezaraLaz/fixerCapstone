@@ -89,7 +89,7 @@ const submitQuote = async (req, res) => {
 };
 
 // Function to fetch quotes for a specific job
-const getQuotesByJob = async (req, res) => { 
+const getQuotesByJob = async (req, res) => {
     const { jobId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
@@ -97,8 +97,8 @@ const getQuotesByJob = async (req, res) => {
     }
 
     try {
-        // Find quotes associated with the job (issueId) and populate the professional's full name
-        const quotes = await Quotes.find({ issueId: jobId }).lean();
+        // Only fetch quotes that are not rejected
+        const quotes = await Quotes.find({ issueId: jobId, status: { $ne: 'rejected' } }).lean();
 
         const populatedQuotes = await Promise.all(
             quotes.map(async (quote) => {
@@ -106,7 +106,7 @@ const getQuotesByJob = async (req, res) => {
                 if (professional) {
                     return {
                         ...quote,
-                        professionalFullName: `${professional.firstName} ${professional.lastName}`, 
+                        professionalFullName: `${professional.firstName} ${professional.lastName}`,
                     };
                 }
                 return quote;
@@ -120,6 +120,7 @@ const getQuotesByJob = async (req, res) => {
     }
 };
 
+
 // Function to update quotes status
 const updateQuoteStatus = async (req, res) => {
     const { quoteId } = req.params;
@@ -130,43 +131,99 @@ const updateQuoteStatus = async (req, res) => {
     }
 
     try {
-        // Update the status of the quote
-        const updatedQuote = await Quotes.findByIdAndUpdate(
-            quoteId,
-            { status },
-            { new: true }
-        );
-
-        if (!updatedQuote) {
+        // Fetch the quote to get the associated job (issueId)
+        const quote = await Quotes.findById(quoteId);
+        if (!quote) {
             return res.status(404).json({ message: 'Quote not found.' });
         }
 
-        // Fetch related information for notification
-        const professional = await fixerClient.findOne({ email: updatedQuote.professionalEmail });
-        const issue = await Jobs.findById(updatedQuote.issueId);
+        if (status === 'accepted') {
+            // Accept the selected quote
+            const updatedQuote = await Quotes.findByIdAndUpdate(
+                quoteId,
+                { status },
+                { new: true }
+            );
 
-        if (!professional || !issue) {
-            return res.status(404).json({ message: 'Professional or issue not found.' });
+            if (!updatedQuote) {
+                return res.status(404).json({ message: 'Failed to update the quote.' });
+            }
+
+            // Automatically reject all other quotes for the same job
+            await Quotes.updateMany(
+                { issueId: quote.issueId, _id: { $ne: quoteId } },
+                { status: 'rejected' }
+            );
+
+            // Fetch related information for notification
+            const professional = await fixerClient.findOne({ email: updatedQuote.professionalEmail });
+            const issue = await Jobs.findById(updatedQuote.issueId);
+
+            if (!professional || !issue) {
+                return res.status(404).json({ message: 'Professional or issue not found.' });
+            }
+
+            // Notify the professional whose quote was accepted
+            const notification = new Notification({
+                userId: professional._id, // Professional's ID
+                message: `Your quote for the job titled "${issue.title}" has been accepted.`,
+                isRead: false,
+            });
+            await notification.save();
+
+            // Notify other professionals whose quotes were rejected
+            const otherProfessionals = await Quotes.find({
+                issueId: quote.issueId,
+                status: 'rejected',
+            }).populate('professionalEmail');
+
+            for (const rejectedQuote of otherProfessionals) {
+                const rejectedProfessional = await fixerClient.findOne({ email: rejectedQuote.professionalEmail });
+                if (rejectedProfessional) {
+                    const rejectionNotification = new Notification({
+                        userId: rejectedProfessional._id,
+                        message: `Your quote for the job titled "${issue.title}" has been rejected.`,
+                        isRead: false,
+                    });
+                    await rejectionNotification.save();
+                }
+            }
+
+            res.status(200).json({ message: `Quote accepted and others rejected.`, quote: updatedQuote });
+        } else if (status === 'rejected') {
+            // Handle manual rejection of a quote
+            const updatedQuote = await Quotes.findByIdAndUpdate(
+                quoteId,
+                { status },
+                { new: true }
+            );
+
+            if (!updatedQuote) {
+                return res.status(404).json({ message: 'Failed to update the quote.' });
+            }
+
+            // Notify the professional whose quote was rejected
+            const professional = await fixerClient.findOne({ email: updatedQuote.professionalEmail });
+            const issue = await Jobs.findById(updatedQuote.issueId);
+
+            if (!professional || !issue) {
+                return res.status(404).json({ message: 'Professional or issue not found.' });
+            }
+
+            const notification = new Notification({
+                userId: professional._id, // Professional's ID
+                message: `Your quote for the job titled "${issue.title}" has been rejected.`,
+                isRead: false,
+            });
+            await notification.save();
+
+            res.status(200).json({ message: `Quote rejected successfully.`, quote: updatedQuote });
         }
-
-        // Create a notification for the professional
-        const notificationMessage =
-            status === 'accepted'
-                ? `Your quote for the job titled "${issue.title}" has been accepted.`
-                : `Your quote for the job titled "${issue.title}" has been rejected.`;
-
-        const notification = new Notification({
-            userId: professional._id, // Professional's ID
-            message: notificationMessage,
-            isRead: false,
-        });
-        await notification.save();
-
-        res.status(200).json({ message: `Quote ${status} successfully.`, quote: updatedQuote });
     } catch (error) {
         console.error('Error updating quote status:', error);
         res.status(500).json({ message: 'Internal server error.' });
     }
 };
+
 
 module.exports = { authenticateJWT, submitQuote, getQuotesByJob, updateQuoteStatus };

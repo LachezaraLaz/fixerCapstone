@@ -1,42 +1,42 @@
-services:
-  admin:
-    build:
-      context: .
-      dockerfile: adminClient/Dockerfile
-    ports:
-      - "19001:19001"
-    volumes:
-      - ./adminClient:/app
-    command: npx expo start --port 19001
+# services:
+#   admin:
+#     build:
+#       context: .
+#       dockerfile: adminClient/Dockerfile
+#     ports:
+#       - "19001:19001"
+#     volumes:
+#       - ./adminClient:/app
+#     command: npx expo start --port 19001
 
-  professional:
-    build:
-      context: .
-      dockerfile: professionalClient/Dockerfile
-    ports:
-      - "19002:19002"
-    volumes:
-      - ./professionalClient:/app
-    command: npx expo start --port 19002
+#   professional:
+#     build:
+#       context: .
+#       dockerfile: professionalClient/Dockerfile
+#     ports:
+#       - "19002:19002"
+#     volumes:
+#       - ./professionalClient:/app
+#     command: npx expo start --port 19002
 
-  client:
-    build:
-      context: .
-      dockerfile: fixerClient/Dockerfile
-    ports:
-      - "19003:19003"
-    volumes:
-      - ./fixerClient:/app
-    command: npx expo start --port 19003
+#   client:
+#     build:
+#       context: .
+#       dockerfile: fixerClient/Dockerfile
+#     ports:
+#       - "19003:19003"
+#     volumes:
+#       - ./fixerClient:/app
+#     command: npx expo start --port 19003
 
-  server:
-    build:
-      context: .
-      dockerfile: server/Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./server:/server
-      - /server/node_modules
-    command: sh -c "npm install && npx nodemon index.js"
+#   server:
+#     build:
+#       context: .
+#       dockerfile: server/Dockerfile
+#     ports:
+#       - "3000:3000"
+#     volumes:
+#       - ./server:/server
+#       - /server/node_modules
+#     command: sh -c "npm install && npx nodemon index.js"
 

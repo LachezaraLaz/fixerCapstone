@@ -81,22 +81,31 @@ describe('EditIssue Component', () => {
     });
 
 
-
     test('shows an error alert if update fails', async () => {
         AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
+        axios.get.mockResolvedValueOnce({
+            status: 200,
+            data: { title: 'Test Job', description: 'A test description.', professionalNeeded: 'Plumber', image: null },
+        });
         axios.put.mockRejectedValueOnce(new Error('Network error'));
 
-        const { getByText, queryByTestId } = render(<EditIssue navigation={mockNavigation} route={route} />);
+        const { getByPlaceholderText, getByText, queryByTestId } = render(
+            <EditIssue navigation={mockNavigation} route={route} />
+        );
 
         // Wait for the loading indicator to disappear
         await waitFor(() => expect(queryByTestId('ActivityIndicator')).toBeNull());
 
-        // Attempt to save changes
+        // Update the inputs
+        fireEvent.changeText(getByPlaceholderText('Title'), 'Updated Job Title');
+        fireEvent.press(getByText('Plumber'));
+        fireEvent.press(getByText('Other'));
+        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'Updated description');
+
+        // Trigger the save changes button
         fireEvent.press(getByText('Save Changes'));
 
-        // Verify the error alert
-        await waitFor(() =>
-            expect(Alert.alert).toHaveBeenCalledWith('An error occurred while updating the job')
-        );
+        // Wait for the axios.put call and the error alert
+        await waitFor(() => expect(Alert.alert).toHaveBeenCalledWith('An error occurred while updating the job'));
     });
 });

@@ -50,16 +50,34 @@ describe('CreateIssue Component', () => {
         expect(Alert.alert).toHaveBeenCalledWith('Job posted successfully');
     });
 
-    test('displays an error alert if post fails', async () => {
+    test('shows an error alert if post fails', async () => {
         AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
         jwtDecode.mockReturnValue({ email: 'user@example.com' });
         axios.post.mockRejectedValueOnce(new Error('Network error'));
 
-        const { getByPlaceholderText, getByTestId } = render(<CreateIssue />);
+        const { getByPlaceholderText, getByText, getByTestId } = render(<CreateIssue />);
+
+        // Fill the title field
         fireEvent.changeText(getByPlaceholderText('Title'), 'Test Issue');
-        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'A test issue description.');
+
+        // Select "Plumber" for Professional Needed
+        fireEvent.press(getByText('Plumber'));
+
+        // Select "Other" to enable the description input
+        fireEvent.press(getByText('Other'));
+
+        // Wait for the "Describe the issue..." input to appear
+        await waitFor(() => expect(getByPlaceholderText('Describe the issue...')).toBeTruthy());
+
+        // Fill the description field
+        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'Test description');
+
+        // Trigger the "Post Job" button
         fireEvent.press(getByTestId('post-job-button'));
 
-        await waitFor(() => expect(Alert.alert).toHaveBeenCalledWith('An error occurred. Please try again.'));
+        // Wait for the error alert to appear
+        await waitFor(() =>
+            expect(Alert.alert).toHaveBeenCalledWith('An error occurred. Please try again.')
+        );
     });
 });

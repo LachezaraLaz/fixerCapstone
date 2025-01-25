@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { Quotes } = require('../model/quoteModel');
 const mongoose = require('mongoose');
+const Notification = require('../model/notificationModel');
+const { fixerClient } = require('../model/fixerClientModel');
+const { Jobs } = require('../model/createIssueModel');
 
 // Middleware to authenticate JWT
 const authenticateJWT = (req, res, next) => {
@@ -52,12 +55,31 @@ const submitQuote = async (req, res) => {
             return res.status(400).json({ message: 'You have already submitted a quote for this issue.' });
         }
 
+        const clientInfo = await fixerClient.findOne({ email: clientEmail });
+        if (!clientInfo) {
+            return res.status(404).json({ message: 'Client information not found' });
+        }
+
+        // Fetch the issue to get the title
+        const issue = await Jobs.findById(issueId);
+        if (!issue) {
+            return res.status(404).json({ message: 'Issue not found.' });
+        }
+
         const newQuote = await Quotes.create({
             professionalEmail,
             clientEmail,
             price,
             issueId,
         });
+
+        // Create a notification for the quote
+        const notification = new Notification({
+            userId: clientInfo._id,  // Use the client's ID
+            message: `Your issue titled "${issue.title}" has received a new quote.`,
+            isRead: false
+        });
+        await notification.save();        
 
         res.status(201).json({ message: 'Quote created successfully', quote: newQuote });
     } catch (error) {
@@ -67,7 +89,7 @@ const submitQuote = async (req, res) => {
 };
 
 // Function to fetch quotes for a specific job
-const getQuotesByJob = async (req, res) => {
+const getQuotesByJob = async (req, res) => { 
     const { jobId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
@@ -75,11 +97,23 @@ const getQuotesByJob = async (req, res) => {
     }
 
     try {
-        // Find quotes associated with the job (issueId)
-        const quotes = await Quotes.find({ issueId: jobId });
+        // Find quotes associated with the job (issueId) and populate the professional's full name
+        const quotes = await Quotes.find({ issueId: jobId }).lean();
 
-        // Return an empty array if no quotes are found
-        res.status(200).json({ offers: quotes || [] });
+        const populatedQuotes = await Promise.all(
+            quotes.map(async (quote) => {
+                const professional = await fixerClient.findOne({ email: quote.professionalEmail });
+                if (professional) {
+                    return {
+                        ...quote,
+                        professionalFullName: `${professional.firstName} ${professional.lastName}`, 
+                    };
+                }
+                return quote;
+            })
+        );
+
+        res.status(200).json({ offers: populatedQuotes || [] });
     } catch (error) {
         console.error('Error fetching quotes:', error);
         res.status(500).json({ message: 'Error fetching quotes for the job.' });

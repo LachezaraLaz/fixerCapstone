@@ -23,7 +23,7 @@ const AddReview = ({ navigation, route }) => {
 
         try {
             // Send the review data to the backend
-            const response = await axios.post(`http://${IPAddress}:3000/reviews/add`, {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/reviews/add`, {
                 jobId,
                 rating: parseInt(rating, 10),
                 comment,

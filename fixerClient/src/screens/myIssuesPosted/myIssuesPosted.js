@@ -243,21 +243,34 @@ export default function MyIssuesPosted() {
                             </View>
                             {/* Add View Offers Button */}
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('OffersPage', { jobId: job._id })}
+                                onPress={() => {
+                                    if (job.offerCount > 0) {
+                                        navigation.navigate('OffersPage', { jobId: job._id });
+                                    }
+                                }}
                                 style={{
                                     marginTop: 10,
-                                    backgroundColor: job.status.toLowerCase() === 'in progress' ? 'green' : '#1A8DEC',
+                                    backgroundColor:
+                                        job.offerCount === 0
+                                            ? '#ccc' // Gray color for disabled button
+                                            : job.status.toLowerCase() === 'in progress'
+                                            ? 'green'
+                                            : '#1A8DEC', // Blue color for other statuses
                                     borderRadius: 5,
                                     padding: 10,
                                     alignItems: 'center',
                                 }}
+                                disabled={job.offerCount === 0} // Disable the button if no offers are available
                             >
                                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                                    {job.status.toLowerCase() === 'in progress'
-                                        ? 'View Contract'
+                                    {job.offerCount === 0
+                                        ? 'No Offers Yet' // Show "No Offers Yet" when there are no offers
+                                        : job.status.toLowerCase() === 'in progress'
+                                        ? 'View Contract' // Show "View Contract" for jobs in progress
                                         : `View ${job.offerCount} Offer${job.offerCount === 1 ? '' : 's'}`}
                                 </Text>
                             </TouchableOpacity>
+
                         </View>
                     ))
                 ) : (

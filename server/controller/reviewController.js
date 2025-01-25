@@ -1,6 +1,27 @@
 const { Jobs } = require('../model/createIssueModel');
 const { fixerClient } = require('../model/professionalClientModel');
 
+exports.getReviewsByProfessionalEmail = async (req, res) => {
+    try {
+        const { email } = req.params;
+
+        // Find all jobs associated with the professional's email that have reviews
+        const reviews = await Jobs.find(
+            { professionalEmail: email, rating: { $exists: true } }, // Ensure jobs with ratings
+            'description professionalNeeded rating comment' // Only select relevant fields
+        );
+
+        if (!reviews || reviews.length === 0) {
+            return res.status(404).json({ message: 'No reviews found for this professional.' });
+        }
+
+        res.status(200).json(reviews);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+};
+
 exports.addReview = async (req, res) => {
     const { jobId, rating, comment } = req.body;
 
@@ -38,7 +59,9 @@ exports.addReview = async (req, res) => {
         }
 
         // Update fields
-        professional.totalRating = ((professional.totalRating * professional.reviewCount) + rating) / (professional.reviewCount + 1);
+        professional.totalRating = Math.round(
+            ((professional.totalRating * professional.reviewCount) + rating) / (professional.reviewCount + 1) * 10
+        ) / 10;
         professional.reviewCount += 1;
         await professional.save();
 

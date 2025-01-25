@@ -7,6 +7,8 @@ const { professionalUploadID } = require('../controller/professionalUploadID');
 const { upload } = require('../services/cloudinaryService');  // Import the Cloudinary upload service
 const { forgotPassword, resetPassword } = require('../controller/resetController');
 const { verifyEmail } = require('../controller/VerifyEmailForProfessional');
+const { getReviewsByProfessionalEmail } = require('../controller/reviewController'); // Import review functions
+
 const professionalRouter = express.Router();
 
 // Register user route
@@ -24,5 +26,7 @@ professionalRouter.post('/reset/resetPassword', resetPassword); // Route to rese
 
 // Upload middleware before calling the controller
 professionalRouter.post('/uploadID', authenticateJWT, upload('professional_ids').single('idImage'), professionalUploadID);
+
+professionalRouter.get('/:email/reviews', getReviewsByProfessionalEmail);
 
 module.exports = { professionalRouter };

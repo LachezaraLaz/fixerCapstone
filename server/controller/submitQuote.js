@@ -130,6 +130,7 @@ const updateQuoteStatus = async (req, res) => {
     }
 
     try {
+        // Update the status of the quote
         const updatedQuote = await Quotes.findByIdAndUpdate(
             quoteId,
             { status },
@@ -140,7 +141,28 @@ const updateQuoteStatus = async (req, res) => {
             return res.status(404).json({ message: 'Quote not found.' });
         }
 
-        res.status(200).json({ message: 'Quote updated successfully.', quote: updatedQuote });
+        // Fetch related information for notification
+        const professional = await fixerClient.findOne({ email: updatedQuote.professionalEmail });
+        const issue = await Jobs.findById(updatedQuote.issueId);
+
+        if (!professional || !issue) {
+            return res.status(404).json({ message: 'Professional or issue not found.' });
+        }
+
+        // Create a notification for the professional
+        const notificationMessage =
+            status === 'accepted'
+                ? `Your quote for the job titled "${issue.title}" has been accepted.`
+                : `Your quote for the job titled "${issue.title}" has been rejected.`;
+
+        const notification = new Notification({
+            userId: professional._id, // Professional's ID
+            message: notificationMessage,
+            isRead: false,
+        });
+        await notification.save();
+
+        res.status(200).json({ message: `Quote ${status} successfully.`, quote: updatedQuote });
     } catch (error) {
         console.error('Error updating quote status:', error);
         res.status(500).json({ message: 'Internal server error.' });

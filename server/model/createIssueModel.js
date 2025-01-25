@@ -9,7 +9,10 @@ const createIssueModel = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
     status: { type: String, default: 'open' }, // e.g., open, in-progress, closed
     latitude: { type: Number },
-    longitude: { type: Number }
+    longitude: { type: Number },
+    rating: { type: Number, min: 1, max: 5 },
+    comment: { type: String },
+    professionalEmail: { type: String },
 }, {
     collection: 'jobs'
 });

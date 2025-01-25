@@ -1,0 +1,1 @@
+export const My_ipAddress = '192.168.2.44';

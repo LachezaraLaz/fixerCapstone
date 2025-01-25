@@ -26,7 +26,7 @@ export default function MyIssuesPosted() {
     const [selectedStatus, setSelectedStatus] = useState('all');
     const [refreshing, setRefreshing] = useState(false); // New state for pull-to-refresh
     const navigation = useNavigation();
-    const isFocused = useIsFocused(); 
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         if (isFocused) {
@@ -43,15 +43,15 @@ export default function MyIssuesPosted() {
                 Alert.alert('You are not logged in');
                 return;
             }
-    
+
             const decodedToken = jwtDecode(token);
             const userEmail = decodedToken.email;
             console.log("User's email from token:", userEmail);
-    
+
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-    
+
             if (response.status === 200) {
                 const jobsWithOffers = await Promise.all(
                     response.data.jobs.map(async (job) => {
@@ -59,7 +59,7 @@ export default function MyIssuesPosted() {
                             const offersResponse = await axios.get(`https://fixercapstone-production.up.railway.app/quotes/job/${job._id}`, {
                                 headers: { 'Authorization': `Bearer ${token}` },
                             });
-    
+
                             return {
                                 ...job,
                                 offerCount: offersResponse.data.offers.length || 0, // Add the number of offers
@@ -73,7 +73,7 @@ export default function MyIssuesPosted() {
                         }
                     })
                 );
-    
+
                 setJobs(jobsWithOffers);
                 console.log("Successfully loaded all of user's posted jobs with offer counts");
             } else {
@@ -86,7 +86,7 @@ export default function MyIssuesPosted() {
             setLoading(false);
             setRefreshing(false); // Stop the refresh control indicator
         }
-    };    
+    };
 
     useEffect(() => {
         fetchJobsForUser();
@@ -207,9 +207,18 @@ export default function MyIssuesPosted() {
                             <Text style={{ color: getStatusColor(job.status) }}>{job.status}</Text>
                             <Text>Professional Needed: {job.professionalNeeded}</Text>
                             <Text style={{ marginBottom: 10 }}>{job.description}</Text>
-                            {/* {job.imageUrl && (
+                            {job.rating && (
+                                <Text style={{ marginBottom: 10 }}>
+                                    You Rated this Job a {' '}
+                                    <Text style={{
+                                        color: '#FFD700'
+                                    }}>{job.rating}⭐ </Text>
+                                </Text>
+                            )}
+
+                            {job.imageUrl && (
                                 <Image source={{ uri: job.imageUrl }} style={{ width: 100, height: 100, marginTop: 10 }} />
-                            )} */}
+                            )}
                             <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                                 <TouchableOpacity
                                     onPress={() => navigation.navigate('EditIssue', { jobId: job._id })}
@@ -222,6 +231,22 @@ export default function MyIssuesPosted() {
                                 >
                                     <Text style={{ color: '#1A8DEC' }}>Edit</Text>
                                 </TouchableOpacity>
+
+
+                                {(job.status.toLowerCase() === 'completed' || job.status.toLowerCase() === 'closed') && (
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('addReview', { jobId: job._id })}
+                                        style={{
+                                            borderColor: '#1A8DEC',
+                                            borderWidth: 1,
+                                            borderRadius: 5,
+                                            padding: 5,
+                                        }}
+                                    >
+                                        <Text style={{ color: '#1A8DEC' }}>Add or Modify a Review</Text>
+                                    </TouchableOpacity>
+                                )}
+
                                 {deletingJobId === job._id ? (
                                     <ActivityIndicator size="small" color="#0000ff" />
                                 ) : (

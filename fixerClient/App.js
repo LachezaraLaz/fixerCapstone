@@ -25,6 +25,7 @@ import { StreamChat } from "stream-chat";
 import { ChatProvider } from "./src/screens/chat/chatContext";
 import ChatListPage from "./src/screens/chat/chatListPage";
 import ChatPage from "./src/screens/chat/chatPage";
+import addReview from "./src/screens/addReview/addReview";
 
 import { Text } from "react-native";
 
@@ -119,6 +120,7 @@ export default function App() {
                                             <Stack.Screen name="OffersPage" component={OffersPage} />
                                             <Stack.Screen name="ChatListPage" component={ChatListPage} />
                                             <Stack.Screen name="ChatPage" component={ChatPage} />
+                                            <Stack.Screen name="addReview" component={addReview} />
                                         </>
 
                                             </Stack.Navigator>

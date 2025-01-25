@@ -14,6 +14,7 @@ const userRouter = require('./routes/userRoute');
 // const contractOfferRouter = require('./routes/contractOfferRoute');
 const getMyProfessionalJobsRouter = require('./routes/getMyProfessionalJobsRoute'); // Import the new route
 const { serverClient } = require('./services/streamClient');
+const reviewRouter = require('./routes/reviewRoute');
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use('/myJobs', getMyProfessionalJobsRouter.getMyProfessionalJobsRouter); // 
 // Email verification route
 app.use('/verify-email', professionalClientRoute.professionalRouter);
 app.use('/notification', notificationRouter);
+app.use('/reviews', reviewRouter.reviewRouter);
 
 app.use('/users', userRouter.userRouter);
 

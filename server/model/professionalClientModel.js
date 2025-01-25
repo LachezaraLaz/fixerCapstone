@@ -14,6 +14,8 @@ const professionalClientModel = new mongoose.Schema({
     passwordResetExpires: Date,
     verified: { type: Boolean, default: false },
     verificationToken: String,
+    totalRating: { type: Number, default: 0 }, // Cumulative rating for the professional
+    reviewCount: { type: Number, default: 0 }, // Number of reviews received
 }, {
     collection: 'fixerClientInfo'
 });

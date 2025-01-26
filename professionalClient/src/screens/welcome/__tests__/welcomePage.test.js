@@ -1,9 +1,14 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import WelcomePage from '../welcomePage'; // Adjust the import path as necessary
+import WelcomePage from '../welcomePage'; 
+
+// code to run only this file through the terminal:
+// npm run test ./src/screens/welcome/__tests__/welcomePage.test.js
+// or
+// npm run test-coverage ./src/screens/welcome/__tests__/welcomePage.test.js
 
 describe('WelcomePage Navigation', () => {
-    it('navigates to SignInPage when the "Sign In" button is pressed', async () => {
+    test('navigates to SignInPage when the "Sign In" button is pressed', async () => {
         const mockNavigation = { navigate: jest.fn() };
         const { getByText } = render(<WelcomePage navigation={mockNavigation} />);
 
@@ -13,7 +18,7 @@ describe('WelcomePage Navigation', () => {
         expect(mockNavigation.navigate).toHaveBeenCalledWith('SignInPage');
     });
 
-    it('navigates to SignUpPage when the "Sign Up" button is pressed', async () => {
+    test('navigates to SignUpPage when the "Sign Up" button is pressed', async () => {
         const mockNavigation = { navigate: jest.fn() };
         const { getByText } = render(<WelcomePage navigation={mockNavigation} />);
 

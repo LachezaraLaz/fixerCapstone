@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import SignInPage from '../signinPage'; // Adjust the import path as necessary
+import SignInPage from '../SignInPage';
 import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -62,7 +62,7 @@ test('handles sign-in correctly and navigates to HomeScreen', async () => {
         expect(AsyncStorage.setItem).toHaveBeenCalledWith('token', 'fake-token');
         expect(setIsLoggedIn).toHaveBeenCalledWith(true);
         expect(Alert.alert).toHaveBeenCalledWith('Signed in successfully');
-        expect(mockNavigation.navigate).toHaveBeenCalledWith('HomeScreen');
+        expect(mockNavigation.navigate).toHaveBeenCalledWith('MainTabs');
     });
 });
 

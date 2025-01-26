@@ -144,7 +144,7 @@ This will start the project and output a QR code. Scan this QR code with your ph
 - [Other Documentation](https://github.com/LachezaraLaz/fixerCapstone/wiki/Other-Documentation)
 - [Personas](https://github.com/LachezaraLaz/fixerCapstone/wiki/Personas)
 - [Risk](https://github.com/LachezaraLaz/fixerCapstone/wiki/Risk)
-- [UI Design (Figma](https://github.com/LachezaraLaz/fixerCapstone/wiki/UI-Design-(Figma))
+- [UI Design (Figma)](https://github.com/LachezaraLaz/fixerCapstone/wiki/UI-Design-(Figma))
 - [User Stories (Simple List)](https://github.com/LachezaraLaz/fixerCapstone/wiki/User-Stories-(Simple-List))
 
 

@@ -1,11 +1,15 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
-import HomeScreen from './homeScreen';
+import HomeScreen from '../homeScreen';
 import axios from 'axios';
 //import * as Location from 'expo-location';
 import { Alert } from 'react-native';  // Import the Alert module
 //import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// code to run only this file through the terminal:
+// npm run test ./src/screens/homeScreen/__tests__/homeScreen.test.js
+// or
+// npm run test-coverage ./src/screens/homeScreen/__tests__/homeScreen.test.js
 
 // Mock expo-modules-core to avoid the NativeModule error
 jest.mock('expo-modules-core', () => ({

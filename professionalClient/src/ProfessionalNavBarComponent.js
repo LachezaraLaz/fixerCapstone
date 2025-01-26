@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Alert, TouchableOpacity } from 'react-native';
-import HomeScreen from './homeScreen';
+import HomeScreen from '../src/screens/homeScreen/homeScreen';
 import MyJobsProfessional from '../src/screens/myJobs/myJobs';
 import ChatListPage from '../src/screens/chat/chatListPage';
 import SettingsPage from '../src/screens/settingsPage/settingsPage';

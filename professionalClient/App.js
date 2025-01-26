@@ -13,7 +13,7 @@ import ForgotPasswordPage from "./src/screens/signin/ForgotPasswordPage";
 import EnterPin from "./src/screens/signin/EnterPinPage";
 import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage";
 import ProfessionalNavBar from './src/ProfessionalNavBarComponent';
-import HomeScreen from "./src/homeScreen";
+import HomeScreen from "./src/screens/homeScreen/homeScreen";
 import ContractOffer from "./src/screens/contractOffer/contractOffer";
 import NotificationPage from './src/screens/notificationPage/notificationPage';
 import NotificationDetail from './src/screens/notificationDetail/notificationDetail';

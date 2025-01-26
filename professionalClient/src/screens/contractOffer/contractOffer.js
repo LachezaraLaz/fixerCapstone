@@ -160,6 +160,7 @@ export default function ContractOffer({ route, navigation }) {
                 transparent={true}
                 animationType="slide"
                 onRequestClose={() => setModalVisible(false)}
+                testID="modal" // testID here
             >
                 <View style={modalStyles.modalContainer}>
                     <Image

@@ -30,7 +30,7 @@ export default function SettingsPage() {
         <SafeAreaView style={styles.safeArea}>
             {/* Custom Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
+                <TouchableOpacity onPress={() => navigation.goBack()} testID="back-button">
                     <Ionicons name="arrow-back" size={28} color="#333" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Settings</Text>

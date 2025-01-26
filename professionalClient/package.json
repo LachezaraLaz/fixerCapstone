@@ -68,7 +68,7 @@
     "collectCoverageFrom": [],
     "coverageThreshold": {
       "global": {
-        "branches": 0,
+        "branches": 60,
         "functions": 60,
         "lines": 60,
         "statements": 60
@@ -76,7 +76,7 @@
     },
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|react-native-vector-icons|@react-native|expo-location|react-native-maps)/)"
+      "node_modules/(?!(react-native|react-native-vector-icons|@react-native|expo-location|expo-image-picker|expo-constants|expo-status-bar|expo-asset|expo-font|@expo/vector-icons|expo-modules-core|react-native-maps|@expo|@react-native)/)"
     ],
     "reporters": [
       "default",

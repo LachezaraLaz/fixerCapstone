@@ -69,7 +69,7 @@ const ProfilePage = () => {
                 <Text style={styles.headerTitle}>ProfilePage</Text>
 
                 {/* Pencil Icon (Shows Alert When Tapped) */}
-                <TouchableOpacity onPress={handleEditPress}>
+                <TouchableOpacity onPress={handleEditPress} testID="edit-button">
                     <MaterialIcons name="edit" size={24} color="black" />
                 </TouchableOpacity>
             </View>

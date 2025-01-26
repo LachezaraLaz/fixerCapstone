@@ -6,6 +6,11 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IPAddress } from '../../../../ipAddress';
 
+// code to run only this file through the terminal:
+// npm run test ./src/screens/signin/__tests__/signinPage.test.js
+// or
+// npm run test-coverage ./src/screens/signin/__tests__/signinPage.test.js
+
 jest.mock('axios', () => ({
     post: jest.fn().mockResolvedValue({
         status: 200,

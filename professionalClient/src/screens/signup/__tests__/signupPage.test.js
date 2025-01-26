@@ -4,6 +4,11 @@ import SignUpPage from '../signupPage'; // Adjust the import path as necessary
 import { Alert } from 'react-native';
 import axios from 'axios';
 
+// code to run only this file through the terminal:
+// npm run test ./src/screens/signup/__tests__/signupPage.test.js
+// or
+// npm run test-coverage ./src/screens/signup/__tests__/signupPage.test.js
+
 // Mock the Alert.alert function
 jest.spyOn(Alert, 'alert');
 jest.mock('axios');
@@ -111,4 +116,58 @@ test('displays "Account already exists" alert when email is already in use', asy
         });
         expect(Alert.alert).toHaveBeenCalledWith("Error", "Account already exists");
     });
+});
+
+test('displays a network error alert when no response is received', async () => {
+    axios.post.mockRejectedValueOnce({ request: {} });
+
+    const { getByPlaceholderText, getByTestId } = render(<SignUpPage />);
+
+    // Simulate user input
+    fireEvent.changeText(getByPlaceholderText('Email'), 'networkerror@example.com');
+    fireEvent.changeText(getByPlaceholderText('First Name'), 'Network');
+    fireEvent.changeText(getByPlaceholderText('Last Name'), 'Error');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+    fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
+
+    // Attempt to sign up
+    const signUpButton = getByTestId('sign-up-button');
+    fireEvent.press(signUpButton);
+
+    // Assertions
+    await waitFor(() => {
+        expect(Alert.alert).toHaveBeenCalledWith("Error", "Network error");
+    });
+});
+
+test('displays an unexpected error alert when no request or response exists', async () => {
+    axios.post.mockRejectedValueOnce({});
+
+    const { getByPlaceholderText, getByTestId } = render(<SignUpPage />);
+
+    // Simulate user input
+    fireEvent.changeText(getByPlaceholderText('Email'), 'unexpectederror@example.com');
+    fireEvent.changeText(getByPlaceholderText('First Name'), 'Unexpected');
+    fireEvent.changeText(getByPlaceholderText('Last Name'), 'Error');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+    fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
+
+    // Attempt to sign up
+    const signUpButton = getByTestId('sign-up-button');
+    fireEvent.press(signUpButton);
+
+    // Assertions
+    await waitFor(() => {
+        expect(Alert.alert).toHaveBeenCalledWith("Error", "An unexpected error occurred");
+    });
+});
+
+test('navigates to SignInPage when the Sign In button is pressed', () => {
+    const mockNavigation = { navigate: jest.fn() };
+    const { getByText } = render(<SignUpPage navigation={mockNavigation} />);
+
+    const signInButton = getByText('Already have an account? Sign in');
+    fireEvent.press(signInButton);
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('SignInPage'); // Verify navigation to SignInPage
 });

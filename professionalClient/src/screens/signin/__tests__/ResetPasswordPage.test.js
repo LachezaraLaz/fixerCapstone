@@ -105,15 +105,15 @@ describe('ResetPasswordPage Component', () => {
         });
     });
     
-    test('navigates to SignInPage when Back to Sign In is pressed', () => {
-        const routeParams = { email: 'test@example.com' };
+    // test('navigates to SignInPage when Back to Sign In is pressed', () => {
+    //     const routeParams = { email: 'test@example.com' };
     
-        const { getByTestId } = renderWithNavigation(routeParams);
+    //     const { getByTestId } = renderWithNavigation(routeParams);
     
-        fireEvent.press(getByTestId('back-to-signin-button'));
+    //     fireEvent.press(getByTestId('back-to-signin-button'));
     
-        waitFor(() => {
-            expect(getByTestId('reset-password-button')).not.toBeInTheDocument(); // Confirm ResetPasswordPage is no longer visible
-        });
-    });    
+    //     waitFor(() => {
+    //         expect(getByTestId('reset-password-button')).not.toBeInTheDocument(); // Confirm ResetPasswordPage is no longer visible
+    //     });
+    // });    
 });

@@ -39,4 +39,3 @@ services:
       - ./server:/server
       - /server/node_modules
     command: sh -c "npm install && npx nodemon index.js"
-

@@ -26,6 +26,24 @@ Top 5 testing files:
 - [professionalClient/src/screens/map-view/__tests__/homeScreen.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/map-view/__tests__/homeScreen.test.js)
 - [professionalClient/src/screens/signin/__tests__/signin.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/signin/__tests__/signin.test.js)
 
+## Release 2:
+Video:
+https://drive.google.com/file/d/1Of85yiZN5_rXYTDKgvUCeXPkay1nanA8/view?usp=sharing
+
+Top 5 files:
+- [server/utils/logger.js](https://github.com/LachezaraLaz/fixerCapstone/blob/main/server/utils/logger.js)
+- [fixerClient/src/screens/chat/chatContext.js](https://github.com/LachezaraLaz/fixerCapstone/blob/main/fixerClient/src/screens/chat/chatContext.js)
+- [fixerClient/src/screens/OffersPage/OffersPage.js](https://github.com/LachezaraLaz/fixerCapstone/blob/main/fixerClient/src/screens/OffersPage/OffersPage.js)
+- [professionalClient/App.js](https://github.com/LachezaraLaz/fixerCapstone/blob/main/professionalClient/App.js)
+- [professionalClient/app.json](https://github.com/LachezaraLaz/fixerCapstone/blob/main/professionalClient/app.json)
+
+Top 5 testing files:
+- [fixerClient/src/screens/OffersPage/__tests__/OffersPage.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/Quote-testing/fixerClient/src/screens/OffersPage/__tests__/OffersPage.test.js)
+- [.github/workflows/moropo_android.yaml](https://github.com/LachezaraLaz/fixerCapstone/blob/main/.github/workflows/moropo_android.yaml)
+- [commit/b312ea2b1b43327be5018323acc030e6437d00de](https://github.com/LachezaraLaz/fixerCapstone/commit/b312ea2b1b43327be5018323acc030e6437d00de)
+- [fixerClient/src/NavBarComponent.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/sdk52_update/fixerClient/src/NavBarComponent.test.js)
+- [professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/sdk52_update/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js)
+
 # Project Title
 A mobile app for small contracts from professionals
 
@@ -239,7 +257,7 @@ const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECR
 ```javascript
 const fetchNotifications = async () => {
     const token = await AsyncStorage.getItem('token');
-    const response = await axios.get(`http://${IPAddress}:3000/notification`, {
+    const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
         headers: { Authorization: `Bearer ${token}` },
     });
 };

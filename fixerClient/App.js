@@ -8,6 +8,7 @@ import CreateIssue from './src/screens/createIssue/createIssue';
 import HomeScreen from "./src/homeScreen";
 import MyIssuesPosted from "./src/screens/myIssuesPosted/myIssuesPosted";
 import EditIssue from './src/screens/editIssue/editIssue';
+import SettingsPage from './src/screens/settingsPage/settingsPage';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
 import SignUpPage from "./src/screens/signup/signupPage";
@@ -105,8 +106,13 @@ export default function App() {
                                                 {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
                                             </Stack.Screen>
                                             <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
-                                            <Stack.Screen name="ProfilePage" component={ProfilePage} />
+                                            <Stack.Screen
+                                                name="ProfilePage"
+                                                component={ProfilePage}
+                                                options={{ headerShown: false }}  // This hides the default navigation header
+                                            />
                                             <Stack.Screen name="CreateIssue" component={CreateIssue} />
+                                            <Stack.Screen name="SettingsPage" component={SettingsPage} />
                                             <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
                                             <Stack.Screen name="EditIssue" component={EditIssue} />
                                             <Stack.Screen name="NotificationPage" component={NotificationPage} />

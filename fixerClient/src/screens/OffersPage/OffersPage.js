@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IPAddress } from '../../../ipAddress';
+import { useNavigation } from '@react-navigation/native';
 
 export default function OffersPage({ route }) {
     const { jobId } = route.params; // Extract jobId from route.params
@@ -10,21 +11,26 @@ export default function OffersPage({ route }) {
     // State for storing offers and loading state
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigation = useNavigation();   
 
     // Function to fetch offers from the database
     const fetchOffers = async () => {
         setLoading(true);
         try {
-            const token = await AsyncStorage.getItem('token'); // Ensure token retrieval works
+            const token = await AsyncStorage.getItem('token');
             if (!token) {
                 Alert.alert('You are not logged in');
                 setLoading(false);
                 return;
             }
-            const response = await axios.get(`http://${IPAddress}:3000/quotes/job/${jobId}`, { // Use dynamic jobId
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (response.status === 200) {
+
+            const response = await axios.get(
+                `https://fixercapstone-production.up.railway.app/quotes/job/${jobId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Check if response and required fields exist
+            if (response?.status === 200 && Array.isArray(response.data?.offers)) {
                 setOffers(response.data.offers);
             } else {
                 Alert.alert('No offers found for this job');
@@ -46,13 +52,13 @@ export default function OffersPage({ route }) {
         try {
             const token = await AsyncStorage.getItem('token');
             const response = await axios.put(
-                `http://${IPAddress}:3000/quotes/${offerId}`,
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
                 { status: 'accepted' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             if (response.status === 200) {
                 Alert.alert('Offer Accepted', 'You have accepted the offer.');
-                fetchOffers();
+                navigation.navigate('MyIssuesPosted'); // Navigate back to refresh jobs
             } else {
                 Alert.alert('Failed to accept the offer.');
             }
@@ -66,7 +72,7 @@ export default function OffersPage({ route }) {
         try {
             const token = await AsyncStorage.getItem('token');
             const response = await axios.put(
-                `http://${IPAddress}:3000/quotes/${offerId}`,
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
                 { status: 'rejected' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -85,7 +91,7 @@ export default function OffersPage({ route }) {
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator testID="loading-indicator" size="large" color="#0000ff" />
             </View>
         );
     }
@@ -114,8 +120,11 @@ export default function OffersPage({ route }) {
                             }}
                         >
                             <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>
-                                Professional: {offer.professionalEmail}
+                                Professional:
                             </Text>
+                            <Text >{offer.professionalFullName || offer.professionalEmail}</Text>
+                            <Text >{offer.professionalEmail}</Text>
+                            <Text ></Text>
                             <Text>Price: ${offer.price}</Text>
                             <Text>Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}</Text>
                             {offer.status === 'pending' && (
@@ -150,6 +159,7 @@ export default function OffersPage({ route }) {
                                     </TouchableOpacity>
                                 </View>
                             )}
+                            <Text style={styles.date}>Quote made on: { new Date(offer.createdAt).toLocaleString() }</Text>
                         </View>
                     ))
                 ) : (
@@ -161,3 +171,13 @@ export default function OffersPage({ route }) {
         </View>
     );
 }
+
+
+const styles = StyleSheet.create({
+    date: { 
+        fontSize: 12, 
+        color: 'gray',
+        paddingTop: 10
+    },
+});
+

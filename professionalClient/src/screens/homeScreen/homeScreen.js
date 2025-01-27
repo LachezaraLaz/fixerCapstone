@@ -2,12 +2,12 @@ import * as React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Modal, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
-import { styles } from '../style/homescreen/homeScreenStyle';
-// import { IPAddress } from '../ipAddress';
+import { styles } from '../../../style/homescreen/homeScreenStyle';
+import { IPAddress } from '../../../ipAddress';
 import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useChatContext } from './screens/chat/chatContext';
+import { useChatContext } from '../chat/chatContext';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
@@ -23,7 +23,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`http://${IPAddress}:3000/issues`);
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
             setIssues(response.data.jobs);
 
             const uniqueTypes = [
@@ -123,7 +123,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             const issueId = selectedIssue._id;
 
             const response = await axios.post(
-                `http://${IPAddress}:3000/quotes/create`,
+                `https://fixercapstone-production.up.railway.app/quotes/create`,
                 { clientEmail, price, issueId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -143,7 +143,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             }
         }
     };
-
 
     const navigateToIssueDetails = () => {
         if (selectedIssue) {

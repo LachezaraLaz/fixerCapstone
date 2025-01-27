@@ -2,7 +2,7 @@ const Notification = require('../model/notificationModel');
 const { Jobs } = require('../model/createIssueModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { getCoordinatesFromAddress } = require('../services/geoCodingService');
-const {logger} = require('../utils/logger');
+const { logger } = require('../utils/logger');
 
 
 const createIssue = async (req, res) => {

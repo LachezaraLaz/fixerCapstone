@@ -1,10 +1,15 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import SignInPage from '../signinPage'; // Adjust the import path as necessary
+import SignInPage from '../SignInPage';
 import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IPAddress } from '../../../../ipAddress';
+
+// code to run only this file through the terminal:
+// npm run test ./src/screens/signin/__tests__/signinPage.test.js
+// or
+// npm run test-coverage ./src/screens/signin/__tests__/signinPage.test.js
 
 jest.mock('axios', () => ({
     post: jest.fn().mockResolvedValue({
@@ -55,14 +60,14 @@ test('handles sign-in correctly and navigates to HomeScreen', async () => {
     fireEvent.press(signInButton)
 
     await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith(`http://${IPAddress}:3000/professional/signin/`, {
+        expect(axios.post).toHaveBeenCalledWith(`https://fixercapstone-production.up.railway.app/professional/signin/`, {
             email: 'user@example.com',
             password: 'password123'
         });
         expect(AsyncStorage.setItem).toHaveBeenCalledWith('token', 'fake-token');
         expect(setIsLoggedIn).toHaveBeenCalledWith(true);
         expect(Alert.alert).toHaveBeenCalledWith('Signed in successfully');
-        expect(mockNavigation.navigate).toHaveBeenCalledWith('HomeScreen');
+        expect(mockNavigation.navigate).toHaveBeenCalledWith('MainTabs');
     });
 });
 
@@ -88,7 +93,7 @@ test('displays an error alert when email does not exist', async () => {
 
     await waitFor(() => {
         // Checking that the error message is displayed
-        expect(axios.post).toHaveBeenCalledWith(`http://${IPAddress}:3000/professional/signin/`, {
+        expect(axios.post).toHaveBeenCalledWith(`https://fixercapstone-production.up.railway.app/professional/signin/`, {
             email: 'nonexistent@example.com',
             password: 'password123'
         });

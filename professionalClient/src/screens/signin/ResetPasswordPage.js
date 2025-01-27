@@ -20,7 +20,7 @@ export default function ResetPasswordPage({ route, navigation }) {
         }
 
         try {
-            const response = await axios.post(`http://${IPAddress}:3000/reset/updatePassword`, { email, newPassword });
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/reset/updatePassword`, { email, newPassword });
 
             if (response.status === 200) {
                 Alert.alert('Success', 'Password has been reset successfully');
@@ -55,11 +55,11 @@ export default function ResetPasswordPage({ route, navigation }) {
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
+            <TouchableOpacity style={styles.button} onPress={handleResetPassword} testID="reset-password-button">
                 <Text style={styles.buttonText}>Reset Password</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
+            <TouchableOpacity onPress={() => navigation.navigate('SignInPage')} testID="back-to-signin-button">
                 <Text style={styles.signInText}>Back to Sign In</Text>
             </TouchableOpacity>
         </View>

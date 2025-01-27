@@ -54,6 +54,7 @@ export default function CreateIssue({ navigation }) {
         }
     };
 
+    // posting the issue by the user
     const postIssue = async () => {
         if (!title || !professionalNeeded || !description) {
             Alert.alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
@@ -82,7 +83,7 @@ export default function CreateIssue({ navigation }) {
                 });
             }
 
-            const response = await axios.post(`http://${IPAddress}:3000/issue/create`, formData, {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/issue/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -90,6 +91,13 @@ export default function CreateIssue({ navigation }) {
             });
 
             if (response.status === 201) {
+                // Reset all fields to default values
+                setTitle('');
+                setDescription('');
+                setProfessionalNeeded('');
+                setImage(null);
+                setOther(false);
+
                 navigation.goBack();
                 Alert.alert('Job posted successfully');
             } else {
@@ -127,66 +135,134 @@ export default function CreateIssue({ navigation }) {
                 <View style={styles.workBlocksContainer}>
                     <Text style={styles.sectionTitle}>Professional Needed</Text>
                     <View style={styles.workBlocks}>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('plumber')}>
+                        <TouchableOpacity
+                            style={[
+                                styles.workBlock,
+                                professionalNeeded === 'plumber' && styles.selectedButton, // Highlight when selected
+                            ]}
+                            onPress={() => setProfessionalNeeded('plumber')}
+                        >
                             <Text style={styles.workText}>Plumber</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('electrician')}>
+                        <TouchableOpacity
+                            style={[
+                                styles.workBlock,
+                                professionalNeeded === 'electrician' && styles.selectedButton, // Highlight when selected
+                            ]}
+                            onPress={() => setProfessionalNeeded('electrician')}
+                        >
                             <Text style={styles.workText}>Electrician</Text>
                         </TouchableOpacity>
                     </View>
 
                     <Text style={styles.sectionTitle}>Issue Description</Text>
                     {professionalNeeded === 'plumber' && (
-                    <View style={styles.workBlocks}>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => {
-                            setDescription('Dripping Faucets'); setOther(false)
-                        }}>
-                            <Text style={styles.workText}>Dripping Faucets</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => {
-                            setDescription('Clogged Drains'); setOther(false)
-                        }}>
-                            <Text style={styles.workText}>Clogged Drains</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => {
-                            setDescription('Leaky Pipes'); setOther(false)
-                        }}>
-                            <Text style={styles.workText}>Leaky Pipes</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={
-                            () => setOther(true)
-                        }>
-                            <Text style={styles.workText}>Other</Text>
-                        </TouchableOpacity>
-                    </View>
-                    )}
-
-                    {professionalNeeded === 'electrician' && (
                         <View style={styles.workBlocks}>
-                            <TouchableOpacity style={styles.workBlock} onPress={() => {
-                                setDescription('Flickering Lights'); setOther(false)
-                            }}>
-                                <Text style={styles.workText}>Flickering Lights</Text>
+                            <TouchableOpacity
+                                style={[
+                                    styles.workBlock,
+                                    description === 'Dripping Faucets' && styles.selectedButton, // Highlight when selected
+                                ]}
+                                onPress={() => {
+                                    setDescription('Dripping Faucets'); 
+                                    setOther(false); // Ensure "Other" is not selected
+                                }}
+                            >
+                                <Text style={styles.workText}>Dripping Faucets</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.workBlock} onPress={() => {
-                                setDescription('Dead Outlets'); setOther(false)
-                            }}>
-                                <Text style={styles.workText}>Dead Outlets</Text>
+                            <TouchableOpacity
+                                style={[
+                                    styles.workBlock,
+                                    description === 'Clogged Drains' && styles.selectedButton, // Highlight when selected
+                                ]}
+                                onPress={() => {
+                                    setDescription('Clogged Drains');
+                                    setOther(false); // Ensure "Other" is not selected
+                                }}
+                            >
+                                <Text style={styles.workText}>Clogged Drains</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.workBlock} onPress={() => {
-                                setDescription('Faulty Switch'); setOther(false)
-                            }}>
-                                <Text style={styles.workText}>Faulty Switch</Text>
+                            <TouchableOpacity
+                                style={[
+                                    styles.workBlock,
+                                    description === 'Leaky Pipes' && styles.selectedButton, // Highlight when selected
+                                ]}
+                                onPress={() => {
+                                    setDescription('Leaky Pipes');
+                                    setOther(false); // Ensure "Other" is not selected
+                                }}
+                            >
+                                <Text style={styles.workText}>Leaky Pipes</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.workBlock} onPress={
-                                () => setOther(true)
-                            }>
+                            <TouchableOpacity
+                                style={[
+                                    styles.workBlock,
+                                    other && styles.selectedButton, // Highlight "Other" when selected
+                                ]}
+                                onPress={() => {
+                                    setOther(true);
+                                    setDescription(''); // Clear previous selection
+                                }}
+                            >
                                 <Text style={styles.workText}>Other</Text>
                             </TouchableOpacity>
                         </View>
                     )}
 
+                    {professionalNeeded === 'electrician' && (
+                        <View style={styles.workBlocks}>
+                            <TouchableOpacity
+                                style={[
+                                    styles.workBlock,
+                                    description === 'Flickering Lights' && styles.selectedButton, // Highlight when selected
+                                ]}
+                                onPress={() => {
+                                    setDescription('Flickering Lights');
+                                    setOther(false); // Ensure "Other" is not selected
+                                }}
+                            >
+                                <Text style={styles.workText}>Flickering Lights</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[
+                                    styles.workBlock,
+                                    description === 'Dead Outlets' && styles.selectedButton, // Highlight when selected
+                                ]}
+                                onPress={() => {
+                                    setDescription('Dead Outlets');
+                                    setOther(false); // Ensure "Other" is not selected
+                                }}
+                            >
+                                <Text style={styles.workText}>Dead Outlets</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[
+                                    styles.workBlock,
+                                    description === 'Faulty Switch' && styles.selectedButton, // Highlight when selected
+                                ]}
+                                onPress={() => {
+                                    setDescription('Faulty Switch');
+                                    setOther(false); // Ensure "Other" is not selected
+                                }}
+                            >
+                                <Text style={styles.workText}>Faulty Switch</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[
+                                    styles.workBlock,
+                                    other && styles.selectedButton, // Highlight "Other" when selected
+                                ]}
+                                onPress={() => {
+                                    setOther(true);
+                                    setDescription(''); // Clear previous selection
+                                }}
+                            >
+                                <Text style={styles.workText}>Other</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
                 </View>
+
 
                 {other === true && (
                     <TextInput
@@ -267,7 +343,7 @@ const styles = StyleSheet.create({
         marginVertical: 8,
     },
     selectedButton: {
-        backgroundColor: '#4CAF50', // Highlight color for selected button
+        backgroundColor: '#1A8DEC', // Highlight color for selected button
     },
     workText: {
         fontSize: 16,

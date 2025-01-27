@@ -66,7 +66,7 @@ const UploadID = () => {
                 console.log("JWT Token:", token);
 
                 // Send the image and token to the backend
-                const response = await axios.post(`http://${IPAddress}:3000/professional/uploadID`, formData, {
+                const response = await axios.post(`https://fixercapstone-production.up.railway.app/professional/uploadID`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${token}`,  // Fixed string interpolation

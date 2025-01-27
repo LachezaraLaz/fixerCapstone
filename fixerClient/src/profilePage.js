@@ -1,36 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';  // To retrieve JWT
-
-import { IPAddress } from '../ipAddress'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const ProfilePage = () => {
-    const [client, setClient] = useState(null);  // State for client's data
-    const [loading, setLoading] = useState(true);  // State to manage loading
+    const [client, setClient] = useState(null);
+    const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                // Get the JWT token from AsyncStorage
                 const token = await AsyncStorage.getItem('token');
                 if (token) {
-                    // Send request to the backend with the JWT token
-                    const response = await axios.get(`http://${IPAddress}:3000/client/profile`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`  // Send JWT in Authorization header
-                        }
-                    });
-                    setClient(response.data);  // Set client data
+                    const response = await axios.get(
+                        `https://fixercapstone-production.up.railway.app/client/profile`,
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    );
+                    setClient(response.data);
                 } else {
                     console.error('No token found');
                 }
             } catch (error) {
                 console.error('Error fetching profile data:', error);
             } finally {
-                setLoading(false);  // Set loading to false after data fetch
+                setLoading(false);
             }
         };
 
@@ -38,29 +34,41 @@ const ProfilePage = () => {
     }, []);
 
     if (loading) {
-        return <Text>Loading...</Text>;  // Show loading text while fetching
+        return <Text>Loading...</Text>;
     }
-
-    // const handleVerifyCredentials = () => {
-    //     navigation.navigate('CredentialFormPage');  // Navigate to the credential form page
-    // };
 
     if (!client) {
-        return <Text>Error loading profile.</Text>;  // Handle error if profile is not found
+        return <Text>Error loading profile.</Text>;
     }
+
+    // Function to show alert when pencil icon is tapped
+    const handleEditPress = () => {
+        Alert.alert(
+            "Feature Unavailable",
+            "The editing feature is not available yet, but please keep an eye out for future updates!",
+            [{ text: "OK", onPress: () => console.log("Alert closed") }]
+        );
+    };
+
     return (
         <View style={styles.container}>
+            {/* Custom Header */}
             <View style={styles.header}>
-                {/* Profile Picture */}
+                <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} accessibilityLabel="back button">
+                    <Ionicons name="arrow-back" size={28} color="#333" />
+                </TouchableOpacity>
+
+                <Text style={styles.headerTitle}>ProfilePage</Text>
+
+                {/* Pencil Icon (Shows Alert When Tapped) */}
+                <TouchableOpacity onPress={handleEditPress}  accessibilityLabel="edit button">
+                    <MaterialIcons name="edit" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
+
+            {/* Profile Details */}
+            <View style={styles.profileContainer}>
                 <Image source={client.profilePicture} style={styles.profileImage} />
-
-                {/* Name and Rating */}
-                <View style={styles.nameContainer}>
-                    <Text style={styles.nameText}>{client.name}</Text>
-                    <Text style={styles.ratingText}>⭐ {client.rating}</Text>
-                </View>
-
-                {/* Email */}
                 <Text style={styles.emailText}>{client.email}</Text>
             </View>
 
@@ -79,29 +87,26 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     header: {
+        flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 24,
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    profileContainer: {
+        alignItems: 'center',
+        marginTop: 20,
     },
     profileImage: {
         width: 100,
         height: 100,
-        borderRadius: 50, // Makes the image circular
+        borderRadius: 50,
         marginBottom: 16,
-    },
-    nameContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 4,
-    },
-    nameText: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#333333',
-        marginRight: 8,
-    },
-    ratingText: {
-        fontSize: 18,
-        color: '#FFD700',
     },
     emailText: {
         fontSize: 16,

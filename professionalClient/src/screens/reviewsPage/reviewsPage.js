@@ -11,7 +11,7 @@ const ReviewsPage = ({ route }) => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await axios.get(`http://${IPAddress}:3000/professional/${professionalEmail}/reviews`);
+                const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/${professionalEmail}/reviews`);
                 setReviews(response.data);
             } catch (error) {
                 console.log('Error fetching reviews:', error.response || error.message);

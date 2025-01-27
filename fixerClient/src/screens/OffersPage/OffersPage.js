@@ -17,16 +17,20 @@ export default function OffersPage({ route }) {
     const fetchOffers = async () => {
         setLoading(true);
         try {
-            const token = await AsyncStorage.getItem('token'); // Ensure token retrieval works
+            const token = await AsyncStorage.getItem('token');
             if (!token) {
                 Alert.alert('You are not logged in');
                 setLoading(false);
                 return;
             }
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/quotes/job/${jobId}`, { // Use dynamic jobId
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (response.status === 200) {
+
+            const response = await axios.get(
+                `https://fixercapstone-production.up.railway.app/quotes/job/${jobId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Check if response and required fields exist
+            if (response?.status === 200 && Array.isArray(response.data?.offers)) {
                 setOffers(response.data.offers);
             } else {
                 Alert.alert('No offers found for this job');
@@ -87,7 +91,7 @@ export default function OffersPage({ route }) {
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator testID="loading-indicator" size="large" color="#0000ff" />
             </View>
         );
     }

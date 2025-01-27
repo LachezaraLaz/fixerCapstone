@@ -26,6 +26,10 @@ Top 5 testing files:
 - [professionalClient/src/screens/map-view/__tests__/homeScreen.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/map-view/__tests__/homeScreen.test.js)
 - [professionalClient/src/screens/signin/__tests__/signin.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/signin/__tests__/signin.test.js)
 
+## Release 2:
+Video:
+https://drive.google.com/file/d/1Of85yiZN5_rXYTDKgvUCeXPkay1nanA8/view?usp=sharing
+
 # Project Title
 A mobile app for small contracts from professionals
 

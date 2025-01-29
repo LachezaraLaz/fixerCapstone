@@ -57,7 +57,7 @@ At Fixr, our commitment is building an all inclusive platform, where a number of
 These individual each equally important should have equal access to high-quality, reliable services and opportunities. This is why Fixr strives to help clients and professionnels by creating an environment where regardless of age, gender, race, location, everyone can connect and benefit from local services in a safe and respectful environment.
 
 
-## Getting Started
+## Getting Started for the Applications
 
 There must be <ins>2 terminals open</ins> to make the project run. The following steps are meant to open the project wanted <br/>
 ### Step 1:
@@ -151,6 +151,21 @@ npx expo start -c
 This will start the project and output a QR code. Scan this QR code with your phones' camera and it will direct you to the Expo Go application. You should see a loading bar at the bottom of the page. If it does not work on the first try, close the application completely and scan the QR code again. 
 
 **Congrats! You have Fixer Open!**
+
+## Getting Started
+
+There must be <ins>2 terminals open</ins> to make the project run. The following steps are meant to open the project wanted <br/>
+### Step 1:
+Duplicate the file called ".envCopy" and rename the duplicated file to ".env". In the ".env" file, the following must be entered:
+
+```
+MONGO_URL=mongodb+srv://fixit9337:9zEWh3F3KcdidqcP@clusterfixit.lcsgj.mongodb.net/?retryWrites=true&w=majority&appName=Clusterfixit
+JWT_SECRET=ws6UFJEgOxN7wFRe9fCB6c507ELT5Q9O
+PASS_RESET='gmzg blbr jvev ghlb'
+```
+**WARNING, the ".env" file must never be pushed to main. EVER.**
+
+<br/><br/>
 
 ## Core Features
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated  } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
@@ -9,20 +9,17 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatContext } from '../chat/chatContext';
 
-export default function HomeScreen({ navigation, setIsLoggedIn }) {
+
+export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
-    const [selectedIssue, setSelectedIssue] = React.useState(null);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [typesOfWork, setTypesOfWork] = React.useState([]);
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
 
-    // Reference to the MapView
     const mapRef = React.useRef(null);
-
-    // Reference to the main ScrollView
     const scrollViewRef = React.useRef(null);
 
     const fetchAllIssues = async () => {
@@ -65,13 +62,14 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         getCurrentLocation();
     }, []);
 
-    const handleFilterSelect = (type) => {
-        if (selectedFilters.includes(type)) {
-            setSelectedFilters(selectedFilters.filter((filter) => filter !== type));
-        } else {
-            setSelectedFilters([...selectedFilters, type]);
-        }
-    };
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            if (route.params?.selectedFilters) {
+                setSelectedFilters(route.params.selectedFilters);
+            }
+        });
+        return unsubscribe;
+    }, [navigation, route.params?.selectedFilters]);
 
     const handleLogout = async () => {
         try {
@@ -89,18 +87,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         } catch (error) {
             console.error("Error logging out: ", error);
             Alert.alert('Error', 'An error occurred while logging out');
-        }
-    };
-
-    const closeModal = () => {
-        setSelectedIssue(null);
-        setIsModalVisible(false);
-    };
-
-    const navigateToIssueDetails = () => {
-        if (selectedIssue) {
-            closeModal();
-            navigation.navigate('ContractOffer', { issue: selectedIssue });
         }
     };
 
@@ -122,21 +108,18 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         extrapolate: 'clamp',
     });
 
-    // Function to handle issue click
     const handleIssueClick = (issue) => {
-        // Scroll up to the map
         if (scrollViewRef.current) {
-            scrollViewRef.current.scrollTo({ y: 0, animated: true });  // Manually scroll to top
+            scrollViewRef.current.scrollTo({ y: 0, animated: true });
         }
 
-        // Animate the map to the selected issue
         if (mapRef.current) {
             mapRef.current.animateToRegion({
                 latitude: issue.latitude,
                 longitude: issue.longitude,
                 latitudeDelta: 0.0122,
                 longitudeDelta: 0.0121,
-            }, 500);  // 500ms animation duration
+            }, 500);
         }
     };
 
@@ -147,7 +130,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 longitude: currentLocation.longitude,
                 latitudeDelta: 0.0122,
                 longitudeDelta: 0.0121,
-            }, 500);  // 500ms animation duration
+            }, 500);
         }
     };
 
@@ -160,28 +143,13 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
                     <Ionicons name="notifications-outline" size={28} color="#333" />
                 </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('FilterIssue', { typesOfWork, selectedFilters })}>
+                    <Ionicons name="filter" size={24} color="#333" />
+                </TouchableOpacity>
             </View>
 
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.filterContainer}>
-                {typesOfWork.map((type, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        onPress={() => handleFilterSelect(type)}
-                        style={[
-                            styles.filterButton,
-                            selectedFilters.includes(type) && styles.filterButtonSelected,
-                        ]}
-                    >
-                        <Text style={styles.filterButtonText}>{type}</Text>
-                    </TouchableOpacity>
-                ))}
-            </ScrollView>
-
             <Animated.ScrollView
-                ref={scrollViewRef}  // Reference to the main ScrollView
+                ref={scrollViewRef}
                 contentContainerStyle={{ paddingBottom: 100 }}
                 onScroll={Animated.event(
                     [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -191,7 +159,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             >
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
                     <MapView
-                        ref={mapRef}  // Add the reference here
+                        ref={mapRef}
                         style={styles.map}
                         showsUserLocation={true}
                         region={currentLocation ? {

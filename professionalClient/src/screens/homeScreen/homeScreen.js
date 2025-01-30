@@ -13,9 +13,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
-    const [selectedIssue, setSelectedIssue] = React.useState(null);
-    const [isModalVisible, setIsModalVisible] = React.useState(false);
-    const [price, setPrice] = React.useState('');
+    // const [selectedIssue, setSelectedIssue] = React.useState(null);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [typesOfWork, setTypesOfWork] = React.useState([]);
     const scrollY = React.useRef(new Animated.Value(0)).current;
@@ -88,65 +86,8 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }
     };
 
-    const handleIssueClick = (issue) => {
-        setSelectedIssue(issue);
-        setIsModalVisible(true);
-    };
-
-    const closeModal = () => {
-        setSelectedIssue(null);
-        setPrice('');
-        setIsModalVisible(false);
-    };
-
-    const submitQuote = async () => {
-        if (!price) {
-            Alert.alert('Error', 'Please enter a price before submitting the quote.');
-            return;
-        }
-
-        try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert('Error', 'User token not found.');
-                return;
-            }
-            console.log('selectedIssue:', selectedIssue);
-
-            if (!selectedIssue || !selectedIssue.userEmail) {
-                console.log('clientEmail is null or undefined');
-                Alert.alert('Error', 'Unable to retrieve client email from the selected issue.');
-                return;
-            }
-
-            const clientEmail = selectedIssue.userEmail; // Use userEmail from the schema
-            const issueId = selectedIssue._id;
-
-            const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/quotes/create`,
-                { clientEmail, price, issueId },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            if (response.status === 201) {
-                Alert.alert('Success', 'Quote submitted successfully!');
-                closeModal();
-            } else {
-                Alert.alert('Error', 'Failed to submit the quote.');
-            }
-        } catch (error) {
-            if (error.response?.status === 400) {
-                Alert.alert('Error', 'You have already submitted a quote for this issue.');
-            } else {
-                console.error('Error submitting quote:', error);
-                Alert.alert('Error', 'An error occurred while submitting the quote.');
-            }
-        }
-    };
-
     const navigateToIssueDetails = () => {
         if (selectedIssue) {
-            closeModal();
             navigation.navigate('ContractOffer', { issue: selectedIssue });
         }
     };
@@ -198,41 +139,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 ))}
             </ScrollView>
 
-            <Modal
-                visible={isModalVisible}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={closeModal}
-                testID="quotemodal"
-            >
-                <View style={styles.overlay}>
-                    <View style={styles.modalContainer}>
-                        <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                            <Ionicons name="close-outline" size={24} color="#333" />
-                        </TouchableOpacity>
-                        <Text style={styles.modalTitle}>{selectedIssue?.title}</Text>
-                        <Text style={styles.modalDescription}>{selectedIssue?.description}</Text>
-                        <Text style={styles.modalStatus}>Status: {selectedIssue?.status}</Text>
-                        <TextInput
-                            style={styles.priceInput}
-                            placeholder="Enter price for this issue"
-                            keyboardType="numeric"
-                            value={price}
-                            onChangeText={setPrice}
-                        />
-
-                        <View style={styles.buttonsContainer}>
-                            <TouchableOpacity onPress={navigateToIssueDetails} style={styles.moreInfoButton}>
-                                <Text style={styles.buttonText}>More Info</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
-                                <Text style={styles.buttonText}>Submit</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-
             <Animated.ScrollView
                 contentContainerStyle={{ paddingBottom: 100 }}
                 onScroll={Animated.event(
@@ -265,7 +171,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
                                 title={issue.title}
                                 description={issue.description}
-                                onPress={() => handleIssueClick(issue)}
+
                             />
                         ))}
                     </MapView>
@@ -277,7 +183,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         <TouchableOpacity
                             key={issue._id}
                             style={styles.card}
-                            onPress={() => handleIssueClick(issue)}
                         >
                             <Text style={styles.cardTitle}>{issue.title}</Text>
                             <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>

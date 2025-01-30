@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../../style/filterIssuePage/filterIssueStyle';
-
 
 const FilterIssuePage = ({ navigation, route }) => {
     const { typesOfWork, selectedFilters } = route.params;
     const [filters, setFilters] = React.useState(selectedFilters);
+    const [distanceRange, setDistanceRange] = React.useState([0, 50]); // [minDistance, maxDistance] in km
 
     const handleFilterSelect = (type) => {
         if (filters.includes(type)) {
@@ -17,7 +18,7 @@ const FilterIssuePage = ({ navigation, route }) => {
     };
 
     const handleApplyFilters = () => {
-        navigation.navigate('Home', { selectedFilters: filters });
+        navigation.navigate('Home', { selectedFilters: filters, distanceRange });
     };
 
     return (
@@ -33,6 +34,23 @@ const FilterIssuePage = ({ navigation, route }) => {
             </View>
 
             <ScrollView contentContainerStyle={styles.filterList}>
+                <Text style={styles.sectionTitle}>Distance Range (km)</Text>
+                <View style={styles.distanceRangeContainer}>
+                    <Text>{distanceRange[0]} km</Text>
+                    <Slider
+                        style={styles.slider}
+                        minimumValue={0}
+                        maximumValue={100}
+                        step={1}
+                        value={distanceRange[1]}
+                        onValueChange={(value) => setDistanceRange([0, value])}
+                        minimumTrackTintColor="orange"
+                        maximumTrackTintColor="#ddd"
+                    />
+                    <Text>{distanceRange[1]} km</Text>
+                </View>
+
+                <Text style={styles.sectionTitle}>Types of Work</Text>
                 {typesOfWork.map((type, index) => (
                     <TouchableOpacity
                         key={index}
@@ -49,7 +67,5 @@ const FilterIssuePage = ({ navigation, route }) => {
         </View>
     );
 };
-
-
 
 export default FilterIssuePage;

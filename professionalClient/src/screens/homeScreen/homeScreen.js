@@ -9,6 +9,19 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatContext } from '../chat/chatContext';
 
+// Utility function to calculate distance using Haversine formula
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const toRadians = (degrees) => degrees * (Math.PI / 180);
+    const R = 6371; // Radius of the Earth in km
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in kilometers
+};
 
 export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
@@ -64,12 +77,12 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
 
     React.useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            if (route.params?.selectedFilters) {
-                setSelectedFilters(route.params.selectedFilters);
+            if (route.params?.selectedFilters || route.params?.distanceRange) {
+                setSelectedFilters(route.params.selectedFilters || []);
             }
         });
         return unsubscribe;
-    }, [navigation, route.params?.selectedFilters]);
+    }, [navigation, route.params?.selectedFilters, route.params?.distanceRange]);
 
     const handleLogout = async () => {
         try {
@@ -90,9 +103,24 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
         }
     };
 
-    const filteredIssues = selectedFilters.length > 0
-        ? issues.filter(issue => selectedFilters.includes(issue.professionalNeeded))
-        : issues;
+    const filteredIssues = issues.filter((issue) => {
+        // Filter by professionalNeeded
+        const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
+
+        // Filter by distance
+        if (currentLocation && route.params?.distanceRange) {
+            const [minDistance, maxDistance] = route.params.distanceRange;
+            const distance = calculateDistance(
+                currentLocation.latitude,
+                currentLocation.longitude,
+                issue.latitude,
+                issue.longitude
+            );
+            return matchesProfessional && distance >= minDistance && distance <= maxDistance;
+        }
+
+        return matchesProfessional;
+    });
 
     if (loading) {
         return (

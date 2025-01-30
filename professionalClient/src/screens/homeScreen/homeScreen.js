@@ -13,11 +13,17 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
-    // const [selectedIssue, setSelectedIssue] = React.useState(null);
+    const [selectedIssue, setSelectedIssue] = React.useState(null);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [typesOfWork, setTypesOfWork] = React.useState([]);
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
+
+    // Reference to the MapView
+    const mapRef = React.useRef(null);
+
+    // Reference to the main ScrollView
+    const scrollViewRef = React.useRef(null);
 
     const fetchAllIssues = async () => {
         try {
@@ -86,8 +92,19 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }
     };
 
+    const handleMarkerClick = (issue) => {
+        setSelectedIssue(issue);
+        setIsModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setSelectedIssue(null);
+        setIsModalVisible(false);
+    };
+
     const navigateToIssueDetails = () => {
         if (selectedIssue) {
+            closeModal();
             navigation.navigate('ContractOffer', { issue: selectedIssue });
         }
     };
@@ -109,6 +126,24 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         outputRange: [400, 150],
         extrapolate: 'clamp',
     });
+
+    // Function to handle issue click
+    const handleIssueClick = (issue) => {
+        // Scroll up to the map
+        if (scrollViewRef.current) {
+            scrollViewRef.current.scrollTo({ y: 0, animated: true });  // Manually scroll to top
+        }
+
+        // Animate the map to the selected issue
+        if (mapRef.current) {
+            mapRef.current.animateToRegion({
+                latitude: issue.latitude,
+                longitude: issue.longitude,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
+            }, 500);  // 500ms animation duration
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -140,6 +175,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             </ScrollView>
 
             <Animated.ScrollView
+                ref={scrollViewRef}  // Reference to the main ScrollView
                 contentContainerStyle={{ paddingBottom: 100 }}
                 onScroll={Animated.event(
                     [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -149,6 +185,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             >
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
                     <MapView
+                        ref={mapRef}  // Add the reference here
                         style={styles.map}
                         showsUserLocation={true}
                         followsUserLocation={true}
@@ -171,7 +208,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
                                 title={issue.title}
                                 description={issue.description}
-
+                                onPress={() => handleMarkerClick(issue)}
                             />
                         ))}
                     </MapView>
@@ -183,6 +220,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         <TouchableOpacity
                             key={issue._id}
                             style={styles.card}
+                            onPress={() => handleIssueClick(issue)}
                         >
                             <Text style={styles.cardTitle}>{issue.title}</Text>
                             <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>

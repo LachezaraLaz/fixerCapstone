@@ -11,10 +11,7 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 5003; // Change the port if needed
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log("Connected to MongoDB from AdminClient1"))
     .catch(err => console.error("MongoDB connection error:", err));
 

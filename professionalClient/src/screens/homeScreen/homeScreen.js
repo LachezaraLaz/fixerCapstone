@@ -171,7 +171,13 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
                     <Ionicons name="notifications-outline" size={28} color="#333" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('FilterIssue', { typesOfWork, selectedFilters })}>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('FilterIssue', {
+                        typesOfWork,
+                        selectedFilters,
+                        distanceRange: route.params?.distanceRange || [0, 50], // Pass current distance range or default
+                    })}
+                >
                     <Ionicons name="filter" size={24} color="#333" />
                 </TouchableOpacity>
             </View>

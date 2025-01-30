@@ -5,9 +5,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../../style/filterIssuePage/filterIssueStyle';
 
 const FilterIssuePage = ({ navigation, route }) => {
-    const { typesOfWork, selectedFilters } = route.params;
+    const { typesOfWork, selectedFilters, distanceRange: initialDistanceRange } = route.params;
     const [filters, setFilters] = React.useState(selectedFilters);
-    const [distanceRange, setDistanceRange] = React.useState([0, 50]); // [minDistance, maxDistance] in km
+    const [distanceRange, setDistanceRange] = React.useState(initialDistanceRange || [0, 50]); // Use passed distance range or default
 
     const handleFilterSelect = (type) => {
         if (filters.includes(type)) {

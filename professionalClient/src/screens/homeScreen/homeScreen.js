@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Modal, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated  } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
@@ -92,11 +92,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }
     };
 
-    const handleMarkerClick = (issue) => {
-        setSelectedIssue(issue);
-        setIsModalVisible(true);
-    };
-
     const closeModal = () => {
         setSelectedIssue(null);
         setIsModalVisible(false);
@@ -139,6 +134,17 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             mapRef.current.animateToRegion({
                 latitude: issue.latitude,
                 longitude: issue.longitude,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
+            }, 500);  // 500ms animation duration
+        }
+    };
+
+    const handleRecenterMap = () => {
+        if (mapRef.current && currentLocation) {
+            mapRef.current.animateToRegion({
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
                 latitudeDelta: 0.0122,
                 longitudeDelta: 0.0121,
             }, 500);  // 500ms animation duration
@@ -188,7 +194,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         ref={mapRef}  // Add the reference here
                         style={styles.map}
                         showsUserLocation={true}
-                        followsUserLocation={true}
                         region={currentLocation ? {
                             latitude: currentLocation.latitude,
                             longitude: currentLocation.longitude,
@@ -201,6 +206,11 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
+                        <View style={styles.recenterButtonContainer}>
+                            <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
+                                <Ionicons name="locate" size={24} color="#333" />
+                            </TouchableOpacity>
+                        </View>
                         {filteredIssues.map((issue) => (
                             <Marker
                                 key={issue._id}
@@ -208,7 +218,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
                                 title={issue.title}
                                 description={issue.description}
-                                onPress={() => handleMarkerClick(issue)}
                             />
                         ))}
                     </MapView>

@@ -192,4 +192,19 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
 
+    //for re-centered the location
+    recenterButtonContainer: {
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        backgroundColor: 'white',
+        borderRadius: 25,
+        padding: 10,
+        elevation: 3,
+    },
+    recenterButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
 });

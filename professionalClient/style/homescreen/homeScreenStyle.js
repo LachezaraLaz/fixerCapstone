@@ -192,7 +192,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
 
-    //for re-centered the location
+    // Recenter button in map
     recenterButtonContainer: {
         position: 'absolute',
         bottom: 20,
@@ -207,4 +207,40 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
+    //Search Bar
+    searchBar: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        marginLeft:'15%',
+        marginRight:'15%',
+        backgroundColor: 'white', // Ensure it has a solid background to appear distinct
+        zIndex: 1,  // Ensure it appears in front of other elements
+        marginBottom:'-4.5%',
+    },
+
+    /*
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        marginBottom: 16,
+    },
+    searchBar: {
+        flex: 1,
+        height: 40,
+        borderColor: '#ddd',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        marginRight: 8,
+    },
+    searchButton: {
+        padding: 8,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 8,
+    },
+    */
 });

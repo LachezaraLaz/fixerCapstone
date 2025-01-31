@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
@@ -31,7 +31,7 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
     const [typesOfWork, setTypesOfWork] = React.useState([]);
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
-
+    const [searchQuery, setSearchQuery] = React.useState('');  // New state for search query
     const mapRef = React.useRef(null);
     const scrollViewRef = React.useRef(null);
 
@@ -108,6 +108,7 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
         const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
 
         // Filter by distance
+        let matchesDistance = true;
         if (currentLocation && route.params?.distanceRange) {
             const [minDistance, maxDistance] = route.params.distanceRange;
             const distance = calculateDistance(
@@ -116,10 +117,14 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                 issue.latitude,
                 issue.longitude
             );
-            return matchesProfessional && distance >= minDistance && distance <= maxDistance;
+            matchesDistance = distance >= minDistance && distance <= maxDistance;
         }
 
-        return matchesProfessional;
+        // Filter by search query
+        const matchesSearch = issue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            issue.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return matchesProfessional && matchesDistance && matchesSearch;
     });
 
     if (loading) {
@@ -224,6 +229,13 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                         ))}
                     </MapView>
                 </Animated.View>
+
+                <TextInput
+                    style={styles.searchBar}  // Add styles for search bar
+                    placeholder="Search issues..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                />
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Issues</Text>

@@ -103,29 +103,31 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
         }
     };
 
-    const filteredIssues = issues.filter((issue) => {
-        // Filter by professionalNeeded
-        const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
+    const filteredIssues = React.useMemo(() => {
+        return issues.filter((issue) => {
+            // Filter by professionalNeeded
+            const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
 
-        // Filter by distance
-        let matchesDistance = true;
-        if (currentLocation && route.params?.distanceRange) {
-            const [minDistance, maxDistance] = route.params.distanceRange;
-            const distance = calculateDistance(
-                currentLocation.latitude,
-                currentLocation.longitude,
-                issue.latitude,
-                issue.longitude
-            );
-            matchesDistance = distance >= minDistance && distance <= maxDistance;
-        }
+            // Filter by distance
+            let matchesDistance = true;
+            if (currentLocation && route.params?.distanceRange) {
+                const [minDistance, maxDistance] = route.params.distanceRange;
+                const distance = calculateDistance(
+                    currentLocation.latitude,
+                    currentLocation.longitude,
+                    issue.latitude,
+                    issue.longitude
+                );
+                matchesDistance = distance >= minDistance && distance <= maxDistance;
+            }
 
-        // Filter by search query
-        const matchesSearch = issue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            issue.description.toLowerCase().includes(searchQuery.toLowerCase());
+            // Filter by search query
+            const matchesSearch = issue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                issue.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-        return matchesProfessional && matchesDistance && matchesSearch;
-    });
+            return matchesProfessional && matchesDistance && matchesSearch;
+        });
+    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange, searchQuery]);
 
     if (loading) {
         return (
@@ -137,7 +139,7 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
 
     const mapHeight = scrollY.interpolate({
         inputRange: [0, 500],
-        outputRange: [400, 150],
+        outputRange: [450, 150],
         extrapolate: 'clamp',
     });
 
@@ -169,24 +171,6 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16 }]}>
-                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
-                    <Ionicons name="person-circle" size={32} color="#333" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
-                    <Ionicons name="notifications-outline" size={28} color="#333" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('FilterIssue', {
-                        typesOfWork,
-                        selectedFilters,
-                        distanceRange: route.params?.distanceRange || [0, 50], // Pass current distance range or default
-                    })}
-                >
-                    <Ionicons name="filter" size={24} color="#333" />
-                </TouchableOpacity>
-            </View>
-
             <Animated.ScrollView
                 ref={scrollViewRef}
                 contentContainerStyle={{ paddingBottom: 100 }}
@@ -213,6 +197,16 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
+                        <View style={styles.profileButton}>
+                            <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
+                                <Ionicons name="person-circle" size={32} color="#333" />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.notificationButton}>
+                            <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
+                                <Ionicons name="notifications-outline" size={28} color="#333" />
+                            </TouchableOpacity>
+                        </View>
                         <View style={styles.recenterButtonContainer}>
                             <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
                                 <Ionicons name="locate" size={24} color="#333" />
@@ -230,12 +224,24 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                     </MapView>
                 </Animated.View>
 
-                <TextInput
-                    style={styles.searchBar}  // Add styles for search bar
-                    placeholder="Search issues..."
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                />
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        style={styles.searchBar}
+                        placeholder="Search issues..."
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                    />
+                    <TouchableOpacity
+                        style={styles.filterButton}
+                        onPress={() => navigation.navigate('FilterIssue', {
+                            typesOfWork,
+                            selectedFilters,
+                            distanceRange: route.params?.distanceRange || [0, 50], // Pass current distance range or default
+                        })}
+                    >
+                        <Ionicons name="filter" size={24} color="#333" />
+                    </TouchableOpacity>
+                </View>
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Issues</Text>

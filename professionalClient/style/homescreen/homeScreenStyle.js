@@ -82,35 +82,11 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+
     footerText: {
         color: 'white',
         fontSize: 11,
     },
-
-
-
-    filterContainer: {
-        flexDirection: 'row',  // Align buttons horizontally
-        marginBottom: 10,
-    },
-    filterButton: {
-        marginRight: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        backgroundColor: '#e0e0e0',
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    filterButtonSelected: {
-        backgroundColor: 'orange',
-    },
-    filterButtonText: {
-        fontSize: 14,
-        color: '#333',
-    },
-
-
 
     //Modal
     overlay: {
@@ -207,18 +183,50 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
-    //Search Bar
+    // notification button
+    notificationButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 10,
+        zIndex: 1,
+    },
+
+    // profile button
+    profileButton: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        padding: 10,
+        zIndex: 1,
+    },
+
+    // Search Bar Container
+    searchContainer: {
+        flexDirection: 'row', // Align children horizontally
+        alignItems: 'center', // Vertically center the children
+        borderColor: 'gray',
+        paddingHorizontal: 10,
+        marginLeft: '15%',
+        marginRight: '15%',
+        zIndex: 1,  // Ensure it appears in front of other elements
+        marginBottom: '-5.5%',
+        gap: 20, // Add gap between search bar and filter button
+    },
+
+    // Search Bar
     searchBar: {
+        flex: 1, // Take up remaining space
         height: 40,
         borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 10,
-        marginLeft:'15%',
-        marginRight:'15%',
-        backgroundColor: 'white', // Ensure it has a solid background to appear distinct
-        zIndex: 1,  // Ensure it appears in front of other elements
-        marginBottom:'-4.5%',
+        backgroundColor: 'white',
+    },
+
+    // Filter Button
+    filterButton: {
     },
 
     /*

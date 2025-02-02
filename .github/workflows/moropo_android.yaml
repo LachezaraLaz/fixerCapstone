@@ -19,12 +19,12 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
-          cache-dependency-path: fixerClient/yarn.lock
+          cache-dependency-path: fixerClient/package-lock.json
           node-version: 20.18.0
-          cache: yarn
+          cache: npm
 
       - name: 📦 Install dependencies
-        run: yarn install
+        run: npm install
         working-directory: fixerClient  # Explicitly point to fixerClient
 
       - name: 🏗 Setup EAS

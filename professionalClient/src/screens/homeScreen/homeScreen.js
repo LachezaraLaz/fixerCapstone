@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, TextInput } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
 import { IPAddress } from '../../../ipAddress';
@@ -31,7 +31,6 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
     const [typesOfWork, setTypesOfWork] = React.useState([]);
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
-    //const [searchQuery, setSearchQuery] = React.useState('');  // New state for search query
     const mapRef = React.useRef(null);
     const scrollViewRef = React.useRef(null);
 
@@ -104,11 +103,11 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
     };
 
     const filteredIssues = React.useMemo(() => {
-        return issues.filter((issue) => {
-            // Filter by professionalNeeded
-            const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
+        const uniqueIssues = Array.from(new Set(issues.map(issue => issue._id)))
+            .map(id => issues.find(issue => issue._id === id));
 
-            // Filter by distance
+        return uniqueIssues.filter((issue) => {
+            const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
             let matchesDistance = true;
             if (currentLocation && route.params?.distanceRange) {
                 const [minDistance, maxDistance] = route.params.distanceRange;
@@ -120,14 +119,9 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                 );
                 matchesDistance = distance >= minDistance && distance <= maxDistance;
             }
-
-            // Filter by search query
-            /*const matchesSearch = issue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                issue.description.toLowerCase().includes(searchQuery.toLowerCase());*/
-
-            return matchesProfessional && matchesDistance/* && matchesSearch*/;
+            return matchesProfessional && matchesDistance;
         });
-    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange/*, searchQuery*/]);
+    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange]);
 
     if (loading) {
         return (
@@ -171,6 +165,21 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.profileButton}>
+                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
+                    <Ionicons name="person-circle" size={32} color="#333" />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.notificationButton}>
+                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
+                    <Ionicons name="notifications-outline" size={28} color="#333" />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.recenterButtonContainer}>
+                <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
+                    <Ionicons name="locate" size={28} color="#333" />
+                </TouchableOpacity>
+            </View>
             <Animated.ScrollView
                 ref={scrollViewRef}
                 contentContainerStyle={{ paddingBottom: 100 }}
@@ -185,6 +194,7 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                         ref={mapRef}
                         style={styles.map}
                         showsUserLocation={true}
+                        showsMyLocationButton={false}  // Add this for Android so i can use my customize recenter button
                         shouldRasterizeIOS={true} // Optimize for iOS
                         renderToHardwareTextureAndroid={true} // Optimize for Android
                         region={currentLocation ? {
@@ -199,21 +209,7 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
-                        <View style={styles.profileButton}>
-                            <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
-                                <Ionicons name="person-circle" size={32} color="#333" />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.notificationButton}>
-                            <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
-                                <Ionicons name="notifications-outline" size={28} color="#333" />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.recenterButtonContainer}>
-                            <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
-                                <Ionicons name="locate" size={24} color="#333" />
-                            </TouchableOpacity>
-                        </View>
+
                         {filteredIssues.map((issue) => (
                             <Marker
                                 key={issue._id}
@@ -227,14 +223,6 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                 </Animated.View>
 
                 <View style={styles.searchContainer}>
-                    {/*
-                    <TextInput
-                        style={styles.searchBar}
-                        placeholder="Search issues..."
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                    />
-                    */}
                     <TouchableOpacity
                         style={styles.filterButton}
                         onPress={() => navigation.navigate('FilterIssue', {

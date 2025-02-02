@@ -97,6 +97,7 @@ export const styles = StyleSheet.create({
         borderRadius: 25,
         padding: 10,
         elevation: 3,
+        zIndex: 1,
     },
     recenterButton: {
         justifyContent: 'center',
@@ -139,39 +140,4 @@ export const styles = StyleSheet.create({
         top: 25
     },
 
-    // Search Bar
-    /*
-    searchBar: {
-        flex: 1, // Take up remaining space
-        height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        backgroundColor: 'white',
-    }, */
-
-
-    /*
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        marginBottom: 16,
-    },
-    searchBar: {
-        flex: 1,
-        height: 40,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        marginRight: 8,
-    },
-    searchButton: {
-        padding: 8,
-        backgroundColor: '#f0f0f0',
-        borderRadius: 8,
-    },
-    */
 });

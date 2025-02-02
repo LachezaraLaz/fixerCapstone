@@ -31,7 +31,7 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
     const [typesOfWork, setTypesOfWork] = React.useState([]);
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
-    const [searchQuery, setSearchQuery] = React.useState('');  // New state for search query
+    //const [searchQuery, setSearchQuery] = React.useState('');  // New state for search query
     const mapRef = React.useRef(null);
     const scrollViewRef = React.useRef(null);
 
@@ -122,12 +122,12 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
             }
 
             // Filter by search query
-            const matchesSearch = issue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                issue.description.toLowerCase().includes(searchQuery.toLowerCase());
+            /*const matchesSearch = issue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                issue.description.toLowerCase().includes(searchQuery.toLowerCase());*/
 
-            return matchesProfessional && matchesDistance && matchesSearch;
+            return matchesProfessional && matchesDistance/* && matchesSearch*/;
         });
-    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange, searchQuery]);
+    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange/*, searchQuery*/]);
 
     if (loading) {
         return (
@@ -185,6 +185,8 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                         ref={mapRef}
                         style={styles.map}
                         showsUserLocation={true}
+                        shouldRasterizeIOS={true} // Optimize for iOS
+                        renderToHardwareTextureAndroid={true} // Optimize for Android
                         region={currentLocation ? {
                             latitude: currentLocation.latitude,
                             longitude: currentLocation.longitude,
@@ -225,12 +227,14 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
                 </Animated.View>
 
                 <View style={styles.searchContainer}>
+                    {/*
                     <TextInput
                         style={styles.searchBar}
                         placeholder="Search issues..."
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                     />
+                    */}
                     <TouchableOpacity
                         style={styles.filterButton}
                         onPress={() => navigation.navigate('FilterIssue', {

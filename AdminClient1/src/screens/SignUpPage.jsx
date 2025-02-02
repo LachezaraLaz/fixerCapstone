@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // For navigation
-import { My_ipAddress } from "../../my_ipAddress.js";
 
 
 export default function SignUpPage() {
@@ -53,7 +52,7 @@ export default function SignUpPage() {
         setLoading(true);
         try {
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/admin/register`,
+                `/api/admin/register`,
                 {
                     email: formData.email,
                     firstName: formData.firstName,

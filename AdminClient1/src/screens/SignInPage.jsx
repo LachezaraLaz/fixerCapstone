@@ -30,7 +30,7 @@ export default function SignInPage() {
 
         setLoading(true);
         try {
-            const response = await axios.post("http://your-backend-api.com/signin", formData);
+            const response = await axios.post(`/api/signin`, formData);
 
             const { token, isAdmin } = response.data; // Assuming backend sends `isAdmin`
             localStorage.setItem("authToken", token); // Store JWT in localStorage

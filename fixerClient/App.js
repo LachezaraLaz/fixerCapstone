@@ -19,9 +19,6 @@ import NavBar from './src/NavBarComponent';
 import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Chat, OverlayProvider, useCreateChatClient } from 'stream-chat-expo';
-import { STREAM_API_KEY } from './src/screens/chat/chatConfig';
-import { StreamChat } from "stream-chat";
 import { ChatProvider } from "./src/screens/chat/chatContext";
 import ChatListPage from "./src/screens/chat/chatListPage";
 import ChatPage from "./src/screens/chat/chatPage";
@@ -34,7 +31,6 @@ const Stack = createNativeStackNavigator();
 export default function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [chatClient, setChatClient] = useState(null);
 
     useEffect(() => {
         const checkToken = async () => {
@@ -53,23 +49,8 @@ export default function App() {
         checkToken();
     }, []);
 
-    // Initialize the StreamChat client
-    useEffect(() => {
-        const initChatClient = async () => {
-            try {
-                // Use your public API key here
-                const client = StreamChat.getInstance(STREAM_API_KEY);
-                setChatClient(client);
-            } catch (err) {
-                console.log("Error creating StreamChat client:", err);
-            }
-        };
-
-        initChatClient();
-    }, []);
-
     // Show loading screen if chat client is not ready or token check is in progress
-    if (loading || !chatClient) {
+    if (loading) {
         return (
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

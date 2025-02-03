@@ -20,10 +20,7 @@ import NotificationDetail from './src/screens/notificationDetail/notificationDet
 import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChatProvider, useChatContext } from "./src/screens/chat/chatContext";
-import { Chat } from 'stream-chat-expo';
-import ChannelListScreen from "./src/screens/chat/chatListPage";
-import ChatPage from "./src/screens/chat/chatPage";
+import { ChatProvider } from "./src/screens/chat/chatContext";
 import ReviewsPage from "./src/screens/reviewsPage/reviewsPage";
 import { Text } from "react-native";
 

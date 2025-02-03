@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StreamChat } from "stream-chat";
+import { OverlayProvider } from 'stream-chat-expo';
 import { STREAM_API_KEY } from "./chatConfig";
 
 export const ChatContext = React.createContext({
@@ -19,24 +20,23 @@ export const ChatProvider = ({ children }) => {
     const [channel, setChannel] = useState(null);
     const [thread, setThread] = useState(null);
     const [user, setUser] = useState(null);
+    const [loadingClient, setLoadingClient] = useState(true);
 
     useEffect(() => {
         const initChat = async () => {
             try {
-
                 const storedUserId = await AsyncStorage.getItem('userId');
                 const storedUserName = await AsyncStorage.getItem('userName');
                 const storedStreamToken = await AsyncStorage.getItem('streamToken');
 
                 if (!storedUserId || !storedStreamToken) {
                     console.log('No user credentials found, skipping chat init');
+                    setLoadingClient(false);
                     return;
                 }
 
-                // Create a single instance of the Stream client
                 const client = StreamChat.getInstance(STREAM_API_KEY);
 
-                // Connect user with the retrieved credentials
                 await client.connectUser(
                     {
                         id: storedUserId,
@@ -45,11 +45,12 @@ export const ChatProvider = ({ children }) => {
                     storedStreamToken
                 );
 
-                // Update state
                 setUser({ id: storedUserId, name: storedUserName });
                 setChatClient(client);
             } catch (error) {
                 console.error('Error initializing chat:', error);
+            } finally {
+                setLoadingClient(false);
             }
         };
 
@@ -73,10 +74,12 @@ export const ChatProvider = ({ children }) => {
                 thread,
                 setThread,
                 user,
-                setUser
+                setUser,
             }}
         >
-            {children}
+            <OverlayProvider>
+                {children}
+            </OverlayProvider>
         </ChatContext.Provider>
     );
 };

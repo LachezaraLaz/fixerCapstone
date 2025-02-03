@@ -4,7 +4,7 @@ import { Alert, TouchableOpacity } from 'react-native';
 import HomeScreen from './homeScreen';
 import CreateIssue from './screens/createIssue/createIssue';
 import MyIssuesPosted from "./screens/myIssuesPosted/myIssuesPosted";
-import ChatListPage from '../src/screens/chat/chatListPage';
+import ChatScreens from './screens/chat/chatScreens'
 import { Ionicons } from '@expo/vector-icons';
 import SettingsPage from '../src/screens/settingsPage/settingsPage';
 
@@ -46,7 +46,7 @@ export default function NavBar({ setIsLoggedIn }) {  // Receive setIsLoggedIn as
 
             <Tab.Screen
                 name="Chat"
-                component={ChatListPage}
+                component={ChatScreens}
             />
 
             {/* Settings Tab - Intercepts press to show alert */}

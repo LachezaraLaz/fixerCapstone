@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Alert, TouchableOpacity } from 'react-native';
 import HomeScreen from '../src/screens/homeScreen/homeScreen';
 import MyJobsProfessional from '../src/screens/myJobs/myJobs';
-import ChatListPage from '../src/screens/chat/chatListPage';
+import ChatScreens from './screens/chat/chatScreens'
 import SettingsPage from '../src/screens/settingsPage/settingsPage';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -49,7 +49,7 @@ export default function ProfessionalNavBar({ setIsLoggedIn }) {  // Receive setI
             {/* Chat Tab - Intercept press and show alert */}
             <Tab.Screen
                 name="Chat"
-                component={ChatListPage}
+                component={ChatScreens}
             />
 
             {/* Settings Tab - Intercepts press to show alert */}

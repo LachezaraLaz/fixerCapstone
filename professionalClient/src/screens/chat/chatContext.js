@@ -77,7 +77,9 @@ export const ChatProvider = ({ children }) => {
                 setUser,
             }}
         >
-            {children}
+            <OverlayProvider>
+                {children}
+            </OverlayProvider>
         </ChatContext.Provider>
     );
 };

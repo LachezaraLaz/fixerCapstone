@@ -78,44 +78,38 @@ export default function App() {
                 <NavigationContainer>
                     {isLoggedIn ? (
                         <ChatProvider>
-                            <OverlayProvider>
-                                <Chat client={chatClient}>
-                                    <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
-                                        <>
-                                            {/* MainTabs with ProfessionalNavBar */}
-                                            <Stack.Screen
-                                                name="MainTabs"
-                                                options={{ headerShown: false }}
-                                            >
-                                                {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                            </Stack.Screen>
+                            <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
+                                <>
+                                    {/* MainTabs with ProfessionalNavBar */}
+                                    <Stack.Screen
+                                        name="MainTabs"
+                                        options={{ headerShown: false }}
+                                    >
+                                        {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                    </Stack.Screen>
 
-                                            <Stack.Screen
-                                                name="HomeScreen"
-                                                options={{ headerShown: false }} // Remove header for HomeScreen
-                                            >
-                                                {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                            </Stack.Screen>
-                                            {/* Additional screens accessible from MainTabs */}
+                                    <Stack.Screen
+                                        name="HomeScreen"
+                                        options={{ headerShown: false }} // Remove header for HomeScreen
+                                    >
+                                        {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                    </Stack.Screen>
+                                    {/* Additional screens accessible from MainTabs */}
 
-                                            <Stack.Screen
-                                                name="ProfilePage"
-                                                component={ProfilePage}
-                                                options={{ headerShown: false }}  // This hides the default navigation header
-                                            />
-                                            <Stack.Screen name="ContractOffer" component={ContractOffer} />
-                                            <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
-                                            <Stack.Screen name="UploadID" component={UploadID} />
-                                            <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
-                                            <Stack.Screen name="NotificationPage" component={NotificationPage} />
-                                            <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
-                                            <Stack.Screen name="ChatListPage" component={ChatListPage} />
-                                            <Stack.Screen name="ChatPage" component={ChatPage} />
-                                            <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
-                                        </>
-                                    </Stack.Navigator>
-                                </Chat>
-                            </OverlayProvider>
+                                    <Stack.Screen
+                                        name="ProfilePage"
+                                        component={ProfilePage}
+                                        options={{ headerShown: false }}  // This hides the default navigation header
+                                    />
+                                    <Stack.Screen name="ContractOffer" component={ContractOffer} />
+                                    <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
+                                    <Stack.Screen name="UploadID" component={UploadID} />
+                                    <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
+                                    <Stack.Screen name="NotificationPage" component={NotificationPage} />
+                                    <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
+                                    <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
+                                </>
+                            </Stack.Navigator>
                         </ChatProvider>
                     ) : (
                         <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>

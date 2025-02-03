@@ -15,6 +15,7 @@ import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage";
 import ProfessionalNavBar from './src/ProfessionalNavBarComponent';
 import HomeScreen from "./src/screens/homeScreen/homeScreen";
 import FilterIssuePage from './src/screens/filterIssuePage/filterIssuePage';
+import MyJobsPage from "./src/screens/myJobs/myJobs";
 import ContractOffer from "./src/screens/contractOffer/contractOffer";
 import NotificationPage from './src/screens/notificationPage/notificationPage';
 import NotificationDetail from './src/screens/notificationDetail/notificationDetail';
@@ -101,6 +102,7 @@ export default function App() {
                                     />
                                     <Stack.Screen name="ContractOffer" component={ContractOffer} />
                                     <Stack.Screen name="FilterIssue" component={FilterIssuePage} />
+                                    <Stack.Screen name="MyJobs" component={MyJobsPage} />
                                     <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
                                     <Stack.Screen name="UploadID" component={UploadID} />
                                     <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />

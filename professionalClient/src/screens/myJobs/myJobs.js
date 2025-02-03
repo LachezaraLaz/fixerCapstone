@@ -3,6 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator, Alert, TouchableOpacity } fr
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../../style/myJobs/myJobsStyle';
+import { IPAddress } from '../../../ipAddress';
 
 
 export default function MyJobsProfessional() {
@@ -18,7 +19,7 @@ export default function MyJobsProfessional() {
                 return;
             }
 
-            const response = await axios.get('https://fixercapstone-production.up.railway.app/myJobs/get', {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/myJobs/get`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

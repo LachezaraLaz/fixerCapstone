@@ -8,6 +8,7 @@ import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatContext } from '../chat/chatContext';
+import { useNavigation } from '@react-navigation/native';
 
 // Utility function to calculate distance using Haversine formula
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -23,7 +24,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
     return R * c; // Distance in kilometers
 };
 
-export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
+export default function HomeScreen({ route, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
@@ -33,6 +34,7 @@ export default function HomeScreen({ navigation, route, setIsLoggedIn }) {
     const { chatClient } = useChatContext();
     const mapRef = React.useRef(null);
     const scrollViewRef = React.useRef(null);
+    const navigation = useNavigation();
 
     const fetchAllIssues = async () => {
         try {

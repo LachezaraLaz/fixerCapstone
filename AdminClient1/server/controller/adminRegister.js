@@ -1,26 +1,23 @@
-
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const adminModel = require("../model/fixerAdminModel");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const dotenv = require("dotenv");
+require("dotenv").config();
 
-dotenv.config();
-
-
+// Send Verification Email
 const sendVerificationEmail = async (admin, token) => {
     const transporter = nodemailer.createTransport({
-        service: "gmail",
+        service: 'gmail',
         auth: {
-            user: process.env.EMAIL_USER, // Your email
-            pass: process.env.EMAIL_PASS, // Your app-specific password
+            user: 'fixit9337@gmail.com',  // Use your email for sending verification
+            pass: process.env.PASS_RESET,  // Ensure this environment variable is set
         },
     });
 
-    const verificationUrl = `http://${process.env.HOST}/admin/verify-email?token=${token}`;
+    const verificationUrl = `http://localhost:5173/admin/verify-email?token=${token}`;
 
     const mailOptions = {
-        from: process.env.EMAIL_USER,
+        from: 'fixit9337@gmail.com',
         to: admin.email,
         subject: "Admin Email Verification",
         html: `<p>Welcome, ${admin.firstName}!</p>
@@ -40,6 +37,11 @@ const registerAdmin = async (req, res) => {
     const { email, firstName, lastName, password } = req.body;
 
     try {
+        // Validate input
+        if (!email || !firstName || !lastName || !password) {
+            return res.status(400).json({ message: "All fields are required." });
+        }
+
         // Check if admin already exists
         const existingAdmin = await adminModel.findOne({ email });
         if (existingAdmin) {
@@ -66,18 +68,16 @@ const registerAdmin = async (req, res) => {
         try {
             await sendVerificationEmail(newAdmin, verificationToken);
         } catch (emailError) {
-            // If email sending fails, clean up the created admin
-            await adminModel.findByIdAndDelete(newAdmin._id);
-            return res.status(500).json({ message: "Failed to send verification email." });
+            console.error("Failed to send verification email:", emailError);
+            // Instead of deleting the admin, send a warning response
+            return res.status(500).json({ message: "Admin created, but failed to send email." });
         }
 
         res.status(201).json({ message: "Admin account created successfully. Check your email!" });
     } catch (error) {
-        console.error(error);
+        console.error("Error registering admin:", error);
         res.status(500).json({ message: "Internal server error." });
     }
 };
-
-
 
 module.exports = { registerAdmin };

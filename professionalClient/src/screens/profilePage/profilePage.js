@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { IPAddress } from '../../../ipAddress';
 
 const ProfilePage = () => {
     const [professional, setProfessional] = useState(null);

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Modal, TextInput } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
 import { IPAddress } from '../../../ipAddress';
@@ -8,18 +8,33 @@ import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatContext } from '../chat/chatContext';
+import { useNavigation } from '@react-navigation/native';
 
-export default function HomeScreen({ navigation, setIsLoggedIn }) {
+// Utility function to calculate distance using Haversine formula
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const toRadians = (degrees) => degrees * (Math.PI / 180);
+    const R = 6371; // Radius of the Earth in km
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in kilometers
+};
+
+export default function HomeScreen({ route, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
-    const [selectedIssue, setSelectedIssue] = React.useState(null);
-    const [isModalVisible, setIsModalVisible] = React.useState(false);
-    const [price, setPrice] = React.useState('');
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [typesOfWork, setTypesOfWork] = React.useState([]);
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
+    const mapRef = React.useRef(null);
+    const scrollViewRef = React.useRef(null);
+    const navigation = useNavigation();
 
     const fetchAllIssues = async () => {
         try {
@@ -61,13 +76,14 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         getCurrentLocation();
     }, []);
 
-    const handleFilterSelect = (type) => {
-        if (selectedFilters.includes(type)) {
-            setSelectedFilters(selectedFilters.filter((filter) => filter !== type));
-        } else {
-            setSelectedFilters([...selectedFilters, type]);
-        }
-    };
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            if (route.params?.selectedFilters || route.params?.distanceRange) {
+                setSelectedFilters(route.params.selectedFilters || []);
+            }
+        });
+        return unsubscribe;
+    }, [navigation, route.params?.selectedFilters, route.params?.distanceRange]);
 
     const handleLogout = async () => {
         try {
@@ -88,72 +104,26 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }
     };
 
-    const handleIssueClick = (issue) => {
-        setSelectedIssue(issue);
-        setIsModalVisible(true);
-    };
+    const filteredIssues = React.useMemo(() => {
+        const uniqueIssues = Array.from(new Set(issues.map(issue => issue._id)))
+            .map(id => issues.find(issue => issue._id === id));
 
-    const closeModal = () => {
-        setSelectedIssue(null);
-        setPrice('');
-        setIsModalVisible(false);
-    };
-
-    const submitQuote = async () => {
-        if (!price) {
-            Alert.alert('Error', 'Please enter a price before submitting the quote.');
-            return;
-        }
-
-        try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert('Error', 'User token not found.');
-                return;
+        return uniqueIssues.filter((issue) => {
+            const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
+            let matchesDistance = true;
+            if (currentLocation && route.params?.distanceRange) {
+                const [minDistance, maxDistance] = route.params.distanceRange;
+                const distance = calculateDistance(
+                    currentLocation.latitude,
+                    currentLocation.longitude,
+                    issue.latitude,
+                    issue.longitude
+                );
+                matchesDistance = distance >= minDistance && distance <= maxDistance;
             }
-            console.log('selectedIssue:', selectedIssue);
-
-            if (!selectedIssue || !selectedIssue.userEmail) {
-                console.log('clientEmail is null or undefined');
-                Alert.alert('Error', 'Unable to retrieve client email from the selected issue.');
-                return;
-            }
-
-            const clientEmail = selectedIssue.userEmail; // Use userEmail from the schema
-            const issueId = selectedIssue._id;
-
-            const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/quotes/create`,
-                { clientEmail, price, issueId },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            if (response.status === 201) {
-                Alert.alert('Success', 'Quote submitted successfully!');
-                closeModal();
-            } else {
-                Alert.alert('Error', 'Failed to submit the quote.');
-            }
-        } catch (error) {
-            if (error.response?.status === 400) {
-                Alert.alert('Error', 'You have already submitted a quote for this issue.');
-            } else {
-                console.error('Error submitting quote:', error);
-                Alert.alert('Error', 'An error occurred while submitting the quote.');
-            }
-        }
-    };
-
-    const navigateToIssueDetails = () => {
-        if (selectedIssue) {
-            closeModal();
-            navigation.navigate('ContractOffer', { issue: selectedIssue });
-        }
-    };
-
-    const filteredIssues = selectedFilters.length > 0
-        ? issues.filter(issue => selectedFilters.includes(issue.professionalNeeded))
-        : issues;
+            return matchesProfessional && matchesDistance;
+        });
+    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange]);
 
     if (loading) {
         return (
@@ -165,75 +135,55 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
     const mapHeight = scrollY.interpolate({
         inputRange: [0, 500],
-        outputRange: [400, 150],
+        outputRange: [450, 150],
         extrapolate: 'clamp',
     });
 
+    const handleIssueClick = (issue) => {
+        if (scrollViewRef.current) {
+            scrollViewRef.current.scrollTo({ y: 0, animated: true });
+        }
+
+        if (mapRef.current) {
+            mapRef.current.animateToRegion({
+                latitude: issue.latitude,
+                longitude: issue.longitude,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
+            }, 500);
+        }
+    };
+
+    const handleRecenterMap = () => {
+        if (mapRef.current && currentLocation) {
+            mapRef.current.animateToRegion({
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
+            }, 500);
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
-            <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16 }]}>
+            <View style={styles.profileButton}>
                 <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
                     <Ionicons name="person-circle" size={32} color="#333" />
                 </TouchableOpacity>
+            </View>
+            <View style={styles.notificationButton}>
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
                     <Ionicons name="notifications-outline" size={28} color="#333" />
                 </TouchableOpacity>
             </View>
-
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.filterContainer}>
-                {typesOfWork.map((type, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        onPress={() => handleFilterSelect(type)}
-                        style={[
-                            styles.filterButton,
-                            selectedFilters.includes(type) && styles.filterButtonSelected,
-                        ]}
-                    >
-                        <Text style={styles.filterButtonText}>{type}</Text>
-                    </TouchableOpacity>
-                ))}
-            </ScrollView>
-
-            <Modal
-                visible={isModalVisible}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={closeModal}
-                testID="quotemodal"
-            >
-                <View style={styles.overlay}>
-                    <View style={styles.modalContainer}>
-                        <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                            <Ionicons name="close-outline" size={24} color="#333" />
-                        </TouchableOpacity>
-                        <Text style={styles.modalTitle}>{selectedIssue?.title}</Text>
-                        <Text style={styles.modalDescription}>{selectedIssue?.description}</Text>
-                        <Text style={styles.modalStatus}>Status: {selectedIssue?.status}</Text>
-                        <TextInput
-                            style={styles.priceInput}
-                            placeholder="Enter price for this issue"
-                            keyboardType="numeric"
-                            value={price}
-                            onChangeText={setPrice}
-                        />
-
-                        <View style={styles.buttonsContainer}>
-                            <TouchableOpacity onPress={navigateToIssueDetails} style={styles.moreInfoButton}>
-                                <Text style={styles.buttonText}>More Info</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
-                                <Text style={styles.buttonText}>Submit</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-
+            <View style={styles.recenterButtonContainer}>
+                <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
+                    <Ionicons name="locate" size={28} color="#333" />
+                </TouchableOpacity>
+            </View>
             <Animated.ScrollView
+                ref={scrollViewRef}
                 contentContainerStyle={{ paddingBottom: 100 }}
                 onScroll={Animated.event(
                     [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -243,9 +193,12 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             >
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
                     <MapView
+                        ref={mapRef}
                         style={styles.map}
                         showsUserLocation={true}
-                        followsUserLocation={true}
+                        showsMyLocationButton={false}  // Add this for Android so i can use my customize recenter button
+                        shouldRasterizeIOS={true} // Optimize for iOS
+                        renderToHardwareTextureAndroid={true} // Optimize for Android
                         region={currentLocation ? {
                             latitude: currentLocation.latitude,
                             longitude: currentLocation.longitude,
@@ -258,6 +211,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
+
                         {filteredIssues.map((issue) => (
                             <Marker
                                 key={issue._id}
@@ -265,11 +219,23 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
                                 title={issue.title}
                                 description={issue.description}
-                                onPress={() => handleIssueClick(issue)}
                             />
                         ))}
                     </MapView>
                 </Animated.View>
+
+                <View style={styles.searchContainer}>
+                    <TouchableOpacity
+                        style={styles.filterButton}
+                        onPress={() => navigation.navigate('FilterIssue', {
+                            typesOfWork,
+                            selectedFilters,
+                            distanceRange: route.params?.distanceRange || [0, 50], // Pass current distance range or default
+                        })}
+                    >
+                        <Ionicons name="filter" size={24} color="#333" />
+                    </TouchableOpacity>
+                </View>
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Issues</Text>

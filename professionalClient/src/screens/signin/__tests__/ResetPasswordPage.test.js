@@ -5,7 +5,7 @@ import axios from 'axios';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ResetPasswordPage from '../ResetPasswordPage';
-import SignInPage from '../SignInPage';
+import SignInPage from '../signinPage';
 
 // code to run only this file through the terminal:
 // npm run test ./src/screens/signin/__tests__/ResetPasswordPage.test.js

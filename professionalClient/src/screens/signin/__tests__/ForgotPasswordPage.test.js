@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ForgotPasswordPage from '../ForgotPasswordPage';
 import EnterPinPage from '../EnterPinPage';
-import SignInPage from '../SignInPage';
+import SignInPage from '../signinPage';
 
 // code to run only this file through the terminal:
 // npm run test ./src/screens/signin/__tests__/ForgotPasswordPage.test.js

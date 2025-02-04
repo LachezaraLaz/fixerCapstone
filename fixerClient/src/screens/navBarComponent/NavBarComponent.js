@@ -1,12 +1,12 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Alert, TouchableOpacity } from 'react-native';
-import HomeScreen from './homeScreen';
-import CreateIssue from './screens/createIssue/createIssue';
-import MyIssuesPosted from "./screens/myIssuesPosted/myIssuesPosted";
-import ChatScreens from './screens/chat/chatScreens'
+import HomeScreen from '../homeScreen/homeScreen';
+import CreateIssue from '../createIssue/createIssue';
+import MyIssuesPosted from "../myIssuesPosted/myIssuesPosted";
+import ChatScreens from '../chat/chatScreens'
 import { Ionicons } from '@expo/vector-icons';
-import SettingsPage from '../src/screens/settingsPage/settingsPage';
+import SettingsPage from '../settingsPage/settingsPage';
 
 const Tab = createBottomTabNavigator();
 

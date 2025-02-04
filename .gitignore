@@ -5,6 +5,10 @@ fixerClient/node_modules/
 professionalClient/node_modules/
 server/node_modules/
 
+# Testing coverage files
+fixerClient/coverage/
+professionalClient/coverage/
+
 # Logs
 
 # Environment variables

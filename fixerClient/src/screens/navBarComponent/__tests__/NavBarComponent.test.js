@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import NavBar from './NavBarComponent';
+import NavBar from '../NavBarComponent';
 import { Alert } from 'react-native';
 
 // Mock Alert

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StreamChat } from "stream-chat";
 import { OverlayProvider } from 'stream-chat-expo';
@@ -21,6 +21,11 @@ export const ChatProvider = ({ children }) => {
     const [thread, setThread] = useState(null);
     const [user, setUser] = useState(null);
     const [loadingClient, setLoadingClient] = useState(true);
+
+    const chatClientRef = useRef(chatClient);
+    useEffect(() => {
+        chatClientRef.current = chatClient;
+    }, [chatClient]);
 
     useEffect(() => {
         const initChat = async () => {
@@ -56,10 +61,9 @@ export const ChatProvider = ({ children }) => {
 
         initChat();
 
-        // Cleanup on unmount or user switch
         return () => {
-            if (chatClient) {
-                chatClient.disconnectUser();
+            if (chatClientRef.current) {
+                chatClientRef.current.disconnectUser();
             }
         };
     }, []);

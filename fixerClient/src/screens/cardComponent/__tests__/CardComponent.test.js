@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import CardComponent from './CardComponent';
+import CardComponent from '../CardComponent';
 
 describe('CardComponent', () => {
     const defaultProps = {

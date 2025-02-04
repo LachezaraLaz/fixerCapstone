@@ -2,9 +2,9 @@ import * as React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CardComponent from './CardComponent';
+import CardComponent from '../cardComponent/CardComponent';
 import { useEffect } from 'react';
-import { useChatContext } from './screens/chat/chatContext';
+import { useChatContext } from '../chat/chatContext';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
 

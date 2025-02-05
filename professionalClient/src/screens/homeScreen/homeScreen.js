@@ -199,17 +199,29 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                         showsMyLocationButton={false}  // Add this for Android so i can use my customize recenter button
                         shouldRasterizeIOS={true} // Optimize for iOS
                         renderToHardwareTextureAndroid={true} // Optimize for Android
-                        region={currentLocation ? {
-                            latitude: currentLocation.latitude,
-                            longitude: currentLocation.longitude,
-                            latitudeDelta: 0.0122,
-                            longitudeDelta: 0.0121,
-                        } : {
-                            latitude: 37.78825,
-                            longitude: -122.4324,
-                            latitudeDelta: 0.0122,
-                            longitudeDelta: 0.0121,
-                        }}
+                        region={currentLocation
+                            ? {
+                                latitude: currentLocation.latitude,
+                                longitude: currentLocation.longitude,
+                                latitudeDelta: 0.0122,
+                                longitudeDelta: 0.0121,
+                            }
+                            : filteredIssues.length > 0
+                                ? {
+                                    latitude: filteredIssues[0].latitude,  // Fallback to an issue marker, if user denied location permission
+                                    longitude: filteredIssues[0].longitude,
+                                    latitudeDelta: 0.05,
+                                    longitudeDelta: 0.05,
+                                }
+                                : {
+                                    latitude: 45.5017,  // Default fallback to Montreal, if no issues exist
+                                    longitude: -73.5673, // Longitude for Montreal
+                                    latitudeDelta: 0.1,
+                                    longitudeDelta: 0.1,
+                                }
+
+                        }
+
                     >
 
                         {filteredIssues.map((issue) => (

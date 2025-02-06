@@ -1,6 +1,5 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Alert, TouchableOpacity } from 'react-native';
 import HomeScreen from '../homeScreen/homeScreen';
 import CreateIssue from '../createIssue/createIssue';
 import MyIssuesPosted from "../myIssuesPosted/myIssuesPosted";

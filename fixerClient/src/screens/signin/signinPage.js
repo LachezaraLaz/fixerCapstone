@@ -32,8 +32,6 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
 
                 Alert.alert("Signed in successfully");
                 setIsLoggedIn(true);
-                console.log("Current Navigation State:", navigation.getState());
-                console.log("Current Navigation State:", navigation.getState());
 
                 setTimeout(() => {
                     navigation.dispatch(

@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 import { useChatContext } from '../chat/chatContext';
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
-
     const { chatClient } = useChatContext();
 
     useEffect(() => {
@@ -38,14 +37,20 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     return (
         <SafeAreaView style={styles.safeArea}>
             {/* Custom Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
-                    <Ionicons name="person-circle" size={32} color="#333" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
-                    <Ionicons name="notifications-outline" size={28} color="#333" />
+            <View style={styles.customHeader}>
+                {/* Fixr Logo/Text */}
+                <Text style={styles.headerLogo}>Fixr</Text>
+
+                {/* Page Title */}
+                <Text style={styles.headerTitle}>Home Screen</Text>
+
+                {/* Notification Button */}
+                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')} style={styles.notificationButton}>
+                    <Ionicons name="notifications-outline" size={24} color="#333" />
                 </TouchableOpacity>
             </View>
+
+
 
             <ScrollView contentContainerStyle={styles.container}>
                 {/* Current Jobs Requested Section */}
@@ -62,10 +67,10 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                     <CardComponent title="Invoice #5678" status="Due Soon" showProgress={false} showProfessional={false} />
                 </View>
 
-                {/* Help Button */}
-                <View style={styles.helpSection}>
-                    <TouchableOpacity style={styles.helpButton}>
-                        <Text style={styles.helpButtonText}>Help</Text>
+                {/* Create Issue Button*/}
+                <View style={styles.createIssueSection}>
+                    <TouchableOpacity style={styles.createIssueButton} onPress={() => navigation.navigate('CreateIssue')}>
+                        <Text style={styles.createIssueButtonText}>Create Issue</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -90,17 +95,40 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
     },
-    header: {
+    customHeader: {
         width: '100%',
-        height: 70, // Adjusted height for better alignment
+        height: 70,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 16,
-        backgroundColor: '#f8f8f8',
+        backgroundColor: '#ffffff',
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end', // Align icons towards the bottom of the header
-        paddingBottom: 8,
+    },
+    headerLogo: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'orange',
+    },
+    headerTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+    },
+    notificationButton: {
+        width: 40,
+        height: 40,
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
     },
     container: {
         flexGrow: 1,
@@ -117,20 +145,26 @@ const styles = StyleSheet.create({
         color: '#333',
         marginBottom: 8,
     },
-    helpSection: {
+    createIssueSection: {
         paddingHorizontal: 16,
         marginVertical: 16,
         width: '100%',
     },
-    helpButton: {
-        backgroundColor: '#e0e0e0',
-        padding: 12,
+    createIssueButton: {
+        backgroundColor: 'orange',
+        padding: 14,
         borderRadius: 8,
         alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
     },
-    helpButtonText: {
+    createIssueButtonText: {
         fontSize: 16,
-        color: '#333',
+        fontWeight: 'bold',
+        color: 'white',
     },
     logoutContainer: {
         paddingHorizontal: 16,
@@ -161,4 +195,3 @@ const styles = StyleSheet.create({
         color: '#666',
     },
 });
-

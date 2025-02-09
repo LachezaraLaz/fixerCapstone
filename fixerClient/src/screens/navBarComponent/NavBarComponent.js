@@ -73,7 +73,7 @@ export default function NavBar({ setIsLoggedIn }) {
                 options={({ route }) => {
                     const routeName = route?.state?.routes?.[route.state.index]?.name;
                     return {
-                        tabBarStyle: routeName === 'ChatPage' ? { display: 'none' } : {},
+                        tabBarStyle: routeName === 'ChatPage' ? { display: 'none' } : styles.tabBarStyle,
                     };
                 }}
             />
@@ -83,6 +83,21 @@ export default function NavBar({ setIsLoggedIn }) {
 }
 
 const styles = StyleSheet.create({
+    tabBarStyle: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        position: 'absolute',
+        height: 70,  // Ensures tab bar remains the same size
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6.27,
+        elevation: 10,
+        paddingBottom: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+    },
     iconContainer: {
         flexDirection: 'row',
         alignItems: 'center',

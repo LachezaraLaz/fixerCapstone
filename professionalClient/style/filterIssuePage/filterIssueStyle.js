@@ -16,18 +16,44 @@ export const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-    },
-    applyButton: {
-        color: 'orange',
-        fontSize: 16,
+        alignItems: 'center',
+        marginRight: '40%', // To have the text "Filters" in the middle of the row
     },
     filterList: {
         padding: 16,
+        paddingBottom: 80, // Ensure space for the button
+    },
+    filterGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+
+    filterButton: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#ddd',
+        marginBottom: 12,
+        backgroundColor: '#fff',
+    },
+    filterButtonSelected: {
+        backgroundColor: '#f28500',
+        borderColor: '#f28500',
+    },
+    filterButtonText: {
+        fontSize: 12,
+        color: '#333',
+        textAlign: 'center',
     },
     sectionTitle: {
         fontSize: 16,
         fontWeight: 'bold',
         marginBottom: 16,
+        marginTop: 20,
     },
     distanceRangeContainer: {
         flexDirection: 'row',
@@ -39,19 +65,24 @@ export const styles = StyleSheet.create({
         flex: 1,
         marginHorizontal: 16,
     },
-    filterButton: {
-        padding: 16,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        marginBottom: 8,
+    applyButtonContainer: {
+        position: 'absolute',
+        bottom: 20,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
     },
-    filterButtonSelected: {
-        backgroundColor: 'orange',
-        borderColor: 'orange',
+    applyButton: {
+        backgroundColor: '#f28500',
+        paddingVertical: 18,
+        paddingHorizontal: 32,
+        borderRadius: 10,
+        width: '90%',
+        alignItems: 'center',
     },
-    filterButtonText: {
+    applyButtonText: {
+        color: '#fff',
         fontSize: 16,
-        color: '#333',
+        fontWeight: 'bold',
     },
 });

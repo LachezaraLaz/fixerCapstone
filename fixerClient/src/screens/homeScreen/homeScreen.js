@@ -37,11 +37,21 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     return (
         <SafeAreaView style={styles.safeArea}>
             {/* Custom Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
-                    <Ionicons name="notifications-outline" size={28} color="#333" />
+            <View style={styles.customHeader}>
+                {/* Fixr Logo/Text */}
+                <Text style={styles.headerLogo}>Fixr</Text>
+
+                {/* Page Title */}
+                <Text style={styles.headerTitle}>Home Screen</Text>
+
+                {/* Notification Icon */}
+                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')} style={styles.notificationContainer}>
+                    <Ionicons name="notifications-outline" size={24} color="#333" />
+                    <View style={styles.notificationDot} /> {/* Small circle on the bell */}
                 </TouchableOpacity>
             </View>
+
+
 
             <ScrollView contentContainerStyle={styles.container}>
                 {/* Current Jobs Requested Section */}
@@ -97,6 +107,40 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end',
         paddingBottom: 8,
+    },
+    customHeader: {
+        width: '100%',
+        height: 70,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+    },
+    headerLogo: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'orange',
+    },
+    headerTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+    },
+    notificationContainer: {
+        position: 'relative',
+    },
+    notificationDot: {
+        position: 'absolute',
+        top: -3,
+        right: -3,
+        width: 8,
+        height: 8,
+        backgroundColor: 'red',
+        borderRadius: 4,
     },
     container: {
         flexGrow: 1,

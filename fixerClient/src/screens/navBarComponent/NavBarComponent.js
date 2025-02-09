@@ -38,7 +38,7 @@ export default function NavBar({ setIsLoggedIn }) {
                         <View
                             style={[
                                 styles.iconContainer,
-                                focused && styles.activeTab, // Apply active styles when focused
+                                focused && styles.activeTab,
                             ]}
                         >
                             <Ionicons
@@ -54,7 +54,7 @@ export default function NavBar({ setIsLoggedIn }) {
                         </View>
                     );
                 },
-                tabBarShowLabel: false, // Disable default text labels
+                tabBarShowLabel: false,
                 tabBarStyle: {
                     backgroundColor: 'white',
                     borderTopLeftRadius: 20,
@@ -70,12 +70,10 @@ export default function NavBar({ setIsLoggedIn }) {
                     paddingLeft: 10,
                     paddingRight: 10
                 },
-                headerShown: false, // Hide the header for each tab
+                headerShown: false,
             })}
         >
-            <Tab.Screen name="Home">
-                {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
-            </Tab.Screen>
+            <Tab.Screen name="Home">{props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}</Tab.Screen>
             <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
             <Tab.Screen name="Chat" component={ChatScreens} />
             <Tab.Screen name="Settings" component={SettingsPage} />

@@ -5,7 +5,7 @@ import HomeScreen from '../homeScreen/homeScreen';
 import MyIssuesPosted from "../myIssuesPosted/myIssuesPosted";
 import ChatScreens from '../chat/chatScreens';
 import { Ionicons } from '@expo/vector-icons';
-import ProfilePage from '../profilPage/profilePage'; // Keeping the correct import
+import ProfilePage from '../profilPage/profilePage';
 
 const Tab = createBottomTabNavigator();
 
@@ -67,7 +67,16 @@ export default function NavBar({ setIsLoggedIn }) {
                 {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
             </Tab.Screen>
             <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
-            <Tab.Screen name="Chat" component={ChatScreens} />
+            <Tab.Screen
+                name="Chat"
+                component={ChatScreens}
+                options={({ route }) => {
+                    const routeName = route?.state?.routes?.[route.state.index]?.name;
+                    return {
+                        tabBarStyle: routeName === 'ChatPage' ? { display: 'none' } : {},
+                    };
+                }}
+            />
             <Tab.Screen name="Profile" component={ProfilePage} />
         </Tab.Navigator>
     );

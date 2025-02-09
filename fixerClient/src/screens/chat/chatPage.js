@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
         paddingBottom: 70, // Keeps space when keyboard is hidden
     },
     inputContainerKeyboardActive: {
-        paddingBottom: 20, // Removes extra space when keyboard is open
+        paddingBottom: 0, // Removes extra space when keyboard is open
     },
 });
 

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Keyboard, Platform } from 'react-native';
 import HomeScreen from '../homeScreen/homeScreen';
 import MyIssuesPosted from "../myIssuesPosted/myIssuesPosted";
 import ChatScreens from '../chat/chatScreens';
@@ -10,6 +10,23 @@ import ProfilePage from '../profilPage/profilePage';
 const Tab = createBottomTabNavigator();
 
 export default function NavBar({ setIsLoggedIn }) {
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+            setKeyboardVisible(true);
+        });
+
+        const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+            setKeyboardVisible(false);
+        });
+
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
+
     const labels = {
         Home: 'Home',
         JobsPosted: 'My Jobs',
@@ -45,21 +62,7 @@ export default function NavBar({ setIsLoggedIn }) {
                     );
                 },
                 tabBarShowLabel: false,
-                tabBarStyle: {
-                    backgroundColor: 'white',
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    position: 'absolute',
-                    height: 70,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 5 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 6.27,
-                    elevation: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                },
+                tabBarStyle: isKeyboardVisible ? { display: "none" } : styles.tabBarStyle, // Hides navbar when keyboard is open
                 headerShown: false,
             })}
         >
@@ -67,16 +70,7 @@ export default function NavBar({ setIsLoggedIn }) {
                 {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
             </Tab.Screen>
             <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
-            <Tab.Screen
-                name="Chat"
-                component={ChatScreens}
-                options={({ route }) => {
-                    const routeName = route?.state?.routes?.[route.state.index]?.name;
-                    return {
-                        tabBarStyle: routeName === 'ChatPage' ? { display: 'none' } : styles.tabBarStyle,
-                    };
-                }}
-            />
+            <Tab.Screen name="Chat" component={ChatScreens} />
             <Tab.Screen name="Profile" component={ProfilePage} />
         </Tab.Navigator>
     );

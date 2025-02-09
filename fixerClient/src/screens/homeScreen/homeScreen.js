@@ -44,10 +44,9 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 {/* Page Title */}
                 <Text style={styles.headerTitle}>Home Screen</Text>
 
-                {/* Notification Icon */}
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')} style={styles.notificationContainer}>
+                {/* Notification Button */}
+                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')} style={styles.notificationButton}>
                     <Ionicons name="notifications-outline" size={24} color="#333" />
-                    <View style={styles.notificationDot} /> {/* Small circle on the bell */}
                 </TouchableOpacity>
             </View>
 
@@ -96,18 +95,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
     },
-    header: {
-        width: '100%',
-        height: 70,
-        paddingHorizontal: 16,
-        backgroundColor: '#f8f8f8',
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingBottom: 8,
-    },
     customHeader: {
         width: '100%',
         height: 70,
@@ -130,17 +117,18 @@ const styles = StyleSheet.create({
         color: '#333',
         textAlign: 'center',
     },
-    notificationContainer: {
-        position: 'relative',
-    },
-    notificationDot: {
-        position: 'absolute',
-        top: -3,
-        right: -3,
-        width: 8,
-        height: 8,
-        backgroundColor: 'red',
-        borderRadius: 4,
+    notificationButton: {
+        width: 40,
+        height: 40,
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
     },
     container: {
         flexGrow: 1,

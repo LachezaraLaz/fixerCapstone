@@ -21,8 +21,6 @@ export default function NavBar({ setIsLoggedIn }) {  // Receive setIsLoggedIn as
                         iconName = focused ? 'home' : 'home-outline';
                     } else if (route.name === 'JobsPosted') {
                         iconName = focused ? 'hammer' : 'hammer-outline';
-                    } else if (route.name === 'CreateIssue') {
-                        iconName = focused ? 'add' : 'add-outline';
                     } else if (route.name === 'Chat') {
                         iconName = focused ? 'chatbubble' : 'chatbubble-outline';
                     } else if (route.name === 'Settings') {
@@ -40,18 +38,8 @@ export default function NavBar({ setIsLoggedIn }) {  // Receive setIsLoggedIn as
                 {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
             </Tab.Screen>
             <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
-            <Tab.Screen name="CreateIssue" component={CreateIssue} />
-
-            <Tab.Screen
-                name="Chat"
-                component={ChatScreens}
-            />
-
-            {/* Settings Tab - Intercepts press to show alert */}
-            <Tab.Screen name="Settings"
-                        component={SettingsPage}
-                        options={{ headerShown: false }}
-            />
+            <Tab.Screen name="Chat" component={ChatScreens}/>
+            <Tab.Screen name="Settings" component={SettingsPage} options={{ headerShown: false }}/>
         </Tab.Navigator>
     );
 }

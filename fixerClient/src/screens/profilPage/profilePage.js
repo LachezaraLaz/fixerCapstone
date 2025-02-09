@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 const ProfilePage = () => {
     const [client, setClient] = useState(null);
@@ -41,62 +41,78 @@ const ProfilePage = () => {
         return <Text>Error loading profile.</Text>;
     }
 
-    // Function to show alert when pencil icon is tapped
-    const handleEditPress = () => {
-        Alert.alert(
-            "Feature Unavailable",
-            "The editing feature is not available yet, but please keep an eye out for future updates!",
-            [{ text: "OK", onPress: () => console.log("Alert closed") }]
-        );
-    };
-
     return (
-        <View style={styles.container}>
+        <View style={styles.safeArea}>
             {/* Custom Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} accessibilityLabel="back button">
-                    <Ionicons name="arrow-back" size={28} color="#333" />
-                </TouchableOpacity>
-
-                <Text style={styles.headerTitle}>ProfilePage</Text>
-
-                {/* Pencil Icon (Shows Alert When Tapped) */}
-                <TouchableOpacity onPress={handleEditPress}  accessibilityLabel="edit button">
-                    <MaterialIcons name="edit" size={24} color="black" />
+            <View style={styles.customHeader}>
+                <Text style={styles.headerLogo}>Fixr</Text>
+                <Text style={styles.headerTitle}>Profile</Text>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('SettingsPage')}
+                    style={styles.settingsButton}
+                >
+                    <Ionicons name="settings-outline" size={24} color="#333" />
                 </TouchableOpacity>
             </View>
 
             {/* Profile Details */}
             <View style={styles.profileContainer}>
-                <Image source={client.profilePicture} style={styles.profileImage} />
+                <Image
+                    source={{ uri: client.profilePicture || 'https://via.placeholder.com/100' }}
+                    style={styles.profileImage}
+                />
                 <Text style={styles.emailText}>{client.email}</Text>
             </View>
 
             {/* Help Button */}
-            <View style={styles.section}>
-                <Text style={styles.sectionText}>Help</Text>
+            <View style={styles.helpContainer}>
+                <TouchableOpacity style={styles.helpButton}>
+                    <Text style={styles.helpButtonText}>Help</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
         flex: 1,
         backgroundColor: '#ffffff',
-        padding: 16,
     },
-    header: {
+    customHeader: {
+        width: '100%',
+        height: 70,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
-        paddingVertical: 12,
-        backgroundColor: '#fff',
+        backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+    },
+    headerLogo: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'orange',
     },
     headerTitle: {
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+    },
+    settingsButton: {
+        width: 40,
+        height: 40,
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
     },
     profileContainer: {
         alignItems: 'center',
@@ -107,21 +123,29 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         marginBottom: 16,
+        backgroundColor: '#e0e0e0',
     },
     emailText: {
         fontSize: 16,
+        fontWeight: 'bold',
         color: '#666666',
+        marginTop: 8,
     },
-    section: {
-        backgroundColor: '#f0f0f0',
-        padding: 12,
-        marginVertical: 8,
-        borderRadius: 8,
+    helpContainer: {
+        marginTop: 20,
         alignItems: 'center',
+        paddingHorizontal: 16,
     },
-    sectionText: {
-        fontSize: 18,
-        color: '#333333',
+    helpButton: {
+        backgroundColor: '#e0e0e0',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+    },
+    helpButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
     },
 });
 

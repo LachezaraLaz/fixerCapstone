@@ -5,17 +5,16 @@ import HomeScreen from '../homeScreen/homeScreen';
 import MyIssuesPosted from "../myIssuesPosted/myIssuesPosted";
 import ChatScreens from '../chat/chatScreens';
 import { Ionicons } from '@expo/vector-icons';
-import SettingsPage from '../settingsPage/settingsPage';
+import ProfilePage from '../profilPage/profilePage'; // Keeping the correct import
 
 const Tab = createBottomTabNavigator();
 
 export default function NavBar({ setIsLoggedIn }) {
-    // Map route names to custom display names
     const labels = {
         Home: 'Home',
         JobsPosted: 'My Jobs',
         Chat: 'Chat',
-        Settings: 'Profile',
+        Profile: 'Profile',
     };
 
     return (
@@ -30,27 +29,18 @@ export default function NavBar({ setIsLoggedIn }) {
                         iconName = 'briefcase';
                     } else if (route.name === 'Chat') {
                         iconName = 'chatbubble';
-                    } else if (route.name === 'Settings') {
+                    } else if (route.name === 'Profile') {
                         iconName = 'person';
                     }
 
                     return (
-                        <View
-                            style={[
-                                styles.iconContainer,
-                                focused && styles.activeTab,
-                            ]}
-                        >
+                        <View style={[styles.iconContainer, focused && styles.activeTab]}>
                             <Ionicons
                                 name={focused ? iconName : `${iconName}-outline`}
                                 size={size}
                                 color={focused ? 'orange' : 'gray'}
                             />
-                            {focused && (
-                                <Text style={styles.tabLabel}>
-                                    {labels[route.name]} {/* Display custom label */}
-                                </Text>
-                            )}
+                            {focused && <Text style={styles.tabLabel}>{labels[route.name]}</Text>}
                         </View>
                     );
                 },
@@ -68,15 +58,17 @@ export default function NavBar({ setIsLoggedIn }) {
                     elevation: 10,
                     paddingBottom: 10,
                     paddingLeft: 10,
-                    paddingRight: 10
+                    paddingRight: 10,
                 },
                 headerShown: false,
             })}
         >
-            <Tab.Screen name="Home">{props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}</Tab.Screen>
+            <Tab.Screen name="Home">
+                {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+            </Tab.Screen>
             <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
             <Tab.Screen name="Chat" component={ChatScreens} />
-            <Tab.Screen name="Settings" component={SettingsPage} />
+            <Tab.Screen name="Profile" component={ProfilePage} />
         </Tab.Navigator>
     );
 }

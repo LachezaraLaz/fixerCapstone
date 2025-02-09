@@ -38,9 +38,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         <SafeAreaView style={styles.safeArea}>
             {/* Custom Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
-                    <Ionicons name="person-circle" size={32} color="#333" />
-                </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
                     <Ionicons name="notifications-outline" size={28} color="#333" />
                 </TouchableOpacity>
@@ -61,7 +58,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                     <CardComponent title="Invoice #5678" status="Due Soon" showProgress={false} showProfessional={false} />
                 </View>
 
-                {/* Create Issue Button (Replacing Help Button) */}
+                {/* Create Issue Button*/}
                 <View style={styles.createIssueSection}>
                     <TouchableOpacity style={styles.createIssueButton} onPress={() => navigation.navigate('CreateIssue')}>
                         <Text style={styles.createIssueButtonText}>Create Issue</Text>
@@ -97,8 +94,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
         paddingBottom: 8,
     },
     container: {

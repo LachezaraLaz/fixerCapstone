@@ -10,6 +10,14 @@ import SettingsPage from '../settingsPage/settingsPage';
 const Tab = createBottomTabNavigator();
 
 export default function NavBar({ setIsLoggedIn }) {
+    // Map route names to custom display names
+    const labels = {
+        Home: 'Home',
+        JobsPosted: 'My Jobs',
+        Chat: 'Chat',
+        Settings: 'Profile',
+    };
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -39,7 +47,9 @@ export default function NavBar({ setIsLoggedIn }) {
                                 color={focused ? 'orange' : 'gray'}
                             />
                             {focused && (
-                                <Text style={styles.tabLabel}>{route.name}</Text>
+                                <Text style={styles.tabLabel}>
+                                    {labels[route.name]} {/* Display custom label */}
+                                </Text>
                             )}
                         </View>
                     );

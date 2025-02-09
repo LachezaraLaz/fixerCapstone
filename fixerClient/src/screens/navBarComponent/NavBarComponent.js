@@ -18,16 +18,22 @@ export default function NavBar({ setIsLoggedIn }) {  // Receive setIsLoggedIn as
                     let iconName;
 
                     if (route.name === 'Home') {
-                        iconName = focused ? 'home' : 'home-outline';
+                        iconName = 'home';
                     } else if (route.name === 'JobsPosted') {
-                        iconName = focused ? 'hammer' : 'hammer-outline';
+                        iconName = 'briefcase';
                     } else if (route.name === 'Chat') {
-                        iconName = focused ? 'chatbubble' : 'chatbubble-outline';
+                        iconName = 'chatbubble';
                     } else if (route.name === 'Settings') {
-                        iconName = focused ? 'settings' : 'settings-outline';
+                        iconName = 'person';
                     }
 
-                    return <Ionicons name={iconName} size={size} color={color} />;
+                    return (
+                        <Ionicons
+                            name={focused ? iconName : `${iconName}-outline`}
+                            size={size}
+                            color={color}
+                        />
+                    );
                 },
                 tabBarActiveTintColor: 'orange',
                 tabBarInactiveTintColor: 'gray',

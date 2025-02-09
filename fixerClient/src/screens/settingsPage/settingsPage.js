@@ -7,7 +7,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function SettingsPage() {
     const navigation = useNavigation();
 
-    // Function to show "Feature Not Available" alert
     const showFeatureUnavailableAlert = (featureName) => {
         Alert.alert("Feature Unavailable", `${featureName} is not available yet.`);
     };
@@ -30,8 +29,8 @@ export default function SettingsPage() {
         <SafeAreaView style={styles.safeArea}>
             {/* Custom Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={28} color="#333" />
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Settings</Text>
             </View>
@@ -89,17 +88,23 @@ const styles = {
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingVertical: 12,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
     },
+    backButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     headerTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
-        marginLeft: 16,
+        color: '#333',
+        textAlign: 'center',
+        flex: 1,
     },
     container: {
         padding: 16,
@@ -137,4 +142,3 @@ const styles = {
         color: '#777',
     },
 };
-

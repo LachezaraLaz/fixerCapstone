@@ -89,7 +89,7 @@ export default function App() {
                                         options={{ headerShown: false }}  // This hides the default navigation header
                                     />
                                     <Stack.Screen name="CreateIssue" component={CreateIssue} />
-                                    <Stack.Screen name="SettingsPage" component={SettingsPage} />
+                                    <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false }}/>
                                     <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
                                     <Stack.Screen name="EditIssue" component={EditIssue} />
                                     <Stack.Screen name="NotificationPage" component={NotificationPage} />

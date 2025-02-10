@@ -62,9 +62,9 @@ export default function App() {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1 }}>
                 <NavigationContainer>
-                        {isLoggedIn ? (
-                            <ChatProvider>
-                                <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
+                    {isLoggedIn ? (
+                        <ChatProvider>
+                            <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                                 <>
                                     {/* MainTabs with NavBar as the default screen */}
                                     <Stack.Screen
@@ -73,7 +73,6 @@ export default function App() {
                                     >
                                         {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
                                     </Stack.Screen>
-
 
                                     {/* Additional screens accessible from MainTabs */}
                                     <Stack.Screen
@@ -97,10 +96,10 @@ export default function App() {
                                     <Stack.Screen name="OffersPage" component={OffersPage} />
                                     <Stack.Screen name="addReview" component={addReview} />
                                 </>
-                                    </Stack.Navigator>
-                            </ChatProvider>
-                        ) : (
-                            <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
+                            </Stack.Navigator>
+                        </ChatProvider>
+                    ) : (
+                        <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                             <>
                                 {/* Screens accessible when the user is not logged in */}
                                 <Stack.Screen name="welcomePage" component={WelcomePage} />
@@ -109,9 +108,8 @@ export default function App() {
                                 </Stack.Screen>
                                 <Stack.Screen name="SignUpPage" component={SignUpPage} />
                             </>
-
-                                </Stack.Navigator>
-                        )}
+                        </Stack.Navigator>
+                    )}
                 </NavigationContainer>
             </SafeAreaView>
         </GestureHandlerRootView>

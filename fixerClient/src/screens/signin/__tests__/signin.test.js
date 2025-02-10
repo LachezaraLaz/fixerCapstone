@@ -23,92 +23,98 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 jest.spyOn(Alert, 'alert');
 
-test('displays an error alert when sign in fields are empty', async () => {
-    const setIsLoggedIn = jest.fn();
-    const mockNavigation = { navigate: jest.fn() };
-    const { getByTestId } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />);
-
-    const signInButton = getByTestId('sign-in-button');
-    fireEvent.press(signInButton);
-
-    await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith('Error', 'Both fields are required');
+describe('CreateIssue Component', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
 
-    // Ensuring no navigation or login state changes occurred
-    expect(setIsLoggedIn).not.toHaveBeenCalled();
-    expect(mockNavigation.navigate).not.toHaveBeenCalled();
-});
+    test('displays an error alert when sign in fields are empty', async () => {
+        const setIsLoggedIn = jest.fn();
+        const mockNavigation = { navigate: jest.fn() };
+        const { getByTestId } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />);
 
-test('handles sign-in correctly and navigates to HomeScreen', async () => {
-    const setIsLoggedIn = jest.fn();
-    const mockNavigation = { navigate: jest.fn() };
+        const signInButton = getByTestId('sign-in-button');
+        fireEvent.press(signInButton);
 
-    axios.post.mockResolvedValue({
-        status: 200,
-        data: { token: 'fake-token' },
-    });
-
-    const { getByTestId, getByPlaceholderText } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />);
-
-    fireEvent.changeText(getByPlaceholderText('Email'), 'user@example.com');
-    fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-    const signInButton = getByTestId('sign-in-button');
-    fireEvent.press(signInButton)
-
-    await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith(`https://fixercapstone-production.up.railway.app/client/signin/`, {
-            email: 'user@example.com',
-            password: 'password123'
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Both fields are required');
         });
-        expect(AsyncStorage.setItem).toHaveBeenCalledWith('token', 'fake-token');
-        expect(setIsLoggedIn).toHaveBeenCalledWith(true);
-        expect(Alert.alert).toHaveBeenCalledWith('Signed in successfully');
-        expect(mockNavigation.navigate).toHaveBeenCalledWith('HomeScreen');
-    });
-});
 
-test('displays an error alert when email does not exist', async () => {
-    const setIsLoggedIn = jest.fn();
-    const mockNavigation = { navigate: jest.fn() };
-
-    // Mock the API response for a non-existent email scenario
-    axios.post.mockRejectedValueOnce({
-        response: {
-            status: 400,  // Assuming the API returns 400 for non-existent email or wrong credentials
-            data: { statusText: 'Wrong email or password' }
-        }
+        // Ensuring no navigation or login state changes occurred
+        expect(setIsLoggedIn).not.toHaveBeenCalled();
+        expect(mockNavigation.navigate).not.toHaveBeenCalled();
     });
 
-    const { getByTestId, getByPlaceholderText } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />);
+    test('handles sign-in correctly and navigates to HomeScreen', async () => {
+        const setIsLoggedIn = jest.fn();
+        const mockNavigation = { navigate: jest.fn() };
 
-    // Inputting an email that does not exist
-    fireEvent.changeText(getByPlaceholderText('Email'), 'nonexistent@example.com');
-    fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-    const signInButton = getByTestId('sign-in-button');
-    fireEvent.press(signInButton);
-
-    await waitFor(() => {
-        // Checking that the error message is displayed
-        expect(axios.post).toHaveBeenCalledWith(`https://fixercapstone-production.up.railway.app/client/signin/`, {
-            email: 'nonexistent@example.com',
-            password: 'password123'
+        axios.post.mockResolvedValue({
+            status: 200,
+            data: { token: 'fake-token' },
         });
-        expect(Alert.alert).toHaveBeenCalledWith("Error", 'Wrong email or password');
+
+        const { getByTestId, getByPlaceholderText } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />);
+
+        fireEvent.changeText(getByPlaceholderText('Email'), 'user@example.com');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+        const signInButton = getByTestId('sign-in-button');
+        fireEvent.press(signInButton)
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith(`https://fixercapstone-production.up.railway.app/client/signin/`, {
+                email: 'user@example.com',
+                password: 'password123'
+            });
+            expect(AsyncStorage.setItem).toHaveBeenCalledWith('token', 'fake-token');
+            expect(setIsLoggedIn).toHaveBeenCalledWith(true);
+            expect(Alert.alert).toHaveBeenCalledWith('Signed in successfully');
+            expect(mockNavigation.navigate).toHaveBeenCalledWith('MainTabs');
+        });
     });
 
-    // Ensuring no navigation or login state changes occurred
-    expect(setIsLoggedIn).not.toHaveBeenCalled();
-    expect(mockNavigation.navigate).not.toHaveBeenCalled();
-    // expect(AsyncStorage.setItem).not.toHaveBeenCalled();
-});
+    test('displays an error alert when email does not exist', async () => {
+        const setIsLoggedIn = jest.fn();
+        const mockNavigation = { navigate: jest.fn() };
 
-test('navigates to SignUpPage when "Sign up" link is pressed', () => {
-    const mockNavigation = { navigate: jest.fn() };
-    const { getByText } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={jest.fn()} />);
+        // Mock the API response for a non-existent email scenario
+        axios.post.mockRejectedValueOnce({
+            response: {
+                status: 400,  // Assuming the API returns 400 for non-existent email or wrong credentials
+                data: { statusText: 'Wrong email or password' }
+            }
+        });
 
-    const signUpLink = getByText("Don't have an account? Sign up");
-    fireEvent.press(signUpLink);
+        const { getByTestId, getByPlaceholderText } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />);
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('SignUpPage');
+        // Inputting an email that does not exist
+        fireEvent.changeText(getByPlaceholderText('Email'), 'nonexistent@example.com');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+        const signInButton = getByTestId('sign-in-button');
+        fireEvent.press(signInButton);
+
+        await waitFor(() => {
+            // Checking that the error message is displayed
+            expect(axios.post).toHaveBeenCalledWith(`https://fixercapstone-production.up.railway.app/client/signin/`, {
+                email: 'nonexistent@example.com',
+                password: 'password123'
+            });
+            expect(Alert.alert).toHaveBeenCalledWith("Error", 'Wrong email or password');
+        });
+
+        // Ensuring no navigation or login state changes occurred
+        expect(setIsLoggedIn).not.toHaveBeenCalled();
+        expect(mockNavigation.navigate).not.toHaveBeenCalled();
+        // expect(AsyncStorage.setItem).not.toHaveBeenCalled();
+    });
+
+    test('navigates to SignUpPage when "Sign up" link is pressed', () => {
+        const mockNavigation = { navigate: jest.fn() };
+        const { getByText } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={jest.fn()} />);
+
+        const signUpLink = getByText("Don't have an account? Sign up");
+        fireEvent.press(signUpLink);
+
+        expect(mockNavigation.navigate).toHaveBeenCalledWith('SignUpPage');
+    });
 });

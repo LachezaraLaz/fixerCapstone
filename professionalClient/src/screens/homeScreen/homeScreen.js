@@ -167,11 +167,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.profileButton}>
-                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
-                    <Ionicons name="person-circle" size={32} color="#333" />
-                </TouchableOpacity>
-            </View>
             <View style={styles.notificationButton}>
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
                     <Ionicons name="notifications-outline" size={28} color="#333" />

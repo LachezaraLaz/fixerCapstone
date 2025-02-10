@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import SignInPage from '../signinPage'; // Adjust the import path as necessary
+import SignInPage from '../signinPage';
 import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,7 +23,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 jest.spyOn(Alert, 'alert');
 
-describe('CreateIssue Component', () => {
+describe('signIn Component', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -40,7 +40,6 @@ describe('CreateIssue Component', () => {
             expect(Alert.alert).toHaveBeenCalledWith('Error', 'Both fields are required');
         });
 
-        // Ensuring no navigation or login state changes occurred
         expect(setIsLoggedIn).not.toHaveBeenCalled();
         expect(mockNavigation.navigate).not.toHaveBeenCalled();
     });
@@ -87,7 +86,6 @@ describe('CreateIssue Component', () => {
 
         const { getByTestId, getByPlaceholderText } = render(<SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />);
 
-        // Inputting an email that does not exist
         fireEvent.changeText(getByPlaceholderText('Email'), 'nonexistent@example.com');
         fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
         const signInButton = getByTestId('sign-in-button');

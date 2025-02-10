@@ -24,6 +24,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChatProvider } from "./src/screens/chat/chatContext";
 import ReviewsPage from "./src/screens/reviewsPage/reviewsPage";
+import SettingsPage from "./src/screens/settingsPage/settingsPage";
 import { Text } from "react-native";
 
 
@@ -109,6 +110,7 @@ export default function App() {
                                     <Stack.Screen name="NotificationPage" component={NotificationPage} />
                                     <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
                                     <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
+                                    <Stack.Screen name="SettingsPage" component={SettingsPage} />
                                 </>
                             </Stack.Navigator>
                         </ChatProvider>

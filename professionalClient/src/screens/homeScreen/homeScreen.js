@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Linking } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
@@ -54,20 +54,37 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     };
 
     const getCurrentLocation = async () => {
-        try {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission to access location was denied');
-                return;
-            }
+        const { status } = await Location.getForegroundPermissionsAsync();
+
+        if (status === 'granted') {
+            // Permission is already granted, get location
             const location = await Location.getCurrentPositionAsync({});
             setCurrentLocation({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
             });
-        } catch (error) {
-            console.error('Error getting location:', error);
-            Alert.alert('Error', 'Could not get your current location.');
+        } else if (status === 'denied') {
+            // If permission was denied, ask the user to go to settings
+            Alert.alert(
+                "Location Permission Denied",
+                "To use this feature, enable location services in settings.",
+                [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "Open Settings", onPress: () => Linking.openSettings() }
+                ]
+            );
+        } else {
+            // Request permission if not determined yet
+            const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
+            if (newStatus === 'granted') {
+                const location = await Location.getCurrentPositionAsync({});
+                setCurrentLocation({
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                });
+            } else {
+                Alert.alert("Permission Denied", "Location access is required to use this feature.");
+            }
         }
     };
 
@@ -173,8 +190,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 </TouchableOpacity>
             </View>
             <View style={styles.recenterButtonContainer}>
-                <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
-                    <Ionicons name="locate" size={28} color="#333" />
+                <TouchableOpacity onPress={handleRecenterMap}>
+                    <Ionicons name="locate" size={30} color="#333" />
                 </TouchableOpacity>
             </View>
             <Animated.ScrollView

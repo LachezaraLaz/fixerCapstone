@@ -5,6 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CardComponent from '../cardComponent/CardComponent';
 import { useEffect } from 'react';
 import { useChatContext } from '../chat/chatContext';
+import OrangeButton from "../../../components/orangeButton";
+import NotificationButton from "../../../components/notificationButton";
+import SearchBar from "../../../components/searchBar";
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const { chatClient } = useChatContext();
@@ -45,12 +48,14 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 <Text style={styles.headerTitle}>Home Screen</Text>
 
                 {/* Notification Button */}
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')} style={styles.notificationButton}>
-                    <Ionicons name="notifications-outline" size={24} color="#333" />
-                </TouchableOpacity>
+                <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
             </View>
 
-
+            {/* Searchbar */}
+            <SearchBar
+                onSearch={() => console.log("Search button pressed")}
+                onFilter={() => console.log("Filter button pressed")}
+            />
 
             <ScrollView contentContainerStyle={styles.container}>
                 {/* Current Jobs Requested Section */}
@@ -67,11 +72,9 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                     <CardComponent title="Invoice #5678" status="Due Soon" showProgress={false} showProfessional={false} />
                 </View>
 
-                {/* Create Issue Button*/}
-                <View style={styles.createIssueSection}>
-                    <TouchableOpacity style={styles.createIssueButton} onPress={() => navigation.navigate('CreateIssue')}>
-                        <Text style={styles.createIssueButtonText}>Create Issue</Text>
-                    </TouchableOpacity>
+                {/* Create Issue Button */ }
+                <View>
+                    <OrangeButton title="Create Issue" onPress={() => navigation.navigate('CreateIssue')} variant="normal" />
                 </View>
 
                 {/* Logout Button */}
@@ -117,19 +120,6 @@ const styles = StyleSheet.create({
         color: '#333',
         textAlign: 'center',
     },
-    notificationButton: {
-        width: 40,
-        height: 40,
-        backgroundColor: '#ffffff',
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 5,
-    },
     container: {
         flexGrow: 1,
         paddingHorizontal: 16,
@@ -149,22 +139,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         marginVertical: 16,
         width: '100%',
-    },
-    createIssueButton: {
-        backgroundColor: 'orange',
-        padding: 14,
-        borderRadius: 8,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    createIssueButtonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'white',
     },
     logoutContainer: {
         paddingHorizontal: 16,

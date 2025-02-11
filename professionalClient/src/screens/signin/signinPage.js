@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios from "axios";
 import { IPAddress } from '../../../ipAddress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CommonActions } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -34,7 +35,14 @@ export default function SignInPage({ setIsLoggedIn }) {
 
                 Alert.alert("Signed in successfully");
                 setIsLoggedIn(true);
-                navigation.navigate('MainTabs');
+                 setTimeout(() => {
+                     navigation.dispatch(
+                         CommonActions.reset({
+                             index: 0,
+                             routes: [{ name: "MainTabs" }],
+                         })
+                     );
+                 }, 100);
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {

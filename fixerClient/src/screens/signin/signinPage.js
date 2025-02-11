@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CommonActions } from '@react-navigation/native';
 //import { IPAddress } from '../../../ipAddress';
 
 export default function SignInPage({ navigation, setIsLoggedIn }) {
@@ -31,7 +32,16 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
 
                 Alert.alert("Signed in successfully");
                 setIsLoggedIn(true);
-                navigation.navigate('MainTabs');
+
+                setTimeout(() => {
+                    navigation.dispatch(
+                        CommonActions.reset({
+                            index: 0,
+                            routes: [{ name: "MainTabs" }],
+                        })
+                    );
+                }, 100);
+
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {

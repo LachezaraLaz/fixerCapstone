@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import MyIssuesPosted from '../myIssuesPosted'; // Adjust the import path as necessary
+import MyIssuesPosted from '../myIssuesPosted';
 import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode'; // Import for mocking
+import jwtDecode from 'jwt-decode';
 // import * as ImagePicker from 'expo-image-picker';
 
 import { IPAddress } from '../../../../ipAddress';
@@ -15,29 +15,43 @@ import { IPAddress } from '../../../../ipAddress';
 // npm run test-coverage ./src/screens/myIssuesPosted/__tests__/issuesPosted.test.js
 
 // Mocking dependencies
-
-jest.mock('@react-navigation/native', () => ({
-    ...jest.requireActual('@react-navigation/native'),
-    useNavigation: () => ({
-        navigate: jest.fn(),
-    }),
-}));
-
+jest.mock('@react-navigation/native', () => {
+    const actualNav = jest.requireActual('@react-navigation/native');
+    return {
+        ...actualNav,
+        useNavigation: jest.fn(), // we will supply a mock return in beforeEach
+        useIsFocused: jest.fn(),  // must be mocked if the component uses it
+    };
+});
 jest.mock('axios', () => ({
     get: jest.fn(),
     delete: jest.fn(),
+    put: jest.fn(),
 }));
 jest.mock('@react-native-async-storage/async-storage', () => ({
     getItem: jest.fn(),
 }));
-jest.mock('jwt-decode', () => jest.fn(() => ({
-    email: 'user@example.com',
-})));
+jest.mock('jwt-decode', () => ({
+    jwtDecode: jest.fn(() => ({ email: 'user@example.com' })),
+}));
 jest.spyOn(Alert, 'alert');
 
 describe('MyIssuesPosted Component', () => {
+    let useNavigationMock;
+    let useIsFocusedMock;
     beforeEach(() => {
         jest.clearAllMocks();
+
+        // Access the mocks for useNavigation & useIsFocused
+        const navigationNative = require('@react-navigation/native');
+        useNavigationMock = navigationNative.useNavigation;
+        useIsFocusedMock = navigationNative.useIsFocused;
+
+        // Provide default mockReturnValues so the component doesn't crash
+        useNavigationMock.mockReturnValue({
+            navigate: jest.fn(),
+        });
+        useIsFocusedMock.mockReturnValue(true);
     });
 
     test('displays a loading spinner while fetching data', async () => {
@@ -97,7 +111,6 @@ describe('MyIssuesPosted Component', () => {
             expect(getByText('No jobs in this status.')).toBeTruthy(); // Ensures the fallback message shows up if data fetch fails
         });
     });
-
 
     test('displays an alert when jobs fail to load with a non-200 response', async () => {
         AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');

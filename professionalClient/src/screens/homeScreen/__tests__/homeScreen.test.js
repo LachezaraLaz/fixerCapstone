@@ -5,6 +5,8 @@ import axios from 'axios';
 //import * as Location from 'expo-location';
 import { Alert } from 'react-native';  // Import the Alert module
 //import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationContainer } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 // code to run only this file through the terminal:
 // npm run test ./src/screens/homeScreen/__tests__/homeScreen.test.js
@@ -15,6 +17,14 @@ import { Alert } from 'react-native';  // Import the Alert module
 jest.mock('expo-modules-core', () => ({
     NativeModule: {},
 }));
+
+jest.mock('@react-navigation/native', () => {
+    const actualNav = jest.requireActual('@react-navigation/native');
+    return {
+        ...actualNav,
+        useNavigation: jest.fn(),
+    };
+});
 
 // Mock expo-location to simulate its methods
 jest.mock('expo-location', () => ({
@@ -61,14 +71,27 @@ jest.mock('react-native-maps', () => {
 });
 
 describe('HomeScreen', () => {
-    const navigation = { navigate: jest.fn(), replace: jest.fn() };
+
     const setIsLoggedIn = jest.fn();
+
+    const mockRoute = {
+        params: {
+            // If you need to test filtering, distance range, etc.
+            selectedFilters: [],
+            distanceRange: [0, 50],
+        },
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
     it('should render the loading indicator initially', async () => {
+        useNavigation.mockReturnValue({
+            navigate: jest.fn(),
+            addListener: jest.fn(() => () => {}), // Return an unsubscribe function
+        });
+
         // Mocking permission request
         require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
             status: 'granted',  // Simulate permission granted
@@ -83,7 +106,12 @@ describe('HomeScreen', () => {
         })
         // Render the component
         const { queryByTestId } = render(
-            <HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />
+            <NavigationContainer>
+                <HomeScreen
+                    route={mockRoute}
+                    setIsLoggedIn={setIsLoggedIn}
+                />
+            </NavigationContainer>
         );
         // Use waitFor to ensure that async operations complete before checking for loading indicator
         await waitFor(() => {
@@ -159,9 +187,19 @@ describe('HomeScreen', () => {
 
 
     it('should display an alert if fetching issues fails', async () => {
+        useNavigation.mockReturnValue({
+            navigate: jest.fn(),
+            addListener: jest.fn(() => () => {}),
+        });
+
         axios.get.mockRejectedValueOnce(new Error('Network Error'));
         const alertSpy = jest.spyOn(Alert, 'alert');
-        const { queryByTestId } = render(<HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />);
+
+        const { queryByTestId } = render(
+            <NavigationContainer>
+                <HomeScreen route={mockRoute} setIsLoggedIn={setIsLoggedIn} />
+            </NavigationContainer>
+        );
         // Ensure loading indicator is removed
         await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
         // Verify error alert
@@ -171,6 +209,12 @@ describe('HomeScreen', () => {
     it('should log out the user when the logout button is pressed', async () => {
         // Mocking console.log to suppress logs during the test
         const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+        const mockNavigate = jest.fn();
+        useNavigation.mockReturnValue({
+            navigate: mockNavigate,
+            addListener: jest.fn(() => () => {}),
+        });
 
         // Mocking permission request
         require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
@@ -189,26 +233,25 @@ describe('HomeScreen', () => {
 
         const setIsLoggedIn = jest.fn();  // Mocking the logout function
 
-        const { getByText, queryByText } = render(<HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />);
+        const { getByText } = render(
+            <NavigationContainer>
+                <HomeScreen route={mockRoute} setIsLoggedIn={setIsLoggedIn} />
+            </NavigationContainer>
+        );
 
-        // Wait for the ActivityIndicator to disappear and the logout button to appear
-        await waitFor(() => expect(queryByText('Logout')).not.toBeNull());
-
-        // Now that the "Logout" button is rendered, simulate the logout button press
-        const logoutButton = getByText('Logout');
-
-        // Wrapping the button press event in act() to avoid state update warnings
-        await act(async () => {
-            fireEvent.press(logoutButton);
+        // Wait for loading to finish
+        await waitFor(() => {
+            expect(getByText('Logout')).toBeTruthy();
         });
 
-        // Verify if logout function was called and the user is logged out
-        await waitFor(() => expect(setIsLoggedIn).toHaveBeenCalledWith(false));
+        // Press logout
+        await act(async () => {
+            fireEvent.press(getByText('Logout'));
+        });
 
-        // Restore the original console.log after the test
-        logSpy.mockRestore();
+        // The HomeScreen calls setIsLoggedIn(false), so let's check
+        expect(setIsLoggedIn).toHaveBeenCalledWith(false);
     });
-
 
     it('should filter the list of jobs based on selected professionalNeeded', async () => {
         // Mocking permission request

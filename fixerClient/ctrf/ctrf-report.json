@@ -5,18 +5,18 @@
     },
     "summary": {
       "tests": 64,
-      "passed": 63,
-      "failed": 1,
+      "passed": 62,
+      "failed": 2,
       "pending": 0,
       "skipped": 0,
       "other": 0,
-      "start": 1739292053874,
-      "stop": 1739292056019
+      "start": 1739294276391,
+      "stop": 1739294278593
     },
     "tests": [
       {
         "name": "ChannelListScreen Tests renders correctly",
-        "duration": 148,
+        "duration": 171,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -27,7 +27,7 @@
       },
       {
         "name": "ChannelListScreen Tests calls setChannel and navigates to ChatPage when a channel is selected",
-        "duration": 10,
+        "duration": 13,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -49,7 +49,7 @@
       },
       {
         "name": "ChannelListScreen Tests passes correct filters and sort props when user is undefined",
-        "duration": 10,
+        "duration": 2,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -60,7 +60,7 @@
       },
       {
         "name": "SignUpPage Tests displays an alert when fields are empty",
-        "duration": 182,
+        "duration": 177,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -71,7 +71,7 @@
       },
       {
         "name": "SignUpPage Tests displays an alert when passwords do not match",
-        "duration": 23,
+        "duration": 35,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -82,7 +82,7 @@
       },
       {
         "name": "SignUpPage Tests displays an alert when email is already in use",
-        "duration": 19,
+        "duration": 24,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -93,7 +93,7 @@
       },
       {
         "name": "SignUpPage Tests navigates to SignInPage when \"Sign in\" link is pressed",
-        "duration": 4,
+        "duration": 6,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -103,52 +103,8 @@
         "suite": "signup.test.js > SignUpPage Tests"
       },
       {
-        "name": "signIn Component displays an error alert when sign in fields are empty",
-        "duration": 258,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/__tests__/signin.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "signin.test.js > signIn Component"
-      },
-      {
-        "name": "signIn Component handles sign-in correctly and navigates to HomeScreen",
-        "duration": 64,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/__tests__/signin.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "signin.test.js > signIn Component"
-      },
-      {
-        "name": "signIn Component displays an error alert when email does not exist",
-        "duration": 70,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/__tests__/signin.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "signin.test.js > signIn Component"
-      },
-      {
-        "name": "signIn Component navigates to SignUpPage when \"Sign up\" link is pressed",
-        "duration": 3,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/__tests__/signin.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "signin.test.js > signIn Component"
-      },
-      {
         "name": "ChatProvider does not initialize chat client if no credentials are found",
-        "duration": 299,
+        "duration": 305,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -159,7 +115,7 @@
       },
       {
         "name": "ChatProvider initializes chat client when valid credentials are found",
-        "duration": 58,
+        "duration": 54,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -170,7 +126,7 @@
       },
       {
         "name": "ChatProvider initializes chat client with default name (\"NoName\") when storedUserName is missing",
-        "duration": 53,
+        "duration": 52,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -181,7 +137,7 @@
       },
       {
         "name": "ChatProvider handles errors during initialization (e.g., connectUser rejection)",
-        "duration": 2,
+        "duration": 5,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -192,7 +148,7 @@
       },
       {
         "name": "ChatProvider calls disconnectUser on unmount if chatClient is set",
-        "duration": 2,
+        "duration": 1,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -203,7 +159,7 @@
       },
       {
         "name": "ChatProvider renders children inside the provider",
-        "duration": 7,
+        "duration": 8,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -236,7 +192,7 @@
       },
       {
         "name": "HomeScreen logs out successfully",
-        "duration": 305,
+        "duration": 393,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -247,7 +203,7 @@
       },
       {
         "name": "HomeScreen renders \"Current Jobs Requested\" and \"Outstanding Payments\" sections",
-        "duration": 8,
+        "duration": 6,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -257,41 +213,8 @@
         "suite": "homeScreen.test.js > HomeScreen"
       },
       {
-        "name": "EditIssue Component fetches job details on load",
-        "duration": 272,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/editIssue/__tests__/editIssue.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "editIssue.test.js > EditIssue Component"
-      },
-      {
-        "name": "EditIssue Component updates job successfully",
-        "duration": 94,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/editIssue/__tests__/editIssue.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "editIssue.test.js > EditIssue Component"
-      },
-      {
-        "name": "EditIssue Component shows an error alert if update fails",
-        "duration": 62,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/editIssue/__tests__/editIssue.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "editIssue.test.js > EditIssue Component"
-      },
-      {
         "name": "ProfilePage Component displays loading state initially",
-        "duration": 221,
+        "duration": 293,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -302,7 +225,7 @@
       },
       {
         "name": "ProfilePage Component displays profile data after successful fetch",
-        "duration": 58,
+        "duration": 60,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -313,7 +236,7 @@
       },
       {
         "name": "ProfilePage Component displays error message if profile data cannot be fetched",
-        "duration": 52,
+        "duration": 53,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -324,7 +247,7 @@
       },
       {
         "name": "ProfilePage Component triggers alert when edit button is pressed",
-        "duration": 57,
+        "duration": 53,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -334,74 +257,41 @@
         "suite": "profilePage.test.js > ProfilePage Component"
       },
       {
-        "name": "CardComponent renders the title and status correctly",
-        "duration": 48,
+        "name": "EditIssue Component fetches job details on load",
+        "duration": 346,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/editIssue/__tests__/editIssue.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "CardComponent.test.js > CardComponent"
+        "suite": "editIssue.test.js > EditIssue Component"
       },
       {
-        "name": "CardComponent applies correct styles for status",
-        "duration": 3,
+        "name": "EditIssue Component updates job successfully",
+        "duration": 112,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/editIssue/__tests__/editIssue.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "CardComponent.test.js > CardComponent"
+        "suite": "editIssue.test.js > EditIssue Component"
       },
       {
-        "name": "CardComponent does not render image when imageUri is not provided",
-        "duration": 1,
+        "name": "EditIssue Component shows an error alert if update fails",
+        "duration": 65,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/editIssue/__tests__/editIssue.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "CardComponent.test.js > CardComponent"
-      },
-      {
-        "name": "CardComponent does not render professional details when showProfessional is false",
-        "duration": 2,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "CardComponent.test.js > CardComponent"
-      },
-      {
-        "name": "CardComponent renders progress steps when showProgress is true",
-        "duration": 2,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "CardComponent.test.js > CardComponent"
-      },
-      {
-        "name": "CardComponent does not render progress steps when showProgress is false",
-        "duration": 1,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "CardComponent.test.js > CardComponent"
+        "suite": "editIssue.test.js > EditIssue Component"
       },
       {
         "name": "ChatPage Tests renders message list and input when channel is selected",
-        "duration": 41,
+        "duration": 35,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -422,30 +312,8 @@
         "suite": "chatPage.test.js > ChatPage Tests"
       },
       {
-        "name": "WelcomePage Navigation navigates to SignInPage when the \"Sign In\" button is pressed",
-        "duration": 42,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/welcome/__tests__/welcome.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "welcome.test.js > WelcomePage Navigation"
-      },
-      {
-        "name": "WelcomePage Navigation navigates to SignUpPage when the \"Sign Up\" button is pressed",
-        "duration": 2,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/welcome/__tests__/welcome.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "welcome.test.js > WelcomePage Navigation"
-      },
-      {
         "name": "MyIssuesPosted Component displays a loading spinner while fetching data",
-        "duration": 328,
+        "duration": 399,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -467,7 +335,7 @@
       },
       {
         "name": "MyIssuesPosted Component displays an alert when there are no jobs posted",
-        "duration": 53,
+        "duration": 52,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -478,7 +346,7 @@
       },
       {
         "name": "MyIssuesPosted Component displays an error alert when fetching jobs fails",
-        "duration": 54,
+        "duration": 53,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -499,19 +367,107 @@
         "suite": "issuesPosted.test.js > MyIssuesPosted Component"
       },
       {
-        "name": "DetailsScreen Component renders correctly with the expected text",
+        "name": "CardComponent renders the title and status correctly",
+        "duration": 35,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "CardComponent.test.js > CardComponent"
+      },
+      {
+        "name": "CardComponent applies correct styles for status",
+        "duration": 2,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "CardComponent.test.js > CardComponent"
+      },
+      {
+        "name": "CardComponent does not render image when imageUri is not provided",
+        "duration": 2,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "CardComponent.test.js > CardComponent"
+      },
+      {
+        "name": "CardComponent does not render professional details when showProfessional is false",
+        "duration": 1,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "CardComponent.test.js > CardComponent"
+      },
+      {
+        "name": "CardComponent renders progress steps when showProgress is true",
+        "duration": 2,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "CardComponent.test.js > CardComponent"
+      },
+      {
+        "name": "CardComponent does not render progress steps when showProgress is false",
+        "duration": 2,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "CardComponent.test.js > CardComponent"
+      },
+      {
+        "name": "NotificationPage Component navigate to notificationDetail page when a notification is clicked",
+        "duration": 124,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/notificationPage/__tests__/notificationPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "notificationPage.test.js > NotificationPage Component"
+      },
+      {
+        "name": "WelcomePage Navigation navigates to SignInPage when the \"Sign In\" button is pressed",
         "duration": 32,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/detailsScreen/__tests__/detailScreen.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/welcome/__tests__/welcome.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "detailScreen.test.js > DetailsScreen Component"
+        "suite": "welcome.test.js > WelcomePage Navigation"
+      },
+      {
+        "name": "WelcomePage Navigation navigates to SignUpPage when the \"Sign Up\" button is pressed",
+        "duration": 1,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/welcome/__tests__/welcome.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "welcome.test.js > WelcomePage Navigation"
       },
       {
         "name": "NotificationDetail Component renders notification details correctly",
-        "duration": 36,
+        "duration": 45,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -522,7 +478,7 @@
       },
       {
         "name": "NotificationDetail Component renders with default styling",
-        "duration": 1,
+        "duration": 2,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -532,29 +488,7 @@
         "suite": "notificationDetail.test.js > NotificationDetail Component"
       },
       {
-        "name": "NotificationPage Component navigate to notificationDetail page when a notification is clicked",
-        "duration": 129,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/notificationPage/__tests__/notificationPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "notificationPage.test.js > NotificationPage Component"
-      },
-      {
         "name": "ChatScreens renders null when chatClient is null",
-        "duration": 9,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/chat/__tests__/chatScreens.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatScreens.test.js > ChatScreens"
-      },
-      {
-        "name": "ChatScreens renders Chat and navigator when chatClient is provided",
         "duration": 12,
         "status": "passed",
         "rawStatus": "passed",
@@ -565,8 +499,30 @@
         "suite": "chatScreens.test.js > ChatScreens"
       },
       {
+        "name": "ChatScreens renders Chat and navigator when chatClient is provided",
+        "duration": 10,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/chat/__tests__/chatScreens.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "chatScreens.test.js > ChatScreens"
+      },
+      {
+        "name": "DetailsScreen Component renders correctly with the expected text",
+        "duration": 38,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/detailsScreen/__tests__/detailScreen.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "detailScreen.test.js > DetailsScreen Component"
+      },
+      {
         "name": "NavBarComponent renders all tabs with correct labels",
-        "duration": 105,
+        "duration": 97,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -577,7 +533,7 @@
       },
       {
         "name": "NavBarComponent navigates to Home tab correctly",
-        "duration": 54,
+        "duration": 55,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -588,7 +544,7 @@
       },
       {
         "name": "NavBarComponent navigates to JobsPosted tab and shows \"My Jobs\" label",
-        "duration": 38,
+        "duration": 35,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -599,7 +555,7 @@
       },
       {
         "name": "NavBarComponent navigates to Chat tab and shows \"Chat\" label",
-        "duration": 17,
+        "duration": 16,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -610,7 +566,7 @@
       },
       {
         "name": "NavBarComponent navigates to Profile tab and shows \"Profile\" label",
-        "duration": 14,
+        "duration": 15,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -621,7 +577,7 @@
       },
       {
         "name": "OffersPage displays loading spinner initially",
-        "duration": 233,
+        "duration": 347,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -632,7 +588,7 @@
       },
       {
         "name": "OffersPage fetches and displays offers on load",
-        "duration": 56,
+        "duration": 54,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -643,7 +599,7 @@
       },
       {
         "name": "OffersPage displays a message when no offers are found",
-        "duration": 53,
+        "duration": 52,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -675,8 +631,54 @@
         "suite": "OffersPage.test.js > OffersPage"
       },
       {
+        "name": "signIn Component displays an error alert when sign in fields are empty",
+        "duration": 291,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/__tests__/signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signin.test.js > signIn Component"
+      },
+      {
+        "name": "signIn Component handles sign-in correctly and navigates to HomeScreen",
+        "duration": 1049,
+        "status": "failed",
+        "message": "TypeError: navigation.dispatch is not a function\n",
+        "trace": "at Timeout.dispatch [as _onTimeout] (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/signinPage.js:37:32)\nat listOnTimeout (node:internal/timers:573:17)\nat processTimers (node:internal/timers:514:7)\nError: \u001b[2mexpect(\u001b[22m\u001b[31mjest.fn()\u001b[39m\u001b[2m).\u001b[22mtoHaveBeenCalledWith\u001b[2m(\u001b[22m\u001b[32m...expected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m\"MainTabs\"\u001b[39m\n\nNumber of calls: \u001b[31m0\u001b[39m\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/__tests__/signin.test.js:63:22)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]\n[object Object]",
+        "rawStatus": "failed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/__tests__/signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signin.test.js > signIn Component"
+      },
+      {
+        "name": "signIn Component displays an error alert when email does not exist",
+        "duration": 54,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/__tests__/signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signin.test.js > signIn Component"
+      },
+      {
+        "name": "signIn Component navigates to SignUpPage when \"Sign up\" link is pressed",
+        "duration": 2,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/signin/__tests__/signin.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signin.test.js > signIn Component"
+      },
+      {
         "name": "CreateIssue Component displays an alert if fields are empty",
-        "duration": 270,
+        "duration": 317,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -687,7 +689,7 @@
       },
       {
         "name": "CreateIssue Component posts an issue successfully",
-        "duration": 1043,
+        "duration": 1104,
         "status": "failed",
         "message": "Error: expect(jest.fn()).toHaveBeenCalledTimes(expected)\n\nExpected number of calls: 1\nReceived number of calls: 0\n",
         "trace": "at Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/src/screens/createIssue/__tests__/createIssue.test.js:67:22)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/fixerClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\n\n[object Object]",
@@ -700,7 +702,7 @@
       },
       {
         "name": "CreateIssue Component renders and allows input for \"Describe the issue...\"",
-        "duration": 9,
+        "duration": 10,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -711,7 +713,7 @@
       },
       {
         "name": "CreateIssue Component shows an error alert if post fails",
-        "duration": 62,
+        "duration": 60,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",

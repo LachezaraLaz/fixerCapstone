@@ -10,13 +10,13 @@
       "pending": 0,
       "skipped": 0,
       "other": 0,
-      "start": 1739291975561,
-      "stop": 1739291979852
+      "start": 1739294291047,
+      "stop": 1739294295180
     },
     "tests": [
       {
         "name": "HomeScreen should render the loading indicator initially",
-        "duration": 190,
+        "duration": 189,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -38,7 +38,7 @@
       },
       {
         "name": "HomeScreen should log out the user when the logout button is pressed",
-        "duration": 56,
+        "duration": 53,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -87,15 +87,48 @@
         "suite": "homeScreen.test.js > HomeScreen"
       },
       {
-        "name": "NotificationDetail Component renders notification details correctly",
-        "duration": 29,
+        "name": "signIn Component displays an error alert when sign in fields are empty",
+        "duration": 27,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/notificationDetail/__tests__/notificationDetail.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "notificationDetail.test.js > NotificationDetail Component"
+        "suite": "signinPage.test.js > signIn Component"
+      },
+      {
+        "name": "signIn Component handles sign-in correctly and navigates to MainTabs",
+        "duration": 7,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signinPage.test.js > signIn Component"
+      },
+      {
+        "name": "signIn Component displays an error alert when email does not exist",
+        "duration": 4,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signinPage.test.js > signIn Component"
+      },
+      {
+        "name": "signIn Component navigates to SignUpPage when \"Sign up\" link is pressed",
+        "duration": 1,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signinPage.test.js > signIn Component"
       },
       {
         "name": "ProfilePage Component renders loading indicator initially",
@@ -110,7 +143,7 @@
       },
       {
         "name": "ProfilePage Component renders profile data correctly",
-        "duration": 51,
+        "duration": 52,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -132,7 +165,7 @@
       },
       {
         "name": "ProfilePage Component shows alert when edit button is pressed",
-        "duration": 53,
+        "duration": 51,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -154,7 +187,7 @@
       },
       {
         "name": "ProfilePage Component navigates to ReviewsPage with professional email",
-        "duration": 52,
+        "duration": 53,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -165,7 +198,7 @@
       },
       {
         "name": "ProfilePage Component navigates to ReviewsPage with professional email",
-        "duration": 52,
+        "duration": 51,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -209,7 +242,7 @@
       },
       {
         "name": "UploadID Component uploads image and navigates to ThankYouPage on success",
-        "duration": 51,
+        "duration": 52,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -231,7 +264,7 @@
       },
       {
         "name": "UploadID Component shows server error alert when server responds with an error",
-        "duration": 52,
+        "duration": 51,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -242,7 +275,7 @@
       },
       {
         "name": "shows \"All fields are required\" alert when fields are empty",
-        "duration": 23,
+        "duration": 24,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -264,7 +297,7 @@
       },
       {
         "name": "successfully creates an account",
-        "duration": 55,
+        "duration": 54,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -286,7 +319,7 @@
       },
       {
         "name": "displays a network error alert when no response is received",
-        "duration": 55,
+        "duration": 54,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -308,7 +341,7 @@
       },
       {
         "name": "navigates to SignInPage when the Sign In button is pressed",
-        "duration": 2,
+        "duration": 1,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -318,8 +351,63 @@
         "suite": "signupPage.test.js"
       },
       {
+        "name": "MyJobsProfessional Component renders loading indicator while fetching jobs",
+        "duration": 25,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "myJobs.test.js > MyJobsProfessional Component"
+      },
+      {
+        "name": "MyJobsProfessional Component fetches and displays jobs successfully",
+        "duration": 52,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "myJobs.test.js > MyJobsProfessional Component"
+      },
+      {
+        "name": "MyJobsProfessional Component shows error alert if no token is found",
+        "duration": 51,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "myJobs.test.js > MyJobsProfessional Component"
+      },
+      {
+        "name": "MyJobsProfessional Component shows error alert if job fetch fails",
+        "duration": 51,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "myJobs.test.js > MyJobsProfessional Component"
+      },
+      {
+        "name": "MyJobsProfessional Component renders jobs for the selected tab",
+        "duration": 55,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "myJobs.test.js > MyJobsProfessional Component"
+      },
+      {
         "name": "displays an error alert when PIN field is empty",
-        "duration": 16,
+        "duration": 15,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -362,63 +450,52 @@
         "suite": "EnterPinPage.test.js"
       },
       {
-        "name": "MyJobsProfessional Component renders loading indicator while fetching jobs",
-        "duration": 25,
+        "name": "ForgotPasswordPage Component displays an error alert when email is not provided",
+        "duration": 13,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ForgotPasswordPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "myJobs.test.js > MyJobsProfessional Component"
+        "suite": "ForgotPasswordPage.test.js > ForgotPasswordPage Component"
       },
       {
-        "name": "MyJobsProfessional Component fetches and displays jobs successfully",
-        "duration": 52,
+        "name": "ForgotPasswordPage Component displays success alert and shows Enter PIN button when email is valid",
+        "duration": 57,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ForgotPasswordPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "myJobs.test.js > MyJobsProfessional Component"
+        "suite": "ForgotPasswordPage.test.js > ForgotPasswordPage Component"
       },
       {
-        "name": "MyJobsProfessional Component shows error alert if no token is found",
-        "duration": 51,
+        "name": "ForgotPasswordPage Component displays error alert when email is invalid or request fails",
+        "duration": 56,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ForgotPasswordPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "myJobs.test.js > MyJobsProfessional Component"
+        "suite": "ForgotPasswordPage.test.js > ForgotPasswordPage Component"
       },
       {
-        "name": "MyJobsProfessional Component shows error alert if job fetch fails",
-        "duration": 50,
+        "name": "ForgotPasswordPage Component navigates to EnterPinPage when Enter PIN is pressed",
+        "duration": 66,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ForgotPasswordPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "myJobs.test.js > MyJobsProfessional Component"
-      },
-      {
-        "name": "MyJobsProfessional Component renders jobs for the selected tab",
-        "duration": 55,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/myJobs/__tests__/myJobs.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "myJobs.test.js > MyJobsProfessional Component"
+        "suite": "ForgotPasswordPage.test.js > ForgotPasswordPage Component"
       },
       {
         "name": "ContractOffer Component renders correctly with issue details",
-        "duration": 29,
+        "duration": 28,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -429,7 +506,7 @@
       },
       {
         "name": "ContractOffer Component fetches user profile on mount",
-        "duration": 55,
+        "duration": 54,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -440,7 +517,7 @@
       },
       {
         "name": "ContractOffer Component handles quote submission successfully and shows alert",
-        "duration": 56,
+        "duration": 55,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -451,7 +528,7 @@
       },
       {
         "name": "ContractOffer Component shows error if quote submission fails",
-        "duration": 58,
+        "duration": 55,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -462,7 +539,7 @@
       },
       {
         "name": "ContractOffer Component opens and closes image modal",
-        "duration": 15,
+        "duration": 9,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -473,7 +550,7 @@
       },
       {
         "name": "ContractOffer Component calls navigation.goBack when Go Back button is pressed",
-        "duration": 4,
+        "duration": 3,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -494,50 +571,6 @@
         "suite": "contractOffer.test.js > ContractOffer Component"
       },
       {
-        "name": "ForgotPasswordPage Component displays an error alert when email is not provided",
-        "duration": 11,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ForgotPasswordPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "ForgotPasswordPage.test.js > ForgotPasswordPage Component"
-      },
-      {
-        "name": "ForgotPasswordPage Component displays success alert and shows Enter PIN button when email is valid",
-        "duration": 58,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ForgotPasswordPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "ForgotPasswordPage.test.js > ForgotPasswordPage Component"
-      },
-      {
-        "name": "ForgotPasswordPage Component displays error alert when email is invalid or request fails",
-        "duration": 55,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ForgotPasswordPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "ForgotPasswordPage.test.js > ForgotPasswordPage Component"
-      },
-      {
-        "name": "ForgotPasswordPage Component navigates to EnterPinPage when Enter PIN is pressed",
-        "duration": 68,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ForgotPasswordPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "ForgotPasswordPage.test.js > ForgotPasswordPage Component"
-      },
-      {
         "name": "CredentialFormPage Component renders correctly",
         "duration": 20,
         "status": "passed",
@@ -550,7 +583,7 @@
       },
       {
         "name": "CredentialFormPage Component updates trade license input value",
-        "duration": 2,
+        "duration": 1,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -561,7 +594,7 @@
       },
       {
         "name": "CredentialFormPage Component submits form and navigates to UploadID on success",
-        "duration": 53,
+        "duration": 52,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -605,7 +638,7 @@
       },
       {
         "name": "NotificationPage Component navigates to NotificationDetail on notification press",
-        "duration": 57,
+        "duration": 58,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -613,50 +646,6 @@
         "retries": 0,
         "flaky": false,
         "suite": "notificationPage.test.js > NotificationPage Component"
-      },
-      {
-        "name": "signIn Component displays an error alert when sign in fields are empty",
-        "duration": 21,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "signinPage.test.js > signIn Component"
-      },
-      {
-        "name": "signIn Component handles sign-in correctly and navigates to HomeScreen",
-        "duration": 54,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "signinPage.test.js > signIn Component"
-      },
-      {
-        "name": "signIn Component displays an error alert when email does not exist",
-        "duration": 53,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "signinPage.test.js > signIn Component"
-      },
-      {
-        "name": "signIn Component navigates to SignUpPage when \"Sign up\" link is pressed",
-        "duration": 2,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "signinPage.test.js > signIn Component"
       },
       {
         "name": "ReviewsPage Component renders loading indicator initially",
@@ -704,7 +693,7 @@
       },
       {
         "name": "ChatProvider does not initialize chat client if no credentials are found",
-        "duration": 25,
+        "duration": 22,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -715,7 +704,7 @@
       },
       {
         "name": "ChatProvider initializes chat client when valid credentials are found",
-        "duration": 51,
+        "duration": 50,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -726,7 +715,7 @@
       },
       {
         "name": "ChatProvider initializes chat client with default name (\"NoName\") when storedUserName is missing",
-        "duration": 51,
+        "duration": 52,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -748,7 +737,7 @@
       },
       {
         "name": "ChatProvider calls disconnectUser on unmount if chatClient is set",
-        "duration": 1,
+        "duration": 0,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -770,7 +759,7 @@
       },
       {
         "name": "ChatProvider useChatContext returns the expected context object",
-        "duration": 2,
+        "duration": 1,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -781,7 +770,7 @@
       },
       {
         "name": "ChatProvider handles error when AsyncStorage.getItem rejects",
-        "duration": 0,
+        "duration": 1,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -791,41 +780,8 @@
         "suite": "chatContext.test.js > ChatProvider"
       },
       {
-        "name": "ResetPasswordPage Component displays an error alert when fields are empty",
-        "duration": 14,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ResetPasswordPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "ResetPasswordPage.test.js > ResetPasswordPage Component"
-      },
-      {
-        "name": "ResetPasswordPage Component displays an error alert when passwords do not match",
-        "duration": 6,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ResetPasswordPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "ResetPasswordPage.test.js > ResetPasswordPage Component"
-      },
-      {
-        "name": "ResetPasswordPage Component displays an error alert when reset fails",
-        "duration": 57,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ResetPasswordPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "ResetPasswordPage.test.js > ResetPasswordPage Component"
-      },
-      {
         "name": "SettingsPage Component renders all options correctly",
-        "duration": 30,
+        "duration": 29,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -891,7 +847,7 @@
       },
       {
         "name": "SettingsPage Component shows alert when Wallet is pressed",
-        "duration": 4,
+        "duration": 3,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -902,7 +858,7 @@
       },
       {
         "name": "SettingsPage Component shows alert when Notifications is pressed",
-        "duration": 3,
+        "duration": 4,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -913,7 +869,7 @@
       },
       {
         "name": "SettingsPage Component shows alert when View Tax Documents is pressed",
-        "duration": 3,
+        "duration": 4,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -924,7 +880,7 @@
       },
       {
         "name": "SettingsPage Component shows alert when Privacy Policy is pressed",
-        "duration": 5,
+        "duration": 3,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -935,7 +891,7 @@
       },
       {
         "name": "SettingsPage Component shows alert when Terms & Conditions is pressed",
-        "duration": 3,
+        "duration": 2,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -945,8 +901,41 @@
         "suite": "settingsPage.test.js > SettingsPage Component"
       },
       {
+        "name": "ResetPasswordPage Component displays an error alert when fields are empty",
+        "duration": 13,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ResetPasswordPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "ResetPasswordPage.test.js > ResetPasswordPage Component"
+      },
+      {
+        "name": "ResetPasswordPage Component displays an error alert when passwords do not match",
+        "duration": 6,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ResetPasswordPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "ResetPasswordPage.test.js > ResetPasswordPage Component"
+      },
+      {
+        "name": "ResetPasswordPage Component displays an error alert when reset fails",
+        "duration": 55,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/ResetPasswordPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "ResetPasswordPage.test.js > ResetPasswordPage Component"
+      },
+      {
         "name": "ChatScreens renders null when chatClient is null",
-        "duration": 9,
+        "duration": 8,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -957,7 +946,7 @@
       },
       {
         "name": "ChatScreens renders Chat and navigator when chatClient is provided",
-        "duration": 3,
+        "duration": 4,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -1034,7 +1023,7 @@
       },
       {
         "name": "WelcomePage Navigation navigates to SignInPage when the \"Sign In\" button is pressed",
-        "duration": 23,
+        "duration": 22,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -1053,6 +1042,17 @@
         "retries": 0,
         "flaky": false,
         "suite": "welcomePage.test.js > WelcomePage Navigation"
+      },
+      {
+        "name": "NotificationDetail Component renders notification details correctly",
+        "duration": 19,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/notificationDetail/__tests__/notificationDetail.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "notificationDetail.test.js > NotificationDetail Component"
       }
     ]
   }

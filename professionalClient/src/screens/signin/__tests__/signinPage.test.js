@@ -1,11 +1,11 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import SignInPage from '../signinPage';
 import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
 import { IPAddress } from '../../../../ipAddress';
 
@@ -25,6 +25,7 @@ jest.mock('@react-navigation/native', () => {
     return {
         ...actualNav,
         useNavigation: jest.fn(),
+        CommonActions: actualNav.CommonActions, // keep the real CommonActions
     };
 });
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -35,6 +36,11 @@ jest.spyOn(Alert, 'alert');
 describe('signIn Component', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
     });
 
     test('displays an error alert when sign in fields are empty', async () => {
@@ -57,18 +63,28 @@ describe('signIn Component', () => {
         expect(mockNavigation.navigate).not.toHaveBeenCalled();
     });
 
-    test('handles sign-in correctly and navigates to HomeScreen', async () => {
+    test('handles sign-in correctly and navigates to MainTabs', async () => {
         const setIsLoggedIn = jest.fn();
+        const mockDispatch = jest.fn();
         const mockNavigate = jest.fn();
 
-        useNavigation.mockReturnValue({ navigate: mockNavigate });
-
-        axios.post.mockResolvedValue({
-            status: 200,
-            data: { token: 'fake-token' },
+        useNavigation.mockReturnValue({
+            dispatch: mockDispatch,
+            navigate: mockNavigate,
         });
 
-        const { getByTestId, getByPlaceholderText } = render(
+        // Mock the POST response: a successful login
+        axios.post.mockResolvedValueOnce({
+            status: 200,
+            data: {
+                token: 'fake-token',
+                streamToken: 'fake-stream-token',
+                userId: 'fakeUserId',
+                userName: 'fakeUserName',
+            },
+        });
+
+        const { getByPlaceholderText, getByTestId } = render(
             <NavigationContainer>
                 <SignInPage setIsLoggedIn={setIsLoggedIn} />
             </NavigationContainer>
@@ -77,17 +93,38 @@ describe('signIn Component', () => {
         fireEvent.changeText(getByPlaceholderText('Email'), 'user@example.com');
         fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
         const signInButton = getByTestId('sign-in-button');
-        fireEvent.press(signInButton)
+        fireEvent.press(signInButton);
+
+        // Wait for the asynchronous requests
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith(
+                'https://fixercapstone-production.up.railway.app/professional/signin/',
+                {
+                    email: 'user@example.com',
+                    password: 'password123',
+                }
+            );
+
+            expect(AsyncStorage.setItem).toHaveBeenCalledWith('token', 'fake-token');
+            expect(AsyncStorage.setItem).toHaveBeenCalledWith('streamToken', 'fake-stream-token');
+            expect(AsyncStorage.setItem).toHaveBeenCalledWith('userId', 'fakeUserId');
+            expect(AsyncStorage.setItem).toHaveBeenCalledWith('userName', 'fakeUserName');
+            expect(Alert.alert).toHaveBeenCalledWith('Signed in successfully');
+            expect(setIsLoggedIn).toHaveBeenCalledWith(true);
+        });
+
+        // The code dispatches after a 100ms setTimeout, so fast-forward timers
+        act(() => {
+            jest.advanceTimersByTime(100);
+        });
 
         await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith(`https://fixercapstone-production.up.railway.app/professional/signin/`, {
-                email: 'user@example.com',
-                password: 'password123'
-            });
-            expect(AsyncStorage.setItem).toHaveBeenCalledWith('token', 'fake-token');
-            expect(setIsLoggedIn).toHaveBeenCalledWith(true);
-            expect(Alert.alert).toHaveBeenCalledWith('Signed in successfully');
-            expect(mockNavigate).toHaveBeenCalledWith('MainTabs');
+            expect(mockDispatch).toHaveBeenCalledWith(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: 'MainTabs' }],
+                })
+            );
         });
     });
 

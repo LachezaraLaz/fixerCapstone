@@ -4,6 +4,7 @@ import ProfilePage from '../profilePage';
 import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 jest.mock('@expo/vector-icons', () => {
     const MockIonicons = (props) => `Ionicons-${props.name}`;
@@ -20,12 +21,13 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 
 jest.mock('axios');
 
-jest.mock('@react-navigation/native', () => ({
-    ...jest.requireActual('@react-navigation/native'),
-    useNavigation: () => ({
-        navigate: jest.fn(),
-    }),
-}));
+jest.mock('@react-navigation/native', () => {
+    const actualNav = jest.requireActual('@react-navigation/native');
+    return {
+        ...actualNav,
+        useNavigation: jest.fn(),
+    };
+});
 
 jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
@@ -66,6 +68,11 @@ describe('ProfilePage Component', () => {
     });
 
     test('triggers alert when edit button is pressed', async () => {
+        const mockNavigate = jest.fn();
+        useNavigation.mockReturnValue({
+            navigate: mockNavigate,
+        });
+
         AsyncStorage.getItem.mockResolvedValue('fake-token');
         axios.get.mockResolvedValueOnce({ data: mockClientData });
 
@@ -75,13 +82,9 @@ describe('ProfilePage Component', () => {
         await waitFor(() => expect(getByText('testuser@example.com')).toBeTruthy());
 
         // Press the edit button using accessibilityLabel
-        fireEvent.press(getByLabelText('edit button'));
+        fireEvent.press(getByLabelText('settings button'));
 
         // Verify the alert is triggered
-        expect(Alert.alert).toHaveBeenCalledWith(
-            'Feature Unavailable',
-            'The editing feature is not available yet, but please keep an eye out for future updates!',
-            [{ text: 'OK', onPress: expect.any(Function) }]
-        );
+        expect(mockNavigate).toHaveBeenCalledWith('SettingsPage');
     });
 });

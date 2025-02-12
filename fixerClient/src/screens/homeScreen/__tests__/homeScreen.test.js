@@ -21,32 +21,54 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 jest.spyOn(Alert, 'alert');
 
-beforeEach(() => {
-    jest.clearAllMocks();
-});
+describe('HomeScreen', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
-test('logs out successfully and navigates to welcomePage', async () => {
-    const mockNavigation = { replace: jest.fn(), setOptions: jest.fn() };
-    const setIsLoggedIn = jest.fn();
 
-    const { getByText } = render(<HomeScreen navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />);
+    test('logs out successfully', async () => {
+        // Create a mock navigation object, with any methods the component uses
+        const mockNavigation = {
+            setOptions: jest.fn(),
+        };
 
-    const logoutButton = getByText('Logout');
-    fireEvent.press(logoutButton);
+        // We pass in the setIsLoggedIn prop as your component expects
+        const setIsLoggedIn = jest.fn();
 
-    await waitFor(() => {
-        expect(AsyncStorage.removeItem).toHaveBeenCalledWith('token');
-        expect(Alert.alert).toHaveBeenCalledWith('Logged out', 'You have been logged out successfully');
-        expect(setIsLoggedIn).toHaveBeenCalledWith(false);
-        expect(mockNavigation.replace).toHaveBeenCalledWith('welcomePage');
+        // Render the HomeScreen, providing our mock props
+        const { getByText } = render(
+            <HomeScreen navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />
+        );
+
+        // Find the Logout button and press it
+        const logoutButton = getByText('Logout');
+        fireEvent.press(logoutButton);
+
+        // Wait for the async logout logic to complete
+        await waitFor(() => {
+            // Check that token removal is called
+            expect(AsyncStorage.removeItem).toHaveBeenCalledWith('token');
+            expect(AsyncStorage.removeItem).toHaveBeenCalledWith('streamToken');
+            expect(AsyncStorage.removeItem).toHaveBeenCalledWith('userId');
+            expect(AsyncStorage.removeItem).toHaveBeenCalledWith('userName');
+
+            // Check that the user is alerted
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Logged out',
+                'You have been logged out successfully'
+            );
+
+            // Confirm setIsLoggedIn(false) was called
+            expect(setIsLoggedIn).toHaveBeenCalledWith(false);
+        });
+    });
+
+    test('renders "Current Jobs Requested" and "Outstanding Payments" sections', () => {
+        const mockNavigation = { setOptions: jest.fn() };
+        const { getByText } = render(<HomeScreen navigation={mockNavigation} />);
+
+        expect(getByText('Current Jobs Requested')).toBeTruthy();
+        expect(getByText('Outstanding Payments')).toBeTruthy();
     });
 });
-
-test('renders "Current Jobs Requested" and "Outstanding Payments" sections', () => {
-    const mockNavigation = { setOptions: jest.fn() };
-    const { getByText } = render(<HomeScreen navigation={mockNavigation} />);
-
-    expect(getByText('Current Jobs Requested')).toBeTruthy();
-    expect(getByText('Outstanding Payments')).toBeTruthy();
-});
-

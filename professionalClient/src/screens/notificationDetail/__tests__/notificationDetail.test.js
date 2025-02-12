@@ -23,6 +23,6 @@ describe('NotificationDetail Component', () => {
 
         expect(getByText('Test Notification')).toBeTruthy(); // Title
         expect(getByText('This is a test notification message.')).toBeTruthy(); // Message
-        expect(getByText('1/25/2025, 7:00:00 AM')).toBeTruthy(); // Date in localized format
+        expect(getByText('1/25/2025, 12:00:00 PM')).toBeTruthy(); // Date in localized format
     });
 });

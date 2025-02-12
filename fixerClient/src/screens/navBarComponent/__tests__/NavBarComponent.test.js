@@ -4,10 +4,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import NavBar from '../NavBarComponent';
 import { Alert } from 'react-native';
 
-// Mock Alert
+// Mock
 jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
-// Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => ({
     __esModule: true,
     default: {
@@ -18,7 +17,6 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
     },
 }));
 
-// Mock expo-image-picker
 jest.mock('expo-image-picker', () => ({
     __esModule: true,
     requestMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
@@ -27,7 +25,6 @@ jest.mock('expo-image-picker', () => ({
     ),
 }));
 
-// Mock Ionicons
 jest.mock('@expo/vector-icons', () => {
     const MockIonicons = (props) => `Ionicons-${props.name}`;
     return {
@@ -47,32 +44,33 @@ describe('NavBarComponent', () => {
 
     test('renders all tabs with correct labels', () => {
         const { getByText } = renderNavBar();
-
-        // Verify the presence of tab labels
         expect(getByText('Home')).toBeTruthy();
-        expect(getByText('JobsPosted')).toBeTruthy();
-        expect(getByText('CreateIssue')).toBeTruthy();
+        expect(getByText('My Jobs')).toBeTruthy();
         expect(getByText('Chat')).toBeTruthy();
-        expect(getByText('Settings')).toBeTruthy();
+        expect(getByText('Profile')).toBeTruthy();
     });
 
     test('navigates to Home tab correctly', () => {
         const { getByText } = renderNavBar();
-
-        // Simulate navigation to Home
         fireEvent.press(getByText('Home'));
-
-        // Verify Home tab remains accessible
         expect(getByText('Home')).toBeTruthy();
     });
 
-    test('displays alert for Settings tab', () => {
+    test('navigates to JobsPosted tab and shows "My Jobs" label', () => {
         const { getByText } = renderNavBar();
+        fireEvent.press(getByText('My Jobs'));
+        expect(getByText('My Jobs')).toBeTruthy();
+    });
 
-        // Simulate pressing the Settings tab
-        fireEvent.press(getByText('Settings'));
+    test('navigates to Chat tab and shows "Chat" label', () => {
+        const { getByText } = renderNavBar();
+        fireEvent.press(getByText('Chat'));
+        expect(getByText('Chat')).toBeTruthy();
+    });
 
-        // Verify the alert is displayed
-        expect(Alert.alert).toHaveBeenCalledWith("Sorry, this feature isn't available yet.");
+    test('navigates to Profile tab and shows "Profile" label', () => {
+        const { getByText } = renderNavBar();
+        fireEvent.press(getByText('Profile'));
+        expect(getByText('Profile')).toBeTruthy();
     });
 });

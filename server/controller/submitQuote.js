@@ -180,6 +180,10 @@ const updateQuoteStatus = async (req, res) => {
             await notification.save();
             logger.info("the accepted quote recieved a notification");
 
+            // initChat
+            const  clientId  = req.user.id;
+            initChat(issue.title, clientId, professional._id.toString());
+
             // Notify other professionals whose quotes were rejected
             const otherProfessionals = await Quotes.find({
                 issueId: quote.issueId,

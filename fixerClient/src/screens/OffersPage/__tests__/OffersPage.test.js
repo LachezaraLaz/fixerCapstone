@@ -123,7 +123,7 @@ describe('OffersPage', () => {
                 { status: 'accepted' },
                 { headers: { Authorization: 'Bearer mock-token' } }
             );
-            expect(mockNavigate).toHaveBeenCalledWith('MyIssuesPosted');
+            expect(mockNavigate).toHaveBeenCalledWith('ChatListPage');
         });
     });
 

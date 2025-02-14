@@ -5,6 +5,7 @@ const Notification = require('../model/notificationModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { Jobs } = require('../model/createIssueModel');
 const { logger } = require('../utils/logger');
+const { initChat } = require('./initChat');
 
 // Middleware to authenticate JWT
 const authenticateJWT = (req, res, next) => {
@@ -20,14 +21,14 @@ const authenticateJWT = (req, res, next) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    console.log('Token received:', token); // Log the token
+    // console.log('Token received:', token); // Log the token
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
             return res.status(403).json({ message: 'Forbidden' });
         }
 
-        console.log('User data from token:', user); // Log user data
+        // console.log('User data from token:', user); // Log user data
         req.user = user;
         next();
     });
@@ -154,7 +155,7 @@ const updateQuoteStatus = async (req, res) => {
 
             // Update the status of the associated issue to "in progress"
             await Jobs.findByIdAndUpdate(quote.issueId, { status: 'In progress' });
-            logger.info("issue number", issueId, "has been updated to in progress because the client accepted a quote");
+            //logger.info("issue number", issueId, "has been updated to in progress because the client accepted a quote");
 
             // Automatically reject all other quotes for the same job
             await Quotes.updateMany(
@@ -179,6 +180,10 @@ const updateQuoteStatus = async (req, res) => {
             });
             await notification.save();
             logger.info("the accepted quote recieved a notification");
+
+            // initChat
+            const  clientId  = req.user.id;
+            await initChat(issue.title, clientId, professional._id.toString());
 
             // Notify other professionals whose quotes were rejected
             const otherProfessionals = await Quotes.find({

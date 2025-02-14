@@ -58,7 +58,7 @@ export default function OffersPage({ route }) {
             );
             if (response.status === 200) {
                 Alert.alert('Offer Accepted', 'You have accepted the offer.');
-                navigation.navigate('MyIssuesPosted'); // Navigate back to refresh jobs
+                navigation.navigate('ChatListPage');
             } else {
                 Alert.alert('Failed to accept the offer.');
             }

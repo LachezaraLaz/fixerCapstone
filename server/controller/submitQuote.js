@@ -142,7 +142,7 @@ const updateQuoteStatus = async (req, res) => {
         }
 
         if (status === 'accepted') {
-            // Accept the selected quote
+            // Accept quote
             const updatedQuote = await Quotes.findByIdAndUpdate(
                 quoteId,
                 { status },

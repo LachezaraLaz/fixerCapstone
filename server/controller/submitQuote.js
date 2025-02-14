@@ -5,6 +5,7 @@ const Notification = require('../model/notificationModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { Jobs } = require('../model/createIssueModel');
 const { logger } = require('../utils/logger');
+const { initChat } = require('./initChat');
 
 // Middleware to authenticate JWT
 const authenticateJWT = (req, res, next) => {

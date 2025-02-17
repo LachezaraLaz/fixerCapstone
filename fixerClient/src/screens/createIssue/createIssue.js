@@ -19,6 +19,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode';
+import { Picker } from '@react-native-picker/picker';
 import { CommonActions } from '@react-navigation/native';
 
 import { IPAddress } from '../../../ipAddress';
@@ -26,15 +27,12 @@ import { IPAddress } from '../../../ipAddress';
 export default function CreateIssue({ navigation }) {
     // List of fields in the page
     const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [professionalNeeded, setProfessionalNeeded] = useState('');
-    const [image, setImage] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [other, setOther] = useState(false);
+    const [selectedService, setSelectedService] = useState('Plumbing');
+    const [selectedImage, setSelectedImage] = useState(null);
 
 
-    //backend 
-    //backend to be able to pick an image 
+    //backend
+    //backend to be able to pick an image
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (permissionResult.granted === false) {
@@ -110,211 +108,83 @@ export default function CreateIssue({ navigation }) {
         }
     };
 
+    const countWords = (text) => {
+        return text.trim().length === 0 ? 0 : text.trim().split(/\s+/).length;
+    };
     //frontend
     return (
         //possibility to dismiss the keyboard just by touching the screen
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <ScrollView style={{ flexGrow: 1, padding: 20}}>
-                <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Create New Issue</Text>
+            <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#f5f5f5'}}>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>Job Description</Text>
 
                 {/* title field */}
                 <TextInput
-                    placeholder="Title"
+                    placeholder= "Describe your service"
                     value={title}
                     onChangeText={setTitle}
                     style={{
                         borderWidth: 1,
-                        borderColor: '#ccc',
+                        background:'#EFF1F999',
+                        borderColor: '#ddd',
+                        borderRadius: 8,
                         padding: 10,
-                        borderRadius: 5,
-                        marginBottom: 15
-                    }}
-                />
+                        marginVertical: 8,
+                        height: 120,
+                        textAlignVertical: 'top', // Ensures text starts from the top
+                    }} multiline/>
 
-                {/* Work Blocks Section */}
-                <View style={styles.workBlocksContainer}>
-                    <Text style={styles.sectionTitle}>Professional Needed</Text>
-                    <View style={styles.workBlocks}>
-                        <TouchableOpacity
-                            style={[
-                                styles.workBlock,
-                                professionalNeeded === 'plumber' && styles.selectedButton, // Highlight when selected
-                            ]}
-                            onPress={() => setProfessionalNeeded('plumber')}
-                        >
-                            <Text style={styles.workText}>Plumber</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[
-                                styles.workBlock,
-                                professionalNeeded === 'electrician' && styles.selectedButton, // Highlight when selected
-                            ]}
-                            onPress={() => setProfessionalNeeded('electrician')}
-                        >
-                            <Text style={styles.workText}>Electrician</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <Text style={styles.sectionTitle}>Issue Description</Text>
-                    {professionalNeeded === 'plumber' && (
-                        <View style={styles.workBlocks}>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Dripping Faucets' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Dripping Faucets'); 
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Dripping Faucets</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Clogged Drains' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Clogged Drains');
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Clogged Drains</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Leaky Pipes' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Leaky Pipes');
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Leaky Pipes</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    other && styles.selectedButton, // Highlight "Other" when selected
-                                ]}
-                                onPress={() => {
-                                    setOther(true);
-                                    setDescription(''); // Clear previous selection
-                                }}
-                            >
-                                <Text style={styles.workText}>Other</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-
-                    {professionalNeeded === 'electrician' && (
-                        <View style={styles.workBlocks}>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Flickering Lights' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Flickering Lights');
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Flickering Lights</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Dead Outlets' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Dead Outlets');
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Dead Outlets</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Faulty Switch' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Faulty Switch');
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Faulty Switch</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    other && styles.selectedButton, // Highlight "Other" when selected
-                                ]}
-                                onPress={() => {
-                                    setOther(true);
-                                    setDescription(''); // Clear previous selection
-                                }}
-                            >
-                                <Text style={styles.workText}>Other</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
+                {/* Word & Character Counter - Positioned Below the Input */}
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 5 }}>
+                    <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
+                        {title.length} chars
+                    </Text>
+                    <Text style={{ fontSize: 10, color: '#555' }}>
+                        {countWords(title)} words
+                    </Text>
+                </View>
+                <View style={styles.pickerContainer}>
+                <Picker
+                    selectedValue={selectedService}
+                    onValueChange={(itemValue) => setSelectedService(itemValue)}
+                    style={styles.picker}
+                    itemStyle={{ fontSize: 12, fontWeight: 'bold', color: 'blue' }} // iOS only
+                >
+                    <Picker.Item label="Select Service" value="" />
+                    <Picker.Item label="Plumbing" value="plumbing" />
+                    <Picker.Item label="Electrical" value="electrical" />
+                </Picker>
                 </View>
 
-
-                {other === true && (
-                    <TextInput
-                        placeholder="Describe the issue..."
-                        value={description}
-                        onChangeText={setDescription}
-                        multiline
-                        style={{
-                            borderWidth: 1,
-                            borderColor: '#ccc',
-                            padding: 10,
-                            height: 100,
-                            textAlignVertical: 'top',
-                            borderRadius: 5,
-                            marginBottom: 15
-                        }}
-                    />
-                )}
-
-                {/* uploading of image button */}
-                <TouchableOpacity onPress={pickImage} style={{ marginBottom: 15 }}>
-                    <View
-                        style={{
-                            backgroundColor: '#eee',
-                            padding: 10,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            borderRadius: 5,
-                        }}
-                    >
-                        <Text>Upload Image</Text>
-                    </View>
-                </TouchableOpacity>
-
-                {image && (
-                    <View style={{ alignItems: 'center', marginBottom: 15 }}>
-                        <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
-                    </View>
-                )}
-
-                {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
-                ) : (
-                    <Button testID={'post-job-button'} title="Post Job" onPress={postIssue} disabled={loading} />
-                )}
-                <View style={{ height: 30 }} />
             </ScrollView>
         </TouchableWithoutFeedback>
     );
 }
 
 const styles = StyleSheet.create({
+    pickerContainer: {
+        backgroundColor: '#E7E7E7',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        marginTop: 25,
+        overflow: 'hidden',
+    },
+    picker: {
+        height: 52,
+        color: 'black', // Affects text color inside the picker
+    },
+    pickerItem: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: 'blue', // Works on iOS, ignored on Android
+    },
+    imagePicker: { alignItems: 'center', justifyContent: 'center', height: 100, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginVertical: 8 },
+    imagePreview: { width: 100, height: 100, borderRadius: 8 },
+    map: { height: 150, marginVertical: 8 },
+    button: { backgroundColor: 'orange', padding: 12, borderRadius: 8, alignItems: 'center' },
+    buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+
     container: {
         flex: 1,
         backgroundColor: '#ffffff',

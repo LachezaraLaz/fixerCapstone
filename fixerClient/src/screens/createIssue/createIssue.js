@@ -14,41 +14,45 @@ import {
     ActivityIndicator,
     StyleSheet
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode';
-import { Picker } from '@react-native-picker/picker';
-import { CommonActions } from '@react-navigation/native';
+import DropDownPicker from 'react-native-dropdown-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 import { IPAddress } from '../../../ipAddress';
 
 export default function CreateIssue({ navigation }) {
     // List of fields in the page
     const [title, setTitle] = useState('');
-    const [selectedService, setSelectedService] = useState('Plumbing');
+    const [selectedService, setSelectedService] = useState(null);
+    const [items, setItems] = useState([
+        { label: 'Select Service', value: '' },
+        { label: 'Plumbing', value: 'plumbing' },
+        { label: 'Electrical', value: 'electrical' },
+    ]);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [open, setOpen] = useState(false);
 
 
-    //backend
-    //backend to be able to pick an image
+    //Pick an image component
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (permissionResult.granted === false) {
-            Alert.alert('Permission to access images is required!');
+        if (!permissionResult.granted) {
+            Alert.alert("Permission required", "Please allow access to your gallery.");
             return;
         }
 
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaType,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
         });
 
-        if (!result.canceled && result.assets && result.assets.length > 0) {
-            setImage(result.assets[0].uri);
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
         }
     };
 
@@ -108,14 +112,37 @@ export default function CreateIssue({ navigation }) {
         }
     };
 
+    const handleImageSelection = async (source) => {
+        const permissionResult = source === 'camera'
+            ? await ImagePicker.requestCameraPermissionsAsync()
+            : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            Alert.alert("Permission required", `Please allow access to your ${source}.`);
+            return;
+        }
+
+        const result = source === 'camera'
+            ? await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 1 })
+            : await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    };
+
     const countWords = (text) => {
         return text.trim().length === 0 ? 0 : text.trim().split(/\s+/).length;
     };
-    //frontend
+
+    const removeImage = () => {
+        setSelectedImage(null);
+    };
+
     return (
         //possibility to dismiss the keyboard just by touching the screen
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#f5f5f5'}}>
+            <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>Job Description</Text>
 
                 {/* title field */}
@@ -126,6 +153,7 @@ export default function CreateIssue({ navigation }) {
                     style={{
                         borderWidth: 1,
                         background:'#EFF1F999',
+                        backgroundColor:'#E7E7E7',
                         borderColor: '#ddd',
                         borderRadius: 8,
                         padding: 10,
@@ -139,48 +167,112 @@ export default function CreateIssue({ navigation }) {
                     <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
                         {title.length} chars
                     </Text>
-                    <Text style={{ fontSize: 10, color: '#555' }}>
-                        {countWords(title)} words
-                    </Text>
                 </View>
                 <View style={styles.pickerContainer}>
-                <Picker
-                    selectedValue={selectedService}
-                    onValueChange={(itemValue) => setSelectedService(itemValue)}
-                    style={styles.picker}
-                    itemStyle={{ fontSize: 12, fontWeight: 'bold', color: 'blue' }} // iOS only
-                >
-                    <Picker.Item label="Select Service" value="" />
-                    <Picker.Item label="Plumbing" value="plumbing" />
-                    <Picker.Item label="Electrical" value="electrical" />
-                </Picker>
+                    <DropDownPicker
+                        style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
+                        open={open}
+                        value={selectedService}
+                        items={items}
+                        setOpen={setOpen}
+                        setValue={setSelectedService}
+                        setItems={setItems}
+                        textStyle={{ fontSize: 13, fontWeight: 'bold' }}
+                        dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
+                        listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
+                        nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView
+                    />
                 </View>
-
+                <View style={styles.imageContainer}>
+                    <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
+                        {selectedImage ? (
+                            <View style={styles.imageWrapper}>
+                                <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+                                <TouchableOpacity style={styles.removeButton} onPress={removeImage}>
+                                    <Text style={styles.removeText}>✖</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ) : (
+                            <View style={styles.placeholder}>
+                                <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
+                                <Text style={styles.text}>Take from your gallery</Text>
+                                <Text style={styles.supportedFormats}>Supported formats: JPEG, PNG, MP4</Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
         </TouchableWithoutFeedback>
     );
 }
 
 const styles = StyleSheet.create({
-    pickerContainer: {
-        backgroundColor: '#E7E7E7',
-        borderRadius: 8,
+    imageWrapper: {
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+    },
+    removeButton: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        borderRadius: 15,
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    removeText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    imageContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 45
+    },
+    uploadBox: {
+        width: 300,
+        height: 150,
         borderWidth: 1,
         borderColor: '#ccc',
-        marginTop: 25,
-        overflow: 'hidden',
+        borderRadius: 10,
+        backgroundColor: '#F8FAFC',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    picker: {
-        height: 52,
-        color: 'black', // Affects text color inside the picker
+    placeholder: {
+        alignItems: 'center',
     },
-    pickerItem: {
-        fontSize: 10,
+    icon: {
+        width: 40,
+        height: 40,
+        marginBottom: 10,
+        tintColor: '#667085',
+    },
+    text: {
+        fontSize: 16,
         fontWeight: 'bold',
-        color: 'blue', // Works on iOS, ignored on Android
+        color: '#F79009',
+    },
+    supportedFormats: {
+        fontSize: 12,
+        color: '#667085',
+        marginTop: 5,
+    },
+    imagePreview: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+    },
+    pickerContainer: {
+        borderRadius: 8,
+        marginTop: 20
     },
     imagePicker: { alignItems: 'center', justifyContent: 'center', height: 100, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginVertical: 8 },
-    imagePreview: { width: 100, height: 100, borderRadius: 8 },
     map: { height: 150, marginVertical: 8 },
     button: { backgroundColor: 'orange', padding: 12, borderRadius: 8, alignItems: 'center' },
     buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },

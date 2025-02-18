@@ -22,6 +22,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import * as ImagePicker from 'expo-image-picker';
 
 import { IPAddress } from '../../../ipAddress';
+import OrangeButton from "../../../components/orangeButton";
 
 export default function CreateIssue({ navigation }) {
     // List of fields in the page
@@ -33,7 +34,15 @@ export default function CreateIssue({ navigation }) {
         { label: 'Electrical', value: 'electrical' },
     ]);
     const [selectedImage, setSelectedImage] = useState(null);
+    {/*TimeLine Dropdown*/}
     const [open, setOpen] = useState(false);
+    const [selectedTimeLine, setSelectedTimeLine] = useState(null);
+    const [itemsTimeLine, setItemsTimeLine] = useState([
+        { label: 'Select Timeline', value: '' },
+        { label: 'Low Priority', value: 'Low-Priority' },
+        { label: 'High Priority', value: 'High-Priority' },
+    ]);
+    const [openTimeLine, setOpenTimeLine] = useState(false);
 
 
     //Pick an image component
@@ -142,8 +151,10 @@ export default function CreateIssue({ navigation }) {
     return (
         //possibility to dismiss the keyboard just by touching the screen
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>Job Description</Text>
+            <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
+                        contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+            >
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>Job Description</Text>
 
                 {/* title field */}
                 <TextInput
@@ -168,9 +179,11 @@ export default function CreateIssue({ navigation }) {
                         {title.length} chars
                     </Text>
                 </View>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>Select Type</Text>
                 <View style={styles.pickerContainer}>
                     <DropDownPicker
                         style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
+                        translation={{PLACEHOLDER: "Select Service"}}
                         open={open}
                         value={selectedService}
                         items={items}
@@ -200,6 +213,42 @@ export default function CreateIssue({ navigation }) {
                             </View>
                         )}
                     </TouchableOpacity>
+                </View>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>Location</Text>
+                {/* title field */}
+                <TextInput
+                    placeholder= "Enter Price"
+                    value={title}
+                    onChangeText={setTitle}
+                    style={{
+                        borderWidth: 1,
+                        backgroundColor:'#E7E7E7',
+                        borderColor: '#ddd',
+                        borderRadius: 8,
+                        padding: 10,
+                        marginVertical: 8,
+                        height: 52,
+                    }}/>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>Urgency Timeline</Text>
+                <View style={styles.pickerContainer}>
+                    <DropDownPicker
+                        style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
+                        translation={{PLACEHOLDER: "Select Timeline"}}
+                        open={openTimeLine}
+                        value={selectedTimeLine}
+                        items={itemsTimeLine}
+                        setOpen={setOpenTimeLine}
+                        setValue={setSelectedTimeLine}
+                        setItems={setItemsTimeLine}
+                        textStyle={{ fontSize: 13, fontWeight: 'bold' }}
+                        dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
+                        listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
+                        nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView
+                    />
+                </View>
+                {/* Create Issue Button */ }
+                <View>
+                    <OrangeButton title="Create Job" variant="normal" />
                 </View>
             </ScrollView>
         </TouchableWithoutFeedback>

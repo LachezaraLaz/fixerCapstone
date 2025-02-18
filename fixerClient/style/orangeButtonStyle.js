@@ -10,7 +10,8 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         shadowRadius: 4,
-        elevation: 5
+        elevation: 5,
+        marginTop: 50
     },
     text: {
         color: 'white',

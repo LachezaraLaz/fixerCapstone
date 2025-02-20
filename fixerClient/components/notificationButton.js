@@ -3,8 +3,7 @@ import { Pressable, Text, Animated, View } from 'react-native';
 import styles from '../style/notificationButtonStyle';
 import {Ionicons} from "@expo/vector-icons";
 
-
-const NotificationButton = ({ onPress, icon = "notifications-outline", size = 24, color = "#333" }) => {
+const NotificationButton = ({ onPress, icon = "notifications-outline", size = 24, color = "#333", testID }) => {
     const [hovered, setHovered] = useState(false);
     const animatedValue = useRef(new Animated.Value(1)).current;
 
@@ -27,6 +26,7 @@ const NotificationButton = ({ onPress, icon = "notifications-outline", size = 24
     return (
         <Animated.View style={{ transform: [{ scale: animatedValue }] }}>
             <Pressable
+                testID={testID}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
                 onPress={onPress}

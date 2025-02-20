@@ -48,13 +48,15 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 <Text style={styles.headerTitle}>Home Screen</Text>
 
                 {/* Notification Button */}
-                <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
+                <NotificationButton testID="notification-button" onPress={() => navigation.navigate('NotificationPage')} />
             </View>
 
             {/* Searchbar */}
             <SearchBar
+                testID="search-button"
                 onSearch={() => console.log("Search button pressed")}
                 onFilter={() => console.log("Filter button pressed")}
+                filterButtonTestID="filter-button"
             />
 
             <ScrollView contentContainerStyle={styles.container}>

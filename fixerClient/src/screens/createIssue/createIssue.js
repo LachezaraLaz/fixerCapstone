@@ -1,5 +1,6 @@
 //Import list
 import * as React from 'react';
+import 'react-native-get-random-values';
 import {
     ScrollView,
     View,
@@ -23,6 +24,8 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { IPAddress } from '../../../ipAddress';
 import OrangeButton from "../../../components/orangeButton";
+import MapView, {Marker} from "react-native-maps";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 export default function CreateIssue({ navigation }) {
     // List of fields in the page
@@ -43,6 +46,7 @@ export default function CreateIssue({ navigation }) {
         { label: 'High Priority', value: 'High-Priority' },
     ]);
     const [openTimeLine, setOpenTimeLine] = useState(false);
+    const [location, setLocation] = useState("");
 
 
     //Pick an image component
@@ -196,6 +200,7 @@ export default function CreateIssue({ navigation }) {
                         nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView
                     />
                 </View>
+                {/*Image upload*/}
                 <View style={styles.imageContainer}>
                     <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
                         {selectedImage ? (
@@ -214,22 +219,57 @@ export default function CreateIssue({ navigation }) {
                         )}
                     </TouchableOpacity>
                 </View>
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>Location</Text>
-                {/* title field */}
-                <TextInput
-                    placeholder= "Enter Price"
-                    value={title}
-                    onChangeText={setTitle}
-                    style={{
-                        borderWidth: 1,
-                        backgroundColor:'#E7E7E7',
-                        borderColor: '#ddd',
-                        borderRadius: 8,
-                        padding: 10,
-                        marginVertical: 8,
-                        height: 52,
-                    }}/>
+                {/*map*/}
+                <View style={styles.mapContainer}>
+                    <MapView
+                        style={styles.map}
+                        initialRegion={{
+                            latitude: 37.7749, // Example: San Francisco
+                            longitude: -122.4194,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        }}
+                    >
+                        {/* Marker Example */}
+                        <Marker
+                            coordinate={{ latitude: 37.7749, longitude: -122.4194 }}
+                            title="San Francisco"
+                            description="This is a marker in SF!"
+                        />
+                    </MapView>
+                </View>
+                {/*location label*/}
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 0, marginTop: 20 }}>Location</Text>
+                {/* location field */}
+                <View style={{ flex: 1 }}>
+                    <GooglePlacesAutocomplete
+                        placeholder="Enter Location"
+                        keyboardShouldPersistTaps="handled" // Prevents touch event conflicts
+                        fetchDetails={true} // Gets extra details like lat/lng
+                        onPress={(data, details = null) => {
+                            console.log("Selected Location:", data.description);
+                            console.log("Coordinates:", details?.geometry.location);
+                        }}
+                        query={{
+                            key: process.env.GOOGLE_MAPS_KEY, // Replace with your API Key
+                            language: "en",
+                            components: "country:ca"
+                        }}
+                        styles={{
+                            textInput: {
+                                height: 52,
+                                borderWidth: 1,
+                                borderColor: "#ddd",
+                                backgroundColor: "#E7E7E7",
+                                borderRadius: 8,
+                                padding: 9,
+                            },
+                        }}
+                        nestedScrollEnabled={true} // Allows smooth scrolling inside ScrollView
+                    />
+                </View>
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>Urgency Timeline</Text>
+                {/*Urgency Timeline*/}
                 <View style={styles.pickerContainer}>
                     <DropDownPicker
                         style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
@@ -241,6 +281,7 @@ export default function CreateIssue({ navigation }) {
                         setValue={setSelectedTimeLine}
                         setItems={setItemsTimeLine}
                         textStyle={{ fontSize: 13, fontWeight: 'bold' }}
+                        dropDownDirection="BOTTOM" // Ensures dropdown opens downward
                         dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
                         listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
                         nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView
@@ -256,6 +297,14 @@ export default function CreateIssue({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+    mapContainer: {
+        flex: 1,
+        marginTop:40
+    },
+    map: {
+        width: 361,
+        height: 222,
+    },
     imageWrapper: {
         width: '100%',
         height: '100%',
@@ -265,7 +314,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 5,
         right: 5,
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        backgroundColor: 'orange',
         borderRadius: 15,
         width: 30,
         height: 30,
@@ -273,9 +322,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     removeText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: 12
     },
     imageContainer: {
         flex: 1,
@@ -322,7 +369,6 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     imagePicker: { alignItems: 'center', justifyContent: 'center', height: 100, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginVertical: 8 },
-    map: { height: 150, marginVertical: 8 },
     button: { backgroundColor: 'orange', padding: 12, borderRadius: 8, alignItems: 'center' },
     buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
 

@@ -32,8 +32,6 @@ export default function CreateIssue({ navigation }) {
     const [loading, setLoading] = useState(false);
     const [other, setOther] = useState(false);
 
-
-    //backend 
     //backend to be able to pick an image 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();

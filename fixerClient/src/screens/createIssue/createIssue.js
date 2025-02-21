@@ -49,8 +49,6 @@ export default function CreateIssue({ navigation }) {
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [location, setLocation] = useState("");
 
-
-    //Pick an image component
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {

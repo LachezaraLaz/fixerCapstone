@@ -1,5 +1,6 @@
 //Import list
 import * as React from 'react';
+import styles from '../../../style/createIssueStyle'
 import 'react-native-get-random-values';
 import {
     ScrollView,
@@ -206,15 +207,15 @@ export default function CreateIssue({ navigation }) {
                         {selectedImage ? (
                             <View style={styles.imageWrapper}>
                                 <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
-                                <TouchableOpacity style={styles.removeButton} onPress={removeImage}>
-                                    <Text style={styles.removeText}>✖</Text>
+                                <TouchableOpacity style={{...styles.removeButton}} onPress={removeImage}>
+                                    <Text style={{...styles.removeText}}>✖</Text>
                                 </TouchableOpacity>
                             </View>
                         ) : (
                             <View style={styles.placeholder}>
                                 <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
-                                <Text style={styles.text}>Take from your gallery</Text>
-                                <Text style={styles.supportedFormats}>Supported formats: JPEG, PNG, MP4</Text>
+                                <Text style={{ ...styles.text }}>Take from your gallery</Text>
+                                <Text style={{...styles.supportedFormats}}>Supported formats: JPEG, PNG, MP4</Text>
                             </View>
                         )}
                     </TouchableOpacity>
@@ -239,7 +240,7 @@ export default function CreateIssue({ navigation }) {
                     </MapView>
                 </View>
                 {/*location label*/}
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 0, marginTop: 20 }}>Location</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15, marginTop: 20 }}>Location</Text>
                 {/* location field */}
                 <View style={{ flex: 1 }}>
                     <GooglePlacesAutocomplete
@@ -295,156 +296,3 @@ export default function CreateIssue({ navigation }) {
         </TouchableWithoutFeedback>
     );
 }
-
-const styles = StyleSheet.create({
-    mapContainer: {
-        flex: 1,
-        marginTop:40
-    },
-    map: {
-        width: 361,
-        height: 222,
-    },
-    imageWrapper: {
-        width: '100%',
-        height: '100%',
-        position: 'relative',
-    },
-    removeButton: {
-        position: 'absolute',
-        top: 5,
-        right: 5,
-        backgroundColor: 'orange',
-        borderRadius: 15,
-        width: 30,
-        height: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    removeText: {
-        fontSize: 12
-    },
-    imageContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 45
-    },
-    uploadBox: {
-        width: 300,
-        height: 150,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 10,
-        backgroundColor: '#F8FAFC',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    placeholder: {
-        alignItems: 'center',
-    },
-    icon: {
-        width: 40,
-        height: 40,
-        marginBottom: 10,
-        tintColor: '#667085',
-    },
-    text: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#F79009',
-    },
-    supportedFormats: {
-        fontSize: 12,
-        color: '#667085',
-        marginTop: 5,
-    },
-    imagePreview: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 10,
-    },
-    pickerContainer: {
-        borderRadius: 8,
-        marginTop: 20
-    },
-    imagePicker: { alignItems: 'center', justifyContent: 'center', height: 100, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginVertical: 8 },
-    button: { backgroundColor: 'orange', padding: 12, borderRadius: 8, alignItems: 'center' },
-    buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
-
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    workBlocksContainer: {
-        paddingHorizontal: 16,
-        marginVertical: 16,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
-    },
-    workBlocks: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    workBlock: {
-        backgroundColor: '#f0f0f0',
-        width: '48%',
-        padding: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    selectedButton: {
-        backgroundColor: '#1A8DEC', // Highlight color for selected button
-    },
-    workText: {
-        fontSize: 16,
-        color: '#333',
-        textAlign: 'center',
-    },
-    helpSection: {
-        paddingHorizontal: 16,
-        marginVertical: 16,
-    },
-    helpButton: {
-        backgroundColor: '#e0e0e0',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    helpButtonText: {
-        fontSize: 16,
-        color: '#333',
-    },
-    logoutContainer: {
-        paddingHorizontal: 16,
-        marginVertical: 16,
-    },
-    logoutButton: {
-        backgroundColor: '#ffdddd',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    logoutText: {
-        fontSize: 16,
-        color: '#d9534f',
-        fontWeight: 'bold',
-    },
-    footer: {
-        padding: 16,
-        alignItems: 'center',
-        borderTopWidth: 1,
-        borderColor: '#e0e0e0',
-        marginTop: 16,
-    },
-    footerText: {
-        fontSize: 12,
-        color: '#666',
-    },
-});

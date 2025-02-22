@@ -50,8 +50,6 @@ export default function CreateIssue({ navigation }) {
     const [location, setLocation] = useState("");
     const [description, setDescription] = useState("");
 
-
-    //Pick an image component
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {

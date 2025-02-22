@@ -140,7 +140,7 @@ export default function SignUpPage({ navigation }) {
                     onChangeText={setCountry}
                     autoCapitalize="none"
                 />
-                <TouchableOpacity style={styles.button} onPress={handleVerifyAddress}>
+                <TouchableOpacity style={styles.button} onPress={handleVerifyAddress} testID={'verify-address-button'} >
                     <Text style={styles.buttonText}>Verify Address</Text>
                 </TouchableOpacity>
 
@@ -179,7 +179,13 @@ export default function SignUpPage({ navigation }) {
                     onChangeText={setConfirmPassword}
                     secureTextEntry
                 />
-                <TouchableOpacity style={styles.button} onPress={() => handleSignUp()} testID={'sign-up-button'} disabled={!isAddressValid}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleSignUp()}
+                    testID="sign-up-button"
+                    disabled={!isAddressValid}
+                    accessibilityState={{ disabled: !isAddressValid }}
+                >
                     <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>

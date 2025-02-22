@@ -26,11 +26,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { IPAddress } from '../../../ipAddress';
 import OrangeButton from "../../../components/orangeButton";
 import MapView, {Marker} from "react-native-maps";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 export default function CreateIssue({ navigation }) {
     // List of fields in the page
-    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
     const [selectedService, setSelectedService] = useState(null);
     const [items, setItems] = useState([
         { label: 'Select Service', value: '' },
@@ -48,7 +47,11 @@ export default function CreateIssue({ navigation }) {
     ]);
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [location, setLocation] = useState("");
-    const [description, setDescription] = useState("");
+
+    const [professionalNeeded, setProfessionalNeeded] = useState('');
+    const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [other, setOther] = useState(false);
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -71,7 +74,7 @@ export default function CreateIssue({ navigation }) {
 
     // posting the issue by the user
     const postIssue = async () => {
-        if (!title) {
+        if (!description) {
             Alert.alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
             return;
         }
@@ -84,9 +87,9 @@ export default function CreateIssue({ navigation }) {
             const userEmail = decodedToken.email;
 
             const formData = new FormData();
-            formData.append('title', title);
+            formData.append('title', description);
             formData.append('description', description);
-            //formData.append('professionalNeeded', professionalNeeded);
+            formData.append('professionalNeeded', selectedService);
             formData.append('email', userEmail);
             formData.append('status', "Open");
 
@@ -97,6 +100,14 @@ export default function CreateIssue({ navigation }) {
                     name: 'issue_image.jpg',
                 });
             }
+            console.log("🚀 Sending Data:", {
+                title: description,
+                description,
+                professionalNeeded: selectedService,
+                email: userEmail,
+                status: "Open",
+                image: selectedImage ? "✅ Image Attached" : "❌ No Image",
+            });
 
             const response = await axios.post(`https://fixercapstone-production.up.railway.app/issue/create`, formData, {
                 headers: {
@@ -104,10 +115,11 @@ export default function CreateIssue({ navigation }) {
                     'Authorization': `Bearer ${token}`
                 },
             });
+            console.log("✅ Response:", response.data);
 
             if (response.status === 201) {
                 // Reset all fields to default values
-                setTitle('');
+                setDescription('');
                 setDescription('');
                 setProfessionalNeeded('');
                 setImage(null);
@@ -119,6 +131,7 @@ export default function CreateIssue({ navigation }) {
                 Alert.alert('Failed to post the job');
             }
         } catch (error) {
+            console.log("❌ Error:", error.response?.data || error.message);
             Alert.alert('An error occurred. Please try again.');
         } finally {
             setLoading(false); // Stop loading after completion
@@ -163,8 +176,8 @@ export default function CreateIssue({ navigation }) {
                 {/* title field */}
                 <TextInput
                     placeholder= "Describe your service"
-                    value={title}
-                    onChangeText={setTitle}
+                    value={description}
+                    onChangeText={setDescription}
                     style={{
                         borderWidth: 1,
                         background:'#EFF1F999',
@@ -180,7 +193,7 @@ export default function CreateIssue({ navigation }) {
                 {/* Word & Character Counter - Positioned Below the Input */}
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 5 }}>
                     <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
-                        {title.length} chars
+                        {description.length} chars
                     </Text>
                 </View>
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>Select Type</Text>
@@ -277,7 +290,7 @@ export default function CreateIssue({ navigation }) {
                 </View>
                 {/* Create Issue Button */ }
                 <View>
-                    <OrangeButton title="Create Job" variant="normal" onPress={postIssue}/>
+                    <OrangeButton testID={'post-job-button'} title="Create Job" variant="normal" onPress={postIssue}/>
                 </View>
             </ScrollView>
         </TouchableWithoutFeedback>

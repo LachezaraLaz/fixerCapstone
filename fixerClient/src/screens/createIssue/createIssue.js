@@ -48,6 +48,7 @@ export default function CreateIssue({ navigation }) {
     ]);
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [location, setLocation] = useState("");
+    const [description, setDescription] = useState("");
 
 
     //Pick an image component
@@ -72,7 +73,7 @@ export default function CreateIssue({ navigation }) {
 
     // posting the issue by the user
     const postIssue = async () => {
-        if (!title || !professionalNeeded || !description) {
+        if (!title) {
             Alert.alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
             return;
         }
@@ -87,7 +88,7 @@ export default function CreateIssue({ navigation }) {
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
-            formData.append('professionalNeeded', professionalNeeded);
+            //formData.append('professionalNeeded', professionalNeeded);
             formData.append('email', userEmail);
             formData.append('status', "Open");
 
@@ -243,30 +244,18 @@ export default function CreateIssue({ navigation }) {
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15, marginTop: 20 }}>Location</Text>
                 {/* location field */}
                 <View style={{ flex: 1 }}>
-                    <GooglePlacesAutocomplete
+                    <TextInput
                         placeholder="Enter Location"
-                        keyboardShouldPersistTaps="handled" // Prevents touch event conflicts
-                        fetchDetails={true} // Gets extra details like lat/lng
-                        onPress={(data, details = null) => {
-                            console.log("Selected Location:", data.description);
-                            console.log("Coordinates:", details?.geometry.location);
+                        value={location}
+                        onChangeText={setLocation}
+                        style={{
+                            height: 52,
+                            borderWidth: 1,
+                            borderColor: "#ddd",
+                            backgroundColor: "#E7E7E7",
+                            borderRadius: 8,
+                            padding: 9,
                         }}
-                        query={{
-                            key: process.env.GOOGLE_MAPS_KEY, // Replace with your API Key
-                            language: "en",
-                            components: "country:ca"
-                        }}
-                        styles={{
-                            textInput: {
-                                height: 52,
-                                borderWidth: 1,
-                                borderColor: "#ddd",
-                                backgroundColor: "#E7E7E7",
-                                borderRadius: 8,
-                                padding: 9,
-                            },
-                        }}
-                        nestedScrollEnabled={true} // Allows smooth scrolling inside ScrollView
                     />
                 </View>
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>Urgency Timeline</Text>
@@ -290,7 +279,7 @@ export default function CreateIssue({ navigation }) {
                 </View>
                 {/* Create Issue Button */ }
                 <View>
-                    <OrangeButton title="Create Job" variant="normal" />
+                    <OrangeButton title="Create Job" variant="normal" onPress={postIssue}/>
                 </View>
             </ScrollView>
         </TouchableWithoutFeedback>

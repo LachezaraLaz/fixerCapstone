@@ -1,13 +1,11 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-    /** ✅ Safe Area **/
     safeArea: {
         flex: 1,
         backgroundColor: '#fff',
     },
 
-    /** ✅ Custom Header **/
     customHeader: {
         width: '100%',
         height: 70,
@@ -22,7 +20,7 @@ export const styles = StyleSheet.create({
     headerLogo: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'orange',
+        color: '#f28500',
     },
     headerTitle: {
         fontSize: 16,
@@ -32,13 +30,12 @@ export const styles = StyleSheet.create({
         flex: 1,
     },
 
-    /** ✅ Tabs Styling (Ensure Equal Padding) **/
     tabsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 16,  // ✅ Ensures equal spacing from both sides
-        paddingVertical: 10,  // ✅ Consistent padding for top & bottom
+        paddingHorizontal: 16,
+        paddingVertical: 10,
         borderBottomWidth: 2,
         borderBottomColor: '#eee',
         marginBottom: 12,
@@ -59,39 +56,33 @@ export const styles = StyleSheet.create({
         color: '#333',
     },
 
-    /** ✅ Jobs Container **/
     jobsContainer: {
         flex: 1,
-        paddingHorizontal: 16, // ✅ Ensures equal padding for job list
+        paddingHorizontal: 16,
     },
 
-    /** ✅ Job Card (Equal Padding on All Sides) **/
     jobCard: {
         flexDirection: 'row',
         backgroundColor: '#fff',
         borderRadius: 15,
-        padding: 20, // ✅ Ensures equal padding on all sides
+        padding: 20,
         marginBottom: 18,
-        marginHorizontal: 0, // ✅ Ensures alignment inside `jobsContainer`
+        marginHorizontal: 0,
         height: 140,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 3,
+        borderWidth: 2,
+        borderColor: '#f0f0f0',
+        elevation: 12,
         alignItems: 'center',
         position: 'relative',
     },
 
-    /** ✅ Job Image **/
     jobImage: {
-        width: 85,
-        height: 85,
-        borderRadius: 12,
+        width: 100,
+        height: 110,
+        borderRadius: 5,
         marginRight: 15,
     },
 
-    /** ✅ Job Details **/
     jobDetails: {
         flex: 1,
     },
@@ -99,20 +90,19 @@ export const styles = StyleSheet.create({
         fontSize: 19,
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 8,
+        marginBottom: 15,
     },
     jobLocation: {
         fontSize: 14,
         color: '#777',
-        marginBottom: 8,
+        marginBottom: 15,
     },
     jobRating: {
         fontSize: 14,
         color: '#777',
-        marginBottom: 10,
+        marginBottom: 15,
     },
 
-    /** ✅ Price Section **/
     jobPriceContainer: {
         backgroundColor: '#fde7d1',
         borderRadius: 12,
@@ -128,7 +118,6 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 
-    /** ✅ No Jobs Available Message **/
     noJobsText: {
         textAlign: 'center',
         fontSize: 16,

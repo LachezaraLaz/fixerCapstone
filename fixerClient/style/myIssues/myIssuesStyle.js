@@ -17,11 +17,13 @@ export const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
     },
+
     headerLogo: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#f28500',
     },
+
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
@@ -40,19 +42,27 @@ export const styles = StyleSheet.create({
         borderBottomColor: '#eee',
         marginBottom: 12,
     },
+
     tab: {
         flex: 1,
         alignItems: 'center',
         paddingVertical: 12,
     },
+
     selectedTab: {
         borderBottomWidth: 4,
         borderBottomColor: '#f28500',
         width: '100%',
     },
+
     tabText: {
         fontSize: 16,
         color: '#333',
+    },
+
+    selectedTabText: {
+        color: '#f28500',
+        fontWeight: 'bold',
     },
 
     jobsContainer: {
@@ -85,21 +95,24 @@ export const styles = StyleSheet.create({
     jobDetails: {
         flex: 1,
     },
+
     jobTitle: {
         fontSize: 19,
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 15,
     },
+
     jobLocation: {
         fontSize: 14,
         color: '#777',
-        marginBottom: 15,
+        marginBottom: 10,
+        marginTop: 10,
     },
+
     jobRating: {
         fontSize: 14,
         color: '#777',
-        marginBottom: 15,
+        marginBottom: 10,
     },
 
     jobPriceContainer: {
@@ -107,10 +120,11 @@ export const styles = StyleSheet.create({
         borderRadius: 12,
         paddingVertical: 5,
         paddingHorizontal: 12,
-        position: 'absolute',
-        bottom: 10,
-        right: 10,
+        alignSelf: 'flex-end',
+        marginTop: -10,
+        marginRight: 2,
     },
+
     jobPriceText: {
         color: '#f28500',
         fontSize: 16,

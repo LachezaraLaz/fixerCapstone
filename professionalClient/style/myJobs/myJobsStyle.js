@@ -116,12 +116,10 @@ export const styles = StyleSheet.create({
     },
 
     jobTitle: {
-        fontSize: 17,
+        fontSize: 19,
         fontWeight: 'bold',
         color: '#333',
-        flexShrink: 1,
-        flexWrap: 'wrap',
-        maxWidth: '70%',
+        marginBottom: 15,
     },
 
     jobLocation: {
@@ -144,7 +142,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 12,
         alignSelf: 'flex-end',
         marginTop: -10,
-        marginRight: 10,
+        marginRight: 2,
     },
 
     jobPriceText: {
@@ -173,7 +171,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         borderWidth: 1.5,
         alignSelf: 'flex-start',
-        marginRight: 10,
+        marginRight: 2,
         marginTop: -8,
     },
 

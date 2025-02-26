@@ -88,7 +88,7 @@ export default function MyIssuesPosted() {
                         style={[styles.tab, selectedTab === key && styles.selectedTab]}
                         onPress={() => setSelectedTab(key)}
                     >
-                        <Text style={styles.tabText}>{label}</Text>
+                        <Text style={[styles.tabText, selectedTab === key && styles.selectedTabText]}>{label}</Text>
                     </TouchableOpacity>
                 ))}
             </View>

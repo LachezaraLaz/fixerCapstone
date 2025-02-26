@@ -32,25 +32,6 @@ export const styles = StyleSheet.create({
         flex: 1,
     },
 
-    amountContainer: {
-        paddingHorizontal: 16,
-        paddingVertical: 15,
-        marginBottom: 12,
-        borderRadius: 10,
-    },
-
-    amountEarned: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-
-    amountValue: {
-        color: '#f28500',
-        fontWeight: 'bold',
-        fontSize: 20,
-    },
-
     tabsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -75,7 +56,7 @@ export const styles = StyleSheet.create({
     },
 
     tabText: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#333',
     },
 
@@ -119,7 +100,6 @@ export const styles = StyleSheet.create({
         fontSize: 19,
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 15,
     },
 
     jobLocation: {
@@ -156,29 +136,5 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         color: '#777',
         marginTop: 20,
-    },
-
-    statusTag: {
-        position: 'absolute',
-        top: 30,
-        right: 20,
-        paddingVertical: 3,
-        paddingHorizontal: 14,
-        borderRadius: 12,
-        minWidth: 90,
-        maxWidth: 100,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1.5,
-        alignSelf: 'flex-start',
-        marginRight: 2,
-        marginTop: -8,
-    },
-
-    statusText: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: '#fff',
-        textAlign: 'center',
     },
 });

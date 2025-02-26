@@ -124,17 +124,17 @@ export const styles = StyleSheet.create({
         maxWidth: '70%',
     },
 
-
     jobLocation: {
         fontSize: 14,
         color: '#777',
-        marginBottom: 15,
+        marginBottom: 10,
+        marginTop: 10,
     },
 
     jobRating: {
         fontSize: 14,
         color: '#777',
-        marginBottom: 15,
+        marginBottom: 10,
     },
 
     jobPriceContainer: {
@@ -143,8 +143,8 @@ export const styles = StyleSheet.create({
         paddingVertical: 5,
         paddingHorizontal: 12,
         alignSelf: 'flex-end',
-        marginTop: -2,
-        marginLeft: 10,
+        marginTop: -10,
+        marginRight: 10,
     },
 
     jobPriceText: {
@@ -161,7 +161,9 @@ export const styles = StyleSheet.create({
     },
 
     statusTag: {
-        position: 'relative',
+        position: 'absolute',
+        top: 30,
+        right: 20,
         paddingVertical: 3,
         paddingHorizontal: 14,
         borderRadius: 12,
@@ -170,8 +172,9 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1.5,
-        marginRight: 5,
         alignSelf: 'flex-start',
+        marginRight: 10,
+        marginTop: -8,
     },
 
     statusText: {
@@ -179,13 +182,5 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#fff',
         textAlign: 'center',
-    },
-
-    statusPriceContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        width: '100%',
-        marginTop: 0,
     },
 });

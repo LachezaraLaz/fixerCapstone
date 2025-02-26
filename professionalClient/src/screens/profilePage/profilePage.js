@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { IPAddress } from '../../../ipAddress';
+
 
 const ProfilePage = () => {
     const [professional, setProfessional] = useState(null);
@@ -39,10 +39,6 @@ const ProfilePage = () => {
         return <Text>Loading...</Text>;
     }
 
-    const handleViewReviews = () => {
-        navigation.navigate('ReviewsPage', { professionalEmail: professional.email });
-    };
-
     if (!professional) {
         return <Text>Error loading profile.</Text>;
     }
@@ -55,45 +51,40 @@ const ProfilePage = () => {
         );
     };
 
+    const handleViewReviews = () => {
+        navigation.navigate('ReviewsPage', { professionalEmail: professional.email });
+    };
+
     const handleVerifyCredentials = () => {
         navigation.navigate('CredentialFormPage');
     };
 
     return (
         <View style={styles.container}>
-            {/* Custom Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('MainTabs')}>
-                    <Ionicons name="arrow-back" size={28} color="#333" />
-                </TouchableOpacity>
-
-                <Text style={styles.headerTitle}>ProfilePage</Text>
-
-                {/* Pencil Icon (Shows Alert When Tapped) */}
-                <TouchableOpacity onPress={handleEditPress} testID="edit-button">
-                    <MaterialIcons name="edit" size={24} color="black" />
+            <View style={styles.customHeader}>
+                <Text style={styles.headerLogo}>Fixr</Text>
+                <Text style={styles.headerTitle}>Profile</Text>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('SettingsPage')}
+                    style={styles.settingsButton}
+                >
+                    <Ionicons name="settings-outline" size={24} color="#333" />
                 </TouchableOpacity>
             </View>
 
-            {/* Profile Details Section */}
             <View style={styles.profileContainer}>
-                {/* Profile Picture */}
-                <Image source={require('../../../assets/profile.jpg')} style={styles.profileImage} />
-
-                {/* Name & Rating */}
-                <View style={styles.nameContainer}>
-                    <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
-                    <Text style={styles.ratingText}>⭐ {professional.totalRating || 0} </Text>
-                    <Text style={styles.emailText}> ({professional.reviewCount} reviews)</Text>
+                <View style={styles.imageWrapper}>
+                    <Image source={require('../../../assets/profile.jpg')} style={styles.profileImage} />
+                    <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
+                        <MaterialIcons name="edit" size={20} color="white" />
+                    </TouchableOpacity>
                 </View>
-
-                {/* Email */}
+                <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
+                <Text style={styles.ratingText}>⭐ {professional.totalRating || 0} ({professional.reviewCount} reviews)</Text>
                 <Text style={styles.emailText}>{professional.email}</Text>
             </View>
 
-            {/* CONDITIONAL VIEWS BASED ON formComplete AND approved */}
             {!professional.formComplete ? (
-                // First view: Form not completed
                 <View style={styles.buttonContainer}>
                     <Button title="Verify Credentials" onPress={handleVerifyCredentials} />
                 </View>
@@ -103,12 +94,10 @@ const ProfilePage = () => {
                 <Text style={styles.waitingText}>Credential Verification Status: Waiting...</Text>
             )}
 
-            {/* Button to View Reviews */}
             <View style={styles.buttonContainer}>
                 <Button title="View Reviews" onPress={handleViewReviews} />
             </View>
 
-            {/* Help Button  */}
             <View style={styles.section}>
                 <Text style={styles.sectionText}>Help</Text>
             </View>
@@ -121,51 +110,78 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
         padding: 16,
-        alignItems: 'center', // Ensure everything is centered
+        alignItems: 'center',
     },
-    header: {
+    customHeader: {
+        width: '100%',
+        height: 70,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: '100%',
         paddingHorizontal: 16,
-        paddingVertical: 12,
-        backgroundColor: '#fff',
+        backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+    },
+    headerLogo: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'orange',
     },
     headerTitle: {
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+    },
+    settingsButton: {
+        width: 40,
+        height: 40,
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
     },
     profileContainer: {
         alignItems: 'center',
         marginTop: 20,
-        width: '100%', // Ensure full width for alignment
+    },
+    imageWrapper: {
+        position: 'relative',
     },
     profileImage: {
         width: 100,
         height: 100,
         borderRadius: 50,
-        marginBottom: 10, // Extra space to separate from name
     },
-    nameContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+    editButton: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        backgroundColor: 'grey',
+        borderRadius: 12,
+        padding: 6,
     },
     nameText: {
         fontSize: 24,
         fontWeight: 'bold',
         color: '#333333',
+        marginTop: 10,
     },
     ratingText: {
         fontSize: 18,
         color: '#FFD700',
-        marginLeft: 6, // Add space between name and star
+        marginTop: 6,
     },
     emailText: {
         fontSize: 16,
         color: '#666666',
-        marginTop: 6, // Space between name and email
+        marginTop: 6,
     },
     verifiedText: {
         fontSize: 20,
@@ -195,5 +211,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfilePage;
-
-

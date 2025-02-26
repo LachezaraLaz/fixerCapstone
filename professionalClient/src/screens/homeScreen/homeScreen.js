@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Linking } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
@@ -54,20 +54,37 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     };
 
     const getCurrentLocation = async () => {
-        try {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission to access location was denied');
-                return;
-            }
+        const { status } = await Location.getForegroundPermissionsAsync();
+
+        if (status === 'granted') {
+            // Permission is already granted, get location
             const location = await Location.getCurrentPositionAsync({});
             setCurrentLocation({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
             });
-        } catch (error) {
-            console.error('Error getting location:', error);
-            Alert.alert('Error', 'Could not get your current location.');
+        } else if (status === 'denied') {
+            // If permission was denied, ask the user to go to settings
+            Alert.alert(
+                "Location Permission Denied",
+                "To use this feature, enable location services in settings.",
+                [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "Open Settings", onPress: () => Linking.openSettings() }
+                ]
+            );
+        } else {
+            // Request permission if not determined yet
+            const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
+            if (newStatus === 'granted') {
+                const location = await Location.getCurrentPositionAsync({});
+                setCurrentLocation({
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                });
+            } else {
+                Alert.alert("Permission Denied", "Location access is required to use this feature.");
+            }
         }
     };
 
@@ -167,19 +184,14 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.profileButton}>
-                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
-                    <Ionicons name="person-circle" size={32} color="#333" />
-                </TouchableOpacity>
-            </View>
             <View style={styles.notificationButton}>
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
                     <Ionicons name="notifications-outline" size={28} color="#333" />
                 </TouchableOpacity>
             </View>
             <View style={styles.recenterButtonContainer}>
-                <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
-                    <Ionicons name="locate" size={28} color="#333" />
+                <TouchableOpacity onPress={handleRecenterMap}>
+                    <Ionicons name="locate" size={30} color="#333" />
                 </TouchableOpacity>
             </View>
             <Animated.ScrollView
@@ -199,17 +211,29 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                         showsMyLocationButton={false}  // Add this for Android so i can use my customize recenter button
                         shouldRasterizeIOS={true} // Optimize for iOS
                         renderToHardwareTextureAndroid={true} // Optimize for Android
-                        region={currentLocation ? {
-                            latitude: currentLocation.latitude,
-                            longitude: currentLocation.longitude,
-                            latitudeDelta: 0.0122,
-                            longitudeDelta: 0.0121,
-                        } : {
-                            latitude: 37.78825,
-                            longitude: -122.4324,
-                            latitudeDelta: 0.0122,
-                            longitudeDelta: 0.0121,
-                        }}
+                        region={currentLocation
+                            ? {
+                                latitude: currentLocation.latitude,
+                                longitude: currentLocation.longitude,
+                                latitudeDelta: 0.0122,
+                                longitudeDelta: 0.0121,
+                            }
+                            : filteredIssues.length > 0
+                                ? {
+                                    latitude: filteredIssues[0].latitude,  // Fallback to an issue marker, if user denied location permission
+                                    longitude: filteredIssues[0].longitude,
+                                    latitudeDelta: 0.05,
+                                    longitudeDelta: 0.05,
+                                }
+                                : {
+                                    latitude: 45.5017,  // Default fallback to Montreal, if no issues exist
+                                    longitude: -73.5673, // Longitude for Montreal
+                                    latitudeDelta: 0.1,
+                                    longitudeDelta: 0.1,
+                                }
+
+                        }
+
                     >
 
                         {filteredIssues.map((issue) => (

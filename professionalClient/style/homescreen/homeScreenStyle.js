@@ -91,7 +91,7 @@ export const styles = StyleSheet.create({
     // Recenter button in map
     recenterButtonContainer: {
         position: 'absolute',
-        bottom: 20,
+        bottom: 100,
         right: 20,
         backgroundColor: 'white',
         borderRadius: 25,
@@ -99,25 +99,13 @@ export const styles = StyleSheet.create({
         elevation: 3,
         zIndex: 1,
     },
-    recenterButton: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+
 
     // notification button
     notificationButton: {
         position: 'absolute',
         top: 10,
         right: 10,
-        padding: 10,
-        zIndex: 1,
-    },
-
-    // profile button
-    profileButton: {
-        position: 'absolute',
-        top: 10,
-        left: 10,
         padding: 10,
         zIndex: 1,
     },

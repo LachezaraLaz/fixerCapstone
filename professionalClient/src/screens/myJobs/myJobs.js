@@ -29,7 +29,7 @@ export default function MyJobsProfessional() {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            const { all = [], active = [], pending = [], done = [], totalEarned = 0 } = response.data;
+            const { all = [], active = [], pending = [], done = [], amountEarned = 0 } = response.data;
 
             setJobs({
                 all,
@@ -37,6 +37,8 @@ export default function MyJobsProfessional() {
                 pending,
                 done,
             });
+
+            setAmountEarned(amountEarned);
 
         } catch (error) {
             console.error('Error fetching jobs:', error);
@@ -120,7 +122,7 @@ export default function MyJobsProfessional() {
             >
                 <View style={styles.amountContainer}>
                     <Text style={styles.amountEarned}>
-                        Amount earned: <Text style={styles.amountValue}>${amountEarned}</Text>
+                        Amount Earned: <Text style={styles.amountValue}>${amountEarned}</Text>
                     </Text>
                 </View>
                 {renderJobs(selectedTab)}

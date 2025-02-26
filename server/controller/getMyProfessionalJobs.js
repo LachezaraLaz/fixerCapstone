@@ -34,12 +34,15 @@ const getMyProfessionalJobs = async (req, res) => {
 
     try {
         const quotes = await Quotes.find({ professionalEmail }).populate('issueId')
+        let amountEarned = 0;
+
 
         const jobsByStatus = {
             all: [],
             done: [],
             pending: [],
             active: [],
+            amountEarned: 0,
         };
 
         quotes.forEach((quote) => {
@@ -62,9 +65,10 @@ const getMyProfessionalJobs = async (req, res) => {
             } else if (quote.status === 'done') {
                 jobsByStatus.done.push(jobDetails);
                 jobsByStatus.all.push(jobDetails);
+                amountEarned += quote.price;
             }
         });
-
+        jobsByStatus.amountEarned = amountEarned;
         res.status(200).json(jobsByStatus);
     } catch (error) {
         console.error('Error fetching professional jobs:', error);

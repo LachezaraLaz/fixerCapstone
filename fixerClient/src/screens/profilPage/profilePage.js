@@ -48,6 +48,7 @@ const ProfilePage = () => {
                 <Text style={styles.headerLogo}>Fixr</Text>
                 <Text style={styles.headerTitle}>Profile</Text>
                 <TouchableOpacity
+                    accessibilityLabel="settings button"
                     onPress={() => navigation.navigate('SettingsPage')}
                     style={styles.settingsButton}
                 >

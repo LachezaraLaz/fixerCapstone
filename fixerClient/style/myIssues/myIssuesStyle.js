@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
         color: '#f28500',
     },
     headerTitle: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#333',
         textAlign: 'center',
@@ -51,8 +51,7 @@ export const styles = StyleSheet.create({
         width: '100%',
     },
     tabText: {
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: 16,
         color: '#333',
     },
 

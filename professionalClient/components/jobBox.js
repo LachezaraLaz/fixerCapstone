@@ -3,7 +3,6 @@ import { Dimensions, View, Text, Image } from 'react-native';
 import { styles } from '../style/myJobs/myJobsStyle';
 
 const JobBox = ({ job, showStatus }) => {
-    console.log("Rendering JobBox:", job);
     const screenWidth = Dimensions.get('window').width;
     const isSmallScreen = screenWidth < 360;
 

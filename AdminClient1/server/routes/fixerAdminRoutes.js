@@ -1,6 +1,8 @@
 const express = require("express");
 const { registerAdmin } = require("../controller/adminRegister");
-const { verifyAdminEmail } = require("../controller/verifyEmailForAdmin");
+// const { verifyAdminEmail } = require("../controller/verifyEmailForAdmin");
+const { verifyAdminEmailPost } = require("../controller/adminVerificationController");
+
 
 const adminRouter = express.Router();
 
@@ -8,6 +10,10 @@ const adminRouter = express.Router();
 adminRouter.post("/register", registerAdmin);
 
 // Admin email verification route
-adminRouter.get("/verify-email", verifyAdminEmail);
+// adminRouter.get("/verify-email", verifyAdminEmail);
+
+// New POST route for email verification
+adminRouter.post("/verify-email", verifyAdminEmailPost);
 
 module.exports = { adminRouter };
+

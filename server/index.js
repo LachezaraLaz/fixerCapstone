@@ -15,6 +15,7 @@ const userRouter = require('./routes/userRoute');
 const getMyProfessionalJobsRouter = require('./routes/getMyProfessionalJobsRoute'); // Import the new route
 const { serverClient } = require('./services/streamClient');
 const reviewRouter = require('./routes/reviewRoute');
+const paymentRoutes = require('./routes/paymentRoute');
 
 const app = express();
 
@@ -47,5 +48,7 @@ app.use('/notification', notificationRouter);
 app.use('/reviews', reviewRouter.reviewRouter);
 
 app.use('/users', userRouter.userRouter);
+
+app.use('/payment', paymentRoutes);
 
 module.exports = app;

@@ -16,6 +16,7 @@ const professionalClientModel = new mongoose.Schema({
     verificationToken: String,
     totalRating: { type: Number, default: 0 }, // Cumulative rating for the professional
     reviewCount: { type: Number, default: 0 }, // Number of reviews received
+    paymentSetup: { type: Boolean, default: false }, // Has the professional linked their Square account?
 }, {
     collection: 'fixerClientInfo'
 });

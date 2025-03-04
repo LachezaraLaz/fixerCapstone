@@ -8,6 +8,7 @@ const { upload } = require('../services/cloudinaryService');  // Import the Clou
 const { forgotPassword, resetPassword } = require('../controller/resetController');
 const { verifyEmail } = require('../controller/VerifyEmailForProfessional');
 const { getReviewsByProfessionalEmail } = require('../controller/reviewController'); // Import review functions
+const { linkProfessionalAccount } = require('../controller/paymentController');
 
 const professionalRouter = express.Router();
 
@@ -28,5 +29,7 @@ professionalRouter.post('/reset/resetPassword', resetPassword); // Route to rese
 professionalRouter.post('/uploadID', authenticateJWT, upload('professional_ids').single('idImage'), professionalUploadID);
 
 professionalRouter.get('/:email/reviews', getReviewsByProfessionalEmail);
+
+professionalRouter.post('/linkSquareAccount', authenticateJWT, linkProfessionalAccount);
 
 module.exports = { professionalRouter };

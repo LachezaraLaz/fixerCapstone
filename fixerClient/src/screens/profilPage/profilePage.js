@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons';
+import { styles } from '../../../style/profilePage/profilePageStyle';
+import { IPAddress } from '../../../ipAddress';
+import SettingsButton from "../../../components/settingsButton";
 
 const ProfilePage = () => {
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
+    //const [reviews, setReviews] = useState([]);
+
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
+
                 if (token) {
-                    const response = await axios.get(
-                        `https://fixercapstone-production.up.railway.app/client/profile`,
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    );
+                    const response = await axios.get(`http://${IPAddress}:3000/client/profile`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
                     setClient(response.data);
                 } else {
                     console.error('No token found');
@@ -33,121 +37,136 @@ const ProfilePage = () => {
         fetchProfileData();
     }, []);
 
-    if (loading) {
-        return <Text>Loading...</Text>;
-    }
+    // const fetchReviews = async () => {
+    //     try {
+    //         const response = await axios.get(`http://${IPAddress}:3000/professional/${professional.email}/reviews`);
+    //         setReviews(response.data);
+    //         console.log(response.data);
+    //         console.log(reviews.length)
+    //     } catch (error) {
+    //         console.log('Error fetching reviews:', error.response || error.message);
+    //         //Alert.alert('Error', 'Failed to load reviews.');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+    // useEffect(() => {
+    //     fetchReviews();
+    // }, []);
 
-    if (!client) {
-        return <Text>Error loading profile.</Text>;
-    }
+
+    if (loading) return <Text>Loading...</Text>;
+    if (!client) return <Text>Error loading profile.</Text>;
+
+    // const renderStars = (rating) => {
+    //     const roundedRating = Math.round(rating);
+    //     return Array(roundedRating).fill('⭐').map((star, index) => (
+    //         <Text key={index} style={styles.ratingText}>{star}</Text>
+    //     ));
+    // };
 
     return (
-        <View style={styles.safeArea}>
-            {/* Custom Header */}
-            <View style={styles.customHeader}>
-                <Text style={styles.headerLogo}>Fixr</Text>
-                <Text style={styles.headerTitle}>Profile</Text>
-                <TouchableOpacity
-                    accessibilityLabel="settings button"
-                    onPress={() => navigation.navigate('SettingsPage')}
-                    style={styles.settingsButton}
-                >
-                    <Ionicons name="settings-outline" size={24} color="#333" />
-                </TouchableOpacity>
-            </View>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            <View style={styles.globalFont}>
+                <View style={styles.customHeader}>
+                    <Text style={styles.headerLogo}>Fixr</Text>
+                    <Text style={styles.headerTitle}>Profile</Text>
+                    <SettingsButton onPress={() => navigation.navigate('SettingsPage')} />
+                </View>
 
-            {/* Profile Details */}
-            <View style={styles.profileContainer}>
-                <Image
-                    source={{ uri: client.profilePicture || 'https://via.placeholder.com/100' }}
-                    style={styles.profileImage}
-                />
-                <Text style={styles.emailText}>{client.email}</Text>
-            </View>
+                <View style={styles.profileContainer}>
+                    <Image source={{ uri: client.idImageUrl || 'https://via.placeholder.com/50' }} style={styles.profileImage} />
+                    <Text style={styles.nameText}>{client.firstName} {client.lastName}</Text>
 
-            {/* Help Button */}
-            <View style={styles.helpContainer}>
-                <TouchableOpacity style={styles.helpButton}>
-                    <Text style={styles.helpButtonText}>Help</Text>
-                </TouchableOpacity>
+                    {/*<View style={styles.ratingContainer}>*/}
+                    {/*    {renderStars(professional.totalRating || 0)}*/}
+                    {/*    <Text style={styles.reviewCountText}> ({professional.totalRating} )</Text>*/}
+                    {/*</View>*/}
+                </View>
+
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.sectionTitle}>Description</Text>
+                    <Text style={styles.descriptionText}>
+                        {client.description || "No description provided."}
+                    </Text>
+                </View>
+
+                {/*<View style={styles.reviewsContainer}>*/}
+                {/*    <View style={{ flexDirection: 'row', alignItems: 'center' }}>*/}
+                {/*        <Text style={styles.sectionTitle}>Rating & Reviews</Text>*/}
+                {/*        <TouchableOpacity onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})}>*/}
+                {/*            <Text style={styles.reviewCountLink}> ({reviews.length})</Text>*/}
+                {/*        </TouchableOpacity>*/}
+                {/*    </View>*/}
+
+                {/*    {loading ? (*/}
+                {/*        <ActivityIndicator size="large" color="#f28500" style={{ marginVertical: 10 }} />*/}
+                {/*    ) : (*/}
+                {/*        <ScrollView*/}
+                {/*            horizontal={true}*/}
+                {/*            showsHorizontalScrollIndicator={false}*/}
+                {/*            contentContainerStyle={styles.reviewScrollContainer}*/}
+                {/*        >*/}
+                {/*            {reviews.length > 0 ? (*/}
+                {/*                reviews.slice(0, 5).map((review, index) => (*/}
+                {/*                    <View key={index} style={styles.reviewCard}>*/}
+                {/*                        <View style={styles.reviewerHeader}>*/}
+                {/*                            <Image source={{ uri: review.reviewerImage || 'https://via.placeholder.com/50' }} style={styles.reviewerImage} />*/}
+                {/*                            <View>*/}
+                {/*                                <Text style={styles.reviewerName}>{review.professionalNeeded}</Text>*/}
+                {/*                                <Text style={styles.reviewerLocation}>{review.location || 'Unknown Location'}</Text>*/}
+                {/*                            </View>*/}
+                {/*                        </View>*/}
+
+                {/*                        <Text style={styles.reviewText}>{review.comment || 'No comment provided.'}</Text>*/}
+
+                {/*                        <View style={styles.reviewRatingContainer}>*/}
+                {/*                            <View style={styles.starContainer}>*/}
+                {/*                                {Array(Math.floor(review.rating)).fill('⭐').map((star, i) => (*/}
+                {/*                                    <Text key={i} style={styles.ratingText}>{star}</Text>*/}
+                {/*                                ))}*/}
+                {/*                            </View>*/}
+                {/*                            <Text style={styles.ratingNumber}>{review.rating.toFixed(1)}</Text>*/}
+                {/*                            <Text style={styles.reviewDate}>{review.date}</Text>*/}
+                {/*                        </View>*/}
+                {/*                    </View>*/}
+                {/*                ))*/}
+                {/*            ) : (*/}
+                {/*                <Text style={styles.noReviewsText}>No reviews available.</Text>*/}
+                {/*            )}*/}
+                {/*        </ScrollView>*/}
+                {/*    )}*/}
+                {/*</View>*/}
+
+
+                <View style={styles.emailContainer}>
+                    <Text style={styles.sectionTitle}>Email Address</Text>
+                    <Text style={styles.emailText}>{client.email}</Text>
+                </View>
+
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Payment Method</Text>
+                    <View style={styles.inputBox}>
+                        <Text>💳 Visa ending in 1234</Text>
+                        <Text>Expiry 06/2024</Text>
+                    </View>
+                </View>
+
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Language</Text>
+                    <View style={styles.inputBox}>
+                        <Text>English</Text>
+                    </View>
+                </View>
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Address</Text>
+                    <View style={styles.inputBox}>
+                        <Text>{client.street}, {client.provinceOrState}, {client.country}, {client.postalCode}</Text>
+                    </View>
+                </View>
             </View>
-        </View>
+        </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    customHeader: {
-        width: '100%',
-        height: 70,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        backgroundColor: '#ffffff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-    },
-    headerLogo: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'orange',
-    },
-    headerTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-        textAlign: 'center',
-    },
-    settingsButton: {
-        width: 40,
-        height: 40,
-        backgroundColor: '#ffffff',
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    profileContainer: {
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    profileImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginBottom: 16,
-        backgroundColor: '#e0e0e0',
-    },
-    emailText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#666666',
-        marginTop: 8,
-    },
-    helpContainer: {
-        marginTop: 20,
-        alignItems: 'center',
-        paddingHorizontal: 16,
-    },
-    helpButton: {
-        backgroundColor: '#e0e0e0',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-    },
-    helpButtonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-});
 
 export default ProfilePage;

@@ -20,7 +20,7 @@ const ProfilePage = () => {
                 const token = await AsyncStorage.getItem('token');
 
                 if (token) {
-                    const response = await axios.get(`http://${IPAddress}:3000/professional/profile`, {
+                    const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/profile`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     setProfessional(response.data);
@@ -39,7 +39,7 @@ const ProfilePage = () => {
 
     const fetchReviews = async () => {
         try {
-            const response = await axios.get(`http://${IPAddress}:3000/professional/${professional.email}/reviews`);
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/${professional.email}/reviews`);
             setReviews(response.data);
             console.log(response.data);
             console.log(reviews.length)

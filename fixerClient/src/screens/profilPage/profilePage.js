@@ -20,7 +20,7 @@ const ProfilePage = () => {
                 const token = await AsyncStorage.getItem('token');
 
                 if (token) {
-                    const response = await axios.get(`http://${IPAddress}:3000/client/profile`, {
+                    const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     setClient(response.data);

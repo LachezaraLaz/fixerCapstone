@@ -1,4 +1,4 @@
-const ProfessionalDTO = require('../../server/DTO/professionalDTO');
+const ProfessionalDTO = require('../DTO/professionalDTO');
 const professionalRepository = require('../../server/repository/professionalRepository');
 
 dotenv = require('dotenv');

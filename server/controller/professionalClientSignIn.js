@@ -1,5 +1,5 @@
-const ProfessionalDTO = require('../../server/DTO/professionalDTO');
-const professionalRepository = require('../../server/repository/professionalRepository');
+const ProfessionalDTO = require('../DTO/professionalDTO');
+const professionalRepository = require('../repository/professionalRepository');
 
 const signinUser = async (req, res) => {
     const { email, password } = req.body;

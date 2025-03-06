@@ -1,5 +1,5 @@
 const NotificationRepository = require('../repository/notificationRepository');
-const NotificationDto = require('../DTO/NotificationDto.js');
+const NotificationDto = require('../DTO/notificationDto.js');
 
 // Controller to fetch current notifications
 const getNotifications = async (req, res) => {

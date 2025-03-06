@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { serverClient } = require('../services/streamClient');
-const UserRepository = require('../../server/controller/userRepository');
-const { RegisterUserDto } = require('../../server/controller/userDto');
+const UserRepository = require('../repository/userRepository');
+const { RegisterUserDto } = require('../DTO/userDto');
 const { logger } = require("../utils/logger");
 
 const signinUser = async (req, res) => {

@@ -1,5 +1,5 @@
-const { getAllJobs } = require('../../server/controller/issueRepository');
-const { issueDTO } = require('../../server/controller/issueDTO');
+const { getAllJobs } = require('../repository/issueRepository');
+const { issueDTO } = require('../DTO/issueDTO');
 
 // GET /issues route to fetch all jobs
 const getAllIssues = async (req, res) => {

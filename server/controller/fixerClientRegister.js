@@ -2,8 +2,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
-const UserRepository = require('../../server/controller/userRepository');
-const { RegisterUserDto } = require('../../server/controller/userDto');
+const UserRepository = require('../repository/userRepository');
+const { RegisterUserDto } = require('../DTO/userDto');
 
 dotenv.config();
 

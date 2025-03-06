@@ -1,5 +1,5 @@
-const { getJobsByUserEmail, updateJobStatus } = require('../../server/controller/jobRepository');
-const { jobDTO } = require('../../server/controller/jobDTO');
+const { getJobsByUserEmail, updateJobStatus } = require('../repository/jobRepository');
+const { jobDTO } = require('../DTO/jobDTO');
 
 // GET /issue/user/:email route to fetch jobs for a specific user
 const getJobsByUser = async (req, res) => {

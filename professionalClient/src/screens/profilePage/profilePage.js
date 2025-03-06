@@ -83,7 +83,7 @@ const ProfilePage = () => {
                 </View>
 
                 <View style={styles.profileContainer}>
-                    <Image source={require('../../../assets/profile.jpg')} style={styles.profileImage} />
+                    <Image source={{ uri: professional.idImageUrl || 'https://via.placeholder.com/50' }} style={styles.profileImage} />
                     <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
 
                     <View style={styles.ratingContainer}>

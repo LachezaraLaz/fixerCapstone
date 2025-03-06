@@ -46,15 +46,10 @@ export const styles = StyleSheet.create({
     profileImage: {
         width: 120,
         height: 120,
-        borderRadius: 20,
-        borderWidth: 3,
+        borderRadius: 10,
+        borderWidth: 4,
         borderColor: '#f0f0f0',
         marginBottom: 10,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 4,
     },
 
     nameText: {

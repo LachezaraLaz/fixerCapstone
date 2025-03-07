@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>server/controller/fixerClientSignIn - Documentation</title>
+    <title>fixerClient/src/screens/notificationPage/notificationPage.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -37,367 +37,217 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/controller/fixerClientSignIn</h1>
+    <h1 class="page-title">fixerClient/src/screens/notificationPage/notificationPage.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-    
-</header>
-
-<article>
-    
-        <div class="container-overview">
-        
-            
-
-            
-        
-        </div>
-    
-
-    
-
-    
-
-    
-    
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="~signinUser"><span class="type-signature type-signature-async, inner">(async, inner) </span>signinUser<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Signs in a user with the provided email and password.</p></li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_controller_fixerClientSignIn.js.html">server/controller/fixerClientSignIn.js</a>, <a href="server_controller_fixerClientSignIn.js.html#line22">line 22</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The request object.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>body</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The body of the request.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>email</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The email of the user.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The password of the user.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The response object.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    <ul>
-<li>Sends a response with the authentication token and user details.</li>
-</ul>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;void></span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { IPAddress } from '../../../ipAddress';
+
+/**
+ * @module fixerClient
+ */
+
+const NotificationPage = () => {
+    const [notifications, setNotifications] = useState([]); // Store notifications
+    const [loading, setLoading] = useState(false);          // Track loading state
+    const [hasMore, setHasMore] = useState(true);           // Track if more notifications are available
+    const [page, setPage] = useState(1);                    // Current page for "Load More"
+    const navigation = useNavigation();                     // Navigation hook
+
+    useEffect(() => {
+        fetchNotifications();
+    }, []);
+
+    /**
+     * Fetches notifications from the server.
+     * 
+     * This function retrieves the user's token from AsyncStorage and uses it to
+     * make an authenticated GET request to the notifications endpoint. The
+     * notifications are then stored in the state. If an error occurs during the
+     * request, it is logged to the console. The loading state is managed before
+     * and after the request.
+     * 
+     * @async
+     * @function fetchNotifications
+     * @returns {Promise&lt;void>} A promise that resolves when the notifications have been fetched and the state has been updated.
+     */
+    const fetchNotifications = async () => {
+        setLoading(true);
+        const token = await AsyncStorage.getItem('token');
+        try {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setNotifications(response.data);
+        } catch (error) {
+            console.error('Error fetching notifications:', error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    /**
+     * Fetches more notifications from the server and updates the state.
+     * 
+     * This function will fetch additional notifications from the server if not currently loading and if there are more notifications to fetch.
+     * It retrieves the token from AsyncStorage and makes a GET request to the notification history endpoint.
+     * If new notifications are received, they are added to the existing notifications state.
+     * If no more notifications are available, it updates the state to indicate that there are no more notifications.
+     * 
+     * @async
+     * @function fetchMoreNotifications
+     * @returns {Promise&lt;void>} A promise that resolves when the notifications have been fetched and the state has been updated.
+     */
+    const fetchMoreNotifications = async () => {
+        if (loading || !hasMore) return;
+
+        setLoading(true);
+        const token = await AsyncStorage.getItem('token');
+        try {
+            const response = await axios.get('https://fixercapstone-production.up.railway.app/notification/history', {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { page, limit: 5 }, // Fetch 5 notifications at a time
+            });
+
+            if (Array.isArray(response.data) &amp;&amp; response.data.length > 0) {
+                const newNotifications = response.data.filter(
+                    (newNotification) => !notifications.some((notif) => notif._id === newNotification._id)
+                );
+                setNotifications((prevNotifications) => [...prevNotifications, ...newNotifications]);
+                setPage((prevPage) => prevPage + 1);
+            } else {
+                setHasMore(false); // No more notifications
+            }
+        } catch (error) {
+            console.error('Error fetching more notifications:', error.message);
+            setHasMore(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    /**
+     * Toggles the read status of a notification.
+     *
+     * @param {string} id - The ID of the notification to update.
+     * @param {boolean} isRead - The current read status of the notification.
+     * @returns {Promise&lt;void>} - A promise that resolves when the read status has been updated.
+     * @throws {Error} - Throws an error if the update request fails.
+     */
+    const toggleReadStatus = async (id, isRead) => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+            await axios.patch(
+                `https://fixercapstone-production.up.railway.app/notification/${id}/read`,
+                { isRead: !isRead },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setNotifications((prevNotifications) =>
+                prevNotifications.map((notification) =>
+                    notification._id === id ? { ...notification, isRead: !isRead } : notification
+                )
+            );
+        } catch (error) {
+            console.error('Error updating notification status:', error.message);
+        }
+    };
+
+    /**
+     * Renders a notification item.
+     *
+     * @param {Object} param - The parameter object.
+     * @param {Object} param.item - The notification item.
+     * @param {string} param.item._id - The unique identifier of the notification.
+     * @param {boolean} param.item.isRead - The read status of the notification.
+     * @param {string} param.item.message - The message content of the notification.
+     * @param {string} param.item.createdAt - The creation date of the notification.
+     * @returns {JSX.Element} The rendered notification component.
+     */
+    const renderNotification = ({ item }) => (
+        &lt;TouchableOpacity
+            onPress={() => {
+                toggleReadStatus(item._id, item.isRead);
+                navigation.navigate('NotificationDetail', { notification: item });
+            }}
+        >
+            &lt;View style={[styles.notification, item.isRead ? styles.read : styles.unread]}>
+                &lt;Text style={styles.message}>{item.message}&lt;/Text>
+                &lt;Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}&lt;/Text>
+            &lt;/View>
+        &lt;/TouchableOpacity>
+    );
+
+    return (
+        &lt;View style={styles.container}>
+            &lt;Text style={styles.title}>Notifications&lt;/Text>
+            {notifications.length === 0 ? (
+                &lt;Text style={styles.noNotifications}>No notifications available&lt;/Text>
+            ) : (
+                &lt;FlatList
+                    data={notifications}
+                    keyExtractor={(item) => item._id}
+                    renderItem={renderNotification}
+                    ListFooterComponent={
+                        hasMore ? (
+                            &lt;TouchableOpacity
+                                style={styles.loadMoreButton}
+                                onPress={fetchMoreNotifications}
+                                disabled={loading}
+                            >
+                                &lt;Text style={styles.loadMoreText}>
+                                    {loading ? 'Loading...' : 'Load More'}
+                                &lt;/Text>
+                            &lt;/TouchableOpacity>
+                        ) : (
+                            &lt;Text style={styles.noMoreNotifications}>No more notifications&lt;/Text>
+                        )
+                    }
+                />
+            )}
+        &lt;/View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
+    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+    notification: { padding: 15, marginBottom: 10, borderRadius: 5 },
+    message: { fontSize: 16 },
+    date: { fontSize: 12, color: 'gray' },
+    read: { backgroundColor: '#d3d3d3' },
+    unread: { backgroundColor: '#add8e6' },
+    noNotifications: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
+    loadMoreButton: {
+        padding: 10,
+        backgroundColor: '#007BFF',
+        borderRadius: 5,
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    loadMoreText: { color: 'white', fontSize: 16 },
+    noMoreNotifications: {
+        fontSize: 16,
+        color: 'gray',
+        textAlign: 'center',
+        marginTop: 20,
+    },
+});
+
+export default NotificationPage;
+</code></pre>
+        </article>
+    </section>
 
 
 

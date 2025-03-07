@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>server/controller/fixerClientSignIn - Documentation</title>
+    <title>fixerClient/src/screens/addReview/addReview.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -37,367 +37,149 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/controller/fixerClientSignIn</h1>
+    <h1 class="page-title">fixerClient/src/screens/addReview/addReview.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-    
-</header>
-
-<article>
-    
-        <div class="container-overview">
-        
-            
-
-            
-        
-        </div>
-    
-
-    
-
-    
-
-    
-    
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="~signinUser"><span class="type-signature type-signature-async, inner">(async, inner) </span>signinUser<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Signs in a user with the provided email and password.</p></li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_controller_fixerClientSignIn.js.html">server/controller/fixerClientSignIn.js</a>, <a href="server_controller_fixerClientSignIn.js.html#line22">line 22</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The request object.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>body</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The body of the request.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>email</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The email of the user.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The password of the user.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The response object.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    <ul>
-<li>Sends a response with the authentication token and user details.</li>
-</ul>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;void></span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
+import {IPAddress} from "../../../ipAddress";
+/**
+ * @module fixerClient
+ */
+
+const AddReview = ({ navigation, route }) => {
+    const { jobId } = route.params; // Get the jobId from navigation parameters
+
+    const [rating, setRating] = useState('');
+    const [comment, setComment] = useState('');
+
+    /**
+     * Handles the submission of a review.
+     * 
+     * This function validates the rating and comment inputs, sends the review data to the backend,
+     * and provides feedback to the user based on the success or failure of the submission.
+     * 
+     * @async
+     * @function handleSubmit
+     * @returns {Promise&lt;void>}
+     * 
+     * @throws Will alert an error message if the rating or comment is missing, if the rating is not a number between 1 and 5,
+     *         or if there is an error during the submission process.
+     */
+    const handleSubmit = async () => {
+        if (!rating || !comment) {
+            Alert.alert('Error', 'Please provide both a rating and a comment.');
+            return;
+        }
+        const numericRating = parseInt(rating, 10);
+
+        if (isNaN(numericRating) || numericRating &lt; 1 || numericRating > 5) {
+            Alert.alert('Error', 'Rating must be a number between 1 and 5.');
+            return;
+        }
+
+        try {
+            // Send the review data to the backend
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/reviews/add`, {
+                jobId,
+                rating: parseInt(rating, 10),
+                comment,
+            });
+
+            // Handle success response
+            Alert.alert('Success', 'Your review has been submitted!');
+            navigation.goBack(); // Navigate back to the previous screen
+        } catch (error) {
+            // Handle error response
+            console.error('Error submitting review:', error.response || error.message);
+            Alert.alert(
+                'Error',
+                error.response?.data?.message || 'Something went wrong. Please try again.'
+            );
+        }
+    };
+
+    return (
+        &lt;View style={styles.container}>
+            &lt;Text style={styles.title}>Add a Review&lt;/Text>
+
+            &lt;TextInput
+                style={styles.input}
+                placeholder="Enter a rating (1-5)"
+                keyboardType="numeric"
+                value={rating}
+                onChangeText={setRating}
+            />
+
+            &lt;TextInput
+                style={styles.textArea}
+                placeholder="Write your comment..."
+                value={comment}
+                onChangeText={setComment}
+                multiline
+            />
+
+            &lt;TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                &lt;Text style={styles.buttonText}>Submit Review&lt;/Text>
+            &lt;/TouchableOpacity>
+        &lt;/View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: '#fff',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 20,
+        fontSize: 16,
+    },
+    textArea: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        padding: 10,
+        height: 100,
+        textAlignVertical: 'top',
+        fontSize: 16,
+        marginBottom: 20,
+    },
+    button: {
+        backgroundColor: '#1E90FF',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+});
+
+export default AddReview;</code></pre>
+        </article>
+    </section>
 
 
 

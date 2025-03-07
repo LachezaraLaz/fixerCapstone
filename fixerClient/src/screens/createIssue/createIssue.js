@@ -27,6 +27,10 @@ import { IPAddress } from '../../../ipAddress';
 import OrangeButton from "../../../components/orangeButton";
 import MapView, {Marker} from "react-native-maps";
 
+/**
+ * @module fixerClient
+ */
+
 export default function CreateIssue({ navigation }) {
     // List of fields in the page
     const [description, setDescription] = useState('');
@@ -53,6 +57,16 @@ export default function CreateIssue({ navigation }) {
     const [loading, setLoading] = useState(false);
     const [other, setOther] = useState(false);
 
+    /**
+     * Asynchronously picks an image from the user's media library.
+     * Requests permission to access the media library if not already granted.
+     * If permission is granted, opens the media library for the user to select an image.
+     * If an image is selected and the operation is not canceled, sets the selected image URI.
+     *
+     * @async
+     * @function pickImage
+     * @returns {Promise<void>} A promise that resolves when the image picking process is complete.
+     */
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
@@ -72,7 +86,18 @@ export default function CreateIssue({ navigation }) {
         }
     };
 
-    // posting the issue by the user
+    /**
+     * Asynchronously posts an issue to the server.
+     * 
+     * This function validates the input fields, constructs a FormData object with the issue details,
+     * and sends a POST request to the server to create a new issue. It handles loading state, error
+     * handling, and resets the form fields upon successful submission.
+     * 
+     * @async
+     * @function postIssue
+     * @returns {Promise<void>} A promise that resolves when the issue is posted.
+     * @throws Will throw an error if the request fails or if required fields are empty.
+     */
     const postIssue = async () => {
         if (!description) {
             Alert.alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
@@ -138,6 +163,14 @@ export default function CreateIssue({ navigation }) {
         }
     };
 
+    /**
+     * Handles the selection of an image from either the camera or the media library.
+     * Requests the necessary permissions and launches the appropriate image picker.
+     * If the user grants permission and selects an image, the image URI is set.
+     *
+     * @param {string} source - The source of the image, either 'camera' or 'mediaLibrary'.
+     * @returns {Promise<void>} - A promise that resolves when the image selection is complete.
+     */
     const handleImageSelection = async (source) => {
         const permissionResult = source === 'camera'
             ? await ImagePicker.requestCameraPermissionsAsync()
@@ -157,10 +190,19 @@ export default function CreateIssue({ navigation }) {
         }
     };
 
+    /**
+     * Counts the number of words in a given text.
+     *
+     * @param {string} text - The text to count words in.
+     * @returns {number} - The number of words in the text.
+     */
     const countWords = (text) => {
         return text.trim().length === 0 ? 0 : text.trim().split(/\s+/).length;
     };
 
+    /**
+     * Removes the currently selected image by setting the selected image state to null.
+     */
     const removeImage = () => {
         setSelectedImage(null);
     };

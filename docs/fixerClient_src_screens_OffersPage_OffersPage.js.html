@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>server/controller/fixerClientSignIn - Documentation</title>
+    <title>fixerClient/src/screens/OffersPage/OffersPage.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -37,367 +37,239 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/controller/fixerClientSignIn</h1>
+    <h1 class="page-title">fixerClient/src/screens/OffersPage/OffersPage.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-    
-</header>
-
-<article>
-    
-        <div class="container-overview">
-        
-            
-
-            
-        
-        </div>
-    
-
-    
-
-    
-
-    
-    
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="~signinUser"><span class="type-signature type-signature-async, inner">(async, inner) </span>signinUser<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Signs in a user with the provided email and password.</p></li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_controller_fixerClientSignIn.js.html">server/controller/fixerClientSignIn.js</a>, <a href="server_controller_fixerClientSignIn.js.html#line22">line 22</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The request object.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>body</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The body of the request.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>email</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The email of the user.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The password of the user.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The response object.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    <ul>
-<li>Sends a response with the authentication token and user details.</li>
-</ul>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;void></span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IPAddress } from '../../../ipAddress';
+import { useNavigation } from '@react-navigation/native';
+
+/**
+ * @module fixerClient
+ */
+
+export default function OffersPage({ route }) {
+    const { jobId } = route.params; // Extract jobId from route.params
+
+    // State for storing offers and loading state
+    const [offers, setOffers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigation = useNavigation();   
+
+    /**
+     * Fetches offers for a specific job and updates the state with the retrieved offers.
+     * 
+     * This function performs the following steps:
+     * 1. Sets the loading state to true.
+     * 2. Retrieves the authentication token from AsyncStorage.
+     * 3. If the token is not found, displays an alert and exits the function.
+     * 4. Makes an API request to fetch offers for the specified job using the retrieved token.
+     * 5. If the response is successful and contains offers, updates the state with the offers.
+     * 6. If no offers are found, displays an alert.
+     * 7. If an error occurs during the API request, logs the error and displays an alert.
+     * 8. Finally, sets the loading state to false.
+     * 
+     * @async
+     * @function fetchOffers
+     * @returns {Promise&lt;void>} A promise that resolves when the function completes.
+     */
+    const fetchOffers = async () => {
+        setLoading(true);
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('You are not logged in');
+                setLoading(false);
+                return;
+            }
+
+            const response = await axios.get(
+                `https://fixercapstone-production.up.railway.app/quotes/job/${jobId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Check if response and required fields exist
+            if (response?.status === 200 &amp;&amp; Array.isArray(response.data?.offers)) {
+                setOffers(response.data.offers);
+            } else {
+                Alert.alert('No offers found for this job');
+            }
+        } catch (error) {
+            console.error('Error fetching offers:', error);
+            Alert.alert('Failed to fetch offers. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch offers when the component loads
+    useEffect(() => {
+        fetchOffers();
+    }, []);
+
+    /**
+     * Handles the acceptance of an offer.
+     *
+     * @param {string} offerId - The ID of the offer to accept.
+     * @returns {Promise&lt;void>} - A promise that resolves when the offer is accepted.
+     * @throws {Error} - Throws an error if there is an issue accepting the offer.
+     */
+    const handleAcceptOffer = async (offerId) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await axios.put(
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                { status: 'accepted' },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (response.status === 200) {
+                Alert.alert('Offer Accepted', 'You have accepted the offer.');
+                navigation.navigate('ChatListPage');
+            } else {
+                Alert.alert('Failed to accept the offer.');
+            }
+        } catch (error) {
+            console.error('Error accepting offer:', error);
+            Alert.alert('An error occurred while accepting the offer.');
+        }
+    };
+
+    /**
+     * Handles the rejection of an offer.
+     *
+     * This function sends a PUT request to update the status of an offer to 'rejected'.
+     * If the request is successful, it alerts the user and refreshes the offers.
+     * If the request fails, it alerts the user of the failure.
+     *
+     * @param {string} offerId - The ID of the offer to be rejected.
+     * @returns {Promise&lt;void>} - A promise that resolves when the offer rejection process is complete.
+     */
+    const handleRejectOffer = async (offerId) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await axios.put(
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                { status: 'rejected' },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (response.status === 200) {
+                Alert.alert('Offer Rejected', 'You have rejected the offer.');
+                fetchOffers(); // Refresh offers after the update
+            } else {
+                Alert.alert('Failed to reject the offer.');
+            }
+        } catch (error) {
+            console.error('Error rejecting offer:', error);
+            Alert.alert('An error occurred while rejecting the offer.');
+        }
+    };
+
+    if (loading) {
+        return (
+            &lt;View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                &lt;ActivityIndicator testID="loading-indicator" size="large" color="#0000ff" />
+            &lt;/View>
+        );
+    }
+
+    return (
+        &lt;View style={{ flex: 1, padding: 15 }}>
+            &lt;Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
+                Offers for Job ID: {jobId}
+            &lt;/Text>
+            &lt;ScrollView>
+                {offers.length > 0 ? (
+                    offers.map((offer) => (
+                        &lt;View
+                            key={offer._id}
+                            style={{
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                marginVertical: 8,
+                                padding: 12,
+                                borderColor:
+                                    offer.status === 'accepted'
+                                        ? 'green'
+                                        : offer.status === 'rejected'
+                                            ? 'red'
+                                            : 'gray',
+                            }}
+                        >
+                            &lt;Text style={{ fontWeight: 'bold', marginBottom: 5 }}>
+                                Professional:
+                            &lt;/Text>
+                            &lt;Text >{offer.professionalFullName || offer.professionalEmail}&lt;/Text>
+                            &lt;Text >{offer.professionalEmail}&lt;/Text>
+                            &lt;Text >&lt;/Text>
+                            &lt;Text>Price: ${offer.price}&lt;/Text>
+                            &lt;Text>Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}&lt;/Text>
+                            {offer.status === 'pending' &amp;&amp; (
+                                &lt;View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        marginTop: 10,
+                                    }}
+                                >
+                                    &lt;TouchableOpacity
+                                        onPress={() => handleAcceptOffer(offer._id)}
+                                        style={{
+                                            backgroundColor: 'green',
+                                            borderRadius: 5,
+                                            paddingVertical: 8,
+                                            paddingHorizontal: 15,
+                                        }}
+                                    >
+                                        &lt;Text style={{ color: 'white', fontWeight: 'bold' }}>Accept&lt;/Text>
+                                    &lt;/TouchableOpacity>
+                                    &lt;TouchableOpacity
+                                        onPress={() => handleRejectOffer(offer._id)}
+                                        style={{
+                                            backgroundColor: 'red',
+                                            borderRadius: 5,
+                                            paddingVertical: 8,
+                                            paddingHorizontal: 15,
+                                        }}
+                                    >
+                                        &lt;Text style={{ color: 'white', fontWeight: 'bold' }}>Reject&lt;/Text>
+                                    &lt;/TouchableOpacity>
+                                &lt;/View>
+                            )}
+                            &lt;Text style={styles.date}>Quote made on: { new Date(offer.createdAt).toLocaleString() }&lt;/Text>
+                        &lt;/View>
+                    ))
+                ) : (
+                    &lt;Text style={{ textAlign: 'center', marginTop: 20 }}>
+                        No offers available for this job.
+                    &lt;/Text>
+                )}
+            &lt;/ScrollView>
+        &lt;/View>
+    );
+}
+
+
+const styles = StyleSheet.create({
+    date: { 
+        fontSize: 12, 
+        color: 'gray',
+        paddingTop: 10
+    },
+});
+
+</code></pre>
+        </article>
+    </section>
 
 
 

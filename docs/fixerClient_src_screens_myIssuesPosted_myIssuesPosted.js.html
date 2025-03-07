@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>server/controller/fixerClientSignIn - Documentation</title>
+    <title>fixerClient/src/screens/myIssuesPosted/myIssuesPosted.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -37,367 +37,149 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/controller/fixerClientSignIn</h1>
+    <h1 class="page-title">fixerClient/src/screens/myIssuesPosted/myIssuesPosted.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-    
-</header>
-
-<article>
-    
-        <div class="container-overview">
-        
-            
-
-            
-        
-        </div>
-    
-
-    
-
-    
-
-    
-    
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="~signinUser"><span class="type-signature type-signature-async, inner">(async, inner) </span>signinUser<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Signs in a user with the provided email and password.</p></li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_controller_fixerClientSignIn.js.html">server/controller/fixerClientSignIn.js</a>, <a href="server_controller_fixerClientSignIn.js.html#line22">line 22</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The request object.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>body</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The body of the request.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>email</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The email of the user.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The password of the user.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The response object.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    <ul>
-<li>Sends a response with the authentication token and user details.</li>
-</ul>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;void></span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, RefreshControl, SafeAreaView } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+
+import { styles } from '../../../style/myIssues/myIssuesStyle';
+import JobBox from '../../../components/jobBox';
+import NotificationButton from "../../../components/notificationButton";
+import { IPAddress } from '../../../ipAddress';
+
+/**
+ * @module fixerClient
+ */
+
+export default function MyIssuesPosted() {
+    const [jobs, setJobs] = useState({ all: [], inProgress: [], completed: [] });
+    const [loading, setLoading] = useState(true);
+    const [selectedTab, setSelectedTab] = useState('inProgress');
+    const [refreshing, setRefreshing] = useState(false);
+    const navigation = useNavigation();
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            fetchJobsForUser();
+        }
+    }, [isFocused]);
+
+    /**
+     * Fetches jobs for the logged-in user and updates the state with the fetched jobs.
+     * 
+     * This function retrieves the user's token from AsyncStorage, decodes it to get the user's email,
+     * and then makes an API call to fetch the jobs associated with that email. The jobs are then
+     * categorized into 'all', 'inProgress', and 'completed' based on their status and stored in the state.
+     * 
+     * @async
+     * @function fetchJobsForUser
+     * @returns {Promise&lt;void>} A promise that resolves when the jobs have been fetched and the state has been updated.
+     * @throws Will alert an error message if there is an issue fetching the jobs.
+     */
+    const fetchJobsForUser = async () => {
+        setLoading(true);
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('You are not logged in');
+                return;
+            }
+
+            const decodedToken = jwtDecode(token);
+            const userEmail = decodedToken.email;
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+
+            setJobs({
+                all: response.data.jobs,
+                inProgress: response.data.jobs.filter(job =>
+                    job.status === 'In Progress' || job.status === 'Open'
+                ),
+                completed: response.data.jobs.filter(job =>
+                    job.status === 'Completed' || job.status === 'Closed'
+                ),
+            });
+
+        } catch (error) {
+            Alert.alert('Error fetching jobs');
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    /**
+     * Handles the refresh action by setting the refreshing state to true
+     * and fetching jobs for the user.
+     */
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchJobsForUser();
+    };
+
+    return (
+        &lt;SafeAreaView style={styles.safeArea}>
+            {/* ✅ Custom Header */}
+            &lt;View style={styles.customHeader}>
+                {/* Fixr Logo/Text */}
+                &lt;Text style={styles.headerLogo}>Fixr&lt;/Text>
+
+                {/* ✅ Updated Title to "My Issues" */}
+                &lt;Text style={styles.headerTitle}>My Issues&lt;/Text>
+
+                {/* Notification Button */}
+                &lt;NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
+            &lt;/View>
+
+            {/* ✅ Fixed Tabs */}
+            &lt;View style={styles.tabsContainer}>
+                {[
+                    { key: "inProgress", label: "In Progress" },
+                    { key: "completed", label: "Completed" }
+                ].map(({ key, label }) => (
+                    &lt;TouchableOpacity
+                        key={key}
+                        style={[styles.tab, selectedTab === key &amp;&amp; styles.selectedTab]}
+                        onPress={() => setSelectedTab(key)}
+                    >
+                        &lt;Text style={[styles.tabText, selectedTab === key &amp;&amp; styles.selectedTabText]}>{label}&lt;/Text>
+                    &lt;/TouchableOpacity>
+                ))}
+            &lt;/View>
+
+            {/* ScrollView with padding to prevent jobs being hidden */}
+            &lt;ScrollView
+                style={styles.jobsContainer}
+                contentContainerStyle={{ paddingBottom: 100 }}
+                refreshControl={&lt;RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            >
+                {jobs[selectedTab].length > 0 ? (
+                    jobs[selectedTab].map(job => &lt;JobBox key={job._id} job={job} navigation={navigation} />)
+                ) : (
+                    &lt;Text style={styles.noJobsText}>No jobs available&lt;/Text>
+                )}
+            &lt;/ScrollView>
+        &lt;/SafeAreaView>
+    );
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

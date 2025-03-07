@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>server/controller/fixerClientSignIn - Documentation</title>
+    <title>fixerClient/src/screens/chat/chatContext.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -37,367 +37,138 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/controller/fixerClientSignIn</h1>
+    <h1 class="page-title">fixerClient/src/screens/chat/chatContext.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-    
-</header>
-
-<article>
-    
-        <div class="container-overview">
-        
-            
-
-            
-        
-        </div>
-    
-
-    
-
-    
-
-    
-    
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="~signinUser"><span class="type-signature type-signature-async, inner">(async, inner) </span>signinUser<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-    
-    <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Signs in a user with the provided email and password.</p></li></ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_controller_fixerClientSignIn.js.html">server/controller/fixerClientSignIn.js</a>, <a href="server_controller_fixerClientSignIn.js.html#line22">line 22</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="h5-parameters">Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The request object.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>body</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The body of the request.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>email</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The email of the user.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The password of the user.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The response object.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5 class="h5-returns">Returns:</h5>
-
-        
-<div class="param-desc">
-    <ul>
-<li>Sends a response with the authentication token and user details.</li>
-</ul>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;void></span>
-
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect, useRef } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StreamChat } from "stream-chat";
+import { OverlayProvider } from 'stream-chat-expo';
+import { STREAM_API_KEY } from "./chatConfig";
+/**
+ * @module fixerClient
+ */
+
+/**
+ * Context for managing chat-related state in the application.
+ * 
+ * @typedef {Object} ChatContext
+ * @property {Object|null} chatClient - The chat client instance.
+ * @property {Function} setChatClient - Function to set the chat client instance.
+ * @property {Object|null} channel - The current chat channel.
+ * @property {Function} setChannel - Function to set the current chat channel.
+ * @property {Object|null} thread - The current chat thread.
+ * @property {Function} setThread - Function to set the current chat thread.
+ * @property {Object|null} user - The current user.
+ * @property {Function} setUser - Function to set the current user.
+ */
+export const ChatContext = React.createContext({
+    chatClient: null,
+    setChatClient: () => {},
+    channel: null,
+    setChannel: () => {},
+    thread: null,
+    setThread: () => {},
+    user: null,
+    setUser: () => {},
+});
+
+export const ChatProvider = ({ children }) => {
+    const [chatClient, setChatClient] = useState(null);
+    const [channel, setChannel] = useState(null);
+    const [thread, setThread] = useState(null);
+    const [user, setUser] = useState(null);
+    const [loadingClient, setLoadingClient] = useState(true);
+
+    const chatClientRef = useRef(chatClient);
+    useEffect(() => {
+        chatClientRef.current = chatClient;
+    }, [chatClient]);
+
+    useEffect(() => {
+        /**
+         * Initializes the chat client by connecting the user to the StreamChat service.
+         * 
+         * This function retrieves the user credentials (userId, userName, and streamToken) from AsyncStorage.
+         * If the credentials are not found, it logs a message and skips the chat initialization.
+         * Otherwise, it connects the user to the StreamChat service using the retrieved credentials.
+         * 
+         * @async
+         * @function initChat
+         * @returns {Promise&lt;void>} A promise that resolves when the chat client is initialized.
+         * @throws {Error} If there is an error during the chat initialization process.
+         */
+        const initChat = async () => {
+            try {
+                const storedUserId = await AsyncStorage.getItem('userId');
+                const storedUserName = await AsyncStorage.getItem('userName');
+                const storedStreamToken = await AsyncStorage.getItem('streamToken');
+
+                if (!storedUserId || !storedStreamToken) {
+                    console.log('No user credentials found, skipping chat init');
+                    setLoadingClient(false);
+                    return;
+                }
+
+                const client = StreamChat.getInstance(STREAM_API_KEY);
+
+                await client.connectUser(
+                    {
+                        id: storedUserId,
+                        name: storedUserName || 'NoName',
+                    },
+                    storedStreamToken
+                );
+
+                setUser({ id: storedUserId, name: storedUserName });
+                setChatClient(client);
+            } catch (error) {
+                console.error('Error initializing chat:', error);
+            } finally {
+                setLoadingClient(false);
+            }
+        };
+
+        initChat();
+
+        return () => {
+            if (chatClientRef.current) {
+                chatClientRef.current.disconnectUser();
+            }
+        };
+    }, []);
+
+    return (
+        &lt;ChatContext.Provider
+            value={{
+                chatClient,
+                setChatClient,
+                channel,
+                setChannel,
+                thread,
+                setThread,
+                user,
+                setUser,
+            }}
+        >
+            &lt;OverlayProvider>
+                {children}
+            &lt;/OverlayProvider>
+        &lt;/ChatContext.Provider>
+    );
+};
+
+export const useChatContext = () => React.useContext(ChatContext);
+</code></pre>
+        </article>
+    </section>
 
 
 

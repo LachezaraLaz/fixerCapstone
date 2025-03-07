@@ -72,9 +72,9 @@ export default function App() {
                                 {/* Screens when user is NOT logged in */}
                                 {!isLoggedIn && (
                                     <>
-                                        <Stack.Screen name="welcomePage" component={WelcomePage} />
+                                        <Stack.Screen name="welcomePage" component={WelcomePage}/>
                                         <Stack.Screen name="SignInPage">
-                                            {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                            {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn}  />}
                                         </Stack.Screen>
                                         <Stack.Screen name="SignUpPage" component={SignUpPage} />
                                     </>
@@ -101,8 +101,8 @@ export default function App() {
                         <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                             <>
                                 {/* Screens accessible when the user is not logged in */}
-                                <Stack.Screen name="welcomePage" component={WelcomePage} />
-                                <Stack.Screen name="SignInPage">
+                                <Stack.Screen name="welcomePage" component={WelcomePage} options={{ headerShown: false }}/>
+                                <Stack.Screen name="SignInPage" options={{ headerShown: false }}>
                                     {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                 </Stack.Screen>
                                 <Stack.Screen name="SignUpPage" component={SignUpPage} />

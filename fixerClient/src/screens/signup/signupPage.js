@@ -18,11 +18,43 @@ export default function SignUpPage({ navigation }) {
 
     const [coordinates, setCoordinates] = useState(null);
     const [isAddressValid, setIsAddressValid] = useState(false);
+    const [isEmailValid, setIsEmailValid] = useState(false); // New state for email validation
+    const [isEmailFocused, setIsEmailFocused] = useState(false); // New state to track focus
+
+
+    // functions for input validation:
+
+    //email
+    // Function to validate email format
+    const validateEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
+
+    // Handle email input change
+    const handleEmailChange = (text) => {
+        setEmail(text);
+        setIsEmailValid(validateEmail(text)); // Validate email in real-time
+    };
+
+    // Handle email input focus
+    const handleEmailFocus = () => {
+        setIsEmailFocused(true);
+    };
+
+    // Handle email input blur
+    const handleEmailBlur = () => {
+        setIsEmailFocused(false);
+    };
 
     //backend
     async function handleSignUp() {
         if (!email || !password || !confirmPassword || !street || !postalCode || !provinceOrState || !country) {
             Alert.alert('Error', 'All fields are required');
+            return;
+        }
+        if (!isEmailValid) {
+            Alert.alert('Error', 'Please enter a valid email address');
             return;
         }
         if (password !== confirmPassword) {
@@ -91,13 +123,22 @@ export default function SignUpPage({ navigation }) {
             <View style={styles.container}>
                 <Text style={styles.title}>Sign Up</Text>
                 <TextInput
-                    style={styles.input}
+                    style={[
+                        styles.input,
+                        isEmailFocused && email.length > 0 && !isEmailValid && styles.invalidInput, // Red if invalid and focused
+                        isEmailFocused && email.length > 0 && isEmailValid && styles.validInput, // Green if valid and focused
+                    ]}
                     placeholder="Email"
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={handleEmailChange}
+                    onFocus={handleEmailFocus} // Track focus
+                    onBlur={handleEmailBlur} // Track blur
                     keyboardType="email-address"
                     autoCapitalize="none"
                 />
+                {!isEmailValid && email.length > 0 && (
+                    <Text style={styles.errorText}>Please enter a valid email address</Text>
+                )}
                 <TextInput
                     style={styles.input}
                     placeholder="First Name"
@@ -214,6 +255,16 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 15,
         marginBottom: 15,
+    },
+    invalidInput: {
+        borderColor: 'red', // Highlight the input field with a red border if email is invalid
+    },
+    validInput: {
+        borderColor: 'green', // Highlight the input field with a green border if email is valid
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 10,
     },
     button: {
         backgroundColor: '#1E90FF',

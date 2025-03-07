@@ -1,7 +1,19 @@
 const { getJobsByUserEmail, updateJobStatus } = require('../repository/jobRepository');
 const { jobDTO } = require('../DTO/jobDTO');
 
-// GET /issue/user/:email route to fetch jobs for a specific user
+/**
+ * @module server/controller/myIssuesPosted
+ */
+
+/**
+ * Fetches jobs posted by a specific user based on their email.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The parameters of the request.
+ * @param {string} req.params.email - The email of the user whose jobs are to be fetched.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the jobs are fetched and the response is sent.
+ */
 const getJobsByUser = async (req, res) => {
     const userEmail = req.params.email;
     console.log(`Fetching jobs for userEmail: ${userEmail}`);
@@ -23,7 +35,15 @@ const getJobsByUser = async (req, res) => {
     }
 };
 
-// GET /issue/:jobId route to fetch a single job by its ID
+/**
+ * Retrieves a job by its ID.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.jobId - The ID of the job to retrieve.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the job is retrieved and the response is sent.
+ */
 const getJobById = async (req, res) => {
     const { jobId } = req.params;
     console.log('Received jobId:', jobId);
@@ -43,7 +63,17 @@ const getJobById = async (req, res) => {
     }
 };
 
-// DELETE /issue/:id route to update job status (Reopen job)
+/**
+ * Updates the status of a job based on the provided job ID and status.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.id - The ID of the job to update.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.status - The new status to set for the job.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the job status is updated.
+ */
 const deleteReopenJob = async (req, res) => {
     const jobId = req.params.id;
     const { status } = req.body;
@@ -63,7 +93,23 @@ const deleteReopenJob = async (req, res) => {
     }
 };
 
-// PUT /issue/:jobId route to update a single job by its ID
+/**
+ * Updates a job with the given jobId using the provided data.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.jobId - The ID of the job to update.
+ * @param {Object} req.body - The request body containing the job data.
+ * @param {string} [req.body.title] - The new title of the job.
+ * @param {string} [req.body.description] - The new description of the job.
+ * @param {string} [req.body.professionalNeeded] - The new professional needed for the job.
+ * @param {string} [req.body.status] - The new status of the job.
+ * @param {string} [req.body.imageUrl] - The existing image URL of the job.
+ * @param {Object} [req.file] - The uploaded file object.
+ * @param {string} [req.file.path] - The path of the uploaded image file.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the job is updated.
+ */
 const updateJob = async (req, res) => {
     const { jobId } = req.params;
     const { title, description, professionalNeeded, status, email } = req.body;

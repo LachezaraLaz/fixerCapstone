@@ -5,6 +5,20 @@ const UserRepository = require('../repository/userRepository');
 const {AuthResponseDto}  = require('../DTO/userDto');
 const { logger } = require("../utils/logger");
 
+/**
+ * @module server/controller/fixerClientSignIn
+ */
+
+/**
+ * Signs in a user with the provided email and password.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - Sends a response with the authentication token and user details.
+ */
 const signinUser = async (req, res) => {
     console.log(AuthResponseDto);  // Should NOT be undefined
     logger.info(AuthResponseDto);  // Should NOT be undefined

@@ -3,7 +3,20 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const moment = require('moment'); // Import Moment.js
 
-// Create a transporter for sending emails
+/**
+ * @module server/controller/resetController
+ */
+
+/**
+ * Creates a transporter object using the default SMTP transport.
+ * This transporter is configured to use Gmail service with authentication.
+ * 
+ * @constant {Object} transporter - The transporter object for sending emails.
+ * @property {string} service - The email service to use (Gmail).
+ * @property {Object} auth - The authentication object.
+ * @property {string} auth.user - The email address to use for sending emails.
+ * @property {string} auth.pass - The password for the email account, retrieved from environment variables.
+ */
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -12,12 +25,30 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// Function to generate a random 6-digit PIN
+/**
+ * Generates a 6-digit PIN.
+ *
+ * @returns {string} A randomly generated 6-digit PIN.
+ */
 function generatePin() {
     return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit PIN
 }
 
-// Function to handle forgot password
+/**
+ * Handles the forgot password functionality.
+ * 
+ * This function finds a user by their email address, generates a password reset PIN,
+ * stores the PIN and its expiration time in the database, and sends an email with the PIN to the user.
+ * 
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.email - The email address of the user requesting a password reset.
+ * @param {Object} res - The response object.
+ * 
+ * @returns {Promise<void>} - A promise that resolves when the function completes.
+ * 
+ * @throws {Error} - Throws an error if the user is not found, or if there is a failure in updating the user or sending the email.
+ */
 async function forgotPassword(req, res) {
     const user = await fixerClientObject.fixerClient.findOne({ email: req.body.email });
 
@@ -55,7 +86,16 @@ async function forgotPassword(req, res) {
     }
 }
 
-// Function to validate the PIN
+/**
+ * Validates the password reset PIN for a user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.pin - The password reset PIN.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the validation is complete.
+ */
 async function validatePin(req, res) {
     console.log('Received validatePin request:', req.body); // Log the incoming request
 
@@ -81,8 +121,16 @@ async function validatePin(req, res) {
     }
 }
 
-
-// Function to reset password
+/**
+ * Resets the user's password.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.email - The email of the user requesting the password reset.
+ * @param {string} req.body.newPassword - The new password to set for the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the password reset process is complete.
+ */
 async function resetPassword(req, res) {
     const { email, newPassword } = req.body;
 

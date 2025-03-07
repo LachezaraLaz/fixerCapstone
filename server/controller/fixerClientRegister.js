@@ -5,9 +5,20 @@ const dotenv = require('dotenv');
 const UserRepository = require('../repository/userRepository');
 const { RegisterUserDto } = require('../DTO/userDto');
 
+/**
+ * @module server/controller/fixerClientRegister
+ */
+
 dotenv.config();
 
-// Send email verification
+/**
+ * Sends a verification email to the user with a verification token.
+ *
+ * @param {Object} user - The user object containing user details.
+ * @param {string} user.email - The email address of the user.
+ * @param {string} token - The verification token to be included in the email.
+ * @returns {Promise<void>} A promise that resolves when the email is sent.
+ */
 async function sendVerificationEmail(user, token) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -25,7 +36,16 @@ async function sendVerificationEmail(user, token) {
     await transporter.sendMail(mailOptions);
 }
 
-// Register User Function
+/**
+ * Registers a new user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request containing user details.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the user is registered.
+ *
+ * @throws {Error} - If user creation fails.
+ */
 const registerUser = async (req, res) => {
     const userDto = new RegisterUserDto(req.body);
     const existedUser = await UserRepository.findByEmail(userDto.email);

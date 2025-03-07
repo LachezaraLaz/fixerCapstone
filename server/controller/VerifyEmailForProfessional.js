@@ -2,9 +2,21 @@ const jwt = require('jsonwebtoken');
 const { fixerClient } = require('../model/professionalClientModel');
 const dotenv = require('dotenv');
 
+/**
+ * @module server/controller/VerifyEmailForProfessional
+ */
+
 dotenv.config();
 
-// Controller to verify the email
+/**
+ * Verifies the email of a professional user based on the provided token.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.query - The query parameters of the request.
+ * @param {string} req.query.token - The verification token.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the email verification process is complete.
+ */
 async function verifyEmail(req, res) {
     const { token } = req.query;  // Extract token from the query params
 

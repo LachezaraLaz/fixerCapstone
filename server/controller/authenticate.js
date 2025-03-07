@@ -2,6 +2,29 @@ const jwt = require('jsonwebtoken');
 const { fixerClient } = require('../model/fixerClientModel');
 const { professionalClient } = require('../model/professionalClientModel');
 
+/**
+ * @module server/controller/authenticate
+ */
+
+/**
+ * Middleware to authenticate JWT tokens.
+ * 
+ * This middleware checks for the presence of an authorization header,
+ * verifies the JWT token, and attaches the user data to the request object.
+ * 
+ * @param {Object} req - The request object.
+ * @param {Object} req.headers - The headers of the request.
+ * @param {string} req.headers.authorization - The authorization header containing the JWT token.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * 
+ * @returns {Object} - Returns a response with status 401 if the authorization header or token is missing,
+ *                     status 403 if the token verification fails,
+ *                     status 404 if the user is not found,
+ *                     or status 500 if there is a server error.
+ * 
+ * @throws {Error} - Throws an error if there is an issue with the authentication process.
+ */
 const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
 

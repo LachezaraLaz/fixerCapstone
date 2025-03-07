@@ -1,7 +1,21 @@
 const jwt = require('jsonwebtoken');
 const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
 
-// Middleware to authenticate JWT
+/**
+ * @module server/controller/getMyProfessionalJobs
+ */
+
+/**
+ * Middleware to authenticate JWT token from the request headers.
+ * 
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * 
+ * @returns {Object} - Returns a 401 status with 'Unauthorized' message if no token is provided.
+ *                     Returns a 403 status with 'Forbidden' message if token verification fails.
+ *                     Proceeds to the next middleware if token is valid.
+ */
 const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
 
@@ -28,7 +42,22 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-// Controller to fetch professional jobs
+
+/**
+ * Retrieves the professional's jobs based on their email from the JWT.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.user - The user object from the JWT.
+ * @param {string} req.user.email - The email of the professional.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves to void.
+ *
+ * @description This function fetches all quotes associated with the professional's email,
+ * categorizes them by status (all, done, pending, active), calculates the total amount earned,
+ * and sends the categorized jobs and amount earned as a JSON response.
+ *
+ * @throws {Error} - If an error occurs while fetching the jobs, a 500 status code and an error message are sent.
+ */
 const getMyProfessionalJobs = async (req, res) => {
     const professionalEmail = req.user.email; // Retrieve professional's email from JWT
 

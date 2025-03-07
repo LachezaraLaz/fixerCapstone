@@ -1,6 +1,20 @@
 const fixerClientObject = require('../model/professionalClientModel');
 
-// Function to handle credential verification
+/**
+ * @module server/controller/professionalClientVerifyCredentials
+ */
+
+/**
+ * Verifies the professional client's trade license and updates their information.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.tradeLicense - The trade license to be verified.
+ * @param {Object} req.user - The authenticated user object.
+ * @param {string} req.user.id - The ID of the authenticated user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
 const verifyCredentials = async (req, res) => {
     try {
         // Extract the tradeLicense from the request body

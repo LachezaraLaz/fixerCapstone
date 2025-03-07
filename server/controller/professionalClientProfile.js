@@ -1,7 +1,21 @@
 const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT verification
 const fixerClientObject = require('../model/professionalClientModel'); // Mongoose model for professional
 
-// Middleware to authenticate JWT
+/**
+ * @module server/controller/professionalClientProfile
+ */
+
+/**
+ * Middleware to authenticate JWT token from the Authorization header.
+ * 
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * 
+ * @returns {Object} - Returns a 401 status with a message 'Unauthorized' if no token is provided or if the token is invalid.
+ *                     Returns a 403 status with a message 'Forbidden' if the token verification fails.
+ *                     Proceeds to the next middleware or route handler if the token is valid.
+ */
 const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;  // Get authorization header
 
@@ -24,7 +38,15 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-// Profile fetching function
+/**
+ * Fetches the professional's profile data based on the user ID from the JWT token.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.user - The user object containing the user ID.
+ * @param {string} req.user.id - The ID of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves to void.
+ */
 const profile = async (req, res) => {
     try {
         // Find the professional by their user ID from the JWT token

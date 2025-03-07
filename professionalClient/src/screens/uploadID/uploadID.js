@@ -6,12 +6,28 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module professionalClient
+ */
+
 const UploadID = () => {
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
     const navigation = useNavigation();
 
     // Request camera permission
     useEffect(() => {
+        /**
+         * Requests camera permission from the user.
+         * 
+         * This function uses the ImagePicker API to request camera permissions asynchronously.
+         * It logs the permission status to the console and updates the state to reflect whether
+         * the permission was granted. If the permission is not granted, it displays an alert
+         * to inform the user that camera access is required to take a picture.
+         * 
+         * @async
+         * @function requestCameraPermission
+         * @returns {Promise<void>} A promise that resolves when the permission request is complete.
+         */
         const requestCameraPermission = async () => {
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
             console.log('Camera permission status:', status);  // Log the permission status
@@ -24,6 +40,15 @@ const UploadID = () => {
         requestCameraPermission();
     }, []);
 
+    /**
+     * Handles the image picking process, including camera permission check, image capture,
+     * and uploading the captured image to the backend server.
+     * 
+     * @async
+     * @function handleImagePick
+     * @returns {Promise<void>} - A promise that resolves when the image picking process is complete.
+     * @throws Will throw an error if there is an issue with the image upload process.
+     */
     const handleImagePick = async () => {
         if (hasCameraPermission === false) {
             Alert.alert('Permission Denied', 'Camera access is required to take a picture.');

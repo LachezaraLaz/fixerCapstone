@@ -7,6 +7,10 @@ import { styles } from '../../../style/profilePage/profilePageStyle';
 import { IPAddress } from '../../../ipAddress';
 import SettingsButton from "../../../components/settingsButton";
 
+/**
+ * @module professionalClient
+ */
+
 const ProfilePage = () => {
     const [professional, setProfessional] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -15,6 +19,18 @@ const ProfilePage = () => {
 
 
     useEffect(() => {
+        /**
+         * Fetches the professional profile data from the server.
+         * 
+         * This function retrieves the authentication token from AsyncStorage and uses it to make
+         * an authenticated GET request to the professional profile endpoint. If the token is found,
+         * it sets the professional data state with the response data. If no token is found, it logs
+         * an error message. Any errors during the fetch process are caught and logged.
+         * 
+         * @async
+         * @function fetchProfileData
+         * @returns {Promise<void>} A promise that resolves when the profile data has been fetched and the state has been updated.
+         */
         const fetchProfileData = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
@@ -37,6 +53,18 @@ const ProfilePage = () => {
         fetchProfileData();
     }, []);
 
+    /**
+     * Fetches the reviews for the professional from the server.
+     * 
+     * This function makes a GET request to the professional reviews endpoint to fetch the reviews
+     * for the professional. If the request is successful, it sets the reviews state with the response
+     * data. Any errors during the fetch process are caught and logged.
+     * 
+     * @async
+     * @function fetchReviews
+     * @returns {Promise<void>} A promise that resolves when the reviews have been fetched and the state has been
+     * updated.
+     */
     const fetchReviews = async () => {
         try {
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/${professional.email}/reviews`);
@@ -50,6 +78,7 @@ const ProfilePage = () => {
             setLoading(false);
         }
     };
+
     useEffect(() => {
         fetchReviews();
     }, []);
@@ -66,6 +95,12 @@ const ProfilePage = () => {
         navigation.navigate('CredentialFormPage');
     };
 
+    /**
+     * Renders a series of star emojis based on the given rating.
+     *
+     * @param {number} rating - The rating value to be converted into stars.
+     * @returns {Array} An array of Text components containing star emojis.
+     */
     const renderStars = (rating) => {
         const roundedRating = Math.round(rating);
         return Array(roundedRating).fill('⭐').map((star, index) => (

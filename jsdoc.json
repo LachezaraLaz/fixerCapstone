@@ -7,7 +7,7 @@
     "recurse": true
   },
   "source": {
-    "include": ["fixerClient/src/screens", "server/controller"],
+    "include": ["fixerClient/src", "professionalClient/src", "server/controller"],
     "includePattern": ".+\\.js(doc|x)?$",
     "excludePattern": "(node_modules|__tests__|__mocks__)"
   },

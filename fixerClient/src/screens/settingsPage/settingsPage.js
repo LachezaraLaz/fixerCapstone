@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'r
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AccountSettingsPage from "../accountSettings/accountSettings";
 
 export default function SettingsPage() {
     const navigation = useNavigation();
@@ -36,7 +37,7 @@ export default function SettingsPage() {
             </View>
 
             <ScrollView contentContainerStyle={styles.container}>
-                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Account Settings")}>
+                <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('AccountSettingsPage')}>
                     <Text style={styles.optionText}>Account Settings</Text>
                 </TouchableOpacity>
 

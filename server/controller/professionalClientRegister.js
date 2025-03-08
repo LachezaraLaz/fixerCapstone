@@ -1,5 +1,5 @@
 const ProfessionalDTO = require('../DTO/professionalDTO');
-const professionalRepository = require('../../server/repository/professionalRepository');
+const professionalRepository = require('../repository/professionalRepository');
 
 dotenv = require('dotenv');
 dotenv.config();

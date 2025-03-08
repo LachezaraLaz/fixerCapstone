@@ -44,6 +44,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
 
             }
         } catch (error) {
+            console.log('Error:', error); // Add this line
             if (error.response && error.response.status === 400) {
                 Alert.alert("Error", error.response.data.statusText || 'Wrong email or password');
             } else if (error.response && error.response.status === 403) {

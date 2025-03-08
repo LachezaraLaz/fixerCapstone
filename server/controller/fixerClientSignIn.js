@@ -2,10 +2,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { serverClient } = require('../services/streamClient');
 const UserRepository = require('../repository/userRepository');
-const { RegisterUserDto } = require('../DTO/userDto');
+const {AuthResponseDto}  = require('../DTO/userDto');
 const { logger } = require("../utils/logger");
 
 const signinUser = async (req, res) => {
+    console.log(AuthResponseDto);  // Should NOT be undefined
+    logger.info(AuthResponseDto);  // Should NOT be undefined
     const { email, password } = req.body;
     const user = await UserRepository.findByEmail(email);
 

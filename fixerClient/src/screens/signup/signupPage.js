@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+// import { Picker } from '@react-native-picker/picker';
 import RNPickerSelect from 'react-native-picker-select';
 import axios, {request} from 'axios';
 import MapView, { Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons'; 
 import OrangeButton from "../../../components/orangeButton";
 import InputField from '../../../components/inputField';
+import PasswordField from '../../../components/passwordField';
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -37,13 +38,9 @@ export default function SignUpPage({ navigation }) {
 
     const [coordinates, setCoordinates] = useState(null);
     const [isAddressValid, setIsAddressValid] = useState(false);
-    // const [isEmailValid, setIsEmailValid] = useState(false); // New state for email validation
+
     const [isValid, setIsValid] = useState(false);
     const [isError, setIsError] = useState(false);
-
-    // const [isEmailFocused, setIsEmailFocused] = useState(false); // New state to track focus
-
-    const [isPasswordFocused, setIsPasswordFocused] = useState(false); // New state for password focus
 
     const [showNameAndAddressFields, setShowNameAndAddressFields] = useState(false); // New state to control visibility
 
@@ -56,17 +53,10 @@ export default function SignUpPage({ navigation }) {
 
     // Show/hide password state
     const [showPassword, setShowPassword] = useState(false); // For password field
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // For confirm password field
 
     // functions for input validation:
 
     //email
-    // Function to validate email format
-    // const validateEmail = (email) => {
-    //     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //     return regex.test(email);
-    // };
-
     const validateEmail = (text) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (text === '') {
@@ -82,22 +72,6 @@ export default function SignUpPage({ navigation }) {
         setEmail(text);
     };
 
-
-    // // Handle email input change
-    // const handleEmailChange = (text) => {
-    //     setEmail(text);
-    //     setIsEmailValid(validateEmail(text)); // Validate email in real-time
-    // };
-
-    // // Handle email input focus
-    // const handleEmailFocus = () => {
-    //     setIsEmailFocused(true);
-    // };
-
-    // // Handle email input blur
-    // const handleEmailBlur = () => {
-    //     setIsEmailFocused(false);
-    // };
 
     //password
     // Function to validate password strength
@@ -118,18 +92,18 @@ export default function SignUpPage({ navigation }) {
     // Handle password input change
     const handlePasswordChange = (text) => {
         setPassword(text);
-        // validatePassword(text); // Validate password in real-time
+        validatePassword(text); // Validate password in real-time
     };
 
-    // Handle password input focus
-    const handlePasswordFocus = () => {
-        setIsPasswordFocused(true);
-    };
+    // // Handle password input focus
+    // const handlePasswordFocus = () => {
+    //     setIsPasswordFocused(true);
+    // };
 
-    // Handle password input blur
-    const handlePasswordBlur = () => {
-        setIsPasswordFocused(false);
-    }
+    // // Handle password input blur
+    // const handlePasswordBlur = () => {
+    //     setIsPasswordFocused(false);
+    // }
 
     // Handle confirm password input change
     const handleConfirmPasswordChange = (text) => {
@@ -147,16 +121,6 @@ export default function SignUpPage({ navigation }) {
             hasSpecialChar &&
             password === confirmPassword
         );
-    };
-
-    const capitalizeFirstLetter = (text) => {
-        if (!text) return text; // Return empty string if text is null or undefined
-        return text.charAt(0).toUpperCase() + text.slice(1);
-    };
-    
-    const filterNameInput = (text) => {
-        // Use a regular expression to allow only letters and dashes
-        return text.replace(/[^A-Za-z-]/g, '');
     };
     
     const validateName = (name) => {
@@ -216,7 +180,7 @@ export default function SignUpPage({ navigation }) {
             return;
         } else {
             try {
-                const response = await axios.post(`http://${IPAddress}:3000/client/register`, {
+                const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/register`, {
                     email: email,
                     firstName: firstName,
                     lastName: lastName,
@@ -248,7 +212,7 @@ export default function SignUpPage({ navigation }) {
 
     const handleVerifyAddress = async () => {
         try {
-            const response = await axios.post(`http://${IPAddress}:3000/client/verifyAddress`, {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
                 street: street,
                 postalCode: postalCode,
             })
@@ -293,52 +257,19 @@ export default function SignUpPage({ navigation }) {
                     isError={isError}
                 />
 
-                {/* <TextInput
-                    style={[
-                        styles.input,
-                        isEmailFocused && email.length > 0 && !isEmailValid && styles.invalidInput, // Red if invalid and focused
-                        isEmailFocused && email.length > 0 && isEmailValid && styles.validInput, // Green if valid and focused
-                    ]}
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={handleEmailChange}
-                    onFocus={handleEmailFocus} // Track focus
-                    onBlur={handleEmailBlur} // Track blur
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                /> */}
                 {!isValid && email.length > 0 && (
                     <Text style={styles.errorText}>Please enter a valid email address</Text>
                 )}
 
                 {/* Password Field */}
-                <View >
-                    <TextInput
-                        style={[
-                            styles.input,
-                            isPasswordFocused && password.length > 0 && !isPasswordValid && styles.invalidInput, // Red if invalid and focused
-                            isPasswordFocused && password.length > 0 && isPasswordValid && styles.validInput, // Green if valid and focused
-                            { flex: 1, paddingRight: 50 }, // Add padding to prevent text overlap with icons
-                        ]}
-                        placeholder="Password"
-                        value={password}
-                        onChangeText={handlePasswordChange}
-                        onFocus={handlePasswordFocus}
-                        onBlur={handlePasswordBlur}
-                        secureTextEntry={!showPassword} // Toggle secureTextEntry based on showPassword state
-                        textContentType="none" // Disable password autofill and suggestions
-                    />
-                    <TouchableOpacity
-                        style={styles.eyeIcon}
-                        onPress={() => setShowPassword(!showPassword)} // Toggle password visibility
-                    >
-                        <Ionicons
-                            name={showPassword ? 'eye-off' : 'eye'} // Change icon based on showPassword state
-                            size={24}
-                            color="#888"
-                        />
-                    </TouchableOpacity>
-                </View>
+                <PasswordField
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={handlePasswordChange}
+                    secureTextEntry={!showPassword}
+                />
+
+                {/* Password Criteria */}
                 {password.length > 0 && (
                     <View style={styles.passwordCriteriaContainer}>
                         <Text style={[styles.criteriaText, hasMinLength && styles.criteriaMet]}>
@@ -360,29 +291,13 @@ export default function SignUpPage({ navigation }) {
                 )}
 
                 {/* Confirm Password Field */}
-                <View style={styles.passwordContainer}>
-                    <TextInput
-                        style={[
-                            styles.input,
-                            { flex: 1, paddingRight: 50 }, // Add padding to prevent text overlap with icons
-                        ]}
-                        placeholder="Confirm Password"
-                        value={confirmPassword}
-                        onChangeText={handleConfirmPasswordChange}
-                        secureTextEntry={!showConfirmPassword} // Toggle secureTextEntry based on showConfirmPassword state
-                        textContentType="none" // Disable password autofill and suggestions
-                    />
-                    <TouchableOpacity
-                        style={styles.eyeIcon}
-                        onPress={() => setShowConfirmPassword(!showConfirmPassword)} // Toggle confirm password visibility
-                    >
-                        <Ionicons
-                            name={showConfirmPassword ? 'eye-off' : 'eye'} // Change icon based on showConfirmPassword state
-                            size={24}
-                            color="#888"
-                        />
-                    </TouchableOpacity>
-                </View>
+                <PasswordField
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChangeText={handleConfirmPasswordChange}
+                    showCriteria={false} // Hide criteria for the confirm password field
+                    secureTextEntry={!showPassword}
+                />
 
                 {/* Button to Proceed to Name and Address Fields */}
                 {!showNameAndAddressFields && (
@@ -392,18 +307,6 @@ export default function SignUpPage({ navigation }) {
                 {/* Name and Address Fields (Conditional Rendering) */}
                 {showNameAndAddressFields && (
                     <>
-
-                        {/* <TextInput
-                            style={styles.input}
-                            placeholder="First Name"
-                            value={firstName}
-                            onChangeText={(text) => {
-                                const filteredText = filterNameInput(text); // Filter out invalid characters
-                                setFirstName(capitalizeFirstLetter(filteredText)); // Capitalize the first letter
-                            }}
-                            autoCapitalize="words"
-                            keyboardType="default"
-                        /> */}
 
                         <InputField
                             placeholder="First Name"
@@ -417,26 +320,6 @@ export default function SignUpPage({ navigation }) {
                             onChangeText={(text) => setLastName(text)}
                         />
 
-                        {/* <TextInput
-                            style={styles.input}
-                            placeholder="Last Name"
-                            value={lastName}
-                            onChangeText={(text) => {
-                                const filteredText = filterNameInput(text); // Filter out invalid characters
-                                setLastName(capitalizeFirstLetter(filteredText)); // Capitalize the first letter
-                            }}
-                            autoCapitalize="words"
-                            keyboardType="default"
-                        /> */}
-
-                        {/* <TextInput
-                            style={styles.input}
-                            placeholder="House number and Street"
-                            value={street}
-                            onChangeText={setStreet}
-                            autoCapitalize="words"
-                        /> */}
-
                         <InputField
                             placeholder="House Number and Street"
                             value={street}
@@ -449,14 +332,6 @@ export default function SignUpPage({ navigation }) {
                             onChangeText={formatPostalCode}
                             maxLength={7}
                         />              
-
-                         {/* <TextInput
-                            style={styles.input}
-                            placeholder="Postal Code"
-                            value={postalCode}
-                            onChangeText={formatPostalCode}
-                            maxLength={7}
-                        /> */}
 
                         <RNPickerSelect
                             onValueChange={(value) => setProvinceOrState(value)}
@@ -474,12 +349,6 @@ export default function SignUpPage({ navigation }) {
                             disabled 
                         />
 
-                        {/* <TextInput
-                            style={[styles.input, { backgroundColor: '#f0f0f0' }]} // Disabled style
-                            placeholder="Canada"
-                            value={country}
-                            editable={false} // Disable editing
-                        /> */}
                         <OrangeButton title="Verify Address" onPress={handleVerifyAddress} variant="normal" />
 
                         {isAddressValid && (
@@ -520,14 +389,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 20,
         backgroundColor: '#fff',
-        paddingTop:100,
+        paddingTop: 100,
         paddingBottom: 300,
     },
     backButton: {
         position: 'absolute',
         top: 40,
         left: 20,
-        flexDirection: 'row', 
+        flexDirection: 'row',
         alignItems: 'center',
         zIndex: 1,
     },
@@ -542,44 +411,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
-    text: {
-        margin: 5,
-    },
-    input: {
-        height: 50,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-    },
-    picker: {
-        height: 50, // Fixed height for the Picker
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 10,
-        marginBottom: 15,
-    },
-    invalidInput: {
-        borderColor: 'red', // Highlight the input field with a red border if invalid
-    },
-    validInput: {
-        borderColor: 'green', // Highlight the input field with a green border if valid
-    },
-    errorText: {
-        color: 'red',
-        marginBottom: 10,
-    },
-    passwordContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        position: 'relative', // Ensure the container is relative for absolute positioning of icons
-    },
-    eyeIcon: {
-        position: 'absolute',
-        right: 15,
-        top: 12,
-    },
     passwordCriteriaContainer: {
         marginBottom: 15,
     },
@@ -589,19 +420,6 @@ const styles = StyleSheet.create({
     },
     criteriaMet: {
         color: 'green', // Green for met criteria
-    },
-    button: {
-        backgroundColor: '#1E90FF',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    disabledButton: {
-        backgroundColor: '#ccc', // Disabled button color
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
     },
     signInText: {
         color: '#1E90FF',
@@ -616,6 +434,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
 });
+
+
 
 const pickerSelectStyles = StyleSheet.create({
     inputIOS: {

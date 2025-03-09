@@ -5,7 +5,6 @@ import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
 import OrangeButton from "../../../components/orangeButton";
-import InputsStyle from "../../../components/inputFields";
 //import { IPAddress } from '../../../ipAddress';
 
 export default function SignInPage({ navigation, setIsLoggedIn }) {
@@ -19,7 +18,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         }
 
         try {
-            const response = await axios.post(`http://${IPAddress}:3000/client/signin/`, {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/signin/`, {
                 email,
                 password
             });

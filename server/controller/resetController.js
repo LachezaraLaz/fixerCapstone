@@ -55,6 +55,45 @@ async function forgotPassword(req, res) {
     }
 }
 
+// Function to update password (validating old password first)
+async function updatePassword(req, res) {
+    const { email, oldPassword, newPassword } = req.body;
+
+    try {
+        // Find user by email
+        const user = await fixerClientObject.fixerClient.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Compare old password with hashed password stored in database
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Old password is incorrect' });
+        }
+
+        // Hash the new password before saving
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+        // Update password
+        await fixerClientObject.fixerClient.updateOne(
+            { _id: user._id },
+            {
+                $set: {
+                    password: hashedPassword,
+                },
+            }
+        );
+
+        res.json({ message: 'Password updated successfully' });
+    } catch (err) {
+        console.error('Error updating password:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
 // Function to validate the PIN
 async function validatePin(req, res) {
     console.log('Received validatePin request:', req.body); // Log the incoming request
@@ -123,4 +162,4 @@ async function resetPassword(req, res) {
     }
 }
 
-module.exports = { forgotPassword, validatePin, resetPassword };
+module.exports = { forgotPassword, validatePin, resetPassword, updatePassword };

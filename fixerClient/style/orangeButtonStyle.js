@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    disabledText: {
+        color: '#a0a0a0', // Light gray color for disabled text
+    },
 });
 
 export default styles;

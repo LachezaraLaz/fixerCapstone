@@ -315,6 +315,7 @@ export default function SignUpPage({ navigation }) {
                             placeholder="First Name"
                             value={firstName}
                             onChangeText={(text) => setFirstName(filterNameInput(text))} // Filter invalid characters
+                            autoCapitalize="words"
                         />
 
                         <InputField
@@ -327,6 +328,7 @@ export default function SignUpPage({ navigation }) {
                             placeholder="House Number and Street"
                             value={street}
                             onChangeText={setStreet}
+                            autoCapitalize="words"
                         />
 
                         <InputField

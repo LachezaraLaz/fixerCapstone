@@ -6,6 +6,7 @@ import axios, {request} from 'axios';
 import MapView, { Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons'; 
 import OrangeButton from "../../../components/orangeButton";
+import InputField from '../../../components/inputField';
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -36,8 +37,11 @@ export default function SignUpPage({ navigation }) {
 
     const [coordinates, setCoordinates] = useState(null);
     const [isAddressValid, setIsAddressValid] = useState(false);
-    const [isEmailValid, setIsEmailValid] = useState(false); // New state for email validation
-    const [isEmailFocused, setIsEmailFocused] = useState(false); // New state to track focus
+    // const [isEmailValid, setIsEmailValid] = useState(false); // New state for email validation
+    const [isValid, setIsValid] = useState(false);
+    const [isError, setIsError] = useState(false);
+
+    // const [isEmailFocused, setIsEmailFocused] = useState(false); // New state to track focus
 
     const [isPasswordFocused, setIsPasswordFocused] = useState(false); // New state for password focus
 
@@ -58,26 +62,42 @@ export default function SignUpPage({ navigation }) {
 
     //email
     // Function to validate email format
-    const validateEmail = (email) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-    };
+    // const validateEmail = (email) => {
+    //     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //     return regex.test(email);
+    // };
 
-    // Handle email input change
-    const handleEmailChange = (text) => {
+    const validateEmail = (text) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (text === '') {
+            setIsValid(false);
+            setIsError(false);
+        } else if (emailRegex.test(text)) {
+            setIsValid(true);
+            setIsError(false);
+        } else {
+            setIsValid(false);
+            setIsError(true);
+        }
         setEmail(text);
-        setIsEmailValid(validateEmail(text)); // Validate email in real-time
     };
 
-    // Handle email input focus
-    const handleEmailFocus = () => {
-        setIsEmailFocused(true);
-    };
 
-    // Handle email input blur
-    const handleEmailBlur = () => {
-        setIsEmailFocused(false);
-    };
+    // // Handle email input change
+    // const handleEmailChange = (text) => {
+    //     setEmail(text);
+    //     setIsEmailValid(validateEmail(text)); // Validate email in real-time
+    // };
+
+    // // Handle email input focus
+    // const handleEmailFocus = () => {
+    //     setIsEmailFocused(true);
+    // };
+
+    // // Handle email input blur
+    // const handleEmailBlur = () => {
+    //     setIsEmailFocused(false);
+    // };
 
     //password
     // Function to validate password strength
@@ -162,7 +182,7 @@ export default function SignUpPage({ navigation }) {
 
     // Check if email and password are valid to show name and address fields
     const checkEmailAndPassword = () => {
-        if (isEmailValid && validatePasswords()) {
+        if (isValid && validatePasswords()) {
             setShowNameAndAddressFields(true); // Show name and address fields
         } else {
             Alert.alert('Error', 'Please enter a valid email and matching passwords');
@@ -175,7 +195,7 @@ export default function SignUpPage({ navigation }) {
             Alert.alert('Error', 'All fields are required');
             return;
         }
-        if (!isEmailValid) {
+        if (!isValid) {
             Alert.alert('Error', 'Please enter a valid email address');
             return;
         }
@@ -264,7 +284,16 @@ export default function SignUpPage({ navigation }) {
                 </TouchableOpacity>
                 
                 <Text style={styles.title}>Sign Up</Text>
-                <TextInput
+
+                <InputField 
+                    placeholder="Email" 
+                    value={email}
+                    onChangeText={validateEmail}
+                    isValid={isValid}
+                    isError={isError}
+                />
+
+                {/* <TextInput
                     style={[
                         styles.input,
                         isEmailFocused && email.length > 0 && !isEmailValid && styles.invalidInput, // Red if invalid and focused
@@ -277,13 +306,13 @@ export default function SignUpPage({ navigation }) {
                     onBlur={handleEmailBlur} // Track blur
                     keyboardType="email-address"
                     autoCapitalize="none"
-                />
-                {!isEmailValid && email.length > 0 && (
+                /> */}
+                {!isValid && email.length > 0 && (
                     <Text style={styles.errorText}>Please enter a valid email address</Text>
                 )}
 
                 {/* Password Field */}
-                <View style={styles.passwordContainer}>
+                <View >
                     <TextInput
                         style={[
                             styles.input,
@@ -364,7 +393,7 @@ export default function SignUpPage({ navigation }) {
                 {showNameAndAddressFields && (
                     <>
 
-                        <TextInput
+                        {/* <TextInput
                             style={styles.input}
                             placeholder="First Name"
                             value={firstName}
@@ -374,9 +403,21 @@ export default function SignUpPage({ navigation }) {
                             }}
                             autoCapitalize="words"
                             keyboardType="default"
+                        /> */}
+
+                        <InputField
+                            placeholder="First Name"
+                            value={firstName}
+                            onChangeText={(text) => setFirstName(text)}
                         />
 
-                        <TextInput
+                        <InputField
+                            placeholder="Last Name"
+                            value={lastName}
+                            onChangeText={(text) => setLastName(text)}
+                        />
+
+                        {/* <TextInput
                             style={styles.input}
                             placeholder="Last Name"
                             value={lastName}
@@ -386,44 +427,63 @@ export default function SignUpPage({ navigation }) {
                             }}
                             autoCapitalize="words"
                             keyboardType="default"
-                        />
+                        /> */}
 
-                        <TextInput
+                        {/* <TextInput
                             style={styles.input}
                             placeholder="House number and Street"
                             value={street}
                             onChangeText={setStreet}
                             autoCapitalize="words"
+                        /> */}
+
+                        <InputField
+                            placeholder="House Number and Street"
+                            value={street}
+                            onChangeText={setStreet}
                         />
-                         <TextInput
+
+                        <InputField
+                            placeholder="Postal Code"
+                            value={postalCode}
+                            onChangeText={formatPostalCode}
+                            maxLength={7}
+                        />              
+
+                         {/* <TextInput
                             style={styles.input}
                             placeholder="Postal Code"
                             value={postalCode}
                             onChangeText={formatPostalCode}
                             maxLength={7}
+                        /> */}
+
+                        <RNPickerSelect
+                            onValueChange={(value) => setProvinceOrState(value)}
+                            items={CANADIAN_PROVINCES.map((province) => ({
+                                label: province,
+                                value: province,
+                            }))}
+                            placeholder={{ label: 'Select Province', value: null }}
+                            style={pickerSelectStyles}
                         />
-                    <RNPickerSelect
-                        onValueChange={(value) => setProvinceOrState(value)}
-                        items={CANADIAN_PROVINCES.map((province) => ({
-                            label: province,
-                            value: province,
-                        }))}
-                        placeholder={{ label: 'Select Province', value: null }}
-                        style={pickerSelectStyles}
-                    />
-                        <TextInput
+
+                        <InputField
+                            placeholder="Country"
+                            value={country}
+                            disabled 
+                        />
+
+                        {/* <TextInput
                             style={[styles.input, { backgroundColor: '#f0f0f0' }]} // Disabled style
                             placeholder="Canada"
                             value={country}
                             editable={false} // Disable editing
-                        />
+                        /> */}
                         <OrangeButton title="Verify Address" onPress={handleVerifyAddress} variant="normal" />
 
                         {isAddressValid && (
-                            <View>
                                 <TextInput style={styles.text}>Valid Address entered</TextInput>
-                                <TextInput style={styles.text}>Does it match to the marker on the map?</TextInput>
-                            </View>
                         )}
 
                         {coordinates && (

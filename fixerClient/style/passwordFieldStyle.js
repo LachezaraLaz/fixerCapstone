@@ -17,6 +17,12 @@ const styles = StyleSheet.create({
         right: 24,
         top: 24,
     },
+    errorText: {
+        color: 'red',
+        fontSize: 12,
+        marginTop: 4,
+        marginLeft: 10,
+    },
 });
 
 export default styles;

@@ -9,8 +9,8 @@ const InputField = ({
     onChangeText,
     isValid,
     isError,
-    disabled = false, // New prop for disabled state
-    secureTextEntry = false, // For password fields
+    disabled = false,
+    secureTextEntry = false,
     style,
 }) => {
     const [focused, setFocused] = useState(false);
@@ -40,12 +40,12 @@ const InputField = ({
 
     // Determine border color based on validation state and focus
     let borderColor = '#ccc'; // Default border color
-    if (isValid && value) {
-        borderColor = colors.green.normal; // Green for valid input (only if value exists)
-    } else if (isError && value) {
-        borderColor = colors.red.normal; // Red for invalid input (only if value exists)
+    if (isValid) {
+        borderColor = colors.green.normal; // Green for valid input
+    } else if (isError) {
+        borderColor = colors.red.normal; // Red for invalid input
     } else if (focused) {
-        borderColor = colors.orange.normal; // Orange when focused (only if not valid or error)
+        borderColor = colors.orange.normal; // Orange when focused
     }
 
     return (

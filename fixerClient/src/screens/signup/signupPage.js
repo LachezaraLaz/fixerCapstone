@@ -88,29 +88,17 @@ export default function SignUpPage({ navigation }) {
         validatePassword(password);
     }, [password])
 
-
     // Handle password input change
     const handlePasswordChange = (text) => {
         setPassword(text);
         validatePassword(text); // Validate password in real-time
     };
 
-    // // Handle password input focus
-    // const handlePasswordFocus = () => {
-    //     setIsPasswordFocused(true);
-    // };
-
-    // // Handle password input blur
-    // const handlePasswordBlur = () => {
-    //     setIsPasswordFocused(false);
-    // }
-
     // Handle confirm password input change
     const handleConfirmPasswordChange = (text) => {
         setConfirmPassword(text);
     };
    
-
     // Handle password and confirm password validation
     const validatePasswords = () => {
         return (
@@ -125,8 +113,14 @@ export default function SignUpPage({ navigation }) {
     
     const validateName = (name) => {
         if (!name) return false; // Name cannot be empty
-        return name.charAt(0) === name.charAt(0).toUpperCase(); // First letter must be capitalized
-    };    
+        const nameRegex = /^[A-Za-z-' ]+$/; // Only letters, hyphens, apostrophes, and spaces
+        return nameRegex.test(name) && name.charAt(0) === name.charAt(0).toUpperCase(); // First letter must be capitalized
+    };   
+
+    const filterNameInput = (text) => {
+        // Use a regular expression to allow only letters, hyphens, and apostrophes
+        return text.replace(/[^A-Za-z-' ]/g, '');
+    };
 
     // Format postal code as A1B 2C3
     const formatPostalCode = (text) => {
@@ -267,6 +261,8 @@ export default function SignUpPage({ navigation }) {
                     value={password}
                     onChangeText={handlePasswordChange}
                     secureTextEntry={!showPassword}
+                    isValid={isPasswordValid} // Green when all criteria are met
+                    isError={!isPasswordValid && password.length > 0} // Red when criteria are not met
                 />
 
                 {/* Password Criteria */}
@@ -295,8 +291,10 @@ export default function SignUpPage({ navigation }) {
                     placeholder="Confirm Password"
                     value={confirmPassword}
                     onChangeText={handleConfirmPasswordChange}
-                    showCriteria={false} // Hide criteria for the confirm password field
                     secureTextEntry={!showPassword}
+                    isValid={confirmPassword === password && confirmPassword.length > 0} // Green when passwords match
+                    isError={confirmPassword !== password && confirmPassword.length > 0} // Red when passwords do not match
+                    errorMessage={confirmPassword !== password && confirmPassword.length > 0 ? "Passwords do not match" : null}
                 />
 
                 {/* Button to Proceed to Name and Address Fields */}
@@ -307,17 +305,16 @@ export default function SignUpPage({ navigation }) {
                 {/* Name and Address Fields (Conditional Rendering) */}
                 {showNameAndAddressFields && (
                     <>
-
                         <InputField
                             placeholder="First Name"
                             value={firstName}
-                            onChangeText={(text) => setFirstName(text)}
+                            onChangeText={(text) => setFirstName(filterNameInput(text))} // Filter invalid characters
                         />
 
                         <InputField
                             placeholder="Last Name"
                             value={lastName}
-                            onChangeText={(text) => setLastName(text)}
+                            onChangeText={(text) => setLastName(filterNameInput(text))} // Filter invalid characters
                         />
 
                         <InputField

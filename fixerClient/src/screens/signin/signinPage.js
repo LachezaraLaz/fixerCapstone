@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; 
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
+import OrangeButton from "../../../components/orangeButton";
+import InputsStyle from "../../../components/inputFields";
 //import { IPAddress } from '../../../ipAddress';
 
 export default function SignInPage({ navigation, setIsLoggedIn }) {
@@ -16,7 +19,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         }
 
         try {
-            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/signin/`, {
+            const response = await axios.post(`http://${IPAddress}:3000/client/signin/`, {
                 email,
                 password
             });
@@ -56,6 +59,12 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
 
     return (
         <View style={styles.container}>
+
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                <Text style={styles.backText}>Back</Text>
+            </TouchableOpacity>
+
             <Text style={styles.title}>Sign In</Text>
 
             <TextInput
@@ -75,10 +84,8 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleSignIn} testID={'sign-in-button'}>
-                <Text style={styles.buttonText}>Sign In</Text>
-            </TouchableOpacity>
-
+            <OrangeButton title="Sign In" onPress={handleSignIn} testID={'sign-in-button'} variant="normal" />
+           
             <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
                 <Text style={styles.signUpText}>Don't have an account? Sign up</Text>
             </TouchableOpacity>
@@ -92,6 +99,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 20,
         backgroundColor: '#fff',
+    },
+    backButton: {
+        position: 'absolute',
+        top: 40,
+        left: 20,
+        flexDirection: 'row', 
+        alignItems: 'center',
+        zIndex: 1,
+    },
+    backText: {
+        marginLeft: 8,
+        fontSize: 18,
+        color: '#1E90FF',
     },
     title: {
         fontSize: 32,

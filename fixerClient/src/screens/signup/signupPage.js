@@ -26,6 +26,7 @@ const CANADIAN_PROVINCES = [
 ];
 
 export default function SignUpPage({ navigation }) {
+    //general fields for page
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -36,13 +37,16 @@ export default function SignUpPage({ navigation }) {
     const [provinceOrState, setProvinceOrState] = useState('');
     const [country, setCountry] = useState('Canada');
 
+    //for verification of address
     const [coordinates, setCoordinates] = useState(null);
     const [isAddressValid, setIsAddressValid] = useState(false);
 
+    //valid inputs or not
     const [isValid, setIsValid] = useState(false);
     const [isError, setIsError] = useState(false);
 
-    const [showNameAndAddressFields, setShowNameAndAddressFields] = useState(false); // New state to control visibility
+    //once email and password are valid, then the rest of the fields appear
+    const [showNameAndAddressFields, setShowNameAndAddressFields] = useState(false); 
 
     // Password criteria states
     const [hasMinLength, setHasMinLength] = useState(false);
@@ -50,13 +54,15 @@ export default function SignUpPage({ navigation }) {
     const [hasUppercase, setHasUppercase] = useState(false);
     const [hasLowercase, setHasLowercase] = useState(false);
     const [hasSpecialChar, setHasSpecialChar] = useState(false)
+    const isPasswordValid = hasMinLength && hasNumber && hasUppercase && hasLowercase && hasSpecialChar;
 
     // Show/hide password state
     const [showPassword, setShowPassword] = useState(false); // For password field
 
-    // functions for input validation:
 
+    // functions for input validation:
     //email
+    // Function ot validate email
     const validateEmail = (text) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (text === '') {
@@ -111,6 +117,7 @@ export default function SignUpPage({ navigation }) {
         );
     };
     
+    // first and last name fields validation
     const validateName = (name) => {
         if (!name) return false; // Name cannot be empty
         const nameRegex = /^[A-Za-z-' ]+$/; // Only letters, hyphens, apostrophes, and spaces
@@ -204,6 +211,7 @@ export default function SignUpPage({ navigation }) {
         }
     }
 
+    //verify the address function
     const handleVerifyAddress = async () => {
         try {
             const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
@@ -230,9 +238,6 @@ export default function SignUpPage({ navigation }) {
         }
     };
 
-    // Derived state for password validity
-    const isPasswordValid = hasMinLength && hasNumber && hasUppercase && hasLowercase && hasSpecialChar;
-
     return (
         <ScrollView >
             <View style={styles.container}>
@@ -249,6 +254,7 @@ export default function SignUpPage({ navigation }) {
                     onChangeText={validateEmail}
                     isValid={isValid}
                     isError={isError}
+                    autoCapitalize="none"
                 />
 
                 {!isValid && email.length > 0 && (

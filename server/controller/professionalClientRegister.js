@@ -3,9 +3,8 @@ const fixerClientObject = require('../model/professionalClientModel');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
-const {verify} = require("jsonwebtoken");
-const {IPAddress} = require("../ipAddress");
-
+const { squareClient } = require('../utils/squareConfig');
+const ProfessionalPayment = require('../model/professionalPaymentModel');
 
 dotenv.config();
 
@@ -35,7 +34,7 @@ async function sendVerificationEmail(user, token) {
 const registerUser = async (req, res) => {
     const { email, firstName, lastName, password } = req.body;
 
-    // Check if user already exists
+    // Check if user already exists in MongoDB
     const existedUser = await fixerClientObject.fixerClient.findOne({ email });
     if (existedUser) {
         return res.status(400).send({ statusText: 'Account already exists' });
@@ -45,7 +44,33 @@ const registerUser = async (req, res) => {
     const encryptedPassword = await bcrypt.hash(password, 12);
 
     try {
-        // Create the new user object
+        // Check if a Square Customer record already exists
+        const response = await squareClient.customers.search({
+            query: {
+                filter: {
+                    emailAddress: {
+                        exact: email
+                    }
+                }
+            }
+        });
+
+        console.log("Square API Response:", response);
+        let squareCustomerId;
+        if (response.customers && response.customers.length > 0) {
+            // Use the existing Square Customer record
+            squareCustomerId = response.customers[0].id;
+        } else {
+            // Create a new Square Customer record
+            const squareResponse = await squareClient.customers.create({
+                givenName: firstName,
+                familyName: lastName,
+                emailAddress: email
+            });
+            squareCustomerId = squareResponse.customer.id;
+        }
+
+        // Create the new user object in MongoDB
         const newUser = await fixerClientObject.fixerClient.create({
             firstName,
             lastName,
@@ -54,6 +79,13 @@ const registerUser = async (req, res) => {
             approved: false,  // Set to false, email must be verified before approval
             accountType: 'professional',
             verified: false,  // Set to false initially, will be updated after verification
+            paymentSetup: true // Set to true after Square linking
+        });
+
+        // Store the Square Customer ID in the ProfessionalPayment collection
+        await ProfessionalPayment.create({
+            professionalId: newUser._id,
+            squareCustomerId
         });
 
         // Generate the verification token

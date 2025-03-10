@@ -336,16 +336,6 @@ export default function SignUpPage({ navigation }) {
                             onChangeText={formatPostalCode}
                             maxLength={7}
                         />              
-{/* 
-                        <RNPickerSelect
-                            onValueChange={(value) => setProvinceOrState(value)}
-                            items={CANADIAN_PROVINCES.map((province) => ({
-                                label: province,
-                                value: province,
-                            }))}
-                            placeholder={{ label: 'Select Province', value: null }}
-                            style={pickerSelectStyles}
-                        /> */}
 
                         <Dropdown
                             placeholder="Select Province"
@@ -366,7 +356,7 @@ export default function SignUpPage({ navigation }) {
                         <OrangeButton title="Verify Address" onPress={handleVerifyAddress} variant="normal" />
 
                         {isAddressValid && (
-                                <TextInput style={styles.text}>Valid Address entered</TextInput>
+                                <Text style={styles.text}>Valid Address entered</Text>
                         )}
 
                         {coordinates && (
@@ -384,7 +374,7 @@ export default function SignUpPage({ navigation }) {
                         )}
                         
                         {/* Sign Up Button (Enabled only if address is verified) */}
-                        <OrangeButton title="Sign Up" onPress={handleSignUp} disabled={!isAddressValid} variant="normal" />
+                        <OrangeButton title="Sign Up" onPress={handleSignUp} testID="sign-up-button" disabled={!isAddressValid} variant="normal" />
                     </>
                 )}
 

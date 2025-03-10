@@ -337,7 +337,7 @@ export default function SignUpPage({ navigation }) {
                             maxLength={7}
                         />              
 
-                        <Dropdown
+                        {/* <Dropdown
                             placeholder="Select Province"
                             items={CANADIAN_PROVINCES.map((province) => ({
                                 label: province,
@@ -351,7 +351,7 @@ export default function SignUpPage({ navigation }) {
                             placeholder="Country"
                             value={country}
                             disabled 
-                        />
+                        /> */}
 
                         <OrangeButton title="Verify Address" onPress={handleVerifyAddress} variant="normal" />
 

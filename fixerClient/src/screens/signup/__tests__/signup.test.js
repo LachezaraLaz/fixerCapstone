@@ -40,15 +40,6 @@ describe('SignUpPage', () => {
         expect(getByPlaceholderText('Password')).toBeTruthy();
         expect(getByPlaceholderText('Confirm Password')).toBeTruthy();
     })
-    // test('displays an error if required fields are missing', async () => {
-    //     const { getByText } = render(<SignUpPage navigation={mockNavigation} />);
-        
-    //     fireEvent.press(getByText('Sign Up'));
-        
-    //     await waitFor(() => {
-    //          expect(Alert.alert).toHaveBeenCalledWith('Error', 'Please enter a valid email and matching passwords');
-    //    });
-    // });
 
     test('displays an error for invalid email', async () => {
         const { getByPlaceholderText, getByText } = render(<SignUpPage navigation={mockNavigation} />);

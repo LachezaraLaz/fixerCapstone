@@ -51,6 +51,7 @@ const InputField = ({
     return (
         <Animated.View style={{ transform: [{ scale: animatedValue }] }}>
             <View
+                testID="input-container"
                 style={[
                     styles.inputContainer,
                     { borderColor },

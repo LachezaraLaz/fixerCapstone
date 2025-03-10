@@ -28,6 +28,7 @@ const PasswordField = ({
                     isError={isError}
                 />
                 <TouchableOpacity
+                    testID="toggle-visibility"
                     style={styles.eyeIcon}
                     onPress={() => setShowPassword(!showPassword)} // Toggle password visibility
                 >

@@ -3,7 +3,7 @@ import { Pressable, Text, Animated, View } from 'react-native';
 import colors from '../../fixerClient/style/colors'; // Import colors
 import styles from '../style/orangeButtonStyle'; // Import styles from external file
 
-const OrangeButton = ({ title, onPress, variant = 'normal', style, disabled = false }) => {
+const OrangeButton = ({ title, onPress, testID, variant = 'normal', style, disabled = false }) => {
     const [hovered, setHovered] = useState(false);
     const animatedValue = useRef(new Animated.Value(1)).current;
 
@@ -33,6 +33,7 @@ const OrangeButton = ({ title, onPress, variant = 'normal', style, disabled = fa
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
                 onPress={!disabled ? onPress : null} // Disable onPress if button is disabled
+                testID={testID} // Ensure the testID is passed here
                 onMouseEnter={() => !disabled && setHovered(true)} // Works on web (optional)
                 onMouseLeave={() => !disabled && setHovered(false)} // Works on web (optional)
                 style={({ pressed }) => [

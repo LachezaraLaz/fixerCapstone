@@ -62,12 +62,12 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
     return (
         <View style={styles.container}>
 
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
                 <Ionicons name="arrow-back" size={28} color="#1E90FF" />
                 <Text style={styles.backText}>Back</Text>
             </TouchableOpacity>
 
-            <Text style={styles.title}>Sign In</Text>
+            <Text style={styles.title} testID='signInTitle'>Sign In</Text>
 
             {/* Email Field */}
             <InputField
@@ -86,7 +86,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 secureTextEntry={true} // Always hide password by default
             />
 
-            <OrangeButton title="Sign In" onPress={handleSignIn} testID={'sign-in-button'} variant="normal" />
+            <OrangeButton title="Sign In" onPress={handleSignIn} testID="sign-in-button" variant="normal" />
            
             <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
                 <Text style={styles.signUpText}>Don't have an account? Sign up</Text>

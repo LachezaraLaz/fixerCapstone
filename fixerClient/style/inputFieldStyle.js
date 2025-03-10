@@ -1,4 +1,4 @@
- import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
     inputContainer: {
@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4, // Add padding to prevent overlap with the border
         fontSize: 12, // Smaller font size for the floating label
         color: '#888', // Gray color for the floating label
+        borderRadius: 10,
     },
     // Disabled styles
     disabledInputContainer: {

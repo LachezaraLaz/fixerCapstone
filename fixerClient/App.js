@@ -24,6 +24,11 @@ import addReview from "./src/screens/addReview/addReview";
 
 import { Text } from "react-native";
 
+import { LogBox } from 'react-native';
+
+// Suppress the specific warning
+LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {

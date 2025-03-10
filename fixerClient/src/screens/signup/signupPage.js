@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import OrangeButton from "../../../components/orangeButton";
 import InputField from '../../../components/inputField';
 import PasswordField from '../../../components/passwordField';
+import Dropdown from '../../../components/dropdown';
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -337,7 +338,7 @@ export default function SignUpPage({ navigation }) {
                             onChangeText={formatPostalCode}
                             maxLength={7}
                         />              
-
+{/* 
                         <RNPickerSelect
                             onValueChange={(value) => setProvinceOrState(value)}
                             items={CANADIAN_PROVINCES.map((province) => ({
@@ -346,6 +347,16 @@ export default function SignUpPage({ navigation }) {
                             }))}
                             placeholder={{ label: 'Select Province', value: null }}
                             style={pickerSelectStyles}
+                        /> */}
+
+                        <Dropdown
+                            placeholder="Select Province"
+                            items={CANADIAN_PROVINCES.map((province) => ({
+                                label: province,
+                                value: province,
+                            }))}
+                            onValueChange={(value) => setProvinceOrState(value)}
+                            value={provinceOrState}
                         />
 
                         <InputField

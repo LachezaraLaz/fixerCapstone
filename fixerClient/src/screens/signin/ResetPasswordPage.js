@@ -3,11 +3,29 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios from 'axios';
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module fixerClient
+ */
+
 export default function ResetPasswordPage({ route, navigation }) {
     const { email } = route.params; // Get the email from the previous page
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    /**
+     * Handles the password reset process.
+     * 
+     * This function performs the following steps:
+     * 1. Checks if the new password and confirm password fields are filled.
+     * 2. Ensures that the new password and confirm password match.
+     * 3. Sends a POST request to the server to update the password.
+     * 4. Displays appropriate alerts based on the success or failure of the operation.
+     * 5. Navigates back to the sign-in page upon successful password reset.
+     * 
+     * @async
+     * @function handleResetPassword
+     * @returns {Promise<void>}
+     */
     const handleResetPassword = async () => {
         if (!newPassword || !confirmPassword) {
             Alert.alert('Error', 'All fields are required');

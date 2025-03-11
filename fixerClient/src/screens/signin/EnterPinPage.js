@@ -3,10 +3,25 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios from 'axios';
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module fixerClient
+ */
+
 export default function EnterPinPage({ route, navigation }) {
     const { email } = route.params; // Get the email from the previous page
     const [pin, setPin] = useState('');
 
+    /**
+     * Handles the submission of the PIN.
+     * 
+     * This function validates the PIN input and sends a request to the server to validate the PIN.
+     * If the PIN is valid, it navigates to the password reset page.
+     * If the PIN is invalid or an error occurs, it displays an appropriate error message.
+     * 
+     * @async
+     * @function handlePinSubmit
+     * @returns {Promise<void>}
+     */
     const handlePinSubmit = async () => {
         if (!pin) {
             Alert.alert('Error', 'PIN field is required');

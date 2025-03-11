@@ -3,10 +3,27 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios from "axios";
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module professionalClient
+ */
+
 export default function ForgotPasswordPage({ navigation }) {
     const [email, setEmail] = useState('');
     const [isPinSent, setIsPinSent] = useState(false); // Track if PIN has been sent
 
+    /**
+     * Handles the forgot password process by sending a password reset request.
+     * 
+     * This function checks if the email field is filled. If not, it shows an alert indicating that the email field is required.
+     * If the email field is filled, it sends a POST request to the server to request a password reset.
+     * 
+     * On a successful response (status 200), it shows a success alert and updates the state to indicate that the PIN has been sent.
+     * If an error occurs, it shows an error alert with the appropriate message.
+     * 
+     * @async
+     * @function handleForgotPassword
+     * @returns {Promise<void>}
+     */
     const handleForgotPassword = async () => {
         if (!email) {
             Alert.alert('Error', 'Email field is required');

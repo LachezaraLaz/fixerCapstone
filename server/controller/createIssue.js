@@ -4,7 +4,27 @@ const { fixerClient } = require('../model/fixerClientModel');
 const { getCoordinatesFromAddress } = require('../services/geoCodingService');
 const { logger } = require('../utils/logger');
 
+/**
+ * @module server/controller
+ */
 
+/**
+ * Creates a new issue based on the provided request data.
+ * 
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.title - The title of the issue.
+ * @param {string} req.body.description - The description of the issue.
+ * @param {string} req.body.professionalNeeded - The type of professional needed for the issue.
+ * @param {string} req.body.email - The email of the user creating the issue.
+ * @param {string} [req.body.status='open'] - The status of the issue (default is 'open').
+ * @param {Object} req.file - The file object containing the uploaded image (optional).
+ * @param {Object} res - The response object.
+ * 
+ * @returns {Promise<void>} - Returns a promise that resolves to void.
+ * 
+ * @throws {Error} - Throws an error if the issue creation fails.
+ */
 const createIssue = async (req, res) => {
     const { title, description, professionalNeeded, email, status = 'open' } = req.body;
     let imageUrl = null;

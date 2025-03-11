@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios from 'axios';
 import MapView, { Marker } from 'react-native-maps';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import OrangeButton from "../../../components/orangeButton";
 import InputField from '../../../components/inputField';
 import PasswordField from '../../../components/passwordField';
 import Dropdown from '../../../components/dropdown';
 
 import { IPAddress } from '../../../ipAddress';
+
+/**
+ * @module fixerClient
+ */
 
 // List of Canadian provinces
 const CANADIAN_PROVINCES = [
@@ -45,7 +49,7 @@ export default function SignUpPage({ navigation }) {
     const [isError, setIsError] = useState(false);
 
     //once email and password are valid, then the rest of the fields appear
-    const [showNameAndAddressFields, setShowNameAndAddressFields] = useState(false); 
+    const [showNameAndAddressFields, setShowNameAndAddressFields] = useState(false);
 
     // Password criteria states
     const [hasMinLength, setHasMinLength] = useState(false);
@@ -103,7 +107,7 @@ export default function SignUpPage({ navigation }) {
     const handleConfirmPasswordChange = (text) => {
         setConfirmPassword(text);
     };
-   
+
     // Handle password and confirm password validation
     const validatePasswords = () => {
         return (
@@ -115,13 +119,13 @@ export default function SignUpPage({ navigation }) {
             password === confirmPassword
         );
     };
-    
+
     // first and last name fields validation
     const validateName = (name) => {
         if (!name) return false; // Name cannot be empty
         const nameRegex = /^[A-Za-z-' ]+$/; // Only letters, hyphens, apostrophes, and spaces
         return nameRegex.test(name) && name.charAt(0) === name.charAt(0).toUpperCase(); // First letter must be capitalized
-    };   
+    };
 
     const filterNameInput = (text) => {
         // Use a regular expression to allow only letters, hyphens, and apostrophes
@@ -153,7 +157,19 @@ export default function SignUpPage({ navigation }) {
         }
     }
 
-    //backend
+    /**
+     * Handles the sign-up process for a new user.
+     *
+     * This function performs the following steps:
+     * 1. Validates that all required fields are filled.
+     * 2. Checks if the password and confirm password fields match.
+     * 3. Sends a POST request to the server to register the new user.
+     * 4. Handles various error scenarios including user already exists, network errors, and unexpected errors.
+     *
+     * @async
+     * @function handleSignUp
+     * @returns {Promise<void>} - A promise that resolves when the sign-up process is complete.
+     */
     async function handleSignUp() {
         if (!email || !password || !confirmPassword || !street || !postalCode) {
             Alert.alert('Error', 'All fields are required');
@@ -170,7 +186,7 @@ export default function SignUpPage({ navigation }) {
         if (password !== confirmPassword) {
             Alert.alert('Error', 'Passwords do not match');
             return;
-        } 
+        }
         if (!validateName(firstName) || !validateName(lastName)) {
             Alert.alert('Error', 'First name and last name must start with a capital letter.');
             return;
@@ -210,7 +226,19 @@ export default function SignUpPage({ navigation }) {
         }
     }
 
-    //verify the address function
+    /**
+     * Asynchronously verifies the address by sending a POST request to the server.
+     *
+     * This function sends the street and postal code to the server for verification.
+     * If the address is verified successfully, it updates the state with the validity
+     * of the address and its coordinates. In case of an error, it displays an alert
+     * with the appropriate error message.
+     *
+     * @async
+     * @function handleVerifyAddress
+     * @returns {Promise<void>} A promise that resolves when the address verification is complete.
+     * @throws Will display an alert with an error message if the request fails.
+     */
     const handleVerifyAddress = async () => {
         try {
             const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
@@ -244,11 +272,11 @@ export default function SignUpPage({ navigation }) {
                     <Ionicons name="arrow-back" size={28} color="#1E90FF" />
                     <Text style={styles.backText}>Back</Text>
                 </TouchableOpacity>
-                
+
                 <Text style={styles.title}>Sign Up</Text>
 
-                <InputField 
-                    placeholder="Email" 
+                <InputField
+                    placeholder="Email"
                     value={email}
                     onChangeText={validateEmail}
                     isValid={isValid}
@@ -335,7 +363,7 @@ export default function SignUpPage({ navigation }) {
                             value={postalCode}
                             onChangeText={formatPostalCode}
                             maxLength={7}
-                        />              
+                        />
 
                         {/* <Dropdown
                             placeholder="Select Province"
@@ -350,7 +378,7 @@ export default function SignUpPage({ navigation }) {
                         <InputField
                             placeholder="Country"
                             value={country}
-                            disabled 
+                            disabled
                         /> */}
 
                         <OrangeButton title="Verify Address" onPress={handleVerifyAddress} variant="normal" />
@@ -372,7 +400,7 @@ export default function SignUpPage({ navigation }) {
                                 <Marker coordinate={coordinates} />
                             </MapView>
                         )}
-                        
+
                         {/* Sign Up Button (Enabled only if address is verified) */}
                         <OrangeButton title="Sign Up" onPress={handleSignUp} testID="sign-up-button" disabled={!isAddressValid} variant="normal" />
                     </>

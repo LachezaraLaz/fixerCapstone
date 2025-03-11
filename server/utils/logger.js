@@ -1,3 +1,8 @@
+
+/**
+ * @module server/utils
+ */
+
 const pino = require('pino');
 const transport = pino.transport({
     target: '@logtail/pino',
@@ -18,7 +23,11 @@ const logger = pino(
     transport
 );
 
-// Function to dynamically set log level
+/**
+ * Sets the log level for the logger.
+ *
+ * @param {string} level - The new log level to be set.
+ */
 const setLogLevel = (level) => {
     logger.level = level;
     currentLogLevel = level;

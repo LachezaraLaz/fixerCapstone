@@ -9,6 +9,10 @@ import OrangeButton from "../../../components/orangeButton";
 import NotificationButton from "../../../components/notificationButton";
 import SearchBar from "../../../components/searchBar";
 
+/**
+ * @module fixerClient
+ */
+
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const { chatClient } = useChatContext();
 
@@ -18,6 +22,21 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         });
     }, [navigation]);
 
+    /**
+     * Handles the user logout process.
+     * 
+     * This function performs the following steps:
+     * 1. Disconnects the user from the chat client if it exists.
+     * 2. Removes authentication and user-related data from AsyncStorage.
+     * 3. Displays an alert indicating successful logout.
+     * 4. Sets the login state to false.
+     * 
+     * If an error occurs during the process, it logs the error to the console and displays an error alert.
+     * 
+     * @async
+     * @function handleLogout
+     * @returns {Promise<void>} A promise that resolves when the logout process is complete.
+     */
     const handleLogout = async () => {
         try {
             if (chatClient) {

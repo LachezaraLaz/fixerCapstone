@@ -4,11 +4,21 @@ import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../../style/filterIssuePage/filterIssueStyle';
 
+/**
+ * @module professionalClient
+ */
+
 const FilterIssuePage = ({ navigation, route }) => {
     const { typesOfWork, selectedFilters, distanceRange: initialDistanceRange } = route.params;
     const [filters, setFilters] = React.useState(selectedFilters);
     const [distanceRange, setDistanceRange] = React.useState(initialDistanceRange || [0, 50]);
 
+    /**
+     * Handles the selection of a filter type. If the filter type is already selected, it removes it from the filters.
+     * Otherwise, it adds the filter type to the filters.
+     *
+     * @param {string} type - The filter type to be selected or deselected.
+     */
     const handleFilterSelect = (type) => {
         if (filters.includes(type)) {
             setFilters(filters.filter((filter) => filter !== type));
@@ -17,6 +27,12 @@ const FilterIssuePage = ({ navigation, route }) => {
         }
     };
 
+    /**
+     * Navigates to the 'Home' screen with the selected filters and distance range.
+     *
+     * @function handleApplyFilters
+     * @returns {void}
+     */
     const handleApplyFilters = () => {
         navigation.navigate('Home', { selectedFilters: filters, distanceRange });
     };

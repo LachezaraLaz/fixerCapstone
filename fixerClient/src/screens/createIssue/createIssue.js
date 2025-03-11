@@ -28,6 +28,9 @@ import OrangeButton from "../../../components/orangeButton";
 import MapView, { Marker } from "react-native-maps";
 
 export default function CreateIssue({ navigation }) {
+    const [loadingAi, setLoadingAi] = useState(false);
+    const [aiSuggestion, setAiSuggestion] = useState('');
+    const [showAiPreview, setShowAiPreview] = useState(false);
     // List of fields in the page
     const [description, setDescription] = useState('');
     const [selectedService, setSelectedService] = useState(null);
@@ -72,7 +75,38 @@ export default function CreateIssue({ navigation }) {
         }
     };
     const handleAiEnhancement = async () => {
-        console.log('AI Enhancement triggered for description:', description);
+        if (!description.trim()) {
+            Alert.alert('No text', 'Please enter some description first.');
+            return;
+        }
+
+        try {
+            setLoadingAi(true);
+            // Call AI endpoint
+            const response = await axios.post(
+                'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
+                { description }
+            );
+
+            const { improvedDescription } = response.data;
+            setAiSuggestion(improvedDescription);
+            setShowAiPreview(true);
+        } catch (error) {
+            console.error('Error enhancing description:', error);
+            Alert.alert('Error', 'Could not enhance your description. Please try again.');
+        } finally {
+            setLoadingAi(false);
+        }
+    };
+
+    const handleAcceptAiSuggestion = () => {
+        setDescription(aiSuggestion);
+        setShowAiPreview(false);
+    };
+
+    const handleRejectAiSuggestion = () => {
+        setAiSuggestion('');
+        setShowAiPreview(false);
     };
 
     // posting the issue by the user
@@ -192,10 +226,57 @@ export default function CreateIssue({ navigation }) {
                             textAlignVertical: 'top', // Ensures text starts from the top
                         }} multiline/>
 
-                    {/* AI Enhancement Button*/}
-                    <TouchableOpacity style={styles.aiEnhanceButton} onPress={handleAiEnhancement}>
-                        <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
+                    {/* AI Enhancement Button */}
+                    <TouchableOpacity
+                        style={[styles.aiEnhanceButton, { marginTop: 10 }]}
+                        onPress={handleAiEnhancement}
+                        disabled={loadingAi}
+                    >
+                        {loadingAi ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
+                        )}
                     </TouchableOpacity>
+                    {/* Show AI preview */}
+                    {showAiPreview && (
+                        <View style={{
+                            borderWidth: 1,
+                            borderColor: '#ccc',
+                            borderRadius: 8,
+                            padding: 10,
+                            marginTop: 20,
+                            backgroundColor: '#f9f9f9'
+                        }}>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 8 }}>
+                                AI's Suggestion:
+                            </Text>
+                            <Text style={{ color: '#333', marginBottom: 16 }}>{aiSuggestion}</Text>
+
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <TouchableOpacity style={{
+                                    backgroundColor: 'green',
+                                    padding: 10,
+                                    borderRadius: 8,
+                                    marginRight: 10
+                                }}
+                                                  onPress={handleAcceptAiSuggestion}
+                                >
+                                    <Text style={{ color: '#fff' }}>Accept</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={{
+                                    backgroundColor: 'red',
+                                    padding: 10,
+                                    borderRadius: 8
+                                }}
+                                                  onPress={handleRejectAiSuggestion}
+                                >
+                                    <Text style={{ color: '#fff' }}>Reject</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
                 </View>
                 {/* Word & Character Counter - Positioned Below the Input */}
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 5 }}>

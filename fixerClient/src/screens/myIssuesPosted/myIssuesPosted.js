@@ -4,7 +4,6 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
-
 import { styles } from '../../../style/myIssues/myIssuesStyle';
 import JobBox from '../../../components/jobBox';
 import NotificationButton from "../../../components/notificationButton";
@@ -36,7 +35,7 @@ export default function MyIssuesPosted() {
             const decodedToken = jwtDecode(token);
             const userEmail = decodedToken.email;
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`, {
+            const response = await axios.get(`http://${IPAddress}:3000/issue/user/${userEmail}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
@@ -100,7 +99,7 @@ export default function MyIssuesPosted() {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             >
                 {jobs[selectedTab].length > 0 ? (
-                    jobs[selectedTab].map(job => <JobBox key={job._id} job={job} navigation={navigation} />)
+                    jobs[selectedTab].map(job => <JobBox key={job.id} job={job} navigation={navigation} />)
                 ) : (
                     <Text style={styles.noJobsText}>No jobs available</Text>
                 )}

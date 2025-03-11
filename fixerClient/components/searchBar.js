@@ -3,7 +3,7 @@ import {View, TextInput, TouchableOpacity, StyleSheet, Platform} from 'react-nat
 import { Ionicons } from '@expo/vector-icons';
 import styles from '../style/searchBarStyle'; // Import styles from external file
 
-const SearchBar = ({ onSearch, onFilter }) => {
+const SearchBar = ({ testID, filterButtonTestID, onSearch, onFilter }) => {
     return (
         <View style={styles.wrapper}>
             {/* Search Bar */}
@@ -14,13 +14,13 @@ const SearchBar = ({ onSearch, onFilter }) => {
                     placeholderTextColor="#999"
                 />
                 {/* Search Button */}
-                <TouchableOpacity style={styles.iconButton} onPress={onSearch}>
+                <TouchableOpacity testID={testID} style={styles.iconButton} onPress={onSearch}>
                     <Ionicons name="search" size={20} color="#666" />
                 </TouchableOpacity>
             </View>
 
             {/* Separate Filter Button */}
-            <TouchableOpacity style={styles.filterButton} onPress={onFilter}>
+            <TouchableOpacity testID={filterButtonTestID} style={styles.filterButton} onPress={onFilter}>
                 <Ionicons name="filter" size={20} color="#666" />
             </TouchableOpacity>
         </View>

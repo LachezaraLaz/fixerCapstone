@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, Button, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { styles } from '../../../style/profilePage/profilePageStyle';
 import { IPAddress } from '../../../ipAddress';
+import SettingsButton from "../../../components/settingsButton";
 
 const ProfilePage = () => {
     const [professional, setProfessional] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
+    const [reviews, setReviews] = useState([]);
+
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
+
                 if (token) {
                     const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/profile`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
+                        headers: { Authorization: `Bearer ${token}` },
                     });
                     setProfessional(response.data);
                 } else {
@@ -35,165 +37,168 @@ const ProfilePage = () => {
         fetchProfileData();
     }, []);
 
-    if (loading) {
-        return <Text>Loading...</Text>;
-    }
-
-    const handleViewReviews = () => {
-        navigation.navigate('ReviewsPage', { professionalEmail: professional.email });
+    const fetchReviews = async () => {
+        try {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/${professional.email}/reviews`);
+            setReviews(response.data);
+            console.log(response.data);
+            console.log(reviews.length)
+        } catch (error) {
+            console.log('Error fetching reviews:', error.response || error.message);
+            //Alert.alert('Error', 'Failed to load reviews.');
+        } finally {
+            setLoading(false);
+        }
     };
+    useEffect(() => {
+        fetchReviews();
+    }, []);
 
-    if (!professional) {
-        return <Text>Error loading profile.</Text>;
-    }
+
+    if (loading) return <Text>Loading...</Text>;
+    if (!professional) return <Text>Error loading profile.</Text>;
 
     const handleEditPress = () => {
-        Alert.alert(
-            "Feature Unavailable",
-            "The editing feature is not available yet, but please keep an eye out for future updates!",
-            [{ text: "OK", onPress: () => console.log("Alert closed") }]
-        );
+        alert("Editing is not available yet. Stay tuned for updates!");
     };
 
     const handleVerifyCredentials = () => {
         navigation.navigate('CredentialFormPage');
     };
 
+    const renderStars = (rating) => {
+        const roundedRating = Math.round(rating);
+        return Array(roundedRating).fill('⭐').map((star, index) => (
+            <Text key={index} style={styles.ratingText}>{star}</Text>
+        ));
+    };
+
     return (
-        <View style={styles.container}>
-            {/* Custom Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('MainTabs')}>
-                    <Ionicons name="arrow-back" size={28} color="#333" />
-                </TouchableOpacity>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            <View style={styles.globalFont}>
+                <View style={styles.customHeader}>
+                    <Text style={styles.headerLogo}>Fixr</Text>
+                    <Text style={styles.headerTitle}>Profile</Text>
+                    <SettingsButton onPress={() => navigation.navigate('SettingsPage')} />
+                </View>
 
-                <Text style={styles.headerTitle}>ProfilePage</Text>
-
-                {/* Pencil Icon (Shows Alert When Tapped) */}
-                <TouchableOpacity onPress={handleEditPress} testID="edit-button">
-                    <MaterialIcons name="edit" size={24} color="black" />
-                </TouchableOpacity>
-            </View>
-
-            {/* Profile Details Section */}
-            <View style={styles.profileContainer}>
-                {/* Profile Picture */}
-                <Image source={require('../../../assets/profile.jpg')} style={styles.profileImage} />
-
-                {/* Name & Rating */}
-                <View style={styles.nameContainer}>
+                <View style={styles.profileContainer}>
+                    <Image source={{ uri: professional.idImageUrl || 'https://via.placeholder.com/50' }} style={styles.profileImage} />
                     <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
-                    <Text style={styles.ratingText}>⭐ {professional.totalRating || 0} </Text>
-                    <Text style={styles.emailText}> ({professional.reviewCount} reviews)</Text>
+
+                    <View style={styles.ratingContainer}>
+                        {renderStars(professional.totalRating || 0)}
+                        <Text style={styles.reviewCountText}> ({professional.totalRating} )</Text>
+                    </View>
                 </View>
 
-                {/* Email */}
-                <Text style={styles.emailText}>{professional.email}</Text>
-            </View>
-
-            {/* CONDITIONAL VIEWS BASED ON formComplete AND approved */}
-            {!professional.formComplete ? (
-                // First view: Form not completed
-                <View style={styles.buttonContainer}>
-                    <Button title="Verify Credentials" onPress={handleVerifyCredentials} />
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.sectionTitle}>Description</Text>
+                    <Text style={styles.descriptionText}>
+                        {professional.description || "No description provided."}
+                    </Text>
                 </View>
-            ) : professional.approved ? (
-                <Text style={styles.verifiedText}>Credentials Verified!</Text>
-            ) : (
-                <Text style={styles.waitingText}>Credential Verification Status: Waiting...</Text>
-            )}
 
-            {/* Button to View Reviews */}
-            <View style={styles.buttonContainer}>
-                <Button title="View Reviews" onPress={handleViewReviews} />
-            </View>
+                <View style={styles.reviewsContainer}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={styles.sectionTitle}>Rating & Reviews</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})}>
+                            <Text style={styles.reviewCountLink}> ({reviews.length})</Text>
+                        </TouchableOpacity>
+                    </View>
 
-            {/* Help Button  */}
-            <View style={styles.section}>
-                <Text style={styles.sectionText}>Help</Text>
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#f28500" style={{ marginVertical: 10 }} />
+                    ) : (
+                        <ScrollView
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.reviewScrollContainer}
+                        >
+                            {reviews.length > 0 ? (
+                                reviews.slice(0, 5).map((review, index) => (
+                                    <View key={index} style={styles.reviewCard}>
+                                        <View style={styles.reviewerHeader}>
+                                            <Image source={{ uri: review.reviewerImage || 'https://via.placeholder.com/50' }} style={styles.reviewerImage} />
+                                            <View>
+                                                <Text style={styles.reviewerName}>{review.professionalNeeded}</Text>
+                                                <Text style={styles.reviewerLocation}>{review.location || 'Unknown Location'}</Text>
+                                            </View>
+                                        </View>
+
+                                        <Text style={styles.reviewText}>{review.comment || 'No comment provided.'}</Text>
+
+                                        <View style={styles.reviewRatingContainer}>
+                                            <View style={styles.starContainer}>
+                                                {Array(Math.floor(review.rating)).fill('⭐').map((star, i) => (
+                                                    <Text key={i} style={styles.ratingText}>{star}</Text>
+                                                ))}
+                                            </View>
+                                            <Text style={styles.ratingNumber}>{review.rating.toFixed(1)}</Text>
+                                            <Text style={styles.reviewDate}>{review.date}</Text>
+                                        </View>
+                                    </View>
+                                ))
+                            ) : (
+                                <Text style={styles.noReviewsText}>No reviews available.</Text>
+                            )}
+                        </ScrollView>
+                    )}
+                </View>
+
+
+
+                <View style={styles.emailContainer}>
+                    <Text style={styles.sectionTitle}>Email Address</Text>
+                    <Text style={styles.emailText}>{professional.email}</Text>
+                </View>
+
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Payment Method</Text>
+                    <View style={styles.inputBox}>
+                        <Text>💳 Visa ending in 1234</Text>
+                        <Text>Expiry 06/2024</Text>
+                    </View>
+                </View>
+
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>Language</Text>
+                    <View style={styles.inputBox}>
+                        <Text>English</Text>
+                    </View>
+                </View>
+
+                <View style={styles.certificatesContainer}>
+                    <Text style={styles.sectionTitle}>Certificates</Text>
+
+                    {professional.certificates && professional.certificates.length > 0 ? (
+                        professional.certificates.map((certificate, index) => (
+                            <View key={index} style={styles.certificateItem}>
+                                <View>
+                                    <Text style={styles.certificateTitle}>{certificate.name}</Text>
+                                    <Text style={styles.certificateSubText}>{certificate.field}</Text>
+                                </View>
+                                <Text style={styles.issuedDate}>Issued Date: {certificate.issuedDate}</Text>
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={styles.noCertificatesText}>No certificates available.</Text>
+                    )}
+                </View>
+
+
+                {!professional.formComplete ? (
+                    <TouchableOpacity style={styles.verifyButton} onPress={handleVerifyCredentials}>
+                        <Text style={styles.verifyButtonText}>Verify Credentials</Text>
+                    </TouchableOpacity>
+                ) : professional.approved ? (
+                    <Text style={styles.verifiedText}>Credentials Verified!</Text>
+                ) : (
+                    <Text style={styles.waitingText}>Credential Verification: Pending...</Text>
+                )}
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-        padding: 16,
-        alignItems: 'center', // Ensure everything is centered
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        backgroundColor: '#fff',
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    profileContainer: {
-        alignItems: 'center',
-        marginTop: 20,
-        width: '100%', // Ensure full width for alignment
-    },
-    profileImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginBottom: 10, // Extra space to separate from name
-    },
-    nameContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    nameText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#333333',
-    },
-    ratingText: {
-        fontSize: 18,
-        color: '#FFD700',
-        marginLeft: 6, // Add space between name and star
-    },
-    emailText: {
-        fontSize: 16,
-        color: '#666666',
-        marginTop: 6, // Space between name and email
-    },
-    verifiedText: {
-        fontSize: 20,
-        color: 'green',
-        marginTop: 20,
-    },
-    waitingText: {
-        fontSize: 18,
-        color: 'orange',
-        marginTop: 20,
-    },
-    buttonContainer: {
-        marginVertical: 10,
-    },
-    section: {
-        backgroundColor: '#f0f0f0',
-        padding: 12,
-        marginVertical: 8,
-        borderRadius: 8,
-        alignItems: 'center',
-        width: '90%',
-    },
-    sectionText: {
-        fontSize: 18,
-        color: '#333333',
-    },
-});
-
 export default ProfilePage;
-
-

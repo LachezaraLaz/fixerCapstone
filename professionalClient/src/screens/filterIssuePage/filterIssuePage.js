@@ -7,7 +7,7 @@ import { styles } from '../../../style/filterIssuePage/filterIssueStyle';
 const FilterIssuePage = ({ navigation, route }) => {
     const { typesOfWork, selectedFilters, distanceRange: initialDistanceRange } = route.params;
     const [filters, setFilters] = React.useState(selectedFilters);
-    const [distanceRange, setDistanceRange] = React.useState(initialDistanceRange || [0, 50]); // Use passed distance range or default
+    const [distanceRange, setDistanceRange] = React.useState(initialDistanceRange || [0, 50]);
 
     const handleFilterSelect = (type) => {
         if (filters.includes(type)) {
@@ -28,12 +28,23 @@ const FilterIssuePage = ({ navigation, route }) => {
                     <Ionicons name="arrow-back" size={24} color="#333" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Filters</Text>
-                <TouchableOpacity onPress={handleApplyFilters}>
-                    <Text style={styles.applyButton}>Apply</Text>
-                </TouchableOpacity>
             </View>
 
             <ScrollView contentContainerStyle={styles.filterList}>
+
+                <View style={styles.filterGrid}>
+                    {typesOfWork.map((type, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() => handleFilterSelect(type)}
+                            style={[styles.filterButton, filters.includes(type) && styles.filterButtonSelected]}
+                        >
+                            <Ionicons name="construct" size={24} color={filters.includes(type) ? '#fff' : '#f28500'} />
+                            <Text style={[styles.filterButtonText, filters.includes(type) && { color: '#fff' }]}>{type}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+
                 <Text style={styles.sectionTitle}>Distance Range (km)</Text>
                 <View style={styles.distanceRangeContainer}>
                     <Text>{distanceRange[0]} km</Text>
@@ -44,26 +55,36 @@ const FilterIssuePage = ({ navigation, route }) => {
                         step={1}
                         value={distanceRange[1]}
                         onValueChange={(value) => setDistanceRange([0, value])}
-                        minimumTrackTintColor="orange"
+                        minimumTrackTintColor="#f28500"
                         maximumTrackTintColor="#ddd"
                     />
                     <Text>{distanceRange[1]} km</Text>
                 </View>
 
-                <Text style={styles.sectionTitle}>Types of Work</Text>
-                {typesOfWork.map((type, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        onPress={() => handleFilterSelect(type)}
-                        style={[
-                            styles.filterButton,
-                            filters.includes(type) && styles.filterButtonSelected,
-                        ]}
-                    >
-                        <Text style={styles.filterButtonText}>{type}</Text>
-                    </TouchableOpacity>
-                ))}
+
+
+                {/*<Text style={styles.sectionTitle}>Budget Range</Text>*/}
+                {/*<View style={styles.distanceRangeContainer}>*/}
+                {/*    <Text>${distanceRange[0]}</Text>*/}
+                {/*    <Slider*/}
+                {/*        style={styles.slider}*/}
+                {/*        minimumValue={5}*/}
+                {/*        maximumValue={1000}*/}
+                {/*        step={1}*/}
+                {/*        value={distanceRange[1]}*/}
+                {/*        onValueChange={(value) => setDistanceRange([5, value])}*/}
+                {/*        minimumTrackTintColor="orange"*/}
+                {/*        maximumTrackTintColor="#ddd"*/}
+                {/*    />*/}
+                {/*    <Text>${distanceRange[1]}</Text>*/}
+                {/*</View>*/}
+
             </ScrollView>
+            <View style={styles.applyButtonContainer}>
+                <TouchableOpacity style={styles.applyButton} onPress={handleApplyFilters}>
+                    <Text style={styles.applyButtonText}>Apply The Filter</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };

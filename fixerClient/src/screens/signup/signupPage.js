@@ -155,7 +155,7 @@ export default function SignUpPage({ navigation }) {
 
     //backend
     async function handleSignUp() {
-        if (!email || !password || !confirmPassword || !street || !postalCode || !provinceOrState || !country) {
+        if (!email || !password || !confirmPassword || !street || !postalCode) {
             Alert.alert('Error', 'All fields are required');
             return;
         }

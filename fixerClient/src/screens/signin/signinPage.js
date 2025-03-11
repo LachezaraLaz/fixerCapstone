@@ -49,6 +49,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
 
             }
         } catch (error) {
+            console.log('Error:', error); // Add this line
             if (error.response && error.response.status === 400) {
                 Alert.alert("Error", error.response.data.statusText || 'Wrong email or password');
             } else if (error.response && error.response.status === 403) {
@@ -91,6 +92,10 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
             <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
                 <Text style={styles.signUpText}>Don't have an account? Sign up</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordPage')}>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -127,4 +132,10 @@ const styles = StyleSheet.create({
         marginTop: 15,
         fontSize: 16,
     },
+    forgotPasswordText: {
+        color: '#1E90FF',
+        textAlign: 'center',
+        marginTop: 15,
+        fontSize: 16,
+    }
 });

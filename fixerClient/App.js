@@ -11,6 +11,9 @@ import EditIssue from './src/screens/editIssue/editIssue';
 import SettingsPage from './src/screens/settingsPage/settingsPage';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
+import ForgotPasswordPage from "./src/screens/signin/ForgotPasswordPage";
+import EnterPin from "./src/screens/signin/EnterPinPage";
+import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage";
 import SignUpPage from "./src/screens/signup/signupPage";
 import NotificationPage from "./src/screens/notificationPage/notificationPage";
 import NotificationDetail from "./src/screens/notificationDetail/notificationDetail";
@@ -111,6 +114,10 @@ export default function App() {
                                     {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                 </Stack.Screen>
                                 <Stack.Screen name="SignUpPage" component={SignUpPage} options={{ headerShown: false }}/>
+                                <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                <Stack.Screen name="EnterPin" component={EnterPin} />
+                                <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
                             </>
 
                         </Stack.Navigator>

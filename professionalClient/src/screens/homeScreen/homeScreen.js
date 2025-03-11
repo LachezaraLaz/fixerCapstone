@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Linking } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
-import { IPAddress } from '../../../ipAddress';
 import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 // Utility function to calculate distance using Haversine formula
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const toRadians = (degrees) => degrees * (Math.PI / 180);
-    const R = 6371; // Radius of the Earth in km
+    const R = 6371; // Earth radius in km
     const dLat = toRadians(lat2 - lat1);
     const dLon = toRadians(lon2 - lon1);
     const a =
@@ -21,7 +20,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
         Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in kilometers
+    return R * c; // Distance in km
 };
 
 export default function HomeScreen({ route, setIsLoggedIn }) {
@@ -39,11 +38,16 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const fetchAllIssues = async () => {
         try {
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
-            setIssues(response.data.jobs);
+            const fixedIssues = response.data.jobs
+                .map(issue => ({
+                    ...issue,
+                    latitude: issue.latitude ? parseFloat(issue.latitude) : null,
+                    longitude: issue.longitude ? parseFloat(issue.longitude) : null,
+                }))
+                .filter(issue => issue.latitude !== null && issue.longitude !== null); // Remove invalid locations
+            setIssues(fixedIssues);
 
-            const uniqueTypes = [
-                ...new Set(response.data.jobs.map((issue) => issue.professionalNeeded)),
-            ];
+            const uniqueTypes = [...new Set(fixedIssues.map(issue => issue.professionalNeeded))];
             setTypesOfWork(uniqueTypes);
         } catch (error) {
             console.error('Error fetching issues:', error);
@@ -54,20 +58,17 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     };
 
     const getCurrentLocation = async () => {
-        try {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission to access location was denied');
-                return;
-            }
-            const location = await Location.getCurrentPositionAsync({});
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert("Location Permission Denied", "To use this feature, enable location services in settings.", [{ text: "OK", onPress: () => Linking.openSettings() }]);
+            return;
+        }
+        const location = await Location.getCurrentPositionAsync({});
+        if (location && location.coords) {
             setCurrentLocation({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
             });
-        } catch (error) {
-            console.error('Error getting location:', error);
-            Alert.alert('Error', 'Could not get your current location.');
         }
     };
 
@@ -87,15 +88,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     const handleLogout = async () => {
         try {
-            if (chatClient) {
-                await chatClient.disconnectUser();
-            }
-
-            await AsyncStorage.removeItem('token');
-            await AsyncStorage.removeItem('streamToken');
-            await AsyncStorage.removeItem('userId');
-            await AsyncStorage.removeItem('userName');
-
+            if (chatClient) await chatClient.disconnectUser();
+            await AsyncStorage.multiRemove(['token', 'streamToken', 'userId', 'userName']);
             Alert.alert('Logged out', 'You have been logged out successfully');
             setIsLoggedIn(false);
         } catch (error) {
@@ -105,10 +99,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     };
 
     const filteredIssues = React.useMemo(() => {
-        const uniqueIssues = Array.from(new Set(issues.map(issue => issue._id)))
-            .map(id => issues.find(issue => issue._id === id));
-
-        return uniqueIssues.filter((issue) => {
+        return issues.filter(issue => {
             const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
             let matchesDistance = true;
             if (currentLocation && route.params?.distanceRange) {
@@ -167,38 +158,37 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     return (
         <SafeAreaView style={styles.container}>
+            {/* Profile Button */}
             <View style={styles.profileButton}>
                 <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
                     <Ionicons name="person-circle" size={32} color="#333" />
                 </TouchableOpacity>
             </View>
+
+            {/* Notification Button */}
             <View style={styles.notificationButton}>
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
                     <Ionicons name="notifications-outline" size={28} color="#333" />
                 </TouchableOpacity>
             </View>
+
+            {/* Recenter Button */}
             <View style={styles.recenterButtonContainer}>
                 <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
-                    <Ionicons name="locate" size={28} color="#333" />
+                    <Ionicons name="locate" size={30} color="#333" />
                 </TouchableOpacity>
             </View>
-            <Animated.ScrollView
-                ref={scrollViewRef}
-                contentContainerStyle={{ paddingBottom: 100 }}
-                onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                    { useNativeDriver: false }
-                )}
-                scrollEventThrottle={16}
-            >
+
+            <Animated.ScrollView ref={scrollViewRef} contentContainerStyle={{ paddingBottom: 100 }} scrollEventThrottle={16}>
+                {/* Map Section */}
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
                     <MapView
                         ref={mapRef}
                         style={styles.map}
                         showsUserLocation={true}
-                        showsMyLocationButton={false}  // Add this for Android so i can use my customize recenter button
-                        shouldRasterizeIOS={true} // Optimize for iOS
-                        renderToHardwareTextureAndroid={true} // Optimize for Android
+                        showsMyLocationButton={false}
+                        shouldRasterizeIOS={true}
+                        renderToHardwareTextureAndroid={true}
                         region={currentLocation ? {
                             latitude: currentLocation.latitude,
                             longitude: currentLocation.longitude,
@@ -211,11 +201,9 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
-
                         {filteredIssues.map((issue) => (
                             <Marker
                                 key={issue._id}
-                                testID={`marker-${issue._id}`}
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
                                 title={issue.title}
                                 description={issue.description}
@@ -224,6 +212,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     </MapView>
                 </Animated.View>
 
+                {/* Filter Button */}
                 <View style={styles.searchContainer}>
                     <TouchableOpacity
                         style={styles.filterButton}
@@ -237,6 +226,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     </TouchableOpacity>
                 </View>
 
+                {/* Issues List */}
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Issues</Text>
                     {filteredIssues.map((issue) => (
@@ -251,6 +241,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     ))}
                 </View>
 
+                {/* Logout Button */}
                 <View style={styles.logoutContainer}>
                     <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                         <Text style={styles.logoutText}>Logout</Text>

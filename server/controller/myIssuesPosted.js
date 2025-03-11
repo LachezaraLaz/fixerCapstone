@@ -1,5 +1,6 @@
 const { getJobsByUserEmail, updateJobStatus } = require('../repository/jobRepository');
 const { jobDTO } = require('../DTO/jobDTO');
+const {Jobs} = require("../model/createIssueModel");
 
 // GET /issue/user/:email route to fetch jobs for a specific user
 const getJobsByUser = async (req, res) => {
@@ -26,11 +27,9 @@ const getJobsByUser = async (req, res) => {
 // GET /issue/:jobId route to fetch a single job by its ID
 const getJobById = async (req, res) => {
     const { jobId } = req.params;
-    console.log('Received jobId:', jobId);
 
     try {
-        const job = await getJobById(jobId);
-
+        const job = await Jobs.findById(req.params.jobId);
         if (!job) {
             return res.status(404).json({ message: 'Job not found' });
         }
@@ -44,7 +43,26 @@ const getJobById = async (req, res) => {
 };
 
 // DELETE /issue/:id route to update job status (Reopen job)
-const deleteReopenJob = async (req, res) => {
+const reopenJob = async (req, res) => {
+    const jobId = req.params.id;
+    console.log(`Updating job status with ID: ${jobId} to open`);
+
+    try {
+        const updatedJob = await updateJobStatus(jobId);
+
+        if (!updatedJob) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        res.status(200).json({ message: `Job status updated to open`, job: jobDTO(updatedJob) });
+    } catch (error) {
+        console.error('Error updating job status:', error);
+        res.status(500).json({ message: 'Failed to update job status', error: error.message });
+    }
+};
+
+// DELETE /issue/:id route to update job status (Reopen job)
+const deleteJob = async (req, res) => {
     const jobId = req.params.id;
     const { status } = req.body;
     console.log(`Updating job status with ID: ${jobId} to ${status}`);
@@ -103,4 +121,4 @@ const updateJob = async (req, res) => {
     }
 };
 
-module.exports = { getJobsByUser, getJobById, deleteReopenJob, updateJob };
+module.exports = { getJobsByUser, getJobById, deleteJob, updateJob, reopenJob };

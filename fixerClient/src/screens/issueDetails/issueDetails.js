@@ -74,6 +74,39 @@ const IssueDetails = () => {
     const currentStatus = job.status?.toLowerCase() || "pending";
     const statusStyle = statusColors[currentStatus] || statusColors["pending"];
 
+    const ReopenIssue = async (id) => {
+        console.log("in reopen issue", id);
+        try {
+            // const token = await AsyncStorage.getItem('token');
+            // if (!token) {
+            //     Alert.alert('You are not logged in');
+            //     return;
+            // }
+            const job2 = await axios.get(`http://${IPAddress}:3000/issue/${jobId}`);
+            setJob(job2.data);
+
+            const newStatus = currentStatus.toLowerCase() === 'open' ? 'completed' : 'open';
+            console.log("before backened call", id,"new status ", newStatus );
+            const id= job.id;
+            console.log(id);
+
+            const response = await axios.delete(`http://${IPAddress}:3000/issue/reopen/${id}`,
+                { status: newStatus },
+                // { headers: { Authorization: `Bearer ${token}` } }
+            );
+            console.log(response);
+
+            if (response.status === 200) {
+                Alert.alert(`Job ${newStatus === 'closed' ? 'Closed' : 'Reopened'} successfully`);
+            } else {
+                Alert.alert(`Failed to ${newStatus === 'closed' ? 'Close' : 'Reopen'} the job`);
+            }
+        } catch (error) {
+            console.error(`Error updating job status to ${newStatus}:`, error);
+            Alert.alert(`An error occurred while trying to ${newStatus === 'closed' ? 'Close' : 'Reopen'} the job`);
+        }
+    };
+
 
     return (
         <ScrollView style={styles.container}>
@@ -94,7 +127,12 @@ const IssueDetails = () => {
                 </Text>
             </View>
 
-
+            {job.professionalEmail && (
+                <View>
+                    <Text style={styles.detailLabel}>Assigned Professional</Text>
+                    <Text style={styles.detailValue}> {job.professionalEmail}</Text>
+                </View>
+            )}
             <Text style={styles.detailLabel}>Created On:</Text>
             <Text style={styles.detailValue}>
                 {new Date(job.createdAt).toDateString()}{" "}
@@ -147,13 +185,13 @@ const IssueDetails = () => {
             {job.status.toLowerCase() === "completed" || job.status.toLowerCase() === "closed"? (
                 <>
                     <OrangeButton
-                        title="Add a Review"
+                        title="Add Review"
                         onPress={() => navigation.navigate("addReview", { jobId })}
                         style={styles.redirectButton}
                     />
                     <OrangeButton
-                        title="Reopen"
-                        onPress={() => navigation.navigate("ReopenJobScreen", { jobId })}
+                        title="Reopen Issue"
+                        onPress={() => ReopenIssue(job.id)}
                         style={styles.redirectButton}
                     />
                 </>

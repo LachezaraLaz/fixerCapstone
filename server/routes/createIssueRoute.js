@@ -1,7 +1,8 @@
 const express = require('express');
 const { createIssue } = require('../controller/createIssue');
-const { getJobsByUser, deleteReopenJob, updateJob } = require('../controller/myIssuesPosted');
-const { getJobById } = require('../repository/jobRepository');
+const { getJobsByUser, deleteJob, updateJob, reopenJob} = require('../controller/myIssuesPosted');
+//const { getJobById } = require('../repository/jobRepository');
+const { getJobById } = require('../controller/myIssuesPosted');
 const { upload } = require('../services/cloudinaryService');
 const createIssueRouter = express.Router();
 
@@ -14,6 +15,8 @@ createIssueRouter.get('/:jobId', getJobById);
 // Route to update an issue by ID
 createIssueRouter.put('/:jobId', upload('issues').single('image'), updateJob);
 // Route to delete a job by ID
-createIssueRouter.delete('/:id', deleteReopenJob);
+createIssueRouter.delete('/delete/:id', deleteJob);
+// Route to reopen a job by ID
+createIssueRouter.delete('/reopen/:id', reopenJob);
 
 module.exports = { createIssueRouter };

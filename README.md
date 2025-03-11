@@ -7,6 +7,8 @@
   <img src="https://github.com/user-attachments/assets/7fc6a0fa-e1f9-428d-ae1f-cbd6ce642642" alt="moropo" width="50" />
 </div>
 
+Documentation: [jsDocs link](https://lachezaralaz.github.io/fixerCapstone/)
+
 # Releases
 ## Release 1:
 Video:

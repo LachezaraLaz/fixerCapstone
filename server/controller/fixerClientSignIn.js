@@ -6,7 +6,7 @@ const {AuthResponseDto}  = require('../DTO/userDto');
 const { logger } = require("../utils/logger");
 
 /**
- * @module server/controller/fixerClientSignIn
+ * @module server/controller
  */
 
 /**

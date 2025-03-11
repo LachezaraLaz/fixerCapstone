@@ -2,7 +2,7 @@ const ProfessionalDTO = require('../DTO/professionalDTO');
 const professionalRepository = require('../repository/professionalRepository');
 
 /**
- * @module server/controller/professionalClientSignIn
+ * @module server/controller
  */
 
 /**

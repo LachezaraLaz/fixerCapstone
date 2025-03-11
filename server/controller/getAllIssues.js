@@ -2,7 +2,7 @@ const { getAllJobs } = require('../repository/issueRepository');
 const { issueDTO } = require('../DTO/issueDTO');
 
 /**
- * @module server/controller/getAllIssues
+ * @module server/controller
  */
 
 /**

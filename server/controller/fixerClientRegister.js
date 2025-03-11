@@ -6,7 +6,7 @@ const UserRepository = require('../repository/userRepository');
 const { RegisterUserDto } = require('../DTO/userDto');
 
 /**
- * @module server/controller/fixerClientRegister
+ * @module server/controller
  */
 
 dotenv.config();

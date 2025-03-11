@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT v
 const fixerClientObject = require('../model/professionalClientModel'); // Mongoose model for professional
 
 /**
- * @module server/controller/professionalClientProfile
+ * @module server/controller
  */
 
 /**

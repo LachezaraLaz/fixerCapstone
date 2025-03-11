@@ -1,7 +1,7 @@
 const fixerClientObject = require('../model/professionalClientModel');
 
 /**
- * @module server/controller/professionalUploadID
+ * @module server/controller
  */
 
 /**

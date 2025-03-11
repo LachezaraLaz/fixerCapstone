@@ -2,7 +2,7 @@ const express = require("express");
 const axios = require('axios');
 
 /**
- * @module server/controller/fixerClientVerifyAddress
+ * @module server/controller
  */
 
 const app = express();

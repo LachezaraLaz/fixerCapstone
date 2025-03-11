@@ -2,7 +2,7 @@ const NotificationRepository = require('../repository/notificationRepository');
 const NotificationDto = require('../DTO/notificationDto.js');
 
 /**
- * @module server/controller/notification
+ * @module server/controller
  */
 
 /**

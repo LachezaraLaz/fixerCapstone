@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const moment = require('moment'); // Import Moment.js
 
 /**
- * @module server/controller/resetController
+ * @module server/controller
  */
 
 /**

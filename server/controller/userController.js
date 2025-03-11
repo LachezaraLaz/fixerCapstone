@@ -2,7 +2,7 @@ const { fixerClient } = require('../model/fixerClientModel');
 const { logger } = require('../utils/logger');
 
 /**
- * @module server/controller/userController
+ * @module server/controller
  */
 
 /**

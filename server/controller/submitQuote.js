@@ -8,7 +8,7 @@ const { logger } = require('../utils/logger');
 const { initChat } = require('./initChat');
 
 /**
- * @module server/controller/submitQuote
+ * @module server/controller
  */
 
 /**

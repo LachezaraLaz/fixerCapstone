@@ -2,7 +2,7 @@ const { getJobsByUserEmail, updateJobStatus } = require('../repository/jobReposi
 const { jobDTO } = require('../DTO/jobDTO');
 
 /**
- * @module server/controller/myIssuesPosted
+ * @module server/controller
  */
 
 /**

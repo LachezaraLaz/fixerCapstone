@@ -3,7 +3,7 @@ const { fixerClient } = require('../model/professionalClientModel');
 const dotenv = require('dotenv');
 
 /**
- * @module server/controller/VerifyEmailForProfessional
+ * @module server/controller
  */
 
 dotenv.config();

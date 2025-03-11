@@ -1,7 +1,7 @@
 const { serverClient } = require('../services/streamClient');
 
 /**
- * @module server/controller/initChat
+ * @module server/controller
  */
 
 /**

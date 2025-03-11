@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
 
 /**
- * @module server/controller/getMyProfessionalJobs
+ * @module server/controller
  */
 
 /**

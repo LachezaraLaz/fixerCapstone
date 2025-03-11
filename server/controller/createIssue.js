@@ -5,7 +5,7 @@ const { getCoordinatesFromAddress } = require('../services/geoCodingService');
 const { logger } = require('../utils/logger');
 
 /**
- * @module server/controller/createIssue
+ * @module server/controller
  */
 
 /**

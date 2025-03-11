@@ -3,7 +3,7 @@ const { fixerClient } = require('../model/fixerClientModel');
 const { professionalClient } = require('../model/professionalClientModel');
 
 /**
- * @module server/controller/authenticate
+ * @module server/controller
  */
 
 /**

@@ -3,7 +3,7 @@ const { fixerClient } = require('../model/fixerClientModel');  // Updated model 
 const dotenv = require('dotenv');
 
 /**
- * @module server/controller/VerifyEmailForClient
+ * @module server/controller
  */
 
 dotenv.config();

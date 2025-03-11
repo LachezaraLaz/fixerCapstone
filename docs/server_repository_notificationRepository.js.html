@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>server/controller/getMyProfessionalJobs.js - Documentation</title>
+    <title>server/repository/notificationRepository.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -37,7 +37,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/controller/getMyProfessionalJobs.js</h1>
+    <h1 class="page-title">server/repository/notificationRepository.js</h1>
     
 
     
@@ -47,114 +47,89 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const jwt = require('jsonwebtoken');
-const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
+            <pre class="prettyprint source linenums"><code>const Notification = require('../model/notificationModel');
+const NotificationHistory = require('../model/notificationHistoryModel');
 
 /**
- * @module server/controller
+ * @module server/repository
  */
 
-/**
- * Middleware to authenticate JWT token from the request headers.
- * 
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {Function} next - Express next middleware function.
- * 
- * @returns {Object} - Returns a 401 status with 'Unauthorized' message if no token is provided.
- *                     Returns a 403 status with 'Forbidden' message if token verification fails.
- *                     Proceeds to the next middleware if token is valid.
- */
-const authenticateJWT = (req, res, next) => {
-    const authorizationHeader = req.headers.authorization;
-
-    if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized' });
+class NotificationRepository {
+    /**
+     * Retrieves notifications for a specific user, sorted by creation date in descending order.
+     *
+     * @param {string} userId - The ID of the user whose notifications are to be retrieved.
+     * @returns {Promise&lt;Array>} A promise that resolves to an array of notifications.
+     */
+    async getNotificationsByUserId(userId) {
+        return await Notification.find({ userId }).sort({ createdAt: -1 });
     }
 
-    const token = authorizationHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
+    /**
+     * Retrieves the notification history for a specific user.
+     *
+     * @param {string} userId - The ID of the user whose notification history is to be retrieved.
+     * @param {number} skip - The number of records to skip for pagination.
+     * @param {number} limit - The maximum number of records to return.
+     * @returns {Promise&lt;Array>} A promise that resolves to an array of notification history records.
+     */
+    async getNotificationHistoryByUserId(userId, skip, limit) {
+        return await NotificationHistory.find({ userId })
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 });
     }
 
-    console.log('Token received:', token);  // Log the token
+    /**
+     * Marks a notification as read.
+     *
+     * @param {string} id - The ID of the notification to mark as read.
+     * @returns {Promise&lt;Object>} The updated notification object.
+     */
+    async markNotificationAsRead(id) {
+        return await Notification.findByIdAndUpdate(id, { isRead: true }, { new: true });
+    }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ message: 'Forbidden' });
-        }
-
-        console.log('User data from token:', user);  // Log user data
-        req.user = user;
-        next();
-    });
-};
-
-
-/**
- * Retrieves the professional's jobs based on their email from the JWT.
- *
- * @param {Object} req - The request object.
- * @param {Object} req.user - The user object from the JWT.
- * @param {string} req.user.email - The email of the professional.
- * @param {Object} res - The response object.
- * @returns {Promise&lt;void>} - A promise that resolves to void.
- *
- * @description This function fetches all quotes associated with the professional's email,
- * categorizes them by status (all, done, pending, active), calculates the total amount earned,
- * and sends the categorized jobs and amount earned as a JSON response.
- *
- * @throws {Error} - If an error occurs while fetching the jobs, a 500 status code and an error message are sent.
- */
-const getMyProfessionalJobs = async (req, res) => {
-    const professionalEmail = req.user.email; // Retrieve professional's email from JWT
-
-    try {
-        const quotes = await Quotes.find({ professionalEmail }).populate('issueId')
-        let amountEarned = 0;
-
-
-        const jobsByStatus = {
-            all: [],
-            done: [],
-            pending: [],
-            active: [],
-            amountEarned: 0,
-        };
-
-        quotes.forEach((quote) => {
-            const jobDetails = {
-                title: quote.issueId?.title || 'No title',
-                description: quote.issueId?.description || 'No description',
-                professionalNeeded: quote.issueId?.professionalNeeded || "No Professional",
-                price: quote.price,
-                status: quote.status,
-                rating: quote.issueId?.rating || 'N/A',
-                imageUrl: quote.issueId?.imageUrl || 'https://via.placeholder.com/100',
-            };
-
-            if (quote.status === 'accepted') {
-                jobsByStatus.active.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'pending') {
-                jobsByStatus.pending.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'done') {
-                jobsByStatus.done.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-                amountEarned += quote.price;
-            }
+    /**
+     * Creates a new notification for a user.
+     *
+     * @param {string} userId - The ID of the user to whom the notification belongs.
+     * @param {string} message - The message content of the notification.
+     * @returns {Promise&lt;Object>} A promise that resolves to the created notification object.
+     */
+    async createNotification(userId, message) {
+        return await Notification.create({
+            userId,
+            message,
+            isRead: false,
+            createdAt: new Date(),
         });
-        jobsByStatus.amountEarned = amountEarned;
-        res.status(200).json(jobsByStatus);
-    } catch (error) {
-        console.error('Error fetching professional jobs:', error);
-        res.status(500).json({ error: 'An error occurred while fetching jobs.' });
     }
-};
 
-module.exports = { authenticateJWT, getMyProfessionalJobs };</code></pre>
+    /**
+     * Deletes a notification by its ID.
+     *
+     * @param {string} id - The ID of the notification to delete.
+     * @returns {Promise&lt;Object|null>} A promise that resolves to the deleted notification object, or null if no notification was found.
+     */
+    async deleteNotification(id) {
+        return await Notification.findByIdAndDelete(id);
+    }
+
+    /**
+     * Counts the number of unread notifications for a given user.
+     *
+     * @param {string} userId - The ID of the user whose unread notifications are to be counted.
+     * @returns {Promise&lt;number>} A promise that resolves to the number of unread notifications.
+     */
+    async countUnreadNotifications(userId) {
+        return await Notification.countDocuments({ userId, isRead: false });
+    }
+}
+
+module.exports = new NotificationRepository();
+
+</code></pre>
         </article>
     </section>
 

@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>server/controller/getMyProfessionalJobs.js - Documentation</title>
+    <title>server/repository/professionalRepository.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -37,7 +37,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/controller/getMyProfessionalJobs.js</h1>
+    <h1 class="page-title">server/repository/professionalRepository.js</h1>
     
 
     
@@ -47,114 +47,152 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const jwt = require('jsonwebtoken');
-const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
+            <pre class="prettyprint source linenums"><code>const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const fixerClientObject = require('../model/professionalClientModel');
+const { serverClient } = require('../services/streamClient');
+dotenv = require('dotenv');
+dotenv.config();
 
 /**
- * @module server/controller
+ * @module server/repository
  */
 
-/**
- * Middleware to authenticate JWT token from the request headers.
- * 
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {Function} next - Express next middleware function.
- * 
- * @returns {Object} - Returns a 401 status with 'Unauthorized' message if no token is provided.
- *                     Returns a 403 status with 'Forbidden' message if token verification fails.
- *                     Proceeds to the next middleware if token is valid.
- */
-const authenticateJWT = (req, res, next) => {
-    const authorizationHeader = req.headers.authorization;
-
-    if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized' });
+class ProfessionalRepository {
+    /**
+     * Finds a professional by their email.
+     *
+     * @param {string} email - The email of the professional to find.
+     * @returns {Promise&lt;Object|null>} A promise that resolves to the professional object if found, or null if not found.
+     */
+    async findProfessionalByEmail(email) {
+        return await fixerClientObject.fixerClient.findOne({ email });
     }
 
-    const token = authorizationHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
+    /**
+     * Creates a new professional using the provided user data.
+     *
+     * @param {Object} userData - The data of the professional to be created.
+     * @param {string} userData.name - The name of the professional.
+     * @param {string} userData.email - The email of the professional.
+     * @param {string} userData.phone - The phone number of the professional.
+     * @param {string} userData.profession - The profession of the professional.
+     * @returns {Promise&lt;Object>} The created professional object.
+     */
+    async createProfessional(userData) {
+        return await fixerClientObject.fixerClient.create(userData);
     }
 
-    console.log('Token received:', token);  // Log the token
+    /**
+     * Saves a professional user to the database.
+     *
+     * @param {Object} user - The user object to be saved.
+     * @returns {Promise&lt;Object>} A promise that resolves to the saved user object.
+     */
+    async saveProfessional(user) {
+        return await user.save();
+    }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ message: 'Forbidden' });
-        }
+    /**
+     * Compares an input password with a stored hashed password.
+     *
+     * @param {string} inputPassword - The plain text password to compare.
+     * @param {string} storedPassword - The hashed password stored in the database.
+     * @returns {Promise&lt;boolean>} - A promise that resolves to true if the passwords match, otherwise false.
+     */
+    async comparePassword(inputPassword, storedPassword) {
+        return await bcrypt.compare(inputPassword, storedPassword);
+    }
 
-        console.log('User data from token:', user);  // Log user data
-        req.user = user;
-        next();
-    });
-};
+    /**
+     * Hashes a password using bcrypt with a salt rounds value of 12.
+     *
+     * @param {string} password - The plain text password to be hashed.
+     * @returns {Promise&lt;string>} - A promise that resolves to the hashed password.
+     */
+    async hashPassword(password) {
+        return await bcrypt.hash(password, 12);
+    }
 
+    /**
+     * Generates a JSON Web Token (JWT) for the given payload.
+     *
+     * @param {Object} payload - The payload to include in the JWT.
+     * @returns {string} The generated JWT.
+     */
+    generateToken(payload) {
+        return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+    }
 
-/**
- * Retrieves the professional's jobs based on their email from the JWT.
- *
- * @param {Object} req - The request object.
- * @param {Object} req.user - The user object from the JWT.
- * @param {string} req.user.email - The email of the professional.
- * @param {Object} res - The response object.
- * @returns {Promise&lt;void>} - A promise that resolves to void.
- *
- * @description This function fetches all quotes associated with the professional's email,
- * categorizes them by status (all, done, pending, active), calculates the total amount earned,
- * and sends the categorized jobs and amount earned as a JSON response.
- *
- * @throws {Error} - If an error occurs while fetching the jobs, a 500 status code and an error message are sent.
- */
-const getMyProfessionalJobs = async (req, res) => {
-    const professionalEmail = req.user.email; // Retrieve professional's email from JWT
+    /**
+     * Generates a JWT verification token for a given user ID.
+     *
+     * @param {string} userId - The ID of the user for whom the token is being generated.
+     * @returns {string} - The generated JWT token.
+     */
+    generateVerificationToken(userId) {
+        return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    }
 
-    try {
-        const quotes = await Quotes.find({ professionalEmail }).populate('issueId')
-        let amountEarned = 0;
+    /**
+     * Sends a verification email to the user with a verification link.
+     *
+     * @param {Object} user - The user object containing user details.
+     * @param {string} user.email - The email address of the user.
+     * @param {string} token - The verification token to be included in the email.
+     * @returns {Promise&lt;void>} - A promise that resolves when the email has been sent.
+     */
+    async sendVerificationEmail(user, token) {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.PASS_RESET,
+            },
+        });
 
+        const verificationUrl = `https://fixercapstone-production.up.railway.app/professional/verify-email?token=${token}`;
 
-        const jobsByStatus = {
-            all: [],
-            done: [],
-            pending: [],
-            active: [],
-            amountEarned: 0,
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: user.email,
+            subject: 'Email Verification',
+            html: `&lt;p>Click &lt;a href="${verificationUrl}">here&lt;/a> to verify your email address.&lt;/p>`
         };
 
-        quotes.forEach((quote) => {
-            const jobDetails = {
-                title: quote.issueId?.title || 'No title',
-                description: quote.issueId?.description || 'No description',
-                professionalNeeded: quote.issueId?.professionalNeeded || "No Professional",
-                price: quote.price,
-                status: quote.status,
-                rating: quote.issueId?.rating || 'N/A',
-                imageUrl: quote.issueId?.imageUrl || 'https://via.placeholder.com/100',
-            };
-
-            if (quote.status === 'accepted') {
-                jobsByStatus.active.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'pending') {
-                jobsByStatus.pending.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'done') {
-                jobsByStatus.done.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-                amountEarned += quote.price;
-            }
-        });
-        jobsByStatus.amountEarned = amountEarned;
-        res.status(200).json(jobsByStatus);
-    } catch (error) {
-        console.error('Error fetching professional jobs:', error);
-        res.status(500).json({ error: 'An error occurred while fetching jobs.' });
+        await transporter.sendMail(mailOptions);
     }
-};
 
-module.exports = { authenticateJWT, getMyProfessionalJobs };</code></pre>
+    /**
+     * Upserts a user in the stream server.
+     *
+     * @param {Object} user - The user object to be upserted.
+     * @param {string} user._id - The unique identifier of the user.
+     * @param {string} user.firstName - The first name of the user.
+     * @param {string} user.lastName - The last name of the user.
+     * @returns {Promise&lt;void>} - A promise that resolves when the user is upserted.
+     */
+    async upsertStreamUser(user) {
+        await serverClient.upsertUser({
+            id: user._id.toString(),
+            role: 'user',
+            name: `${user.firstName} ${user.lastName}`,
+        });
+    }
+
+    /**
+     * Creates a stream token for the given user.
+     *
+     * @param {string} userId - The ID of the user for whom the token is being created.
+     * @returns {string} The generated stream token.
+     */
+    createStreamToken(userId) {
+        return serverClient.createToken(userId.toString());
+    }
+}
+
+module.exports = new ProfessionalRepository();</code></pre>
         </article>
     </section>
 

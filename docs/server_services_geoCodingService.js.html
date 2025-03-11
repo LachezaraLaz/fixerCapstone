@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>server/controller/getMyProfessionalJobs.js - Documentation</title>
+    <title>server/services/geoCodingService.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -37,7 +37,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/controller/getMyProfessionalJobs.js</h1>
+    <h1 class="page-title">server/services/geoCodingService.js</h1>
     
 
     
@@ -47,114 +47,53 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const jwt = require('jsonwebtoken');
-const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
+            <pre class="prettyprint source linenums"><code>const axios = require('axios');
+require('dotenv').config();
 
 /**
- * @module server/controller
+ * @module server/services
  */
+
+const GOOGLE_MAPS_KEY = process.env.GOOGLE_MAPS_KEY;
 
 /**
- * Middleware to authenticate JWT token from the request headers.
- * 
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {Function} next - Express next middleware function.
- * 
- * @returns {Object} - Returns a 401 status with 'Unauthorized' message if no token is provided.
- *                     Returns a 403 status with 'Forbidden' message if token verification fails.
- *                     Proceeds to the next middleware if token is valid.
+ * Fetches the geographical coordinates (latitude and longitude) for a given address using the Google Maps Geocoding API.
+ *
+ * @param {string} address - The address to geocode.
+ * @returns {Promise&lt;{latitude: number, longitude: number}>} - A promise that resolves to an object containing the latitude and longitude of the address.
+ * @throws {Error} - Throws an error if the geocoding request fails or if no results are returned.
  */
-const authenticateJWT = (req, res, next) => {
-    const authorizationHeader = req.headers.authorization;
-
-    if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    const token = authorizationHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    console.log('Token received:', token);  // Log the token
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ message: 'Forbidden' });
-        }
-
-        console.log('User data from token:', user);  // Log user data
-        req.user = user;
-        next();
-    });
-};
-
-
-/**
- * Retrieves the professional's jobs based on their email from the JWT.
- *
- * @param {Object} req - The request object.
- * @param {Object} req.user - The user object from the JWT.
- * @param {string} req.user.email - The email of the professional.
- * @param {Object} res - The response object.
- * @returns {Promise&lt;void>} - A promise that resolves to void.
- *
- * @description This function fetches all quotes associated with the professional's email,
- * categorizes them by status (all, done, pending, active), calculates the total amount earned,
- * and sends the categorized jobs and amount earned as a JSON response.
- *
- * @throws {Error} - If an error occurs while fetching the jobs, a 500 status code and an error message are sent.
- */
-const getMyProfessionalJobs = async (req, res) => {
-    const professionalEmail = req.user.email; // Retrieve professional's email from JWT
-
+const getCoordinatesFromAddress = async (address) => {
     try {
-        const quotes = await Quotes.find({ professionalEmail }).populate('issueId')
-        let amountEarned = 0;
-
-
-        const jobsByStatus = {
-            all: [],
-            done: [],
-            pending: [],
-            active: [],
-            amountEarned: 0,
-        };
-
-        quotes.forEach((quote) => {
-            const jobDetails = {
-                title: quote.issueId?.title || 'No title',
-                description: quote.issueId?.description || 'No description',
-                professionalNeeded: quote.issueId?.professionalNeeded || "No Professional",
-                price: quote.price,
-                status: quote.status,
-                rating: quote.issueId?.rating || 'N/A',
-                imageUrl: quote.issueId?.imageUrl || 'https://via.placeholder.com/100',
-            };
-
-            if (quote.status === 'accepted') {
-                jobsByStatus.active.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'pending') {
-                jobsByStatus.pending.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'done') {
-                jobsByStatus.done.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-                amountEarned += quote.price;
-            }
+        const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+            params: {
+                //address: encodeURIComponent(address),
+                address,
+                key: GOOGLE_MAPS_KEY,
+            },
         });
-        jobsByStatus.amountEarned = amountEarned;
-        res.status(200).json(jobsByStatus);
+
+        // Check both the status and if results are returned
+        if (response.data.status === 'OK' &amp;&amp; response.data.results.length > 0) {
+            const { lat, lng } = response.data.results[0].geometry.location;
+            return { latitude: lat, longitude: lng };
+        } else {
+            throw new Error('Failed to fetch coordinates');
+        }
     } catch (error) {
-        console.error('Error fetching professional jobs:', error);
-        res.status(500).json({ error: 'An error occurred while fetching jobs.' });
+        if (error.response) {
+            console.error('Geocoding request failed:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request error:', error.message);
+        }
+        throw error;
     }
 };
 
-module.exports = { authenticateJWT, getMyProfessionalJobs };</code></pre>
+module.exports = { getCoordinatesFromAddress };
+</code></pre>
         </article>
     </section>
 

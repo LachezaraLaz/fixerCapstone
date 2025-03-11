@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>server/controller/getMyProfessionalJobs.js - Documentation</title>
+    <title>server/utils - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -37,126 +37,194 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/controller/getMyProfessionalJobs.js</h1>
+    <h1 class="page-title">server/utils</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const jwt = require('jsonwebtoken');
-const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
+        
+    
+</header>
 
-/**
- * @module server/controller
- */
+<article>
+    
+        <div class="container-overview">
+        
+            
 
-/**
- * Middleware to authenticate JWT token from the request headers.
- * 
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @param {Function} next - Express next middleware function.
- * 
- * @returns {Object} - Returns a 401 status with 'Unauthorized' message if no token is provided.
- *                     Returns a 403 status with 'Forbidden' message if token verification fails.
- *                     Proceeds to the next middleware if token is valid.
- */
-const authenticateJWT = (req, res, next) => {
-    const authorizationHeader = req.headers.authorization;
+            
+        
+        </div>
+    
 
-    if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
+    
 
-    const token = authorizationHeader.split(' ')[1];
+    
 
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
+    
+    
+    
 
-    console.log('Token received:', token);  // Log the token
+     
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ message: 'Forbidden' });
-        }
+    
 
-        console.log('User data from token:', user);  // Log user data
-        req.user = user;
-        next();
-    });
-};
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="~setLogLevel"><span class="type-signature type-signature-inner">(inner) </span>setLogLevel<span class="signature">(level)</span><span class="type-signature"></span></h4>
+
+    
 
 
-/**
- * Retrieves the professional's jobs based on their email from the JWT.
- *
- * @param {Object} req - The request object.
- * @param {Object} req.user - The user object from the JWT.
- * @param {string} req.user.email - The email of the professional.
- * @param {Object} res - The response object.
- * @returns {Promise&lt;void>} - A promise that resolves to void.
- *
- * @description This function fetches all quotes associated with the professional's email,
- * categorizes them by status (all, done, pending, active), calculates the total amount earned,
- * and sends the categorized jobs and amount earned as a JSON response.
- *
- * @throws {Error} - If an error occurs while fetching the jobs, a 500 status code and an error message are sent.
- */
-const getMyProfessionalJobs = async (req, res) => {
-    const professionalEmail = req.user.email; // Retrieve professional's email from JWT
-
-    try {
-        const quotes = await Quotes.find({ professionalEmail }).populate('issueId')
-        let amountEarned = 0;
 
 
-        const jobsByStatus = {
-            all: [],
-            done: [],
-            pending: [],
-            active: [],
-            amountEarned: 0,
-        };
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Sets the log level for the logger.</p></li></ul></dd>
+    
 
-        quotes.forEach((quote) => {
-            const jobDetails = {
-                title: quote.issueId?.title || 'No title',
-                description: quote.issueId?.description || 'No description',
-                professionalNeeded: quote.issueId?.professionalNeeded || "No Professional",
-                price: quote.price,
-                status: quote.status,
-                rating: quote.issueId?.rating || 'N/A',
-                imageUrl: quote.issueId?.imageUrl || 'https://via.placeholder.com/100',
-            };
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_utils_logger.js.html">server/utils/logger.js</a>, <a href="server_utils_logger.js.html#line31">line 31</a>
+    </li></ul></dd>
+    
 
-            if (quote.status === 'accepted') {
-                jobsByStatus.active.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'pending') {
-                jobsByStatus.pending.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'done') {
-                jobsByStatus.done.push(jobDetails);
-                jobsByStatus.all.push(jobDetails);
-                amountEarned += quote.price;
-            }
-        });
-        jobsByStatus.amountEarned = amountEarned;
-        res.status(200).json(jobsByStatus);
-    } catch (error) {
-        console.error('Error fetching professional jobs:', error);
-        res.status(500).json({ error: 'An error occurred while fetching jobs.' });
-    }
-};
+    
 
-module.exports = { authenticateJWT, getMyProfessionalJobs };</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>level</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The new log level to be set.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

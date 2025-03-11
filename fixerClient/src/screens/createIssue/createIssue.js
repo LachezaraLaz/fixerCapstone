@@ -19,13 +19,13 @@ import {
 import { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as ImagePicker from 'expo-image-picker';
 
 import { IPAddress } from '../../../ipAddress';
 import OrangeButton from "../../../components/orangeButton";
-import MapView, {Marker} from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 
 export default function CreateIssue({ navigation }) {
     // List of fields in the page
@@ -70,6 +70,9 @@ export default function CreateIssue({ navigation }) {
         if (!result.canceled) {
             setSelectedImage(result.assets[0].uri);
         }
+    };
+    const handleAiEnhancement = async () => {
+        console.log('AI Enhancement triggered for description:', description);
     };
 
     // posting the issue by the user
@@ -172,24 +175,42 @@ export default function CreateIssue({ navigation }) {
                         contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
             >
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>Job Description</Text>
-
                 {/* title field */}
-                <TextInput
-                    placeholder= "Describe your service"
-                    value={description}
-                    onChangeText={setDescription}
-                    style={{
-                        borderWidth: 1,
-                        background:'#EFF1F999',
-                        backgroundColor:'#E7E7E7',
-                        borderColor: '#ddd',
-                        borderRadius: 8,
-                        padding: 10,
-                        marginVertical: 8,
-                        height: 120,
-                        textAlignVertical: 'top', // Ensures text starts from the top
-                    }} multiline/>
+                <View style={{ position: 'relative' }}>
+                    <TextInput
+                        placeholder= "Describe your service"
+                        value={description}
+                        onChangeText={setDescription}
+                        style={{
+                            borderWidth: 1,
+                            backgroundColor: '#E7E7E7',
+                            borderColor: '#ddd',
+                            borderRadius: 8,
+                            padding: 10,
+                            marginVertical: 8,
+                            height: 120,
+                            textAlignVertical: 'top', // Ensures text starts from the top
+                        }} multiline/>
 
+                    {/* AI Enhancement Button*/}
+                    <TouchableOpacity
+                        style={{
+                            position: 'absolute',
+                            bottom: 15,
+                            right: 15,
+                            backgroundColor: '#ff8c00',
+                            borderRadius: 50,
+                            width: 32,
+                            height: 32,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            elevation: 2
+                        }}
+                        onPress={handleAiEnhancement}
+                    >
+                        <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
+                    </TouchableOpacity>
+                </View>
                 {/* Word & Character Counter - Positioned Below the Input */}
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 5 }}>
                     <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
@@ -200,7 +221,7 @@ export default function CreateIssue({ navigation }) {
                 <View style={styles.pickerContainer}>
                     <DropDownPicker
                         style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
-                        translation={{PLACEHOLDER: "Select Service"}}
+                        translation={{ PLACEHOLDER: "Select Service" }}
                         open={open}
                         value={selectedService}
                         items={items}
@@ -243,7 +264,6 @@ export default function CreateIssue({ navigation }) {
                             longitudeDelta: 0.0421,
                         }}
                     >
-                        {/* Marker Example */}
                         <Marker
                             coordinate={{ latitude: 37.7749, longitude: -122.4194 }}
                             title="San Francisco"
@@ -270,11 +290,10 @@ export default function CreateIssue({ navigation }) {
                     />
                 </View>
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>Urgency Timeline</Text>
-                {/*Urgency Timeline*/}
                 <View style={styles.pickerContainer}>
                     <DropDownPicker
                         style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
-                        translation={{PLACEHOLDER: "Select Timeline"}}
+                        translation={{ PLACEHOLDER: "Select Timeline" }}
                         open={openTimeLine}
                         value={selectedTimeLine}
                         items={itemsTimeLine}
@@ -282,7 +301,6 @@ export default function CreateIssue({ navigation }) {
                         setValue={setSelectedTimeLine}
                         setItems={setItemsTimeLine}
                         textStyle={{ fontSize: 13, fontWeight: 'bold' }}
-                        dropDownDirection="BOTTOM" // Ensures dropdown opens downward
                         dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
                         listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
                         nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView

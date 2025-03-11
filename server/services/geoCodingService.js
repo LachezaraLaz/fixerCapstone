@@ -1,9 +1,19 @@
 const axios = require('axios');
 require('dotenv').config();
 
+/**
+ * @module server/services
+ */
+
 const GOOGLE_MAPS_KEY = process.env.GOOGLE_MAPS_KEY;
 
-
+/**
+ * Fetches the geographical coordinates (latitude and longitude) for a given address using the Google Maps Geocoding API.
+ *
+ * @param {string} address - The address to geocode.
+ * @returns {Promise<{latitude: number, longitude: number}>} - A promise that resolves to an object containing the latitude and longitude of the address.
+ * @throws {Error} - Throws an error if the geocoding request fails or if no results are returned.
+ */
 const getCoordinatesFromAddress = async (address) => {
     try {
         const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {

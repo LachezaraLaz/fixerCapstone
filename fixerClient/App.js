@@ -27,6 +27,11 @@ import addReview from "./src/screens/addReview/addReview";
 
 import { Text } from "react-native";
 
+import { LogBox } from 'react-native';
+
+// Suppress the specific warning
+LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -75,9 +80,9 @@ export default function App() {
                                 {/* Screens when user is NOT logged in */}
                                 {!isLoggedIn && (
                                     <>
-                                        <Stack.Screen name="welcomePage" component={WelcomePage} />
+                                        <Stack.Screen name="welcomePage" component={WelcomePage}/>
                                         <Stack.Screen name="SignInPage">
-                                            {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                            {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn}  />}
                                         </Stack.Screen>
                                         <Stack.Screen name="SignUpPage" component={SignUpPage} />
                                     </>
@@ -104,10 +109,11 @@ export default function App() {
                         <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                             <>
                                 {/* Screens accessible when the user is not logged in */}
-                                <Stack.Screen name="welcomePage" component={WelcomePage} />
-                                <Stack.Screen name="SignInPage">
+                                <Stack.Screen name="welcomePage" component={WelcomePage} options={{ headerShown: false }}/>
+                                <Stack.Screen name="SignInPage" options={{ headerShown: false }}>
                                     {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                 </Stack.Screen>
+                                <Stack.Screen name="SignUpPage" component={SignUpPage} options={{ headerShown: false }}/>
                                 <Stack.Screen name="SignUpPage" component={SignUpPage} />
                                 <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
                                 <Stack.Screen name="EnterPin" component={EnterPin} />

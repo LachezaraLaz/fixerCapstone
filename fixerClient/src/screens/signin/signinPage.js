@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; 
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
-//import { IPAddress } from '../../../ipAddress';
+import OrangeButton from "../../../components/orangeButton";
+import InputField  from '../../../components/inputField';
+import PasswordField from '../../../components/passwordField';
+
+import { IPAddress } from '../../../ipAddress';
 
 export default function SignInPage({ navigation, setIsLoggedIn }) {
     const [email, setEmail] = useState('');
@@ -57,10 +62,16 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Sign In</Text>
 
-            <TextInput
-                style={styles.input}
+            <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                <Text style={styles.backText}>Back</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.title} testID='signInTitle'>Sign In</Text>
+
+            {/* Email Field */}
+            <InputField
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
@@ -68,18 +79,16 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 autoCapitalize="none"
             />
 
-            <TextInput
-                style={styles.input}
+            {/* Password Field */}
+            <PasswordField
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={true} // Always hide password by default
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleSignIn} testID={'sign-in-button'}>
-                <Text style={styles.buttonText}>Sign In</Text>
-            </TouchableOpacity>
-
+            <OrangeButton title="Sign In" onPress={handleSignIn} testID="sign-in-button" variant="normal" />
+           
             <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
                 <Text style={styles.signUpText}>Don't have an account? Sign up</Text>
             </TouchableOpacity>
@@ -98,29 +107,24 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#fff',
     },
+    backButton: {
+        position: 'absolute',
+        top: 40,
+        left: 20,
+        flexDirection: 'row', 
+        alignItems: 'center',
+        zIndex: 1,
+    },
+    backText: {
+        marginLeft: 8,
+        fontSize: 18,
+        color: '#1E90FF',
+    },
     title: {
         fontSize: 32,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
-    },
-    input: {
-        height: 50,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-    },
-    button: {
-        backgroundColor: '#1E90FF',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
     },
     signUpText: {
         color: '#1E90FF',

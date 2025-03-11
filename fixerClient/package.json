@@ -90,7 +90,7 @@
     "collectCoverageFrom": [],
     "coverageThreshold": {
       "global": {
-        "branches": 0,
+        "branches": 60,
         "functions": 60,
         "lines": 60,
         "statements": 60

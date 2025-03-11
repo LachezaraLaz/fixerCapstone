@@ -193,21 +193,7 @@ export default function CreateIssue({ navigation }) {
                         }} multiline/>
 
                     {/* AI Enhancement Button*/}
-                    <TouchableOpacity
-                        style={{
-                            position: 'absolute',
-                            bottom: 15,
-                            right: 15,
-                            backgroundColor: '#ff8c00',
-                            borderRadius: 50,
-                            width: 32,
-                            height: 32,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            elevation: 2
-                        }}
-                        onPress={handleAiEnhancement}
-                    >
+                    <TouchableOpacity style={styles.aiEnhanceButton} onPress={handleAiEnhancement}>
                         <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
                     </TouchableOpacity>
                 </View>

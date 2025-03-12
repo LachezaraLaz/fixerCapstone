@@ -25,7 +25,8 @@ async function enhanceIssueDescription(userDescription) {
                         content: userDescription
                     }
                 ],
-                max_tokens: 500, // to ensure response don't exceed 300 words (One token ~0.75 words, so 500 tokens is ~375 words.)                temperature: 0.7
+                max_tokens: 500, // to ensure response don't exceed 300 words (One token ~0.75 words, so 500 tokens is ~375 words.)
+                temperature: 0.7
             },
             {
                 headers: {

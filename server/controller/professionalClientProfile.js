@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT verification
-const fixerClientObject = require('../model/professionalClientModel'); // Mongoose model for professional
+const fixerClientObject = require('../model/professionalClientModel');
+const {squareClient} = require("../utils/squareConfig"); // Mongoose model for professional
 
 /**
  * @module server/controller
@@ -64,4 +65,56 @@ const profile = async (req, res) => {
     }
 };
 
-module.exports = { profile, authenticateJWT };
+const addBankingInfo = async (req, res) => {
+    const { userId, accountNumber, routingNumber } = req.body;
+
+    try {
+        // Validate input
+        if (!accountNumber || !routingNumber) {
+            return res.status(400).send({ success: false, message: 'Account number and routing number are required.' });
+        }
+
+        // Use Square's API to securely store the banking information
+        const squareResponse = await squareClient.bankAccounts.createBankAccount({
+            accountNumber,
+            routingNumber,
+            // Add other required fields (e.g., account holder name, account type)
+        });
+
+        if (!squareResponse.result || !squareResponse.result.bankAccount) {
+            return res.status(500).send({ success: false, message: 'Failed to add banking information with Square.' });
+        }
+
+        // Update the professional's record in MongoDB
+        await fixerClientObject.fixerClient.findByIdAndUpdate(userId, {
+            bankingInfoAdded: true,
+            squareBankAccountId: squareResponse.result.bankAccount.id,
+        });
+
+        res.send({ success: true, message: 'Banking information added successfully.' });
+    } catch (error) {
+        console.error('Error adding banking information:', error);
+        res.status(500).send({ success: false, message: 'An error occurred while adding banking information.' });
+    }
+};
+
+const getBankingInfoStatus = async (req, res) => {
+    console.log("getBankingInfoStatus called"); // Add this line
+    try {
+        const userId = req.user.id;
+        console.log("User ID:", userId); // Add this line
+
+        const professional = await fixerClientObject.fixerClient.findById(userId);
+        if (!professional) {
+            return res.status(404).json({ message: "Professional not found" });
+        }
+
+        console.log("Banking Info Status:", professional.bankingInfoAdded); // Add this line
+        res.json({ bankingInfoAdded: professional.bankingInfoAdded || false });
+    } catch (error) {
+        console.error("Error fetching banking info status:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+module.exports = { profile, authenticateJWT, addBankingInfo, getBankingInfoStatus };

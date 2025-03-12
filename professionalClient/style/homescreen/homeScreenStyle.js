@@ -88,16 +88,33 @@ export const styles = StyleSheet.create({
         fontSize: 11,
     },
 
-    // Recenter button in map
-    recenterButtonContainer: {
+    recenterButtonWrapper: {
         position: 'absolute',
-        bottom: 100,
+        bottom: 20,
         right: 20,
+        zIndex: 1,
+    },
+
+    recenterButton: {
         backgroundColor: 'white',
         borderRadius: 25,
         padding: 10,
         elevation: 3,
-        zIndex: 1,
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    recenterButtonDenied: {
+        backgroundColor: '#eee', // subtle grey to indicate disabled state
+    },
+
+    deniedSlash: {
+        position: 'absolute',
+        width: '120%',
+        height: 2,
+        backgroundColor: 'red',
+        transform: [{ rotate: '-45deg' }],
     },
 
 

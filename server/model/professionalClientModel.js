@@ -16,9 +16,15 @@ const professionalClientModel = new mongoose.Schema({
     verificationToken: String,
     totalRating: { type: Number, default: 0 }, // Cumulative rating for the professional
     reviewCount: { type: Number, default: 0 }, // Number of reviews received
-    paymentSetup: { type: Boolean, default: false }, // square account linked
+    paymentSetup: { type: Boolean, default: false }, // Square account linked
     bankingInfoAdded: { type: Boolean, default: false },
     squareBankAccountId: { type: String, default: null },
+    bankingInfo: { // Add this field
+        accountNumber: { type: String, default: null },
+        routingNumber: { type: String, default: null },
+        accountHolderName: { type: String, default: null },
+        accountType: { type: String, default: null }, // CHECKING or SAVINGS
+    },
 }, {
     collection: 'fixerClientInfo'
 });
@@ -26,6 +32,3 @@ const professionalClientModel = new mongoose.Schema({
 const fixerClient = mongoose.model('fixerClientInfo', professionalClientModel);
 
 module.exports = { fixerClient };
-
-
-

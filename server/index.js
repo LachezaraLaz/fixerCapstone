@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const professionalClientRoute = require('./routes/professionalClientRoute');
 const fixerClientRoute = require('./routes/fixerClientRoute');
 const createIssueRoute = require('./routes/createIssueRoute');
-const issueRoute = require('./routes/getIssuesRoute'); 
+const issueRoute = require('./routes/getIssuesRoute');
 const resetPasswordRouter = require('./routes/passwordResetRoute');
 // const createIssueRouter = require('./routes/createIssueRoute');
 const notificationRouter = require('./routes/notificationRoute');
@@ -16,8 +16,12 @@ const getMyProfessionalJobsRouter = require('./routes/getMyProfessionalJobsRoute
 const { serverClient } = require('./services/streamClient');
 const reviewRouter = require('./routes/reviewRoute');
 const paymentRoutes = require('./routes/paymentRoute');
-
 const app = express();
+const cors = require('cors');
+app.use(cors({
+  origin: ['https://fixercapstone-production.up.railway.app'],
+}));
+
 
 app.use(bodyParser.json());
 
@@ -50,5 +54,17 @@ app.use('/reviews', reviewRouter.reviewRouter);
 app.use('/users', userRouter.userRouter);
 
 app.use('/payment', paymentRoutes);
+
+app._router.stack.forEach((middleware) => {
+  if (middleware.route) {
+    console.log(middleware.route.path);
+  } else if (middleware.name === 'router') {
+    middleware.handle.stack.forEach((handler) => {
+      if (handler.route) {
+        console.log(handler.route.path);
+      }
+    });
+  }
+});
 
 module.exports = app;

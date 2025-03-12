@@ -1,7 +1,7 @@
 const express = require('express');
 const { registerUser } = require('../controller/professionalClientRegister');
 const { signinUser } = require('../controller/professionalClientSignIn');
-const { profile, authenticateJWT } = require('../controller/professionalClientProfile');
+const { profile, authenticateJWT, addBankingInfo, getBankingInfoStatus } = require('../controller/professionalClientProfile');
 const { verifyCredentials } = require('../controller/professionalClientVerifyCredentials');
 const { professionalUploadID } = require('../controller/professionalUploadID');
 const { upload } = require('../services/cloudinaryService');  // Import the Cloudinary upload service
@@ -31,5 +31,9 @@ professionalRouter.post('/uploadID', authenticateJWT, upload('professional_ids')
 professionalRouter.get('/:email/reviews', getReviewsByProfessionalEmail);
 
 professionalRouter.post('/linkSquareAccount', authenticateJWT, linkProfessionalAccount);
+
+professionalRouter.post('/add-banking-info', authenticateJWT, addBankingInfo);
+
+professionalRouter.get('/banking-info-status', authenticateJWT, getBankingInfoStatus);
 
 module.exports = { professionalRouter };

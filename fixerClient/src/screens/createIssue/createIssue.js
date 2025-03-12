@@ -99,9 +99,34 @@ export default function CreateIssue({ navigation }) {
      * @throws Will throw an error if the request fails or if required fields are empty.
      */
     const postIssue = async () => {
-        if (!description) {
-            Alert.alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
+        if (!description || description.trim().length < 10) {
+            Alert.alert("Invalid Description", "Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
             return;
+        }
+
+        if (!selectedService) {
+            Alert.alert("Invalid Service", "Please select a valid service type.");
+            return;
+        }
+
+        if (!selectedTimeLine) {
+            Alert.alert("Invalid Timeline", "Please select an urgency timeline.");
+            return;
+        }
+
+        if (!location || location.trim().length < 5) {
+            Alert.alert("Invalid Location", "Please provide a valid location with at least 5 characters.");
+            return;
+        }
+
+        // Optional Image
+        if (selectedImage) {
+            const validImageTypes = ['image/jpeg', 'image/png'];
+            const imageType = selectedImage.split('.').pop().toLowerCase();
+            if (!validImageTypes.includes(`image/${imageType}`)) {
+                Alert.alert("Invalid Image", "Only JPEG and PNG images are supported.");
+                return;
+            }
         }
 
         setLoading(true); // Start loading
@@ -118,10 +143,10 @@ export default function CreateIssue({ navigation }) {
             formData.append('email', userEmail);
             formData.append('status', "Open");
 
-            if (image) {
+            if (selectedImage) {
                 formData.append('image', {
-                    uri: image,
-                    type: 'image/jpeg',
+                    uri: selectedImage,
+                    type: `image/${selectedImage.split('.').pop().toLowerCase()}`,
                     name: 'issue_image.jpg',
                 });
             }

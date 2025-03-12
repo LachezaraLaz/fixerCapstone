@@ -22,6 +22,7 @@
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cloudinary": "^1.41.3",
+    "dotenv": "^16.4.7",
     "expo": "~51.0.28",
     "expo-image-picker": "^15.0.7",
     "expo-status-bar": "~1.12.1",
@@ -40,6 +41,7 @@
     "react-native": "^0.75.4",
     "react-native-gesture-handler": "^2.20.0",
     "react-native-maps": "^1.18.1",
+    "square": "^41.0.0",
     "stream-chat": "^8.50.0"
   },
   "devDependencies": {

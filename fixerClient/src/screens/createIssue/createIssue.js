@@ -93,8 +93,14 @@ export default function CreateIssue({ navigation }) {
             setAiSuggestion(improvedDescription);
             setShowAiPreview(true);
         } catch (error) {
-            console.error('Error enhancing description:', error);
-            Alert.alert('Error', 'Could not enhance your description. Please try again.');
+            // Handle 400 Bad Request (Invalid Category)
+            if (error.response && error.response.status === 400) {
+                Alert.alert('Invalid Job Category', error.response.data.error ||
+                    'Please provide a home service or blue-collar job description.');
+            } else {
+                console.error('Error enhancing description:', error);
+                Alert.alert('Error', 'Could not enhance your description. Please try again.');
+            }
         } finally {
             setLoadingAi(false);
         }

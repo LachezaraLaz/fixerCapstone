@@ -125,9 +125,28 @@ export default function EditIssue({ route, navigation }) {
      * @throws Will display an alert if any error occurs during the update process.
      */
     const updateJob = async () => {
-        if (!title || !professionalNeeded || !description) {
-            Alert.alert("Please complete all fields for the professional to provide an accurate quote.");
+        if (!title || title.trim().length < 5) {
+            Alert.alert("Invalid Title", "Title must be at least 5 characters long.");
             return;
+        }
+
+        if (!professionalNeeded) {
+            Alert.alert("Invalid Professional", "Please select a professional type (Plumber/Electrician).");
+            return;
+        }
+
+        if (!description || description.trim().length < 10) {
+            Alert.alert("Invalid Description", "Please provide a description with at least 10 characters.");
+            return;
+        }
+
+        if (image) {
+            const validImageTypes = ['image/jpeg', 'image/png'];
+            const imageType = image.split('.').pop().toLowerCase();
+            if (!validImageTypes.includes(`image/${imageType}`)) {
+                Alert.alert("Invalid Image", "Only JPEG and PNG images are supported.");
+                return;
+            }
         }
 
         setLoading(true);
@@ -148,7 +167,7 @@ export default function EditIssue({ route, navigation }) {
             if (image) {
                 formData.append('image', {
                     uri: image,
-                    type: 'image/jpeg',
+                    type: `image/${image.split('.').pop().toLowerCase()}`,
                     name: 'issue_image.jpg',
                 });
             }

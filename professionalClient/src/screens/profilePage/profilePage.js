@@ -5,10 +5,10 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-
 const ProfilePage = () => {
     const [professional, setProfessional] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [bankingInfoAdded, setBankingInfoAdded] = useState(false); // New state for banking info status
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -33,6 +33,29 @@ const ProfilePage = () => {
         };
 
         fetchProfileData();
+    }, []);
+
+    const fetchBankingInfoStatus = async () => {
+        try {
+            const userId = await AsyncStorage.getItem('userId'); // Get the logged-in user's ID
+            console.log("Fetched userId:", userId); // Log userId to confirm it's not null/undefined
+
+            if (!userId) {
+                console.error("No userId found in AsyncStorage");
+                return;
+            }
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
+                params: { userId }
+            });
+            setBankingInfoAdded(response.data.bankingInfoAdded);
+        } catch (error) {
+            console.error('Error fetching banking info status:', error.response?.data || error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchBankingInfoStatus();
     }, []);
 
     if (loading) {
@@ -71,6 +94,24 @@ const ProfilePage = () => {
                     <Ionicons name="settings-outline" size={24} color="#333" />
                 </TouchableOpacity>
             </View>
+
+            {/* Notice for banking information */}
+            {!bankingInfoAdded && (
+                <View style={styles.noticeContainer}>
+                    <Text style={styles.noticeText}>
+                        Please add your banking information to start submitting quotes.
+                    </Text>
+                </View>
+            )}
+
+            {!bankingInfoAdded && (
+                <TouchableOpacity
+                    style={styles.addBankingButton}
+                    onPress={() => navigation.navigate('BankingInfoPage')}
+                >
+                    <Text style={styles.addBankingButtonText}>Add Banking Information</Text>
+                </TouchableOpacity>
+            )}
 
             <View style={styles.profileContainer}>
                 <View style={styles.imageWrapper}>
@@ -207,6 +248,21 @@ const styles = StyleSheet.create({
     sectionText: {
         fontSize: 18,
         color: '#333333',
+    },
+    noticeContainer: {
+        backgroundColor: '#fff3cd', // Light yellow background
+        padding: 16,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#ffeeba', // Yellow border
+        marginBottom: 16,
+        marginHorizontal: 16, // Add horizontal margin for better spacing
+        width: '90%', // Match the width of other sections
+    },
+    noticeText: {
+        color: '#856404', // Dark yellow text
+        fontSize: 16,
+        textAlign: 'center', // Center the text
     },
 });
 

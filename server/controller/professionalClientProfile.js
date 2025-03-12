@@ -44,32 +44,32 @@ const profile = async (req, res) => {
 };
 
 const addBankingInfo = async (req, res) => {
-    const { userId, accountNumber, routingNumber } = req.body;
+    const { userId, accountNumber, routingNumber, accountHolderName, accountType } = req.body;
 
     try {
         // Validate input
-        if (!accountNumber || !routingNumber) {
-            return res.status(400).send({ success: false, message: 'Account number and routing number are required.' });
+        if (!accountNumber || !routingNumber || !accountHolderName || !accountType) {
+            return res.status(400).send({ success: false, message: 'All fields are required.' });
         }
 
-        // Use Square's API to securely store the banking information
-        const squareResponse = await squareClient.bankAccounts.createBankAccount({
-            accountNumber,
-            routingNumber,
-            // Add other required fields (e.g., account holder name, account type)
-        });
-
-        if (!squareResponse.result || !squareResponse.result.bankAccount) {
-            return res.status(500).send({ success: false, message: 'Failed to add banking information with Square.' });
-        }
-
-        // Update the professional's record in MongoDB
+        // Store banking information in MongoDB (for reference)
         await fixerClientObject.fixerClient.findByIdAndUpdate(userId, {
-            bankingInfoAdded: true,
-            squareBankAccountId: squareResponse.result.bankAccount.id,
+            bankingInfo: {
+                accountNumber,
+                routingNumber,
+                accountHolderName,
+                accountType,
+            },
+            bankingInfoAdded: true, // Mark as added (but not yet verified)
         });
 
-        res.send({ success: true, message: 'Banking information added successfully.' });
+        // Redirect the professional to the Square Dashboard to link the bank account
+        const squareDashboardUrl = 'https://squareup.com/dashboard/bank-accounts'; // Example URL
+        res.send({
+            success: true,
+            message: 'Banking information saved. Please link your bank account in the Square Dashboard.',
+            redirectUrl: squareDashboardUrl,
+        });
     } catch (error) {
         console.error('Error adding banking information:', error);
         res.status(500).send({ success: false, message: 'An error occurred while adding banking information.' });
@@ -77,20 +77,30 @@ const addBankingInfo = async (req, res) => {
 };
 
 const getBankingInfoStatus = async (req, res) => {
-    console.log("getBankingInfoStatus called"); // Add this line
-    try {
-        const userId = req.user.id;
-        console.log("User ID:", userId); // Add this line
+    const { userId } = req.query;
 
+    try {
+        // Retrieve the professional's Square customer ID from MongoDB
         const professional = await fixerClientObject.fixerClient.findById(userId);
         if (!professional) {
             return res.status(404).json({ message: "Professional not found" });
         }
 
-        console.log("Banking Info Status:", professional.bankingInfoAdded); // Add this line
-        res.json({ bankingInfoAdded: professional.bankingInfoAdded || false });
+        // Retrieve the linked bank accounts for the Square customer
+        const squareResponse = await squareClient.customers.listCustomerBankAccounts(professional.squareCustomerId);
+
+        if (!squareResponse.result || !squareResponse.result.bankAccounts) {
+            return res.status(500).json({ message: "Failed to retrieve bank account information." });
+        }
+
+        // Check if any bank account is verified
+        const verifiedBankAccount = squareResponse.result.bankAccounts.find(
+            (account) => account.status === 'VERIFIED'
+        );
+
+        res.json({ bankAccountVerified: !!verifiedBankAccount });
     } catch (error) {
-        console.error("Error fetching banking info status:", error);
+        console.error("Error fetching bank account status:", error);
         res.status(500).json({ message: "Server error" });
     }
 };

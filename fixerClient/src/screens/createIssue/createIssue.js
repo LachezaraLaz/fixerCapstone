@@ -84,7 +84,8 @@ export default function CreateIssue({ navigation }) {
             setLoadingAi(true);
             // Call AI endpoint
             const response = await axios.post(
-                'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
+                //'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
+                'http://192.168.0.19:3000/issue/aiEnhancement',
                 { description }
             );
 

@@ -12,8 +12,9 @@ async function enhanceIssueDescription(userDescription) {
                 messages: [
                     {
                         role: 'system',
-                        content: `You are a helpful assistant that improves a short job issue description. 
-                      Make it concise, clear, under 300 words, and keep it relevant.`
+                        content: `You are a helpful assistant that improves home service and blue-collar job descriptions.
+                        If the description is **not** related to these fields (e.g., programming, finance, consulting, AI, etc.), 
+                        respond with exactly "INVALID CATEGORY" (no extra text). Otherwise, improve the description while keeping it concise, clear, and under 300 words.`
                     },
                     {
                         role: 'user',

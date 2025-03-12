@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Linking } from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
 import { IPAddress } from '../../../ipAddress';
@@ -30,6 +30,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const [currentLocation, setCurrentLocation] = React.useState(null);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [typesOfWork, setTypesOfWork] = React.useState([]);
+    const [bankingInfoAdded, setBankingInfoAdded] = React.useState(false); // New state for banking info status
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
     const mapRef = React.useRef(null);
@@ -50,6 +51,25 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
             Alert.alert('Error', 'An error occurred while fetching issues.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchBankingInfoStatus = async () => {
+        try {
+            const userId = await AsyncStorage.getItem('userId'); // Get the logged-in user's ID
+            console.log("Fetched userId:", userId); // Log userId to confirm it's not null/undefined
+
+            if (!userId) {
+                console.error("No userId found in AsyncStorage");
+                return;
+            }
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
+                params: { userId }
+            });
+            setBankingInfoAdded(response.data.bankingInfoAdded);
+        } catch (error) {
+            console.error('Error fetching banking info status:', error.response?.data || error.message);
         }
     };
 
@@ -91,6 +111,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     React.useEffect(() => {
         fetchAllIssues();
         getCurrentLocation();
+        fetchBankingInfoStatus(); // Fetch banking info status on component mount
     }, []);
 
     React.useEffect(() => {
@@ -184,6 +205,22 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     return (
         <SafeAreaView style={styles.container}>
+            {/* Notice for banking information */}
+            {!bankingInfoAdded && (
+                <View style={styles.noticeContainer}>
+                    <Text style={styles.noticeText}>
+                        Please add your banking information to start submitting quotes.
+                    </Text>
+                </View>
+            )}
+
+            <TouchableOpacity
+                style={styles.addBankingButton}
+                onPress={() => navigation.navigate('BankingInfoPage')}
+            >
+                <Text style={styles.addBankingButtonText}>Add Banking Information</Text>
+            </TouchableOpacity>
+
             <View style={styles.notificationButton}>
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
                     <Ionicons name="notifications-outline" size={28} color="#333" />

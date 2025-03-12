@@ -15,8 +15,12 @@ const userRouter = require('./routes/userRoute');
 const getMyProfessionalJobsRouter = require('./routes/getMyProfessionalJobsRoute'); // Import the new route
 const { serverClient } = require('./services/streamClient');
 const reviewRouter = require('./routes/reviewRoute');
-
 const app = express();
+const cors = require('cors');
+app.use(cors({
+  origin: ['https://fixercapstone-production.up.railway.app'],
+}));
+
 
 app.use(bodyParser.json());
 

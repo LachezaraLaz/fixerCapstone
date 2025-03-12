@@ -42,6 +42,59 @@ describe('EditIssue Component', () => {
         expect(getByPlaceholderText('Title').props.value).toBe('Test Job');
     });
 
+    test('shows an alert if title is too short', async () => {
+        const { getByPlaceholderText, getByText } = render(
+            <EditIssue navigation={mockNavigation} route={route} />
+        );
+
+        fireEvent.changeText(getByPlaceholderText('Title'), '123');
+        fireEvent.press(getByText('Save Changes'));
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Invalid Title',
+                'Title must be at least 5 characters long.'
+            );
+        });
+    });
+
+    test('shows an alert if description is too short', async () => {
+        const { getByPlaceholderText, getByText } = render(
+            <EditIssue navigation={mockNavigation} route={route} />
+        );
+
+        fireEvent.changeText(getByPlaceholderText('Title'), 'Valid Title');
+        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'Short');
+        fireEvent.press(getByText('Save Changes'));
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Invalid Description',
+                'Please provide a description with at least 10 characters.'
+            );
+        });
+    });
+
+    test('shows an alert if unsupported image format is selected', async () => {
+        ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
+            canceled: false,
+            assets: [{ uri: 'invalid-image.bmp' }], // Unsupported format
+        });
+
+        const { getByText } = render(
+            <EditIssue navigation={mockNavigation} route={route} />
+        );
+
+        fireEvent.press(getByText('Upload Image'));
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Invalid Image',
+                'Only JPEG and PNG images are supported.'
+            );
+        });
+    });
+
     test('updates job successfully', async () => {
         AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
         axios.put.mockResolvedValueOnce({ status: 200 });

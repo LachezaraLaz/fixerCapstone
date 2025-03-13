@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
 import NotificationButton from "../../../components/notificationButton";
 import OrangeButton from "../../../components/orangeButton";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const IssueDetails = () => {
     const [job, setJob] = useState(null);
@@ -74,39 +75,30 @@ const IssueDetails = () => {
     const currentStatus = job.status?.toLowerCase() || "pending";
     const statusStyle = statusColors[currentStatus] || statusColors["pending"];
 
-    const ReopenIssue = async (id) => {
-        console.log("in reopen issue", id);
+    const deleteReopenIssue = async (job, currentStatus) => {
         try {
-            // const token = await AsyncStorage.getItem('token');
-            // if (!token) {
-            //     Alert.alert('You are not logged in');
-            //     return;
-            // }
-            const job2 = await axios.get(`http://${IPAddress}:3000/issue/${jobId}`);
-            setJob(job2.data);
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('You are not logged in');
+                return;
+            }
+            const newStatus = currentStatus.toLowerCase() === 'open' ? 'Closed By Client' : 'Open';
 
-            const newStatus = currentStatus.toLowerCase() === 'open' ? 'completed' : 'open';
-            console.log("before backened call", id,"new status ", newStatus );
-            const id= job.id;
-            console.log(id);
-
-            const response = await axios.delete(`http://${IPAddress}:3000/issue/reopen/${id}`,
-                { status: newStatus },
-                // { headers: { Authorization: `Bearer ${token}` } }
+            const response = await axios.delete(`http://${IPAddress}:3000/issue/delete/${job.id}?status=${newStatus}`,
+                { headers: { Authorization: `Bearer ${token}` } }
             );
-            console.log(response);
 
             if (response.status === 200) {
-                Alert.alert(`Job ${newStatus === 'closed' ? 'Closed' : 'Reopened'} successfully`);
+                Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Closed' : 'Reopened'} successfully`);
+                navigation.navigate("MyIssuesPosted");
             } else {
-                Alert.alert(`Failed to ${newStatus === 'closed' ? 'Close' : 'Reopen'} the job`);
+                Alert.alert(`Failed to ${newStatus === 'closed By Client' ? 'Close' : 'Reopen'} the job`);
             }
         } catch (error) {
             console.error(`Error updating job status to ${newStatus}:`, error);
-            Alert.alert(`An error occurred while trying to ${newStatus === 'closed' ? 'Close' : 'Reopen'} the job`);
+            Alert.alert(`An error occurred while trying to ${newStatus === 'closed By Client' ? 'Close' : 'Reopen'} the job`);
         }
     };
-
 
     return (
         <ScrollView style={styles.container}>
@@ -191,7 +183,7 @@ const IssueDetails = () => {
                     />
                     <OrangeButton
                         title="Reopen Issue"
-                        onPress={() => ReopenIssue(job.id)}
+                        onPress={() => deleteReopenIssue (job, job.status)}
                         style={styles.redirectButton}
                     />
                 </>
@@ -204,7 +196,7 @@ const IssueDetails = () => {
                     />
                     <OrangeButton
                         title="Delete"
-                        onPress={() => navigation.navigate("DeleteJobScreen", { jobId })}
+                        onPress={() => deleteReopenIssue (job, job.status)}
                         style={styles.redirectButton}
                     />
                 </>

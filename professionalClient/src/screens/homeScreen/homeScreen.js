@@ -229,7 +229,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     if (loading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator testID="loading-indicator" size="large" color="#0000ff" />
             </View>
         );
     }
@@ -327,6 +327,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     {/* Recenter Button */}
                     <View style={styles.recenterButtonWrapper}>
                         <TouchableOpacity
+                            testID="recenterButton"
                             style={[
                                 styles.recenterButton,
                                 locationPermission !== 'granted' && styles.recenterButtonDenied,

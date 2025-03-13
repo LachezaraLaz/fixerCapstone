@@ -362,11 +362,25 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     {filteredIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue._id}
-                            style={styles.card}
+                            style={styles.issueCard}
                             onPress={() => handleIssueClick(issue)}
                         >
-                            <Text style={styles.cardTitle}>{issue.title}</Text>
-                            <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>
+                            {/*<Image
+                                source={{uri: issue.imageUrl}} // Assume issue has imageUrl property
+                                style={styles.issueImage}
+                            />*/}
+                            <View style={styles.issueDetails}>
+                                <Text style={styles.issueTitle}>{issue.title}</Text>
+                                <Text style={styles.issueDescription}>{issue.description}</Text>
+                                <View style={styles.issueRatingContainer}>
+                                    <Ionicons name="star" size={16} color="#f1c40f" />
+                                    <Text style={styles.issueRating}>{issue.rating}</Text>
+                                    <Text style={styles.issueReviews}>| {issue.comments} reviews</Text>
+                                </View>
+                            </View>
+                            <View style={styles.issuePriceContainer}>
+                                <Text style={styles.issuePrice}>${issue.price}</Text>
+                            </View>
                         </TouchableOpacity>
                     ))}
                 </View>

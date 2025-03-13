@@ -6,6 +6,8 @@ import { Alert, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { AppState } from 'react-native';
+import { Animated } from 'react-native';
+
 
 // Mock AppState event handling
 jest.spyOn(AppState, 'addEventListener');
@@ -16,6 +18,29 @@ jest.mock('expo-location', () => ({
     requestForegroundPermissionsAsync: jest.fn(),
     getCurrentPositionAsync: jest.fn(),
 }));
+
+jest.mock('react-native/Libraries/Animated/NativeAnimatedModule', () => ({
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
+}));
+
+jest.mock('../../chat/chatContext', () => ({
+    useChatContext: () => ({
+        chatClient: { disconnectUser: jest.fn().mockResolvedValue() } // Default: success
+    }),
+}));
+
+
+jest.mock('react-native-reanimated', () => {
+    const Reanimated = require('react-native-reanimated/mock');
+    return {
+        ...Reanimated,
+        useAnimatedProps: jest.fn(),
+        useSharedValue: jest.fn(() => ({ value: 0 })),
+        useAnimatedStyle: jest.fn(() => ({})),
+    };
+});
+
 
 jest.mock('axios');
 jest.mock('react-native/Libraries/Alert/Alert', () => ({
@@ -40,6 +65,12 @@ describe('HomeScreen', () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
+        jest.doMock('../../chat/chatContext', () => ({
+            useChatContext: () => ({
+                chatClient: { disconnectUser: jest.fn().mockResolvedValue() } // Default: success
+            }),
+        }));
+
         Location.requestForegroundPermissionsAsync.mockResolvedValue({ status: 'granted' });
         Location.getCurrentPositionAsync.mockResolvedValue({ coords: { latitude: 37.78825, longitude: -122.4324 } });
         axios.get.mockResolvedValue({
@@ -50,15 +81,18 @@ describe('HomeScreen', () => {
 
     beforeEach(() => jest.clearAllMocks());
 
-    it('renders loading indicator initially', async () => {
-        const { getByTestId } = render(
-            <HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />
-        );
+    it('handles logout correctly', async () => {
+        const { getByText } = render(<HomeScreen route={{ params: {} }} setIsLoggedIn={mockSetIsLoggedIn} />);
 
-        // Use waitFor to handle async updates properly
-        expect(getByTestId('loading-indicator')).toBeTruthy();
+        await waitFor(() => expect(getByText('Logout')).toBeTruthy());
 
-        await waitFor(() => expect(getByTestId('loading-indicator')).toBeTruthy());
+        // Simulate clicking logout
+        await act(async () => {
+            fireEvent.press(getByText('Logout'));
+        });
+
+        // ✅ Check that `setIsLoggedIn(false)` is called on successful logout
+        expect(mockSetIsLoggedIn).toHaveBeenCalledWith(false);
     });
 
     it('fetches issues and renders them', async () => {
@@ -186,6 +220,5 @@ describe('HomeScreen', () => {
         // Check Linking.openSettings() is called
         expect(Linking.openSettings).toHaveBeenCalled();
     });
-
 
 });

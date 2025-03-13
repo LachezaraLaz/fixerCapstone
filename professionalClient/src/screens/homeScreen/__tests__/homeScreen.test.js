@@ -6,7 +6,6 @@ import { Alert, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { AppState } from 'react-native';
-import { Animated } from 'react-native';
 
 
 // Mock AppState event handling
@@ -26,7 +25,7 @@ jest.mock('react-native/Libraries/Animated/NativeAnimatedModule', () => ({
 
 jest.mock('../../chat/chatContext', () => ({
     useChatContext: () => ({
-        chatClient: { disconnectUser: jest.fn().mockResolvedValue() } // Default: success
+        chatClient: { disconnectUser: jest.fn().mockResolvedValue() }
     }),
 }));
 
@@ -91,7 +90,7 @@ describe('HomeScreen', () => {
             fireEvent.press(getByText('Logout'));
         });
 
-        // ✅ Check that `setIsLoggedIn(false)` is called on successful logout
+        // Check that `setIsLoggedIn(false)` is called on successful logout
         expect(mockSetIsLoggedIn).toHaveBeenCalledWith(false);
     });
 
@@ -115,7 +114,7 @@ describe('HomeScreen', () => {
 
         const alertSpy = jest.spyOn(Alert, 'alert');
 
-        // Mock console.error temporarily to silence Jest logs
+        // Mock the console.error temporarily to silence Jest logs
         jest.spyOn(console, 'error').mockImplementation(() => {});
 
         render(<HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />);
@@ -124,7 +123,7 @@ describe('HomeScreen', () => {
             expect(alertSpy).toHaveBeenCalledWith('Error', 'An error occurred while fetching issues.')
         );
 
-        // Optional: check if console.error was called (if desired)
+        // Check if console.error was called
         expect(console.error).toHaveBeenCalledWith('Error fetching issues:', expect.any(Error));
 
         // Restore console.error after the test finishes
@@ -147,10 +146,10 @@ describe('HomeScreen', () => {
         // Wait for loading indicator to disappear
         await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
 
-        // Wait explicitly for the recenter button to appear
+        // Wait for the recenter button to appear
         await waitFor(() => expect(getByTestId('recenterButton')).toBeTruthy());
 
-        // Now trigger the button press
+        // Now click on the button recenterButton
         await act(async () => {
             fireEvent.press(getByTestId('recenterButton'));
         });
@@ -196,7 +195,7 @@ describe('HomeScreen', () => {
         // Ensure loading finishes first
         await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
 
-        // Press recenter button
+        // Press on recenter button
         await act(async () => {
             fireEvent.press(getByTestId('recenterButton'));
         });
@@ -211,13 +210,13 @@ describe('HomeScreen', () => {
             ]
         );
 
-        // Simulate pressing 'Go to Settings' button on the alert
+        // Simulate pressing by clicking on 'Go to Settings' button on the alert
         const alertButtons = alertSpy.mock.calls[0][2];
         act(() => {
             alertButtons[1].onPress();
         });
 
-        // Check Linking.openSettings() is called
+        // Check if Linking.openSettings() is called
         expect(Linking.openSettings).toHaveBeenCalled();
     });
 

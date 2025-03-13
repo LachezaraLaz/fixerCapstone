@@ -1,6 +1,10 @@
-import { StyleSheet } from "react-native";
+import {StyleSheet} from "react-native";
 
 export const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
     customHeader: {
         width: '100%',
         height: 70,
@@ -28,8 +32,9 @@ export const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        //backgroundColor: "#fff",
         paddingHorizontal: 16,
+        paddingBottom: 100,
     },
     header: {
         flexDirection: "row",
@@ -37,9 +42,7 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 12,
     },
-    headerButton: {
-        padding: 8,
-    },
+
     jobTitle: {
         fontSize: 22,
         fontWeight: "bold",
@@ -51,6 +54,7 @@ export const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         marginTop: 20,
+        marginBottom: 10,
         color: "#333",
     },
     detailValue: {
@@ -83,14 +87,7 @@ export const styles = StyleSheet.create({
         height: 250,
         resizeMode: "contain",
         marginBottom: 10,
-        marginRight: 15,
-    },
-    smallImage: {
-        width: "100%",
-        height: 200,
-        borderRadius: 10,
-        resizeMode: "contain",
-        marginBottom: 8,
+        marginRight: 10,
     },
     modalContainer: {
         flex: 1,
@@ -122,18 +119,4 @@ export const styles = StyleSheet.create({
         fontWeight: "bold",
         textTransform: "capitalize",
     },
-    redirectButton:{
-        padding: 20,
-        borderRadius: 8,
-        flex: 1,
-        justifyContent: 'center',
-        minWidth: '90%',
-        alignSelf: 'center',
-        alignItems: 'center',
-        shadowRadius: 4,
-        elevation: 5,
-        marginTop: 20,
-        marginBottom: 20,
-    }
-
 });

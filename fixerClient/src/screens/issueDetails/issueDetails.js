@@ -1,11 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, ActivityIndicator, Alert, TouchableOpacity, Modal } from "react-native";
+import React, {useEffect, useState} from "react";
+import {
+    View,
+    Text,
+    Image,
+    ScrollView,
+    ActivityIndicator,
+    Alert,
+    TouchableOpacity,
+    Modal,
+    SafeAreaView,
+    RefreshControl
+} from "react-native";
 import axios from "axios";
-import { useRoute, useNavigation } from "@react-navigation/native";
-import { styles } from "../../../style/issueDetails/issueDetailsStyle";
-import { IPAddress } from "../../../ipAddress";
-import { Ionicons } from "@expo/vector-icons";
-import MapView, { Marker } from "react-native-maps";
+import {useRoute, useNavigation} from "@react-navigation/native";
+import {styles} from "../../../style/issueDetails/issueDetailsStyle";
+import {IPAddress} from "../../../ipAddress";
+import {Ionicons} from "@expo/vector-icons";
+import MapView, {Marker} from "react-native-maps";
 import NotificationButton from "../../../components/notificationButton";
 import OrangeButton from "../../../components/orangeButton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,11 +27,13 @@ const IssueDetails = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const route = useRoute();
     const navigation = useNavigation();
-    const { jobId } = route.params;
+    const [refreshing, setRefreshing] = useState(false);
+    const {jobId} = route.params;
 
     useEffect(() => {
         fetchJobDetails();
     }, []);
+
 
     const fetchJobDetails = async () => {
         try {
@@ -37,7 +50,7 @@ const IssueDetails = () => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#ff6600" />
+                <ActivityIndicator size="large" color="#ff6600"/>
             </View>
         );
     }
@@ -82,126 +95,169 @@ const IssueDetails = () => {
                 Alert.alert('You are not logged in');
                 return;
             }
-            const newStatus = currentStatus.toLowerCase() === 'open' ? 'Closed By Client' : 'Open';
 
-            const response = await axios.delete(`http://${IPAddress}:3000/issue/delete/${job.id}?status=${newStatus}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+            const newStatus = currentStatus.toLowerCase() === 'open' ? 'Closed By Client' : 'Open';
+            const actionText = newStatus === 'Closed By Client' ? 'delete' : 'reopen';
+
+            // Show a confirmation popup before proceeding
+            Alert.alert(
+                `Confirm ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`, // Capitalize first letter
+                `Are you sure you want to ${actionText} this issue?`,
+                [
+                    {
+                        text: "Cancel",
+                        style: "cancel"
+                    },
+                    {
+                        text: `Yes`,
+                        onPress: async () => {
+                            try {
+                                const response = await axios.delete(`http://${IPAddress}:3000/issue/delete/${job.id}?status=${newStatus}`,
+                                    {headers: {Authorization: `Bearer ${token}`}}
+                                );
+
+                                if (response.status === 200) {
+                                    Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Closed' : 'Reopened'} successfully`);
+                                    navigation.navigate("MyIssuesPosted");
+                                } else {
+                                    Alert.alert(`Failed to ${actionText} the job`);
+                                }
+                            } catch (error) {
+                                console.error(`Error updating job status to ${newStatus}:`, error);
+                                Alert.alert(`An error occurred while trying to ${actionText} the job`);
+                            }
+                        }
+                    }
+                ]
             );
 
-            if (response.status === 200) {
-                Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Closed' : 'Reopened'} successfully`);
-                navigation.navigate("MyIssuesPosted");
-            } else {
-                Alert.alert(`Failed to ${newStatus === 'closed By Client' ? 'Close' : 'Reopen'} the job`);
-            }
         } catch (error) {
-            console.error(`Error updating job status to ${newStatus}:`, error);
-            Alert.alert(`An error occurred while trying to ${newStatus === 'closed By Client' ? 'Close' : 'Reopen'} the job`);
+            console.error('Error handling job status:', error);
+            Alert.alert('An unexpected error occurred.');
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
         }
     };
 
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchJobDetails();
+    };
+
+
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.customHeader}>
-                <Text style={styles.headerLogo}>Fixr</Text>
-                <Text style={styles.headerTitle}>My Issues</Text>
-                <NotificationButton onPress={() => navigation.navigate("NotificationPage")} />
-            </View>
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView style={styles.container} contentContainerStyle={{paddingBottom: 50}}
+                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
+                <View style={styles.customHeader}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <Ionicons name="arrow-back" size={28} color="orange"/>
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Issue Details</Text>
+                    <NotificationButton onPress={() => navigation.navigate("NotificationPage")}/>
+                </View>
 
-            <Text style={styles.jobTitle}>{job.title}</Text>
-            <Text style={styles.detailLabel}>Professional Needed: </Text>
-            <Text style={styles.detailValue}>{job.professionalNeeded || "Not specified"}</Text>
+                <Text style={styles.jobTitle}>{job.title}</Text>
+                <Text style={styles.detailLabel}>Professional Needed </Text>
+                <Text style={styles.detailValue}>{job.professionalNeeded || "Not specified"}</Text>
 
-            <Text style={styles.detailLabel}>Status: </Text>
-            <View style={[styles.statusContainer, { backgroundColor: statusStyle.background, borderColor: statusStyle.border }]}>
-                <Text style={[styles.statusText, { color: statusStyle.text }]}>
-                    {job.status}
+                <Text style={styles.detailLabel}>Status </Text>
+                <View style={[styles.statusContainer, {
+                    backgroundColor: statusStyle.background,
+                    borderColor: statusStyle.border
+                }]}>
+                    <Text style={[styles.statusText, {color: statusStyle.text}]}>
+                        {job.status}
+                    </Text>
+                </View>
+
+                {job.professionalEmail && (
+                    <View>
+                        <Text style={styles.detailLabel}>Assigned Professional</Text>
+                        <Text style={styles.detailValue}> {job.professionalEmail} </Text>
+                    </View>
+                )}
+                <Text style={styles.detailLabel}>Created On</Text>
+                <Text style={styles.detailValue}>
+                    {new Date(job.createdAt).toDateString()}{" "}
+                    {new Date(job.createdAt).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}
                 </Text>
-            </View>
 
-            {job.professionalEmail && (
-                <View>
-                    <Text style={styles.detailLabel}>Assigned Professional</Text>
-                    <Text style={styles.detailValue}> {job.professionalEmail}</Text>
-                </View>
-            )}
-            <Text style={styles.detailLabel}>Created On:</Text>
-            <Text style={styles.detailValue}>
-                {new Date(job.createdAt).toDateString()}{" "}
-                {new Date(job.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-            </Text>
-
-            <Text style={styles.detailLabel}>Description</Text>
-            <Text style={styles.detailValue}>{job.description}</Text>
+                <Text style={styles.detailLabel}>Description</Text>
+                <Text style={styles.detailValue}>{job.description || "No Description"}</Text>
 
 
-            {job.imageUrl && (
-                <View style={styles.imageGrid}>
-                    <Text style={styles.detailLabel}>Attached Images</Text>
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Image source={{ uri: job.imageUrl }} style={styles.jobImage} />
-                    </TouchableOpacity>
-                </View>
-            )}
+                {job.imageUrl && job.imageUrl !== 'https://via.placeholder.com/150' && job.imageUrl !== null ? (
+                    <View style={styles.imageGrid}>
+                        <Text style={styles.detailLabel}>Attached Images</Text>
+                        <TouchableOpacity onPress={() => setModalVisible(true)}>
+                            <Image source={{uri: job.imageUrl}} style={styles.jobImage}/>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <View>
+                        <Text style={styles.detailLabel}>Attached Images</Text>
+                        <Text style={styles.detailValue}>No image attached yet</Text>
+                    </View>
+                )}
+                <Modal visible={modalVisible} transparent={true} animationType="fade">
+                    <View style={styles.modalContainer}>
+                        <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalVisible(false)}>
+                            <Ionicons name="close" size={30} color="white"/>
+                        </TouchableOpacity>
+                        <Image source={{uri: job.imageUrl}} style={styles.fullImage}/>
+                    </View>
+                </Modal>
 
-            <Text style={styles.detailLabel}>Location</Text>
-            <Modal visible={modalVisible} transparent={true} animationType="fade">
-                <View style={styles.modalContainer}>
-                    <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalVisible(false)}>
-                        <Ionicons name="close" size={30} color="white" />
-                    </TouchableOpacity>
-                    <Image source={{ uri: job.imageUrl }} style={styles.fullImage} />
-                </View>
-            </Modal>
+                <Text style={styles.detailLabel}>Location</Text>
+                <MapView
+                    style={styles.map}
+                    initialRegion={{
+                        latitude: job.latitude || 0.0,
+                        longitude: job.longitude || 0.0,
+                        latitudeDelta: 0.01,
+                        longitudeDelta: 0.01,
+                    }}
+                >
+                    <Marker coordinate={{latitude: job.latitude || 0.0, longitude: job.longitude || 0.0}}/>
+                </MapView>
 
-            <MapView
-                style={styles.map}
-                initialRegion={{
-                    latitude: job.latitude || 0.0,
-                    longitude: job.longitude || 0.0,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
-                }}
-            >
-                <Marker coordinate={{ latitude: job.latitude || 0.0, longitude: job.longitude || 0.0 }} />
-            </MapView>
+                {job.rating && (
+                    <View>
+                        <Text style={styles.detailLabel}>Review:</Text>
+                        <Text style={styles.detailValue}>Rating: {job.rating} Stars</Text>
+                        <Text style={styles.detailValue}>Comment: {job.comment || "No comment"}</Text>
+                    </View>
+                )}
 
-            {job.rating && (
-                <View>
-                    <Text style={styles.detailLabel}>Review:</Text>
-                    <Text style={styles.detailValue}>Rating: {job.rating}</Text>
-                    <Text style={styles.detailValue}>Comment: {job.comment}</Text>
-                </View>
-            )}
+                {job.status.toLowerCase() === "completed" || job.status.toLowerCase() === "closed" ? (
+                    <>
+                        <OrangeButton
+                            title="Add Review"
+                            onPress={() => navigation.navigate("addReview", {jobId})}
+                            variant="normal"
+                        />
+                        <OrangeButton
+                            title="Reopen Issue"
+                            onPress={() => deleteReopenIssue(job, job.status)}
+                        />
+                    </>
+                ) : job.status.toLowerCase() === "open" || job.status.toLowerCase() === "pending" ? (
+                    <>
+                        <OrangeButton
+                            title="Modify Issue"
+                            onPress={() => navigation.navigate("EditIssue", {jobId})}
+                        />
+                        <OrangeButton
+                            title="Delete Issue"
+                            onPress={() => deleteReopenIssue(job, job.status)}
+                        />
+                    </>
+                ) : null}
 
-            {job.status.toLowerCase() === "completed" || job.status.toLowerCase() === "closed"? (
-                <>
-                    <OrangeButton
-                        title="Add Review"
-                        onPress={() => navigation.navigate("addReview", { jobId })}
-                        style={styles.redirectButton}
-                    />
-                    <OrangeButton
-                        title="Reopen Issue"
-                        onPress={() => deleteReopenIssue (job, job.status)}
-                        style={styles.redirectButton}
-                    />
-                </>
-            ) : job.status.toLowerCase() === "open" || job.status.toLowerCase() === "pending" ? (
-                <>
-                    <OrangeButton
-                        title="Modify"
-                        onPress={() => navigation.navigate("EditIssue", { jobId })}
-                        style={styles.redirectButton}
-                    />
-                    <OrangeButton
-                        title="Delete"
-                        onPress={() => deleteReopenIssue (job, job.status)}
-                        style={styles.redirectButton}
-                    />
-                </>
-            ) : null}
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 

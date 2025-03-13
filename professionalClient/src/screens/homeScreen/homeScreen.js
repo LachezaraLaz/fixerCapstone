@@ -8,6 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatContext } from '../chat/chatContext';
 import { useNavigation } from '@react-navigation/native';
+import { AppState } from 'react-native';
 
 /**
  * @module professionalClient
@@ -62,8 +63,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      */
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
-            console.log(response);
+            const response = await axios.get(`http://192.168.2.16:3000/issues`);
             const fixedIssues = response.data.jobs
                 .map(issue => ({
                     ...issue,
@@ -135,9 +135,17 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         fetchAllIssues();
         getCurrentLocation();
         const focusListener = navigation.addListener('focus', getCurrentLocation);
-        return focusListener;
-
+        const appStateListener = AppState.addEventListener('change', (nextAppState) => {
+            if (nextAppState === 'active') {
+                getCurrentLocation(); // Recheck permissions and location when app returns to foreground
+            }
+        });
+        return () => {
+            focusListener();
+            appStateListener.remove();
+        };
     }, [navigation]);
+
 
     React.useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {

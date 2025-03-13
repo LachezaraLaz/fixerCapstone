@@ -98,7 +98,7 @@
     },
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(expo-image-picker|@testing-library/dom|expo-modules-core|@react-native|react-native-maps|react-native|react-native-vector-icons)/)"
+      "node_modules/(?!(expo-image-picker|@testing-library/dom|expo-modules-core|@react-native|react-native-maps|react-native|react-native-vector-icons|react-native-dropdown-picker)/)"
     ],
     "reporters": [
       "default",

@@ -19,19 +19,22 @@ import {
 import { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as ImagePicker from 'expo-image-picker';
 
 import { IPAddress } from '../../../ipAddress';
 import OrangeButton from "../../../components/orangeButton";
-import MapView, {Marker} from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 
 /**
  * @module fixerClient
  */
 
 export default function CreateIssue({ navigation }) {
+    const [loadingAi, setLoadingAi] = useState(false);
+    const [aiSuggestion, setAiSuggestion] = useState('');
+    const [showAiPreview, setShowAiPreview] = useState(false);
     // List of fields in the page
     const [description, setDescription] = useState('');
     const [selectedService, setSelectedService] = useState(null);
@@ -84,6 +87,47 @@ export default function CreateIssue({ navigation }) {
         if (!result.canceled) {
             setSelectedImage(result.assets[0].uri);
         }
+    };
+    const handleAiEnhancement = async () => {
+        if (!description.trim()) {
+            Alert.alert('No text', 'Please enter some description first.');
+            return;
+        }
+
+        try {
+            setLoadingAi(true);
+            // Call AI endpoint
+            const response = await axios.post(
+                'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
+                //'http://192.168.0.19:3000/issue/aiEnhancement',
+                { description }
+            );
+
+            const { improvedDescription } = response.data;
+            setAiSuggestion(improvedDescription);
+            setShowAiPreview(true);
+        } catch (error) {
+            // Handle 400 Bad Request (Invalid Category)
+            if (error.response && error.response.status === 400) {
+                Alert.alert('Invalid Job Category', error.response.data.error ||
+                    'Please provide a home service or blue-collar job description.');
+            } else {
+                console.error('Error enhancing description:', error);
+                Alert.alert('Error', 'Could not enhance your description. Please try again.');
+            }
+        } finally {
+            setLoadingAi(false);
+        }
+    };
+
+    const handleAcceptAiSuggestion = () => {
+        setDescription(aiSuggestion);
+        setShowAiPreview(false);
+    };
+
+    const handleRejectAiSuggestion = () => {
+        setAiSuggestion('');
+        setShowAiPreview(false);
     };
 
     /**
@@ -214,24 +258,75 @@ export default function CreateIssue({ navigation }) {
                         contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
             >
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>Job Description</Text>
-
                 {/* title field */}
-                <TextInput
-                    placeholder= "Describe your service"
-                    value={description}
-                    onChangeText={setDescription}
-                    style={{
-                        borderWidth: 1,
-                        background:'#EFF1F999',
-                        backgroundColor:'#E7E7E7',
-                        borderColor: '#ddd',
-                        borderRadius: 8,
-                        padding: 10,
-                        marginVertical: 8,
-                        height: 120,
-                        textAlignVertical: 'top', // Ensures text starts from the top
-                    }} multiline/>
+                <View style={{ position: 'relative' }}>
+                    <TextInput
+                        placeholder= "Describe your service"
+                        value={description}
+                        onChangeText={setDescription}
+                        style={{
+                            borderWidth: 1,
+                            backgroundColor: '#E7E7E7',
+                            borderColor: '#ddd',
+                            borderRadius: 8,
+                            padding: 10,
+                            marginVertical: 8,
+                            height: 120,
+                            textAlignVertical: 'top', // Ensures text starts from the top
+                        }} multiline/>
 
+                    {/* AI Enhancement Button */}
+                    <TouchableOpacity
+                        style={[styles.aiEnhanceButton, { marginTop: 10 }]}
+                        onPress={handleAiEnhancement}
+                        disabled={loadingAi}
+                    >
+                        {loadingAi ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
+                        )}
+                    </TouchableOpacity>
+                    {/* Show AI preview */}
+                    {showAiPreview && (
+                        <View style={{
+                            borderWidth: 1,
+                            borderColor: '#ccc',
+                            borderRadius: 8,
+                            padding: 10,
+                            marginTop: 20,
+                            backgroundColor: '#f9f9f9'
+                        }}>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 8 }}>
+                                AI's Suggestion:
+                            </Text>
+                            <Text style={{ color: '#333', marginBottom: 16 }}>{aiSuggestion}</Text>
+
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <TouchableOpacity style={{
+                                    backgroundColor: 'green',
+                                    padding: 10,
+                                    borderRadius: 8,
+                                    marginRight: 10
+                                }}
+                                                  onPress={handleAcceptAiSuggestion}
+                                >
+                                    <Text style={{ color: '#fff' }}>Accept</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={{
+                                    backgroundColor: 'red',
+                                    padding: 10,
+                                    borderRadius: 8
+                                }}
+                                                  onPress={handleRejectAiSuggestion}
+                                >
+                                    <Text style={{ color: '#fff' }}>Reject</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
+                </View>
                 {/* Word & Character Counter - Positioned Below the Input */}
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 5 }}>
                     <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
@@ -242,7 +337,7 @@ export default function CreateIssue({ navigation }) {
                 <View style={styles.pickerContainer}>
                     <DropDownPicker
                         style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
-                        translation={{PLACEHOLDER: "Select Service"}}
+                        translation={{ PLACEHOLDER: "Select Service" }}
                         open={open}
                         value={selectedService}
                         items={items}
@@ -285,7 +380,6 @@ export default function CreateIssue({ navigation }) {
                             longitudeDelta: 0.0421,
                         }}
                     >
-                        {/* Marker Example */}
                         <Marker
                             coordinate={{ latitude: 37.7749, longitude: -122.4194 }}
                             title="San Francisco"
@@ -312,11 +406,10 @@ export default function CreateIssue({ navigation }) {
                     />
                 </View>
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>Urgency Timeline</Text>
-                {/*Urgency Timeline*/}
                 <View style={styles.pickerContainer}>
                     <DropDownPicker
                         style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
-                        translation={{PLACEHOLDER: "Select Timeline"}}
+                        translation={{ PLACEHOLDER: "Select Timeline" }}
                         open={openTimeLine}
                         value={selectedTimeLine}
                         items={itemsTimeLine}
@@ -324,7 +417,6 @@ export default function CreateIssue({ navigation }) {
                         setValue={setSelectedTimeLine}
                         setItems={setItemsTimeLine}
                         textStyle={{ fontSize: 13, fontWeight: 'bold' }}
-                        dropDownDirection="BOTTOM" // Ensures dropdown opens downward
                         dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
                         listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
                         nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView

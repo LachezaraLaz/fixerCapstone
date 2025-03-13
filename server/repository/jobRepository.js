@@ -10,9 +10,9 @@ const getJobsByUserEmail = async (userEmail) => {
 };
 
 // Fetch a job by its ID
-const getJobById = async (jobId) => {
+const getJobByIdRepo = async (jobId) => {
     try {
-        return await Jobs.findById(jobId);
+        return await Jobs.findById(jobId.params.jobId);
     } catch (error) {
         throw new Error('Failed to fetch job by ID');
     }
@@ -36,4 +36,4 @@ const updateJob = async (jobId, updateData) => {
     }
 };
 
-module.exports = { getJobsByUserEmail, getJobById, updateJobStatus, updateJob };
+module.exports = { getJobsByUserEmail, getJobByIdRepo, updateJobStatus, updateJob };

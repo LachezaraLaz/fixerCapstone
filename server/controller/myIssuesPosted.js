@@ -1,4 +1,4 @@
-const { getJobsByUserEmail, updateJobStatus } = require('../repository/jobRepository');
+const { getJobsByUserEmail, updateJobStatus, getJobByIdRepo } = require('../repository/jobRepository');
 const { jobDTO } = require('../DTO/jobDTO');
 const {Jobs} = require("../model/createIssueModel");
 
@@ -26,14 +26,17 @@ const getJobsByUser = async (req, res) => {
 
 // GET /issue/:jobId route to fetch a single job by its ID
 const getJobById = async (req, res) => {
-    const { jobId } = req.params;
+    const jobId = req.params?.jobId ?? req;
+
+    if (!jobId) {
+        return res.status(400).json({ message: 'Job ID is required' });
+    }
 
     try {
-        const job = await Jobs.findById(req.params.jobId);
+        const job = await Jobs.findById(jobId);
         if (!job) {
             return res.status(404).json({ message: 'Job not found' });
         }
-
         // Use DTO to format the job before returning it
         res.status(200).json(jobDTO(job));
     } catch (error) {
@@ -91,7 +94,7 @@ const updateJob = async (req, res) => {
     console.log('Update data:', { title, description, professionalNeeded, status, imageUrl });
 
     try {
-        const existingJob = await getJobById(jobId);
+        const existingJob = await getJobByIdRepo(req);
 
         if (!existingJob) {
             console.log(`Job not found with jobId: ${jobId}`);
@@ -106,10 +109,10 @@ const updateJob = async (req, res) => {
             ...(imageUrl && { imageUrl }), // Update imageUrl only if it's provided
         };
 
-        const updatedJob = await updateJob(jobId, updatedJobData);
+        const updatedJob = await Jobs.findByIdAndUpdate(jobId, updatedJobData, { new: true, runValidators: true });
 
         if (!updatedJob) {
-            console.log(`Failed to update job with jobId: ${jobId}`);
+            console.log(`Failed to update job with jobID: ${jobId}`);
             return res.status(500).json({ message: 'Failed to update job' });
         }
 
@@ -117,7 +120,7 @@ const updateJob = async (req, res) => {
         res.status(200).json(jobDTO(updatedJob));
     } catch (error) {
         console.error('Error updating job:', error);
-        res.status(500).json({ message: 'Failed to update job', error: error.message });
+        return res.status(500).json({ message: 'Failed to update job', error: error.message });
     }
 };
 

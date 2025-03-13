@@ -1,7 +1,7 @@
 const express = require('express');
 const { createIssue } = require('../controller/createIssue');
 const { getJobsByUser, deleteJob, updateJob, reopenJob} = require('../controller/myIssuesPosted');
-//const { getJobById } = require('../repository/jobRepository');
+const { getJobByIdRepo } = require('../repository/jobRepository');
 const { getJobById } = require('../controller/myIssuesPosted');
 const { upload } = require('../services/cloudinaryService');
 const createIssueRouter = express.Router();

@@ -8,6 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatContext } from '../chat/chatContext';
 import { useNavigation } from '@react-navigation/native';
+import { AppState } from 'react-native';
 
 /**
  * @module professionalClient
@@ -46,6 +47,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const mapRef = React.useRef(null);
     const scrollViewRef = React.useRef(null);
     const navigation = useNavigation();
+    const [locationPermission, setLocationPermission] = React.useState(null);
 
     /**
      * Fetches all issues from the server and updates the state with the fetched data.
@@ -81,6 +83,14 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
+
+    const checkLocationPermission = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        setLocationPermission(status);
+        return status;
+    };
+
+
     /**
      * Asynchronously gets the current location of the user.
      * 
@@ -93,24 +103,49 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      * @returns {Promise<void>} A promise that resolves when the location is retrieved or permission status is handled.
      */
     const getCurrentLocation = async () => {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert("Location Permission Denied", "To use this feature, enable location services in settings.", [{ text: "OK", onPress: () => Linking.openSettings() }]);
-            return;
-        }
-        const location = await Location.getCurrentPositionAsync({});
-        if (location && location.coords) {
+        const status = await checkLocationPermission();
+        if (status === 'granted') {
+            const location = await Location.getCurrentPositionAsync({});
+            if (location && location.coords) {
+                setCurrentLocation({
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    latitudeDelta: 0.0122,
+                    longitudeDelta: 0.0121,
+                });
+            }
+        } else {
             setCurrentLocation({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
+                latitude: 45.5017, // Montreal Default Location
+                longitude: -73.5673,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
             });
         }
     };
 
+    /**
+     *
+     * These lines allow to update and actualize the location permission from the settings.
+     * We don't need to resign in to get the app updated.
+     *
+     */
+
     React.useEffect(() => {
         fetchAllIssues();
         getCurrentLocation();
-    }, []);
+        const focusListener = navigation.addListener('focus', getCurrentLocation);
+        const appStateListener = AppState.addEventListener('change', (nextAppState) => {
+            if (nextAppState === 'active') {
+                getCurrentLocation(); // Recheck permissions and location when app returns to foreground
+            }
+        });
+        return () => {
+            focusListener();
+            appStateListener.remove();
+        };
+    }, [navigation]);
+
 
     React.useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -194,7 +229,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     if (loading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator testID="loading-indicator" size="large" color="#0000ff" />
             </View>
         );
     }
@@ -235,6 +270,17 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      * @returns {void}
      */
     const handleRecenterMap = () => {
+        if (locationPermission !== 'granted') {
+            Alert.alert(
+                "Location Permission Denied",
+                "To use this feature, enable location services in settings.",
+                [
+                    { text: "Back", style: "cancel" },
+                    { text: "Go to Settings", onPress: () => Linking.openSettings() }
+                ]
+            );
+            return;
+        }
         if (mapRef.current && currentLocation) {
             mapRef.current.animateToRegion({
                 latitude: currentLocation.latitude,
@@ -247,27 +293,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* Profile Button */}
-            <View style={styles.profileButton}>
-                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
-                    <Ionicons name="person-circle" size={32} color="#333" />
-                </TouchableOpacity>
-            </View>
-
-            {/* Notification Button */}
-            <View style={styles.notificationButton}>
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
-                    <Ionicons name="notifications-outline" size={28} color="#333" />
-                </TouchableOpacity>
-            </View>
-
-            {/* Recenter Button */}
-            <View style={styles.recenterButtonContainer}>
-                <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
-                    <Ionicons name="locate" size={30} color="#333" />
-                </TouchableOpacity>
-            </View>
-
             <Animated.ScrollView ref={scrollViewRef} contentContainerStyle={{ paddingBottom: 100 }} scrollEventThrottle={16}>
                 {/* Map Section */}
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
@@ -299,6 +324,22 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             />
                         ))}
                     </MapView>
+                    {/* Recenter Button */}
+                    <View style={styles.recenterButtonWrapper}>
+                        <TouchableOpacity
+                            testID="recenterButton"
+                            style={[
+                                styles.recenterButton,
+                                locationPermission !== 'granted' && styles.recenterButtonDenied,
+                            ]}
+                            onPress={handleRecenterMap}
+                        >
+                            <Ionicons name="locate" size={30} color="#333" />
+                            {locationPermission !== 'granted' && <View style={styles.deniedSlash} />}
+                        </TouchableOpacity>
+                    </View>
+
+
                 </Animated.View>
 
                 {/* Filter Button */}
@@ -321,11 +362,25 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     {filteredIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue._id}
-                            style={styles.card}
+                            style={styles.issueCard}
                             onPress={() => handleIssueClick(issue)}
                         >
-                            <Text style={styles.cardTitle}>{issue.title}</Text>
-                            <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>
+                            {/*<Image
+                                source={{uri: issue.imageUrl}} // Assume issue has imageUrl property
+                                style={styles.issueImage}
+                            />*/}
+                            <View style={styles.issueDetails}>
+                                <Text style={styles.issueTitle}>{issue.title}</Text>
+                                <Text style={styles.issueDescription}>{issue.description}</Text>
+                                <View style={styles.issueRatingContainer}>
+                                    <Ionicons name="star" size={16} color="#f1c40f" />
+                                    <Text style={styles.issueRating}>{issue.rating}</Text>
+                                    <Text style={styles.issueReviews}>| {issue.comments} reviews</Text>
+                                </View>
+                            </View>
+                            <View style={styles.issuePriceContainer}>
+                                <Text style={styles.issuePrice}>${issue.price}</Text>
+                            </View>
                         </TouchableOpacity>
                     ))}
                 </View>

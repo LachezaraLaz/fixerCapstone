@@ -77,6 +77,7 @@ PINO_LOG_LEVEL='info'
 BETTER_STACK_TOKEN='aJkWYiLMUV6RTSeJ2H8dNiwy'
 STREAM_API_KEY=ut27s54hv26w
 STREAM_API_SECRET=wqwnt3c933uqfsgfrjf5xh37cuwzqkyj5hegvwn42mdn6gtyfvgz4pr6hmru6733
+OPENAI_API_KEY=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
 ```
 **WARNING, the ".env" file must never be pushed to main. EVER.**
 

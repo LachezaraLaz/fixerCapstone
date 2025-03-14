@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const ProfessionalPaymentSchema = new mongoose.Schema({
+const professionalPaymentSchema = new mongoose.Schema({
     professionalId: { type: mongoose.Schema.Types.ObjectId, ref: 'ProfessionalClient', required: true },
-    squareCustomerId: { type: String, required: true }, // Square's unique customer ID
+    stripeCustomerId: { type: String, required: true },
     linkedAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('ProfessionalPayment', ProfessionalPaymentSchema);
+module.exports = mongoose.model('ProfessionalPayment', professionalPaymentSchema);

@@ -29,6 +29,7 @@
     "expo-status-bar": "~1.12.1",
     "express": "^4.21.1",
     "github-actions-ctrf": "^0.0.45",
+    "has-symbols": "^1.1.0",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "mongoose": "^8.8.0",
@@ -43,7 +44,8 @@
     "react-native-gesture-handler": "^2.20.0",
     "react-native-maps": "^1.18.1",
     "square": "^41.0.0",
-    "stream-chat": "^8.50.0"
+    "stream-chat": "^8.50.0",
+    "stripe": "^17.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

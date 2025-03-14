@@ -1,39 +1,24 @@
+const { stripe } = require('../utils/stripeConfig');
 const ProfessionalPayment = require('../model/professionalPaymentModel');
-const { createProfessionalCustomer } = require('../services/squareService');
-const { fixerClient } = require('../model/professionalClientModel');
 
-async function linkProfessionalAccount(req, res) {
+async function createProfessionalCustomer(professionalId, firstName, lastName, email) {
     try {
-        const professionalId = req.user.id; // Extract professional ID from authenticated user
-        const { email } = req.body;
+        // Create a Stripe customer
+        const customer = await stripe.customers.create({
+            name: `${firstName} ${lastName}`,
+            email: email,
+        });
 
-        if (!email) {
-            return res.status(400).json({ message: "Missing required email field." });
-        }
+        const customerId = customer.id;
 
-        console.log('Professional ID:', professionalId);
+        // Store in the database
+        await ProfessionalPayment.create({ professionalId, stripeCustomerId: customerId });
 
-        // Check if professional has already linked Square
-        const existingPayment = await ProfessionalPayment.findOne({ professionalId });
-        console.log('Existing Professional Payment Profile:', existingPayment);
-        if (existingPayment) {
-            return res.status(400).json({ message: "Square account already linked." });
-        }
-
-        // Create a Square customer
-        const result = await createProfessionalCustomer(professionalId, email);
-
-        if (result.success) {
-            await fixerClient.findByIdAndUpdate(professionalId, { paymentSetup: true });
-
-            res.status(201).json({ message: "Account linked successfully", customerId: result.customerId });
-        } else {
-            res.status(500).json({ message: "Failed to link account", error: result.error });
-        }
+        return { success: true, customerId };
     } catch (error) {
-        console.error('Error linking professional to Square:', error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error('Error linking professional to Stripe:', error);
+        return { success: false, error: error.message };
     }
 }
 
-module.exports = { linkProfessionalAccount };
+module.exports = { createProfessionalCustomer };

@@ -3,7 +3,7 @@ const fixerClientObject = require('../model/professionalClientModel');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
-const { squareClient } = require('../utils/squareConfig');
+const { stripe } = require('../utils/stripeConfig');
 const ProfessionalPayment = require('../model/professionalPaymentModel');
 
 dotenv.config();
@@ -30,7 +30,6 @@ async function sendVerificationEmail(user, token) {
     await transporter.sendMail(mailOptions);
 }
 
-// Register user
 const registerUser = async (req, res) => {
     const { email, firstName, lastName, password } = req.body;
 
@@ -44,30 +43,29 @@ const registerUser = async (req, res) => {
     const encryptedPassword = await bcrypt.hash(password, 12);
 
     try {
-        // Check if a Square Customer record already exists
-        const response = await squareClient.customers.search({
-            query: {
-                filter: {
-                    emailAddress: {
-                        exact: email
-                    }
-                }
-            }
+        // Check if a Stripe Customer record already exists
+        const customers = await stripe.customers.list({
+            email: email,
+            limit: 1,
         });
 
-        console.log("Square API Response:", response);
-        let squareCustomerId;
-        if (response.customers && response.customers.length > 0) {
-            // Use the existing Square Customer record
-            squareCustomerId = response.customers[0].id;
+        let stripeCustomerId;
+        if (customers.data.length > 0) {
+            // Use the existing Stripe Customer record
+            stripeCustomerId = customers.data[0].id;
         } else {
-            // Create a new Square Customer record
-            const squareResponse = await squareClient.customers.create({
-                givenName: firstName,
-                familyName: lastName,
-                emailAddress: email
-            });
-            squareCustomerId = squareResponse.customer.id;
+            // Create a new Stripe Customer record
+            try {
+                const customer = await stripe.customers.create({
+                    name: `${firstName} ${lastName}`,
+                    email: email,
+                });
+                stripeCustomerId = customer.id;
+                console.log(`Stripe customer created with ID: ${stripeCustomerId}`);
+            } catch (stripeError) {
+                console.error('Stripe customer creation failed:', stripeError);
+                return res.status(500).send({ status: 'error', data: 'Stripe customer creation failed' });
+            }
         }
 
         // Create the new user object in MongoDB
@@ -79,14 +77,15 @@ const registerUser = async (req, res) => {
             approved: false,  // Set to false, email must be verified before approval
             accountType: 'professional',
             verified: false,  // Set to false initially, will be updated after verification
-            paymentSetup: true // Set to true after Square linking
+            paymentSetup: !!stripeCustomerId // Set to true only if stripeCustomerId exists
         });
 
-        // Store the Square Customer ID in the ProfessionalPayment collection
+        // Store the Stripe Customer ID in the ProfessionalPayment collection
         await ProfessionalPayment.create({
             professionalId: newUser._id,
-            squareCustomerId
+            stripeCustomerId,
         });
+        console.log(`ProfessionalPayment record created for professionalId: ${newUser._id}`);
 
         // Generate the verification token
         const verificationToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });

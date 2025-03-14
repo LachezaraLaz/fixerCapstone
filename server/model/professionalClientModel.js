@@ -14,12 +14,12 @@ const professionalClientModel = new mongoose.Schema({
     passwordResetExpires: Date,
     verified: { type: Boolean, default: false },
     verificationToken: String,
-    totalRating: { type: Number, default: 0 }, // Cumulative rating for the professional
-    reviewCount: { type: Number, default: 0 }, // Number of reviews received
-    paymentSetup: { type: Boolean, default: false }, // Square account linked
-    bankingInfoAdded: { type: Boolean, default: false },
-    squareBankAccountId: { type: String, default: null },
-    bankingInfo: { // Add this field
+    totalRating: { type: Number, default: 0 },
+    reviewCount: { type: Number, default: 0 },
+    paymentSetup: { type: Boolean, default: false }, // Stripe account linked
+    stripeAccountId: { type: String, default: null }, // Stripe Connect account ID
+    bankingInfoAdded: { type: Boolean, default: false }, // Banking info added
+    bankingInfo: {
         accountNumber: { type: String, default: null },
         routingNumber: { type: String, default: null },
         accountHolderName: { type: String, default: null },

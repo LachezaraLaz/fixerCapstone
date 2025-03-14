@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT verification
 const fixerClientObject = require('../model/professionalClientModel');
-const {squareClient} = require("../utils/squareConfig"); // Mongoose model for professional
+const {squareClient} = require("../utils/stripeConfig");
+const professionalPaymentSchema = require("../model/professionalPaymentModel");
 
 // Middleware to authenticate JWT
 const authenticateJWT = (req, res, next) => {
@@ -77,32 +78,26 @@ const addBankingInfo = async (req, res) => {
 };
 
 const getBankingInfoStatus = async (req, res) => {
-    const { userId } = req.query;
-
     try {
-        // Retrieve the professional's Square customer ID from MongoDB
+        const userId = req.user.id; // Extract user ID from JWT token
+
+        // Find professional client in MongoDB
         const professional = await fixerClientObject.fixerClient.findById(userId);
+
         if (!professional) {
             return res.status(404).json({ message: "Professional not found" });
         }
 
-        // Retrieve the linked bank accounts for the Square customer
-        const squareResponse = await squareClient.customers.listCustomerBankAccounts(professional.squareCustomerId);
-
-        if (!squareResponse.result || !squareResponse.result.bankAccounts) {
-            return res.status(500).json({ message: "Failed to retrieve bank account information." });
-        }
-
-        // Check if any bank account is verified
-        const verifiedBankAccount = squareResponse.result.bankAccounts.find(
-            (account) => account.status === 'VERIFIED'
-        );
-
-        res.json({ bankAccountVerified: !!verifiedBankAccount });
+        // Check if banking info is added in our database
+        res.json({
+            bankingInfoAdded: professional.bankingInfoAdded || false,
+            bankingInfo: professional.bankingInfo || null // Return stored banking info (if necessary)
+        });
     } catch (error) {
-        console.error("Error fetching bank account status:", error);
+        console.error("Error fetching banking info status:", error);
         res.status(500).json({ message: "Server error" });
     }
 };
+
 
 module.exports = { profile, authenticateJWT, addBankingInfo, getBankingInfoStatus };

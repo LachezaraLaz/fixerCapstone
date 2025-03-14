@@ -30,7 +30,7 @@ professionalRouter.post('/uploadID', authenticateJWT, upload('professional_ids')
 
 professionalRouter.get('/:email/reviews', getReviewsByProfessionalEmail);
 
-professionalRouter.post('/linkSquareAccount', authenticateJWT, linkProfessionalAccount);
+// professionalRouter.post('/linkSquareAccount', authenticateJWT, linkProfessionalAccount);
 
 professionalRouter.post('/add-banking-info', authenticateJWT, addBankingInfo);
 

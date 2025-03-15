@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>server/controller/fixerClientSignIn - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-fixerClient.html">fixerClient</a><ul class='methods'><li data-type='method'><a href="module-fixerClient.html#~fetchJobDetails">fetchJobDetails</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchJobsForUser">fetchJobsForUser</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchMoreNotifications">fetchMoreNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchOffers">fetchOffers</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-fixerClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleVerifyAddress">handleVerifyAddress</a></li><li data-type='method'><a href="module-fixerClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~postIssue">postIssue</a></li><li data-type='method'><a href="module-fixerClient.html#~updateJob">updateJob</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-professionalClient.html">professionalClient</a><ul class='methods'><li data-type='method'><a href="module-professionalClient.html#~calculateDistance">calculateDistance</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchAllIssues">fetchAllIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchJobs">fetchJobs</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchReviews">fetchReviews</a></li><li data-type='method'><a href="module-professionalClient.html#~filteredIssues">filteredIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~getCurrentLocation">getCurrentLocation</a></li><li data-type='method'><a href="module-professionalClient.html#~handleApplyFilters">handleApplyFilters</a></li><li data-type='method'><a href="module-professionalClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleImagePick">handleImagePick</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~handleRecenterMap">handleRecenterMap</a></li><li data-type='method'><a href="module-professionalClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-professionalClient.html#~requestCameraPermission">requestCameraPermission</a></li><li data-type='method'><a href="module-professionalClient.html#~submitQuote">submitQuote</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_controller_VerifyEmailForClient.html">server/controller/VerifyEmailForClient</a><ul class='methods'><li data-type='method'><a href="module-server_controller_VerifyEmailForClient.html#~verifyEmail">verifyEmail</a></li></ul></li><li><a href="module-server_controller_VerifyEmailForProfessional.html">server/controller/VerifyEmailForProfessional</a><ul class='methods'><li data-type='method'><a href="module-server_controller_VerifyEmailForProfessional.html#~verifyEmail">verifyEmail</a></li></ul></li><li><a href="module-server_controller_authenticate.html">server/controller/authenticate</a><ul class='methods'><li data-type='method'><a href="module-server_controller_authenticate.html#~authenticateJWT">authenticateJWT</a></li></ul></li><li><a href="module-server_controller_createIssue.html">server/controller/createIssue</a><ul class='methods'><li data-type='method'><a href="module-server_controller_createIssue.html#~createIssue">createIssue</a></li></ul></li><li><a href="module-server_controller_fixerClientProfile.html">server/controller/fixerClientProfile</a><ul class='methods'><li data-type='method'><a href="module-server_controller_fixerClientProfile.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller_fixerClientProfile.html#~profile">profile</a></li></ul></li><li><a href="module-server_controller_fixerClientRegister.html">server/controller/fixerClientRegister</a><ul class='methods'><li data-type='method'><a href="module-server_controller_fixerClientRegister.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller_fixerClientRegister.html#~sendVerificationEmail">sendVerificationEmail</a></li></ul></li><li><a href="module-server_controller_fixerClientSignIn.html">server/controller/fixerClientSignIn</a><ul class='methods'><li data-type='method'><a href="module-server_controller_fixerClientSignIn.html#~signinUser">signinUser</a></li></ul></li><li><a href="module-server_controller_fixerClientVerifyAddress.html">server/controller/fixerClientVerifyAddress</a><ul class='methods'><li data-type='method'><a href="module-server_controller_fixerClientVerifyAddress.html#~getCoordinates">getCoordinates</a></li><li data-type='method'><a href="module-server_controller_fixerClientVerifyAddress.html#~verifyAddress">verifyAddress</a></li></ul></li><li><a href="module-server_controller_getAllIssues.html">server/controller/getAllIssues</a><ul class='methods'><li data-type='method'><a href="module-server_controller_getAllIssues.html#~getAllIssues">getAllIssues</a></li></ul></li><li><a href="module-server_controller_getMyProfessionalJobs.html">server/controller/getMyProfessionalJobs</a><ul class='methods'><li data-type='method'><a href="module-server_controller_getMyProfessionalJobs.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller_getMyProfessionalJobs.html#~getMyProfessionalJobs">getMyProfessionalJobs</a></li></ul></li><li><a href="module-server_controller_initChat.html">server/controller/initChat</a><ul class='methods'><li data-type='method'><a href="module-server_controller_initChat.html#~initChat">initChat</a></li></ul></li><li><a href="module-server_controller_myIssuesPosted.html">server/controller/myIssuesPosted</a><ul class='methods'><li data-type='method'><a href="module-server_controller_myIssuesPosted.html#~deleteReopenJob">deleteReopenJob</a></li><li data-type='method'><a href="module-server_controller_myIssuesPosted.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_controller_myIssuesPosted.html#~getJobsByUser">getJobsByUser</a></li><li data-type='method'><a href="module-server_controller_myIssuesPosted.html#~updateJob">updateJob</a></li></ul></li><li><a href="module-server_controller_notification.html">server/controller/notification</a><ul class='methods'><li data-type='method'><a href="module-server_controller_notification.html#~createNotification">createNotification</a></li><li data-type='method'><a href="module-server_controller_notification.html#~getNotificationHistory">getNotificationHistory</a></li><li data-type='method'><a href="module-server_controller_notification.html#~getNotifications">getNotifications</a></li><li data-type='method'><a href="module-server_controller_notification.html#~getUnreadNotificationCount">getUnreadNotificationCount</a></li><li data-type='method'><a href="module-server_controller_notification.html#~markAsRead">markAsRead</a></li></ul></li><li><a href="module-server_controller_professionalClientProfile.html">server/controller/professionalClientProfile</a><ul class='methods'><li data-type='method'><a href="module-server_controller_professionalClientProfile.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller_professionalClientProfile.html#~profile">profile</a></li></ul></li><li><a href="module-server_controller_professionalClientRegister.html">server/controller/professionalClientRegister</a><ul class='methods'><li data-type='method'><a href="module-server_controller_professionalClientRegister.html#~registerUser">registerUser</a></li></ul></li><li><a href="module-server_controller_professionalClientSignIn.html">server/controller/professionalClientSignIn</a><ul class='methods'><li data-type='method'><a href="module-server_controller_professionalClientSignIn.html#~signinUser">signinUser</a></li></ul></li><li><a href="module-server_controller_professionalClientVerifyCredentials.html">server/controller/professionalClientVerifyCredentials</a><ul class='methods'><li data-type='method'><a href="module-server_controller_professionalClientVerifyCredentials.html#~verifyCredentials">verifyCredentials</a></li></ul></li><li><a href="module-server_controller_professionalUploadID.html">server/controller/professionalUploadID</a><ul class='methods'><li data-type='method'><a href="module-server_controller_professionalUploadID.html#~professionalUploadID">professionalUploadID</a></li></ul></li><li><a href="module-server_controller_resetController.html">server/controller/resetController</a><ul class='methods'><li data-type='method'><a href="module-server_controller_resetController.html#~forgotPassword">forgotPassword</a></li><li data-type='method'><a href="module-server_controller_resetController.html#~generatePin">generatePin</a></li><li data-type='method'><a href="module-server_controller_resetController.html#~resetPassword">resetPassword</a></li><li data-type='method'><a href="module-server_controller_resetController.html#~validatePin">validatePin</a></li></ul></li><li><a href="module-server_controller_reviewController.html">server/controller/reviewController</a></li><li><a href="module-server_controller_submitQuote.html">server/controller/submitQuote</a><ul class='methods'><li data-type='method'><a href="module-server_controller_submitQuote.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller_submitQuote.html#~getQuotesByJob">getQuotesByJob</a></li><li data-type='method'><a href="module-server_controller_submitQuote.html#~submitQuote">submitQuote</a></li><li data-type='method'><a href="module-server_controller_submitQuote.html#~updateQuoteStatus">updateQuoteStatus</a></li></ul></li><li><a href="module-server_controller_userController.html">server/controller/userController</a><ul class='methods'><li data-type='method'><a href="module-server_controller_userController.html#~getUserProfile">getUserProfile</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">server/controller/fixerClientSignIn</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+            
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="~signinUser"><span class="type-signature type-signature-async, inner">(async, inner) </span>signinUser<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Signs in a user with the provided email and password.</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_controller_fixerClientSignIn.js.html">server/controller/fixerClientSignIn.js</a>, <a href="server_controller_fixerClientSignIn.js.html#line22">line 22</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The request object.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>body</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The body of the request.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The email of the user.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>password</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The password of the user.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The response object.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Sends a response with the authentication token and user details.</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;void></span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Thu Mar 06 2025 22:52:14 GMT-0500 (Eastern Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

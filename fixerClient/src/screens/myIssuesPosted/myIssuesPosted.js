@@ -9,6 +9,10 @@ import JobBox from '../../../components/jobBox';
 import NotificationButton from "../../../components/notificationButton";
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module fixerClient
+ */
+
 export default function MyIssuesPosted() {
     const [jobs, setJobs] = useState({ all: [], inProgress: [], completed: [] });
     const [loading, setLoading] = useState(true);
@@ -23,6 +27,18 @@ export default function MyIssuesPosted() {
         }
     }, [isFocused]);
 
+    /**
+     * Fetches jobs for the logged-in user and updates the state with the fetched jobs.
+     * 
+     * This function retrieves the user's token from AsyncStorage, decodes it to get the user's email,
+     * and then makes an API call to fetch the jobs associated with that email. The jobs are then
+     * categorized into 'all', 'inProgress', and 'completed' based on their status and stored in the state.
+     * 
+     * @async
+     * @function fetchJobsForUser
+     * @returns {Promise<void>} A promise that resolves when the jobs have been fetched and the state has been updated.
+     * @throws Will alert an error message if there is an issue fetching the jobs.
+     */
     const fetchJobsForUser = async () => {
         setLoading(true);
         try {
@@ -57,6 +73,10 @@ export default function MyIssuesPosted() {
         }
     };
 
+    /**
+     * Handles the refresh action by setting the refreshing state to true
+     * and fetching jobs for the user.
+     */
     const onRefresh = () => {
         setRefreshing(true);
         fetchJobsForUser();

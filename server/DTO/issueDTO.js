@@ -6,6 +6,8 @@ const issueDTO = (job) => ({
     professionalNeeded: job.professionalNeeded,
     status: job.status,
     createdAt: job.createdAt,
+    latitude: job.latitude || 0.0,
+    longitude: job.longitude || 0.0,
 });
 
 module.exports = { issueDTO };

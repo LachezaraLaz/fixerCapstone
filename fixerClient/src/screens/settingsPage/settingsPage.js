@@ -4,6 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/**
+ * @module fixerClient
+ */
+
 export default function SettingsPage() {
     const navigation = useNavigation();
 
@@ -11,6 +15,14 @@ export default function SettingsPage() {
         Alert.alert("Feature Unavailable", `${featureName} is not available yet.`);
     };
 
+    /**
+     * Logs the user out by removing authentication tokens and user information from AsyncStorage.
+     * Displays an alert indicating the success or failure of the logout process.
+     * 
+     * @async
+     * @function handleLogout
+     * @returns {Promise<void>} A promise that resolves when the logout process is complete.
+     */
     const handleLogout = async () => {
         try {
             await AsyncStorage.removeItem('token');

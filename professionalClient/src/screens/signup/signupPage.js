@@ -3,6 +3,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios, {request} from 'axios';
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module professionalClient
+ */
 
 export default function SignUpPage({ navigation }) {
     const [email, setEmail] = useState('');
@@ -11,7 +14,19 @@ export default function SignUpPage({ navigation }) {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    //backend
+    /**
+     * Handles the sign-up process for a new user.
+     * 
+     * This function performs the following steps:
+     * 1. Validates that all required fields (email, password, confirmPassword) are filled.
+     * 2. Checks if the password and confirmPassword fields match.
+     * 3. Sends a POST request to the registration endpoint to create a new user account.
+     * 4. Handles various error scenarios including user already exists, network errors, and unexpected errors.
+     * 
+     * @async
+     * @function handleSignUp
+     * @returns {Promise<void>} - A promise that resolves when the sign-up process is complete.
+     */
     async function handleSignUp() {
         if (!email || !password || !confirmPassword) {
             Alert.alert('Error', 'All fields are required');

@@ -8,8 +8,21 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatContext } from '../chat/chatContext';
 import { useNavigation } from '@react-navigation/native';
+import { AppState } from 'react-native';
 
-// Utility function to calculate distance using Haversine formula
+/**
+ * @module professionalClient
+ */
+
+/**
+ * Calculates the distance between two geographical coordinates using the Haversine formula.
+ *
+ * @param {number} lat1 - Latitude of the first point in degrees.
+ * @param {number} lon1 - Longitude of the first point in degrees.
+ * @param {number} lat2 - Latitude of the second point in degrees.
+ * @param {number} lon2 - Longitude of the second point in degrees.
+ * @returns {number} - The distance between the two points in kilometers.
+ */
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const toRadians = (degrees) => degrees * (Math.PI / 180);
     const R = 6371; // Earth radius in km
@@ -34,7 +47,20 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const mapRef = React.useRef(null);
     const scrollViewRef = React.useRef(null);
     const navigation = useNavigation();
+    const [locationPermission, setLocationPermission] = React.useState(null);
 
+    /**
+     * Fetches all issues from the server and updates the state with the fetched data.
+     * 
+     * This function makes an asynchronous GET request to the specified endpoint to retrieve
+     * a list of issues. Upon successful retrieval, it updates the state with the list of issues
+     * and extracts unique types of work required by the issues. If an error occurs during the
+     * fetch operation, it logs the error and displays an alert to the user.
+     * 
+     * @async
+     * @function fetchAllIssues
+     * @returns {Promise<void>} A promise that resolves when the fetch operation is complete.
+     */
     const fetchAllIssues = async () => {
         try {
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
@@ -57,25 +83,69 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
-    const getCurrentLocation = async () => {
+
+    const checkLocationPermission = async () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert("Location Permission Denied", "To use this feature, enable location services in settings.", [{ text: "OK", onPress: () => Linking.openSettings() }]);
-            return;
-        }
-        const location = await Location.getCurrentPositionAsync({});
-        if (location && location.coords) {
+        setLocationPermission(status);
+        return status;
+    };
+
+
+    /**
+     * Asynchronously gets the current location of the user.
+     * 
+     * This function checks for location permissions and requests them if not already granted.
+     * If permissions are granted, it retrieves the current position and updates the state with the latitude and longitude.
+     * If permissions are denied, it prompts the user to enable location services in the settings.
+     * 
+     * @async
+     * @function getCurrentLocation
+     * @returns {Promise<void>} A promise that resolves when the location is retrieved or permission status is handled.
+     */
+    const getCurrentLocation = async () => {
+        const status = await checkLocationPermission();
+        if (status === 'granted') {
+            const location = await Location.getCurrentPositionAsync({});
+            if (location && location.coords) {
+                setCurrentLocation({
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    latitudeDelta: 0.0122,
+                    longitudeDelta: 0.0121,
+                });
+            }
+        } else {
             setCurrentLocation({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
+                latitude: 45.5017, // Montreal Default Location
+                longitude: -73.5673,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
             });
         }
     };
 
+    /**
+     *
+     * These lines allow to update and actualize the location permission from the settings.
+     * We don't need to resign in to get the app updated.
+     *
+     */
+
     React.useEffect(() => {
         fetchAllIssues();
         getCurrentLocation();
-    }, []);
+        const focusListener = navigation.addListener('focus', getCurrentLocation);
+        const appStateListener = AppState.addEventListener('change', (nextAppState) => {
+            if (nextAppState === 'active') {
+                getCurrentLocation(); // Recheck permissions and location when app returns to foreground
+            }
+        });
+        return () => {
+            focusListener();
+            appStateListener.remove();
+        };
+    }, [navigation]);
+
 
     React.useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -86,6 +156,22 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         return unsubscribe;
     }, [navigation, route.params?.selectedFilters, route.params?.distanceRange]);
 
+    /**
+     * Handles the user logout process.
+     * 
+     * This function performs the following steps:
+     * 1. Disconnects the user from the chat client if it exists.
+     * 2. Removes the user's token, stream token, user ID, and user name from AsyncStorage.
+     * 3. Displays an alert indicating the user has been logged out successfully.
+     * 4. Sets the `isLoggedIn` state to false.
+     * 
+     * If an error occurs during the logout process, it logs the error to the console
+     * and displays an alert indicating that an error occurred.
+     * 
+     * @async
+     * @function handleLogout
+     * @returns {Promise<void>} A promise that resolves when the logout process is complete.
+     */
     const handleLogout = async () => {
         try {
             if (chatClient) await chatClient.disconnectUser();
@@ -98,6 +184,30 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
+    /**
+     * Filters and returns a list of unique issues based on selected filters and distance range.
+     *
+     * @function
+     * @name filteredIssues
+     * @returns {Array} - The filtered list of unique issues.
+     *
+     * @example
+     * // Example usage:
+     * const issues = [
+     *   { _id: '1', professionalNeeded: 'plumber', latitude: 40.7128, longitude: -74.0060 },
+     *   { _id: '2', professionalNeeded: 'electrician', latitude: 34.0522, longitude: -118.2437 }
+     * ];
+     * const selectedFilters = ['plumber'];
+     * const currentLocation = { latitude: 37.7749, longitude: -122.4194 };
+     * const route = { params: { distanceRange: [0, 100] } };
+     * const result = filteredIssues(issues, selectedFilters, currentLocation, route.params.distanceRange);
+     * console.log(result);
+     *
+     * @param {Array} issues - The list of issues to filter.
+     * @param {Array} selectedFilters - The list of selected filters for professionals needed.
+     * @param {Object} currentLocation - The current location with latitude and longitude.
+     * @param {Array} route.params.distanceRange - The distance range [minDistance, maxDistance] to filter issues by.
+     */
     const filteredIssues = React.useMemo(() => {
         return issues.filter(issue => {
             const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
@@ -119,7 +229,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     if (loading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator testID="loading-indicator" size="large" color="#0000ff" />
             </View>
         );
     }
@@ -130,6 +240,14 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         extrapolate: 'clamp',
     });
 
+    /**
+     * Handles the click event on an issue.
+     * Scrolls the scroll view to the top and animates the map to the issue's location.
+     *
+     * @param {Object} issue - The issue object containing location details.
+     * @param {number} issue.latitude - The latitude of the issue's location.
+     * @param {number} issue.longitude - The longitude of the issue's location.
+     */
     const handleIssueClick = (issue) => {
         if (scrollViewRef.current) {
             scrollViewRef.current.scrollTo({ y: 0, animated: true });
@@ -145,7 +263,24 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
+    /**
+     * Re-centers the map to the current location with a smooth animation.
+     * 
+     * @function handleRecenterMap
+     * @returns {void}
+     */
     const handleRecenterMap = () => {
+        if (locationPermission !== 'granted') {
+            Alert.alert(
+                "Location Permission Denied",
+                "To use this feature, enable location services in settings.",
+                [
+                    { text: "Back", style: "cancel" },
+                    { text: "Go to Settings", onPress: () => Linking.openSettings() }
+                ]
+            );
+            return;
+        }
         if (mapRef.current && currentLocation) {
             mapRef.current.animateToRegion({
                 latitude: currentLocation.latitude,
@@ -158,27 +293,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* Profile Button */}
-            <View style={styles.profileButton}>
-                <TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
-                    <Ionicons name="person-circle" size={32} color="#333" />
-                </TouchableOpacity>
-            </View>
-
-            {/* Notification Button */}
-            <View style={styles.notificationButton}>
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
-                    <Ionicons name="notifications-outline" size={28} color="#333" />
-                </TouchableOpacity>
-            </View>
-
-            {/* Recenter Button */}
-            <View style={styles.recenterButtonContainer}>
-                <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
-                    <Ionicons name="locate" size={30} color="#333" />
-                </TouchableOpacity>
-            </View>
-
             <Animated.ScrollView ref={scrollViewRef} contentContainerStyle={{ paddingBottom: 100 }} scrollEventThrottle={16}>
                 {/* Map Section */}
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
@@ -210,6 +324,22 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             />
                         ))}
                     </MapView>
+                    {/* Recenter Button */}
+                    <View style={styles.recenterButtonWrapper}>
+                        <TouchableOpacity
+                            testID="recenterButton"
+                            style={[
+                                styles.recenterButton,
+                                locationPermission !== 'granted' && styles.recenterButtonDenied,
+                            ]}
+                            onPress={handleRecenterMap}
+                        >
+                            <Ionicons name="locate" size={30} color="#333" />
+                            {locationPermission !== 'granted' && <View style={styles.deniedSlash} />}
+                        </TouchableOpacity>
+                    </View>
+
+
                 </Animated.View>
 
                 {/* Filter Button */}
@@ -232,11 +362,25 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     {filteredIssues.map((issue) => (
                         <TouchableOpacity
                             key={issue._id}
-                            style={styles.card}
+                            style={styles.issueCard}
                             onPress={() => handleIssueClick(issue)}
                         >
-                            <Text style={styles.cardTitle}>{issue.title}</Text>
-                            <Text style={styles.cardSubtitle}>Status: {issue.status}</Text>
+                            {/*<Image
+                                source={{uri: issue.imageUrl}} // Assume issue has imageUrl property
+                                style={styles.issueImage}
+                            />*/}
+                            <View style={styles.issueDetails}>
+                                <Text style={styles.issueTitle}>{issue.title}</Text>
+                                <Text style={styles.issueDescription}>{issue.description}</Text>
+                                <View style={styles.issueRatingContainer}>
+                                    <Ionicons name="star" size={16} color="#f1c40f" />
+                                    <Text style={styles.issueRating}>{issue.rating}</Text>
+                                    <Text style={styles.issueReviews}>| {issue.comments} reviews</Text>
+                                </View>
+                            </View>
+                            <View style={styles.issuePriceContainer}>
+                                <Text style={styles.issuePrice}>${issue.price}</Text>
+                            </View>
                         </TouchableOpacity>
                     ))}
                 </View>

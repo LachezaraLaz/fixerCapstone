@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>server/controller/notification.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module-server_repository-NotificationRepository.html">NotificationRepository</a></li><li><a href="module-server_repository-ProfessionalRepository.html">ProfessionalRepository</a></li><li><a href="module-server_repository-UserRepository.html">UserRepository</a></li></ul><h3>Modules</h3><ul><li><a href="module-fixerClient.html">fixerClient</a><ul class='methods'><li data-type='method'><a href="module-fixerClient.html#~fetchJobDetails">fetchJobDetails</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchJobsForUser">fetchJobsForUser</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchMoreNotifications">fetchMoreNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchOffers">fetchOffers</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-fixerClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleVerifyAddress">handleVerifyAddress</a></li><li data-type='method'><a href="module-fixerClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~postIssue">postIssue</a></li><li data-type='method'><a href="module-fixerClient.html#~updateJob">updateJob</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-professionalClient.html">professionalClient</a><ul class='methods'><li data-type='method'><a href="module-professionalClient.html#~calculateDistance">calculateDistance</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchAllIssues">fetchAllIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchJobs">fetchJobs</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchReviews">fetchReviews</a></li><li data-type='method'><a href="module-professionalClient.html#~filteredIssues">filteredIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~getCurrentLocation">getCurrentLocation</a></li><li data-type='method'><a href="module-professionalClient.html#~handleApplyFilters">handleApplyFilters</a></li><li data-type='method'><a href="module-professionalClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleImagePick">handleImagePick</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~handleRecenterMap">handleRecenterMap</a></li><li data-type='method'><a href="module-professionalClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-professionalClient.html#~requestCameraPermission">requestCameraPermission</a></li><li data-type='method'><a href="module-professionalClient.html#~submitQuote">submitQuote</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_controller.html">server/controller</a><ul class='methods'><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~createIssue">createIssue</a></li><li data-type='method'><a href="module-server_controller.html#~createNotification">createNotification</a></li><li data-type='method'><a href="module-server_controller.html#~deleteReopenJob">deleteReopenJob</a></li><li data-type='method'><a href="module-server_controller.html#~forgotPassword">forgotPassword</a></li><li data-type='method'><a href="module-server_controller.html#~generatePin">generatePin</a></li><li data-type='method'><a href="module-server_controller.html#~getAllIssues">getAllIssues</a></li><li data-type='method'><a href="module-server_controller.html#~getCoordinates">getCoordinates</a></li><li data-type='method'><a href="module-server_controller.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_controller.html#~getJobsByUser">getJobsByUser</a></li><li data-type='method'><a href="module-server_controller.html#~getMyProfessionalJobs">getMyProfessionalJobs</a></li><li data-type='method'><a href="module-server_controller.html#~getNotificationHistory">getNotificationHistory</a></li><li data-type='method'><a href="module-server_controller.html#~getNotifications">getNotifications</a></li><li data-type='method'><a href="module-server_controller.html#~getQuotesByJob">getQuotesByJob</a></li><li data-type='method'><a href="module-server_controller.html#~getUnreadNotificationCount">getUnreadNotificationCount</a></li><li data-type='method'><a href="module-server_controller.html#~getUserProfile">getUserProfile</a></li><li data-type='method'><a href="module-server_controller.html#~initChat">initChat</a></li><li data-type='method'><a href="module-server_controller.html#~markAsRead">markAsRead</a></li><li data-type='method'><a href="module-server_controller.html#~professionalUploadID">professionalUploadID</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~resetPassword">resetPassword</a></li><li data-type='method'><a href="module-server_controller.html#~sendVerificationEmail">sendVerificationEmail</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~submitQuote">submitQuote</a></li><li data-type='method'><a href="module-server_controller.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_controller.html#~updateQuoteStatus">updateQuoteStatus</a></li><li data-type='method'><a href="module-server_controller.html#~validatePin">validatePin</a></li><li data-type='method'><a href="module-server_controller.html#~verifyAddress">verifyAddress</a></li><li data-type='method'><a href="module-server_controller.html#~verifyCredentials">verifyCredentials</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_repository.html">server/repository</a><ul class='methods'><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#countUnreadNotifications">NotificationRepository#countUnreadNotifications</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#createNotification">NotificationRepository#createNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#deleteNotification">NotificationRepository#deleteNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationHistoryByUserId">NotificationRepository#getNotificationHistoryByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationsByUserId">NotificationRepository#getNotificationsByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#markNotificationAsRead">NotificationRepository#markNotificationAsRead</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#comparePassword">ProfessionalRepository#comparePassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createProfessional">ProfessionalRepository#createProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createStreamToken">ProfessionalRepository#createStreamToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#findProfessionalByEmail">ProfessionalRepository#findProfessionalByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateToken">ProfessionalRepository#generateToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateVerificationToken">ProfessionalRepository#generateVerificationToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#hashPassword">ProfessionalRepository#hashPassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#saveProfessional">ProfessionalRepository#saveProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#sendVerificationEmail">ProfessionalRepository#sendVerificationEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#upsertStreamUser">ProfessionalRepository#upsertStreamUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#createUser">UserRepository#createUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findByEmail">UserRepository#findByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findById">UserRepository#findById</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#updateUser">UserRepository#updateUser</a></li><li data-type='method'><a href="module-server_repository.html#~getAllJobs">getAllJobs</a></li><li data-type='method'><a href="module-server_repository.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_repository.html#~getJobsByUserEmail">getJobsByUserEmail</a></li><li data-type='method'><a href="module-server_repository.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_repository.html#~updateJobStatus">updateJobStatus</a></li></ul></li><li></li><li></li><li></li><li></li><li><a href="module-server_services.html">server/services</a><ul class='methods'><li data-type='method'><a href="module-server_services.html#~getCoordinatesFromAddress">getCoordinatesFromAddress</a></li><li data-type='method'><a href="module-server_services.html#~storage">storage</a></li><li data-type='method'><a href="module-server_services.html#~upload">upload</a></li><li data-type='method'><a href="module-server_services.html#~uploadImageToCloudinary">uploadImageToCloudinary</a></li></ul></li><li></li><li><a href="module-server_utils.html">server/utils</a><ul class='methods'><li data-type='method'><a href="module-server_utils.html#~setLogLevel">setLogLevel</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">server/controller/notification.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const NotificationRepository = require('../repository/notificationRepository');
+const NotificationDto = require('../DTO/notificationDto.js');
+
+/**
+ * @module server/controller
+ */
+
+/**
+ * Retrieves notifications for the authenticated user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.user - The authenticated user object.
+ * @param {string} req.user.id - The ID of the authenticated user.
+ * @param {Object} res - The response object.
+ * @returns {Promise&lt;void>} - A promise that resolves when the notifications are fetched and sent in the response.
+ */
+const getNotifications = async (req, res) => {
+    try {
+        const notifications = await NotificationRepository.getNotificationsByUserId(req.user.id);
+        res.json(notifications.map(notification => new NotificationDto(notification)));
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+        res.status(500).json({ message: 'Failed to fetch notifications' });
+    }
+};
+
+/**
+ * Retrieves the notification history for the authenticated user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.query - The query parameters.
+ * @param {number} [req.query.page=1] - The page number for pagination.
+ * @param {number} [req.query.limit=10] - The number of notifications per page.
+ * @param {Object} req.user - The authenticated user object.
+ * @param {string} req.user.id - The ID of the authenticated user.
+ * @param {Object} res - The response object.
+ * @returns {Promise&lt;void>} - A promise that resolves when the response is sent.
+ */
+const getNotificationHistory = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
+
+    try {
+        const notifications = await NotificationRepository.getNotificationHistoryByUserId(req.user.id, skip, parseInt(limit));
+
+        if (notifications.length === 0) {
+            return res.status(200).json({ message: 'No more notifications' });
+        }
+
+        res.status(200).json(notifications.map(notification => new NotificationDto(notification)));
+    } catch (error) {
+        console.error('Error fetching notifications history:', error);
+        res.status(500).json({ message: 'Failed to fetch notifications history' });
+    }
+};
+
+/**
+ * Marks a notification as read.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.id - The ID of the notification to mark as read.
+ * @param {Object} res - The response object.
+ * @returns {Promise&lt;void>} - A promise that resolves when the operation is complete.
+ */
+const markAsRead = async (req, res) => {
+    try {
+        const notification = await NotificationRepository.markNotificationAsRead(req.params.id);
+
+        if (!notification) {
+            return res.status(404).json({ message: 'Notification not found' });
+        }
+
+        res.json({ message: 'Notification marked as read', notification: new NotificationDto(notification) });
+    } catch (error) {
+        console.error('Error marking notification as read:', error);
+        res.status(500).json({ message: 'Failed to mark notification as read' });
+    }
+};
+
+/**
+ * Creates a new notification.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.userId - The ID of the user to notify.
+ * @param {string} req.body.message - The notification message.
+ * @param {Object} res - The response object.
+ * @returns {Promise&lt;void>} - A promise that resolves when the notification is created.
+ */
+const createNotification = async (req, res) => {
+    try {
+        const { userId, message } = req.body;
+        const notification = await NotificationRepository.createNotification(userId, message);
+
+        res.status(201).json({ message: 'Notification created', notification: new NotificationDto(notification) });
+    } catch (error) {
+        console.error('Error creating notification:', error);
+        res.status(500).json({ message: 'Failed to create notification' });
+    }
+};
+
+/**
+ * Get the count of unread notifications for the authenticated user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.user - The authenticated user object.
+ * @param {string} req.user.id - The ID of the authenticated user.
+ * @param {Object} res - The response object.
+ * @returns {Promise&lt;void>} - A promise that resolves when the count is fetched and the response is sent.
+ */
+const getUnreadNotificationCount = async (req, res) => {
+    try {
+        const count = await NotificationRepository.countUnreadNotifications(req.user.id);
+        res.status(200).json({ unreadCount: count });
+    } catch (error) {
+        console.error('Error counting unread notifications:', error);
+        res.status(500).json({ message: 'Failed to fetch unread notification count' });
+    }
+};
+
+module.exports = {
+    getNotifications,
+    getNotificationHistory,
+    markAsRead,
+    createNotification,
+    getUnreadNotificationCount
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Tue Mar 11 2025 11:53:54 GMT-0400 (Eastern Daylight Saving Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

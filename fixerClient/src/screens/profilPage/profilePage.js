@@ -7,6 +7,10 @@ import { styles } from '../../../style/profilePage/profilePageStyle';
 import { IPAddress } from '../../../ipAddress';
 import SettingsButton from "../../../components/settingsButton";
 
+/**
+ * @module fixerClient
+ */
+
 const ProfilePage = () => {
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -15,6 +19,17 @@ const ProfilePage = () => {
 
 
     useEffect(() => {
+        /**
+         * Fetches the profile data of the client.
+         * 
+         * This function retrieves the authentication token from AsyncStorage and uses it to make a GET request
+         * to the profile endpoint. If the token is found, it sets the client data with the response. If no token
+         * is found, it logs an error message. Any errors during the fetch process are caught and logged.
+         * 
+         * @async
+         * @function fetchProfileData
+         * @returns {Promise<void>} A promise that resolves when the profile data has been fetched and the client state has been set.
+         */
         const fetchProfileData = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');

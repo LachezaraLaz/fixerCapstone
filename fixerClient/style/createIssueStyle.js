@@ -94,6 +94,18 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginTop: 20,
     },
+    aiEnhanceButton: {
+        position: 'absolute',
+        bottom: 15,
+        right: 15,
+        backgroundColor: '#ff8c00',
+        borderRadius: 50,
+        width: 32,
+        height: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 2,
+    },
     footer: {
         padding: 16,
         alignItems: 'center',

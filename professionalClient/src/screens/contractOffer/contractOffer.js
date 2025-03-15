@@ -5,6 +5,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module professionalClient
+ */
+
 export default function ContractOffer({ route, navigation }) {
     const { issue } = route.params;
     const [price, setPrice] = React.useState('');
@@ -12,6 +16,13 @@ export default function ContractOffer({ route, navigation }) {
     const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
     const [userAddress, setUserAddress] = useState(null);
 
+    /**
+     * Fetches the user profile based on the provided email.
+     * 
+     * @param {string} email - The email of the user whose profile is to be fetched.
+     * @returns {Promise<void>} - A promise that resolves when the user profile is fetched and the user address is set.
+     * @throws {Error} - Throws an error if the user profile cannot be fetched.
+     */
     const fetchUserProfile = async (email) => {
         try {
             console.log('Fetching profile for email:', email);
@@ -49,7 +60,6 @@ export default function ContractOffer({ route, navigation }) {
         }
     };
     
-
     React.useEffect(() => {
         if (issue) {
             setSelectedIssue(issue);
@@ -57,6 +67,18 @@ export default function ContractOffer({ route, navigation }) {
         }
     }, [issue]);
 
+    /**
+     * Submits a quote for the selected issue.
+     * 
+     * This function checks if a price is entered and retrieves the user token from AsyncStorage.
+     * It then validates the selected issue and client email before sending a POST request to create a quote.
+     * If the quote is successfully submitted, an alert is shown and the user is navigated back.
+     * If an error occurs, appropriate error messages are displayed.
+     * 
+     * @async
+     * @function submitQuote
+     * @returns {Promise<void>}
+     */
     const submitQuote = async () => {
         if (!price) {
             Alert.alert('Error', 'Please enter a price before submitting the quote.');
@@ -104,6 +126,7 @@ export default function ContractOffer({ route, navigation }) {
             }
         }
     };
+    
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>{issue.title}</Text>

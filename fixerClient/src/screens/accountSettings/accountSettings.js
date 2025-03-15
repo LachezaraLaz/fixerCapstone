@@ -13,14 +13,18 @@ const AccountSettingsPage = () => {
         firstName: '',
         lastName: '',
         email: '',
-        address: '',
-        oldPassword: '',
+        street: '',
+        postalCode: '',
+        provinceOrState: '',
+        country: '',
+        currentPassword: '',
         newPassword: '',
         confirmPassword: '',
     });
 
     const [isEditing, setIsEditing] = useState(false);
-    const [isOldPasswordValid, setIsOldPasswordValid] = useState(false);
+    const [isCurrentPasswordValid, setIsCurrentPasswordValid] = useState(false);
+    const [addressValidated, setAddressValidated] = useState(false);
     const [loading, setLoading] = useState(true);
 
     // Fetch user profile data
@@ -43,7 +47,10 @@ const AccountSettingsPage = () => {
                     firstName: response.data.firstName,
                     lastName: response.data.lastName,
                     email: response.data.email,
-                    address: response.data.address,
+                    street: response.data.street || '',
+                    postalCode: response.data.postalCode || '',
+                    provinceOrState: response.data.provinceOrState || '',
+                    country: response.data.country || '',
                 }));
             } catch (error) {
                 console.error("Error fetching profile data:", error);
@@ -59,10 +66,43 @@ const AccountSettingsPage = () => {
     // Handle input changes
     const handleInputChange = (field, value) => {
         setFormData((prevState) => ({ ...prevState, [field]: value }));
+
+        // Reset address validation when any address field changes
+        if (['street', 'postalCode', 'provinceOrState', 'country'].includes(field)) {
+            setAddressValidated(false);
+        }
     };
 
-    // Validate old password before allowing new password input
-    const validateOldPassword = async () => {
+    // Verify Address Before Saving
+    const handleVerifyAddress = async () => {
+        try {
+            const response = await axios.post(
+                `https://fixercapstone-production.up.railway.app/client/verifyAddress`,
+                {
+                    street: formData.street,
+                    postalCode: formData.postalCode,
+                    provinceOrState: formData.provinceOrState,
+                    country: formData.country,
+                }
+            );
+
+            if (response.data.isAddressValid) {
+                setAddressValidated(true);
+                Alert.alert("Success", "Address verified successfully.");
+                return true;
+            } else {
+                setAddressValidated(false);
+                Alert.alert("Error", "Invalid address. Please enter a valid address.");
+                return false;
+            }
+        } catch (error) {
+            setAddressValidated(false);
+            Alert.alert("Error", error.response?.data?.message || "An unexpected error occurred.");
+            return false;
+        }
+    };
+
+    const validateCurrentPassword = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
@@ -71,18 +111,24 @@ const AccountSettingsPage = () => {
             }
 
             const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/reset/updatePasswordWithOld`,
-                { email: formData.email, oldPassword: formData.oldPassword, newPassword: formData.oldPassword }, // Just for validation
+                `https://fixercapstone-production.up.railway.app/reset/validateCurrentPassword`,
+                { email: formData.email, currentPassword: formData.currentPassword },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
             if (response.status === 200) {
-                setIsOldPasswordValid(true);
-                Alert.alert("Success", "Old password validated. You can now set a new password.");
+                setIsCurrentPasswordValid(true);
+                Alert.alert("Success", "Current password validated. You can now set a new password.");
             }
         } catch (error) {
-            setIsOldPasswordValid(false);
-            Alert.alert("Error", "Old password is incorrect.");
+            setIsCurrentPasswordValid(false);
+            if (error.response) {
+                Alert.alert("Error", error.response.data?.error || "Incorrect password.");
+            } else if (error.request) {
+                Alert.alert("Error", "Network error. Please check your connection and try again.");
+            } else {
+                Alert.alert("Error", "Unexpected error occurred.");
+            }
         }
     };
 
@@ -100,12 +146,22 @@ const AccountSettingsPage = () => {
                 return;
             }
 
-            // Update profile information (excluding password)
+            // Always verify address if any address fields are filled
+            if (formData.street || formData.postalCode) {
+                const isAddressVerified = await handleVerifyAddress();
+                if (!isAddressVerified) {
+                    return; // Stop if address is invalid
+                }
+            }
+
+            // Send full profile update request
             const updatedData = {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-                email: formData.email,
-                address: formData.address,
+                street: formData.street,
+                postalCode: formData.postalCode,
+                provinceOrState: formData.provinceOrState,
+                country: formData.country,
             };
 
             await axios.put(
@@ -114,11 +170,11 @@ const AccountSettingsPage = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // If the user validated old password and set a new one
-            if (isOldPasswordValid && formData.newPassword) {
+            // Only update password if it's changed
+            if (isCurrentPasswordValid && formData.newPassword) {
                 const passwordData = {
                     email: formData.email,
-                    oldPassword: formData.oldPassword,
+                    currentPassword: formData.currentPassword,
                     newPassword: formData.newPassword,
                 };
 
@@ -127,6 +183,9 @@ const AccountSettingsPage = () => {
                     passwordData,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
+            } else if (!isCurrentPasswordValid && formData.newPassword) {
+                Alert.alert("Error", "Please validate your current password before updating.");
+                return;
             }
 
             Alert.alert("Success", "Your changes have been saved.");
@@ -135,6 +194,20 @@ const AccountSettingsPage = () => {
             console.error("Update error:", error);
             Alert.alert("Error", error.response?.data?.error || "Failed to update profile.");
         }
+    };
+
+    // Add a verification button for the address
+    const AddressVerificationButton = () => {
+        if (!isEditing) return null;
+
+        return (
+            <TouchableOpacity
+                style={[styles.validateButton, {marginTop: 5}]}
+                onPress={handleVerifyAddress}
+            >
+                <Text style={styles.validateButtonText}>Verify Address</Text>
+            </TouchableOpacity>
+        );
     };
 
     return (
@@ -185,31 +258,103 @@ const AccountSettingsPage = () => {
                             />
                         </View>
 
+                        {/* Address Fields with Visual Indicators */}
                         <View style={styles.formGroup}>
-                            <Text style={styles.label}>Address</Text>
-                            <TextInput
-                                style={[styles.input, !isEditing && styles.disabledInput]}
-                                value={formData.address}
-                                onChangeText={(text) => handleInputChange('address', text)}
-                                editable={isEditing}
-                            />
+                            <Text style={styles.label}>Street</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={[
+                                        styles.inputWithIcon,
+                                        !isEditing && styles.disabledInput,
+                                        addressValidated && styles.validInput
+                                    ]}
+                                    value={formData.street}
+                                    onChangeText={(text) => handleInputChange('street', text)}
+                                    editable={isEditing}
+                                />
+                                {addressValidated && (
+                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
+                                )}
+                            </View>
                         </View>
 
                         <View style={styles.formGroup}>
-                            <Text style={styles.label}>Old Password</Text>
+                            <Text style={styles.label}>Postal Code</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={[
+                                        styles.inputWithIcon,
+                                        !isEditing && styles.disabledInput,
+                                        addressValidated && styles.validInput
+                                    ]}
+                                    value={formData.postalCode}
+                                    onChangeText={(text) => handleInputChange('postalCode', text)}
+                                    editable={isEditing}
+                                />
+                                {addressValidated && (
+                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
+                                )}
+                            </View>
+                        </View>
+
+                        <View style={styles.formGroup}>
+                            <Text style={styles.label}>Province/State</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={[
+                                        styles.inputWithIcon,
+                                        !isEditing && styles.disabledInput,
+                                        addressValidated && styles.validInput
+                                    ]}
+                                    value={formData.provinceOrState}
+                                    onChangeText={(text) => handleInputChange('provinceOrState', text)}
+                                    editable={isEditing}
+                                />
+                                {addressValidated && (
+                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
+                                )}
+                            </View>
+                        </View>
+
+                        <View style={styles.formGroup}>
+                            <Text style={styles.label}>Country</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={[
+                                        styles.inputWithIcon,
+                                        !isEditing && styles.disabledInput,
+                                        addressValidated && styles.validInput
+                                    ]}
+                                    value={formData.country}
+                                    onChangeText={(text) => handleInputChange('country', text)}
+                                    editable={isEditing}
+                                />
+                                {addressValidated && (
+                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
+                                )}
+                            </View>
+                        </View>
+
+                        {/* Address Verification Button */}
+                        {isEditing && <AddressVerificationButton />}
+
+                        <View style={styles.formGroup}>
+                            <Text style={styles.label}>Current Password</Text>
                             <TextInput
                                 style={styles.input}
                                 secureTextEntry
-                                value={formData.oldPassword}
-                                onChangeText={(text) => handleInputChange('oldPassword', text)}
+                                value={formData.currentPassword}
+                                onChangeText={(text) => handleInputChange('currentPassword', text)}
                                 editable={isEditing}
                             />
-                            <TouchableOpacity onPress={validateOldPassword} style={styles.validateButton}>
-                                <Text style={styles.validateButtonText}>Validate</Text>
-                            </TouchableOpacity>
+                            {isEditing && (
+                                <TouchableOpacity onPress={validateCurrentPassword} style={styles.validateButton}>
+                                    <Text style={styles.validateButtonText}>Validate</Text>
+                                </TouchableOpacity>
+                            )}
                         </View>
 
-                        {isOldPasswordValid && (
+                        {isCurrentPasswordValid && (
                             <>
                                 <View style={styles.formGroup}>
                                     <Text style={styles.label}>New Password</Text>
@@ -219,6 +364,25 @@ const AccountSettingsPage = () => {
                                         value={formData.newPassword}
                                         onChangeText={(text) => handleInputChange('newPassword', text)}
                                     />
+                                </View>
+                                <View style={styles.formGroup}>
+                                    <Text style={styles.label}>Confirm Password</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        secureTextEntry
+                                        value={formData.confirmPassword}
+                                        onChangeText={(text) => handleInputChange('confirmPassword', text)}
+                                    />
+                                    {formData.newPassword && formData.confirmPassword && (
+                                        <Text style={{
+                                            color: formData.newPassword === formData.confirmPassword ? 'green' : 'red',
+                                            marginTop: 5
+                                        }}>
+                                            {formData.newPassword === formData.confirmPassword
+                                                ? "Passwords match ✓"
+                                                : "Passwords don't match ✗"}
+                                        </Text>
+                                    )}
                                 </View>
                             </>
                         )}
@@ -234,8 +398,6 @@ const AccountSettingsPage = () => {
         </SafeAreaView>
     );
 };
-
-
 
 const styles = StyleSheet.create({
     safeArea: {
@@ -284,6 +446,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
         color: '#777',
     },
+    validateButton: {
+        backgroundColor: '#FFA500',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    validateButtonText: {
+        fontSize: 16,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
     saveButton: {
         backgroundColor: 'orange',
         paddingVertical: 12,
@@ -295,6 +470,25 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#fff',
         fontWeight: 'bold',
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    inputWithIcon: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        padding: 10,
+        fontSize: 16,
+        backgroundColor: '#fff',
+    },
+    inputIcon: {
+        marginLeft: 10,
+    },
+    validInput: {
+        borderColor: 'green',
     },
 });
 

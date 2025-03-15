@@ -162,4 +162,28 @@ async function resetPassword(req, res) {
     }
 }
 
-module.exports = { forgotPassword, validatePin, resetPassword, updatePassword };
+async function validateCurrentPassword(req, res) {
+    const { email, currentPassword } = req.body; // Use currentPassword instead of oldPassword
+
+    try {
+        const user = await fixerClientObject.fixerClient.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Check if the current password is correct
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Current password is incorrect' });
+        }
+
+        res.status(200).json({ message: 'Current password validated successfully' });
+    } catch (err) {
+        console.error('Error validating current password:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+module.exports = { forgotPassword, validatePin, resetPassword, updatePassword, validateCurrentPassword };

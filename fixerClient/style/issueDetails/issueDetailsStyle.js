@@ -57,6 +57,13 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
         color: "#333",
     },
+    detailSubLabel: {
+        fontSize: 16,
+        fontWeight: "bold",
+        marginTop: 20,
+        marginBottom: 10,
+        color: "#333",
+    },
     detailValue: {
         fontSize: 16,
         color: "#555",

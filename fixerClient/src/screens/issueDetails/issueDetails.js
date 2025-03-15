@@ -12,7 +12,7 @@ import {
     RefreshControl
 } from "react-native";
 import axios from "axios";
-import {useRoute, useNavigation} from "@react-navigation/native";
+import {useRoute, useNavigation, useFocusEffect} from "@react-navigation/native";
 import {styles} from "../../../style/issueDetails/issueDetailsStyle";
 import {IPAddress} from "../../../ipAddress";
 import {Ionicons} from "@expo/vector-icons";
@@ -20,6 +20,7 @@ import MapView, {Marker} from "react-native-maps";
 import NotificationButton from "../../../components/notificationButton";
 import OrangeButton from "../../../components/orangeButton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useCallback } from "react";
 
 const IssueDetails = () => {
     const [job, setJob] = useState(null);
@@ -34,6 +35,13 @@ const IssueDetails = () => {
         fetchJobDetails();
     }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            fetchJobDetails();
+        }, [jobId])
+    );
+
+
 
     const fetchJobDetails = async () => {
         try {
@@ -44,6 +52,7 @@ const IssueDetails = () => {
             Alert.alert("Error", "Failed to fetch issue details");
         } finally {
             setLoading(false);
+            setRefreshing(false)
         }
     };
 
@@ -225,9 +234,16 @@ const IssueDetails = () => {
 
                 {job.rating && (
                     <View>
-                        <Text style={styles.detailLabel}>Review:</Text>
-                        <Text style={styles.detailValue}>Rating: {job.rating} Stars</Text>
-                        <Text style={styles.detailValue}>Comment: {job.comment || "No comment"}</Text>
+                        <Text style={styles.detailLabel}>Review</Text>
+                        <Text>
+                            <Text style={styles.detailSubLabel}>Rating: </Text>
+                            <Text style={styles.detailValue}>{job.rating} Stars</Text>
+                        </Text>
+                        <Text>
+                            <Text style={styles.detailSubLabel}>Comment: </Text>
+                            <Text style={styles.detailValue}>{job.comment || "No comment"}</Text>
+                        </Text>
+
                     </View>
                 )}
 

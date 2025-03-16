@@ -42,4 +42,77 @@ const profile = async (req, res) => {
     }
 };
 
-module.exports = { profile, authenticateJWT };
+
+const updateProfile = async (req, res) => {
+    try {
+        // Get token from request header
+        const token = req.headers.authorization?.split(' ')[1];
+
+        if (!token) {
+            console.log('No token provided in updateProfile request');
+            return res.status(401).json({ error: 'Authorization token required' });
+        }
+
+        // Extract user info from token using JWT
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userEmail = decoded.email;
+
+        if (!userEmail) {
+            console.log('Token did not contain email');
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+
+        // Get updated profile data from request body
+        const { firstName, lastName, street, postalCode, provinceOrState, country } = req.body;
+
+        console.log(`Updating profile for user: ${userEmail}`);
+        console.log(`Profile data:`, req.body);
+
+        // Find and update the user - use the same model your profile endpoint uses
+        const user = await fixerClient.findOne({ email: userEmail });
+
+        if (!user) {
+            console.log(`User not found with email: ${userEmail}`);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Update fields if provided
+        if (firstName !== undefined) user.firstName = firstName;
+        if (lastName !== undefined) user.lastName = lastName;
+        if (street !== undefined) user.street = street;
+        if (postalCode !== undefined) user.postalCode = postalCode;
+        if (provinceOrState !== undefined) user.provinceOrState = provinceOrState;
+        if (country !== undefined) user.country = country;
+
+        // Save the updated user
+        await user.save();
+
+        console.log(`Profile updated successfully for: ${userEmail}`);
+
+        return res.status(200).json({
+            message: 'Profile updated successfully',
+            user: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                street: user.street,
+                postalCode: user.postalCode,
+                provinceOrState: user.provinceOrState,
+                country: user.country
+            }
+        });
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            console.log(`JWT Error: ${error.message}`);
+            return res.status(401).json({ error: 'Invalid token' });
+        } else if (error.name === 'TokenExpiredError') {
+            console.log('Token expired');
+            return res.status(401).json({ error: 'Token expired' });
+        }
+
+        console.error('Error updating profile:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+module.exports = { profile, authenticateJWT, updateProfile };

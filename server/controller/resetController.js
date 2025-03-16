@@ -57,7 +57,8 @@ async function forgotPassword(req, res) {
 
 // Function to update password (validating old password first)
 async function updatePassword(req, res) {
-    const { email, oldPassword, newPassword } = req.body;
+
+    const { email, currentPassword, newPassword } = req.body;
 
     try {
         // Find user by email
@@ -67,10 +68,11 @@ async function updatePassword(req, res) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Compare old password with hashed password stored in database
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        // Compare current password with hashed password stored in database
+        // Changed from oldPassword to currentPassword
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-            return res.status(401).json({ error: 'Old password is incorrect' });
+            return res.status(401).json({ error: 'Current password is incorrect' });
         }
 
         // Hash the new password before saving
@@ -163,17 +165,23 @@ async function resetPassword(req, res) {
 }
 
 async function validateCurrentPassword(req, res) {
-    const { email, currentPassword } = req.body; // Use currentPassword instead of oldPassword
+    const { email, currentPassword } = req.body;
+    console.log(`Attempting to validate password for: ${email}`);
 
     try {
         const user = await fixerClientObject.fixerClient.findOne({ email });
 
         if (!user) {
+            console.log(`User not found with email: ${email}`);
             return res.status(404).json({ error: 'User not found' });
         }
 
+        console.log(`User found: ${user.email}`);
+
         // Check if the current password is correct
         const isMatch = await bcrypt.compare(currentPassword, user.password);
+        console.log(`Password match result: ${isMatch}`);
+
         if (!isMatch) {
             return res.status(401).json({ error: 'Current password is incorrect' });
         }

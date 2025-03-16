@@ -1,18 +1,15 @@
 const { fixerClient } = require('../model/fixerClientModel');
 const { logger } = require('../utils/logger');
 
-// GET /users/user/:email route to fetch jobs for a specific user
 const getUserProfile = async (req, res) => {
     const email = req.params.email;
 
-    // confirm that an email is properly provided
     if (!email) {
         console.log('No email provided in request query.');
         return res.status(400).json({ message: 'Email is required.' });
     }
 
     try {
-        //find the user linked to that email
         const user = await fixerClient.findOne({ email });
 
         if (!user) {
@@ -37,4 +34,4 @@ const getUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { getUserProfile };
+module.exports = { getUserProfile};

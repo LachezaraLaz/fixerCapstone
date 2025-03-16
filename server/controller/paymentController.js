@@ -23,7 +23,7 @@ async function deductCut(req, res) {
         // Transfer the platform cut to your Stripe account
         const transfer = await stripe.transfers.create({
             amount: platformCut * 100, // Amount in cents
-            currency: 'usd',
+            currency: 'cad',
             destination: professionalPayment.bankAccountId,
             description: `Platform fee for quote ${quoteId}`,
         });

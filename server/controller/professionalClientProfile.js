@@ -66,38 +66,31 @@ const profile = async (req, res) => {
     }
 };
 
-const addBankingInfo = async (req, res) => {
-    const { userId, accountNumber, routingNumber, accountHolderName, accountType } = req.body;
+async function addBankingInfo(req, res) {
+    const { professionalId, bankAccountToken } = req.body;
 
     try {
-        // Validate input
-        if (!accountNumber || !routingNumber || !accountHolderName || !accountType) {
-            return res.status(400).send({ success: false, message: 'All fields are required.' });
+        // Retrieve the Stripe customer ID for the professional
+        const professionalPayment = await professionalPaymentSchema.findOne({ professionalId });
+        if (!professionalPayment) {
+            return res.status(404).send({ status: 'error', data: 'Professional not found' });
         }
 
-        // Store banking information in MongoDB (for reference)
-        await fixerClientObject.fixerClient.findByIdAndUpdate(userId, {
-            bankingInfo: {
-                accountNumber,
-                routingNumber,
-                accountHolderName,
-                accountType,
-            },
-            bankingInfoAdded: true, // Mark as added (but not yet verified)
+        // Attach the bank account to the Stripe customer
+        const bankAccount = await stripe.customers.createSource(professionalPayment.stripeCustomerId, {
+            source: bankAccountToken, // Bank account token from Stripe.js or equivalent
         });
 
-        // Redirect the professional to the Square Dashboard to link the bank account
-        const squareDashboardUrl = 'https://squareup.com/dashboard/bank-accounts'; // Example URL
-        res.send({
-            success: true,
-            message: 'Banking information saved. Please link your bank account in the Square Dashboard.',
-            redirectUrl: squareDashboardUrl,
-        });
+        // Update the professional's payment record with the bank account ID
+        professionalPayment.bankAccountId = bankAccount.id;
+        await professionalPayment.save();
+
+        res.send({ status: 'success', data: 'Bank account linked successfully' });
     } catch (error) {
-        console.error('Error adding banking information:', error);
-        res.status(500).send({ success: false, message: 'An error occurred while adding banking information.' });
+        console.error('Error linking bank account:', error);
+        res.status(500).send({ status: 'error', data: 'Failed to link bank account' });
     }
-};
+}
 
 const getBankingInfoStatus = async (req, res) => {
     try {

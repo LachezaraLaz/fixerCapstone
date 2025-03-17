@@ -14,7 +14,7 @@ export default function VerificationStatus() {
     return (
         <div style={styles.container}>
             <h2>{message}</h2>
-            <button style={styles.button} onClick={() => navigate("/admin/signin")}>
+            <button style={styles.button} onClick={() => navigate("/signin")}>
                 Go to Sign In
             </button>
         </div>

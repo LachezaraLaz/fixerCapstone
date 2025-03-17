@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { fixerClient } = require('../model/fixerClientModel');
 const { professionalClient } = require('../model/professionalClientModel');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -30,7 +31,7 @@ const authenticateJWT = (req, res, next) => {
 
     if (!authorizationHeader) {
         console.log("Authorization header missing");
-        return res.status(401).json({ message: 'Unauthorized' });
+        return next(new AppError('Unauthorized', 401));
     }
 
     const token = authorizationHeader.split(' ')[1];
@@ -38,13 +39,13 @@ const authenticateJWT = (req, res, next) => {
 
     if (!token) {
         console.log("Token missing in authorization header");
-        return res.status(401).json({ message: 'Unauthorized' });
+        return next(new AppError('Unauthorized', 401));
     }
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
         if (err) {
             console.log("Token verification failed:", err.message);
-            return res.status(403).json({ message: 'Forbidden' });
+            return next(new AppError('Forbidden', 403));
         }
 
         console.log("Decoded Token:", decodedToken);
@@ -62,7 +63,7 @@ const authenticateJWT = (req, res, next) => {
 
             if (!user) {
                 console.log("User not found in either client or professional collections");
-                return res.status(404).json({ message: 'User not found' });
+                return next(new AppError('User not found', 404));
             }
 
             // Attach user data and user type to the request for use in other routes
@@ -71,7 +72,7 @@ const authenticateJWT = (req, res, next) => {
             next();
         } catch (error) {
             console.error('Error in authentication:', error);
-            res.status(500).json({ message: 'Server error' });
+            next(new AppError('Server error', 500));
         }
     });
 };

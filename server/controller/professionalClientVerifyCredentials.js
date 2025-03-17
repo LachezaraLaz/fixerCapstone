@@ -1,4 +1,5 @@
 const fixerClientObject = require('../model/professionalClientModel');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -28,13 +29,13 @@ const verifyCredentials = async (req, res) => {
         );
 
         if (!professional) {
-            return res.status(404).json({ message: 'Professional not found' });
+            throw new AppError('Professional not found', 404);
         }
 
         res.json({ message: 'Trade license submitted successfully', professional });
     } catch (error) {
         console.error('Error verifying trade license:', error);
-        res.status(500).json({ message: 'Server error' });
+        next(new AppError(`Server error: ${error.message}`, 500));
     }
 };
 

@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT verification
 const fixerClientObject = require('../model/fixerClientModel'); // Mongoose model for professional
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -22,18 +23,18 @@ const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;  // Get authorization header
 
     if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized' });  // No token provided
+        return next(new AppError('Unauthorized', 401))  // No token provided
     }
 
     const token = authorizationHeader.split(' ')[1];  // Extract token from Authorization header
 
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });  // No token
+        return next(new AppError('Unauthorized', 401))  // No token
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return res.status(403).json({ message: 'Forbidden' });  // Token invalid
+            return next(new AppError('Forbidden', 403)); // Token invalid
         }
         req.user = user;  // Attach user details from the token to the request
         next();  // Proceed to the next middleware or route handler
@@ -57,14 +58,14 @@ const profile = async (req, res) => {
         const client = await fixerClientObject.fixerClient.findById(req.user.id);
 
         if (!client) {
-            return res.status(404).json({ message: 'Client not found' });
+            throw new AppError('Client not found', 404);
         }
 
         // Respond with professional's data
         res.json(client);
     } catch (error) {
         console.error('Error fetching client data:', error);
-        res.status(500).json({ message: 'Server error' });
+        next(error); // custom error handler
     }
 };
 

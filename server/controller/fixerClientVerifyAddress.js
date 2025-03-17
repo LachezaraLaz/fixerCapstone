@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require('axios');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -22,9 +23,13 @@ let coordinates;
  * @returns {Promise<void>} - A promise that resolves when the address verification is complete.
  */
 const verifyAddress = async (req, res) => {
-    const { street, postalCode } = req.body;
-
     try {
+        const { street, postalCode } = req.body;
+
+        if (!street || !postalCode) {
+            throw new AppError('Street and postal code are required.', 400);
+        }
+
         const response = await axios.post(
             `https://addressvalidation.googleapis.com/v1:validateAddress?key=${GOOGLE_API_KEY}`,
             {
@@ -39,17 +44,21 @@ const verifyAddress = async (req, res) => {
         if (response.data.result.verdict.addressComplete === true) {
             //Get coordinates for the verified address
             const fullAddress = `${street}, ${postalCode}`;
-            await getCoordinates(fullAddress);
+            const coordinates = await getCoordinates(fullAddress);
+
+            if (!coordinates) {
+                throw new AppError('Geocoding failed for the given address.', 400);
+            }
 
             res.send({ status: 'success', data: 'Address verified successfully from server',
                 isAddressValid: true,
                 coordinates: coordinates});
         } else {
-            res.send({ status: 'error', data: 'address verification failed from server 1' });
+            throw new AppError('Address verification failed from server 1.', 400);
         }
     } catch (err) {
         console.error(err);
-        res.send({ status: 'error', data: 'address verification failed from server 2' });
+        next(err);
     }
 };
 
@@ -68,16 +77,16 @@ const getCoordinates = async (fullAddress) => {
 
         if (geoResponse.data.results.length > 0) {
             const location = geoResponse.data.results[0].geometry.location;
-            coordinates = {
+            return {
                 latitude: location.lat,
                 longitude: location.lng,
             };
         } else {
-            coordinates = null;
+            return null;
         }
     } catch (err) {
         console.error('Geocoding API Error:', err.response?.data || err.message);
-        coordinates = null;
+        return null;
     }
 };
 

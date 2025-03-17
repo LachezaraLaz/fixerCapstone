@@ -1,5 +1,6 @@
 const axios = require('axios');
 require('dotenv').config();
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/services
@@ -29,7 +30,7 @@ const getCoordinatesFromAddress = async (address) => {
             const { lat, lng } = response.data.results[0].geometry.location;
             return { latitude: lat, longitude: lng };
         } else {
-            throw new Error('Failed to fetch coordinates');
+            throw new AppError('Failed to fetch coordinates. The address may be invalid or not found.', 400);
         }
     } catch (error) {
         if (error.response) {
@@ -39,7 +40,7 @@ const getCoordinatesFromAddress = async (address) => {
         } else {
             console.error('Request error:', error.message);
         }
-        throw error;
+        throw new AppError(`Error fetching coordinates: ${error.message}`, 500);
     }
 };
 

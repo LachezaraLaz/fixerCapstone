@@ -1,4 +1,5 @@
 const axios = require('axios');
+const AppError = require('../utils/AppError');
 
 async function enhanceIssueDescription(userDescription) {
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -46,7 +47,7 @@ async function enhanceIssueDescription(userDescription) {
         return { improvedDescription: aiMessage };
     } catch (error) {
         console.error('Error calling OpenAI API:', error);
-        throw error;
+        throw new AppError(`Error calling OpenAI API: ${error.message}`, 500);
     }
 }
 

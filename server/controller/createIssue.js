@@ -3,6 +3,7 @@ const { Jobs } = require('../model/createIssueModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { getCoordinatesFromAddress } = require('../services/geoCodingService');
 const { logger } = require('../utils/logger');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -30,7 +31,7 @@ const createIssue = async (req, res) => {
     let imageUrl = null;
 
     if (!title || !description || !professionalNeeded) {
-        return res.status(400).json({ message: 'Some required fields are missing.' });
+        throw new AppError('Some required fields are missing.', 400);
     }
 
     if (req.file) {
@@ -40,7 +41,7 @@ const createIssue = async (req, res) => {
     try {
         const clientInfo = await fixerClient.findOne({ email });
         if (!clientInfo) {
-            return res.status(404).json({ message: 'Client information not found' });
+            throw new AppError('Client information not found', 404);
         }
 
         const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
@@ -70,7 +71,7 @@ const createIssue = async (req, res) => {
         logger.warn('test pino create issue');
     } catch (error) {
         logger.error('Error occurred while creating issue:', error);
-        res.status(500).json({ message: 'Failed to create issue', error: error.message });
+        next(error);
     }
 };
 

@@ -1,4 +1,5 @@
 const fixerClientObject = require('../model/professionalClientModel');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -23,7 +24,7 @@ const professionalUploadID = async (req, res) => {
     // Check if the file was uploaded successfully to Cloudinary
     if (!req.file || !req.file.path) {
         console.error('File not uploaded or missing path');
-        return res.status(400).json({ message: 'No file uploaded or file path is missing' });
+        return next(new AppError('No file uploaded or file path is missing', 400));
     }
 
     try {
@@ -39,13 +40,13 @@ const professionalUploadID = async (req, res) => {
         );
 
         if (!user) {
-            return res.status(404).json({ message: 'Professional not found' });
+            throw new AppError('Professional not found', 404);
         }
 
         res.json({ message: 'ID image uploaded successfully and form is now complete', user });
     } catch (error) {
         console.error('Error updating user with ID image:', error);
-        res.status(500).json({ message: 'Server error', error });
+        next(new AppError(`Server error: ${error.message}`, 500));
     }
 };
 

@@ -4,6 +4,7 @@ const { serverClient } = require('../services/streamClient');
 const UserRepository = require('../repository/userRepository');
 const {AuthResponseDto}  = require('../DTO/userDto');
 const { logger } = require("../utils/logger");
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -20,28 +21,34 @@ const { logger } = require("../utils/logger");
  * @returns {Promise<void>} - Sends a response with the authentication token and user details.
  */
 const signinUser = async (req, res) => {
-    console.log(AuthResponseDto);  // Should NOT be undefined
-    logger.info(AuthResponseDto);  // Should NOT be undefined
-    const { email, password } = req.body;
-    const user = await UserRepository.findByEmail(email);
+    try {
+        console.log(AuthResponseDto);  // Should NOT be undefined
+        logger.info(AuthResponseDto);  // Should NOT be undefined
+        const { email, password } = req.body;
+        const user = await UserRepository.findByEmail(email);
 
-    if (!user || user.accountType !== 'client') return res.status(400).send({ statusText: 'User not found' });
-    if (!user.verified) return res.status(403).send({ statusText: 'Account not verified yet' });
+        if (!user || user.accountType !== 'client') throw new AppError('User not found', 400);
 
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) return res.status(400).send({ statusText: 'Invalid password' });
+        if (!user.verified) throw new AppError('Account not verified yet', 403);
 
-    const token = jwt.sign({
-        id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName,
-        street: user.street, postalCode: user.postalCode, provinceOrState: user.provinceOrState, country: user.country
-    }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-    await serverClient.upsertUser({ id: user._id.toString(), role: 'user', name: `${user.firstName} ${user.lastName}` });
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) throw new AppError('Invalid password', 400);
 
-    const streamToken = serverClient.createToken(user._id.toString());
-    logger.emergency(token);
+        const token = jwt.sign({
+            id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName,
+            street: user.street, postalCode: user.postalCode, provinceOrState: user.provinceOrState, country: user.country
+        }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-    res.send(new AuthResponseDto(user, token, streamToken));
+        await serverClient.upsertUser({ id: user._id.toString(), role: 'user', name: `${user.firstName} ${user.lastName}` });
+
+        const streamToken = serverClient.createToken(user._id.toString());
+        logger.emergency(token);
+
+        res.send(new AuthResponseDto(user, token, streamToken));
+    } catch (error) {
+        next(error); // custom error handler
+    }
 };
 
 module.exports = { signinUser };

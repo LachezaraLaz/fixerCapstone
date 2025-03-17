@@ -1,6 +1,7 @@
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/services
@@ -52,7 +53,7 @@ const uploadImageToCloudinary = async (path, folder = 'issues') => {
         return result.secure_url; // Return the URL of the uploaded image
     } catch (error) {
         console.error('Error uploading to Cloudinary:', error);
-        throw error;
+        throw new AppError(`Failed to upload image to Cloudinary: ${error.message}`, 500);
     }
 };
 

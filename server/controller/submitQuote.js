@@ -6,6 +6,7 @@ const { fixerClient } = require('../model/fixerClientModel');
 const { Jobs } = require('../model/createIssueModel');
 const { logger } = require('../utils/logger');
 const { initChat } = require('./initChat');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -28,20 +29,20 @@ const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
 
     if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return next(new AppError('Unauthorized: Missing authorization header', 401));
     }
 
     const token = authorizationHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return next(new AppError('Unauthorized: Token not found', 401));
     }
 
     // console.log('Token received:', token); // Log the token
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return res.status(403).json({ message: 'Forbidden' });
+            return next(new AppError('Forbidden: Invalid token', 403));
         }
 
         // console.log('User data from token:', user); // Log user data
@@ -64,37 +65,36 @@ const authenticateJWT = (req, res, next) => {
  * @returns {Promise<void>} - Returns a promise that resolves to void.
  */
 const submitQuote = async (req, res) => {
-    console.log('User data in submitQuote:', req.user); // Log the user data
-
-    const { clientEmail, price, issueId } = req.body;
-
-    if (!clientEmail || !price || !issueId) {
-        return res.status(400).json({ message: 'Missing required fields.' });
-    }
-
     try {
-        const professionalEmail = req.user.email; // This should come from req.user if it's set correctly
+        console.log('User data in submitQuote:', req.user); // Log the user data
 
+        const { clientEmail, price, issueId } = req.body;
+
+        if (!clientEmail || !price || !issueId) {
+            throw new AppError('Missing required fields: clientEmail, price, and issueId.', 400);
+        }
+
+        const professionalEmail = req.user.email; // This should come from req.user if it's set correctly
         if (!professionalEmail) {
-            return res.status(400).json({ message: 'Professional email not found.' });
+            throw new AppError('Professional email not found in token.', 400);
         }
 
         // Check if a quote already exists
         const existingQuote = await Quotes.findOne({ issueId, professionalEmail });
         if (existingQuote) {
-            return res.status(400).json({ message: 'You have already submitted a quote for this issue.' });
+            throw new AppError('You have already submitted a quote for this issue.', 400);
         }
 
         // Fetch client information
         const clientInfo = await fixerClient.findOne({ email: clientEmail });
         if (!clientInfo) {
-            return res.status(404).json({ message: 'Client information not found' });
+            throw new AppError('Client information not found', 404);
         }
 
         // Fetch the issue to get the title
         const issue = await Jobs.findById(issueId);
         if (!issue) {
-            return res.status(404).json({ message: 'Issue not found.' });
+            throw new AppError('Issue not found.', 404);
         }
 
         const newQuote = await Quotes.create({
@@ -116,7 +116,7 @@ const submitQuote = async (req, res) => {
         res.status(201).json({ message: 'Quote created successfully', quote: newQuote });
     } catch (error) {
         console.error('Error creating quote:', error);
-        res.status(500).json({ message: 'Internal server error.' });
+        next(new AppError(`Internal server error while creating quote: ${error.message}`, 500));
     }
 };
 
@@ -130,13 +130,13 @@ const submitQuote = async (req, res) => {
  * @returns {Promise<void>} - A promise that resolves when the quotes are fetched and the response is sent.
  */
 const getQuotesByJob = async (req, res) => {
-    const { jobId } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return res.status(400).json({ message: 'Invalid job ID.' });
-    }
-
     try {
+        const { jobId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(jobId)) {
+            throw new AppError('Invalid job ID.', 400);
+        }
+
         // Only fetch quotes that are not rejected
         const quotes = await Quotes.find({ issueId: jobId, status: { $ne: 'rejected' } }).lean();
 
@@ -156,7 +156,7 @@ const getQuotesByJob = async (req, res) => {
         res.status(200).json({ offers: populatedQuotes || [] });
     } catch (error) {
         console.error('Error fetching quotes:', error);
-        res.status(500).json({ message: 'Error fetching quotes for the job.' });
+        next(new AppError(`Error fetching quotes for the job: ${error.message}`, 500));
     }
 };
 
@@ -176,18 +176,18 @@ const getQuotesByJob = async (req, res) => {
  * @throws {Error} - Throws an error if there is an issue updating the quote status.
  */
 const updateQuoteStatus = async (req, res) => {
-    const { quoteId } = req.params;
-    const { status } = req.body;
-
-    if (!['accepted', 'rejected'].includes(status)) {
-        return res.status(400).json({ message: 'Invalid status value.' });
-    }
-
     try {
+        const { quoteId } = req.params;
+        const { status } = req.body;
+
+        if (!['accepted', 'rejected'].includes(status)) {
+            throw new AppError('Invalid status value. Must be "accepted" or "rejected".', 400);
+        }
+
         // Fetch the quote to get the associated job (issueId)
         const quote = await Quotes.findById(quoteId);
         if (!quote) {
-            return res.status(404).json({ message: 'Quote not found.' });
+            throw new AppError('Quote not found.', 404);
         }
 
         if (status === 'accepted') {
@@ -199,7 +199,7 @@ const updateQuoteStatus = async (req, res) => {
             );
 
             if (!updatedQuote) {
-                return res.status(404).json({ message: 'Failed to update the quote.' });
+                throw new AppError('Failed to update the quote.', 404);
             }
 
             // Update the status of the associated issue to "in progress"
@@ -218,7 +218,7 @@ const updateQuoteStatus = async (req, res) => {
             const issue = await Jobs.findById(updatedQuote.issueId);
 
             if (!professional || !issue) {
-                return res.status(404).json({ message: 'Professional or issue not found.' });
+                throw new AppError('Professional or issue not found.', 404);
             }
 
             // Notify the professional whose quote was accepted
@@ -263,7 +263,7 @@ const updateQuoteStatus = async (req, res) => {
             );
 
             if (!updatedQuote) {
-                return res.status(404).json({ message: 'Failed to update the quote.' });
+                throw new AppError('Failed to update the quote.', 404);
             }
 
             // Notify the professional whose quote was rejected
@@ -271,7 +271,7 @@ const updateQuoteStatus = async (req, res) => {
             const issue = await Jobs.findById(updatedQuote.issueId);
 
             if (!professional || !issue) {
-                return res.status(404).json({ message: 'Professional or issue not found.' });
+                throw new AppError('Professional or issue not found.', 404);
             }
 
             const notification = new Notification({
@@ -287,7 +287,7 @@ const updateQuoteStatus = async (req, res) => {
         }
     } catch (error) {
         console.error('Error updating quote status:', error);
-        res.status(500).json({ message: 'Internal server error.' });
+        next(new AppError(`Internal server error while updating quote status: ${error.message}`, 500));
     }
 };
 

@@ -49,7 +49,6 @@ const updateProfile = async (req, res) => {
         const token = req.headers.authorization?.split(' ')[1];
 
         if (!token) {
-            console.log('No token provided in updateProfile request');
             return res.status(401).json({ error: 'Authorization token required' });
         }
 
@@ -58,21 +57,16 @@ const updateProfile = async (req, res) => {
         const userEmail = decoded.email;
 
         if (!userEmail) {
-            console.log('Token did not contain email');
             return res.status(401).json({ error: 'Invalid token' });
         }
 
         // Get updated profile data from request body
         const { firstName, lastName, street, postalCode, provinceOrState, country } = req.body;
 
-        console.log(`Updating profile for user: ${userEmail}`);
-        console.log(`Profile data:`, req.body);
-
         // Find and update the user - use the same model your profile endpoint uses
-        const user = await fixerClient.findOne({ email: userEmail });
+        const user = await fixerClientObject.fixerClient.findOne({ email: userEmail });
 
         if (!user) {
-            console.log(`User not found with email: ${userEmail}`);
             return res.status(404).json({ error: 'User not found' });
         }
 
@@ -86,8 +80,6 @@ const updateProfile = async (req, res) => {
 
         // Save the updated user
         await user.save();
-
-        console.log(`Profile updated successfully for: ${userEmail}`);
 
         return res.status(200).json({
             message: 'Profile updated successfully',
@@ -103,10 +95,8 @@ const updateProfile = async (req, res) => {
         });
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
-            console.log(`JWT Error: ${error.message}`);
             return res.status(401).json({ error: 'Invalid token' });
         } else if (error.name === 'TokenExpiredError') {
-            console.log('Token expired');
             return res.status(401).json({ error: 'Token expired' });
         }
 

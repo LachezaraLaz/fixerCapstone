@@ -69,7 +69,6 @@ async function updatePassword(req, res) {
         }
 
         // Compare current password with hashed password stored in database
-        // Changed from oldPassword to currentPassword
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
             return res.status(401).json({ error: 'Current password is incorrect' });

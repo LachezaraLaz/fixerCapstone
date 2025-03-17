@@ -20,16 +20,54 @@ const verifyAddress = async (req, res) => {
                 },
             }
         );
-        console.log(response.data)
 
         if (response.data.result.verdict.addressComplete === true) {
-            //Get coordinates for the verified address
-            const fullAddress = `${street}, ${postalCode}`;
+            // Extract complete address information
+            const completeAddress = {};
+
+            // First try to get postal address components
+            if (response.data.result.address.postalAddress) {
+                const postalAddress = response.data.result.address.postalAddress;
+                if (postalAddress.postalCode) {
+                    completeAddress.postalCode = postalAddress.postalCode;
+                }
+                if (postalAddress.administrativeArea) {
+                    completeAddress.provinceOrState = postalAddress.administrativeArea;
+                }
+                if (postalAddress.regionCode) {
+                    completeAddress.country = postalAddress.regionCode === 'CA' ? 'Canada' :
+                        postalAddress.regionCode === 'US' ? 'United States' :
+                            postalAddress.regionCode;
+                }
+            }
+
+            // Try to extract postal code from formatted address as fallback
+            if (!completeAddress.postalCode && response.data.result.address.formattedAddress) {
+                const formattedAddress = response.data.result.address.formattedAddress;
+                // Canadian postal code regex
+                const canadianPostalRegex = /[A-Z]\d[A-Z]\s?\d[A-Z]\d/;
+                // US ZIP code regex
+                const usZipRegex = /\b\d{5}(?:-\d{4})?\b/;
+
+                let match = formattedAddress.match(canadianPostalRegex);
+                if (!match) match = formattedAddress.match(usZipRegex);
+
+                if (match) {
+                    completeAddress.postalCode = match[0];
+                }
+            }
+
+            // Get coordinates for the verified address
+            const fullAddress = `${street}, ${postalCode || completeAddress.postalCode || ''}`;
             await getCoordinates(fullAddress);
 
-            res.send({ status: 'success', data: 'Address verified successfully from server',
+            res.send({
+                status: 'success',
+                data: 'Address verified successfully from server',
                 isAddressValid: true,
-                coordinates: coordinates});
+                coordinates: coordinates,
+                completeAddress: completeAddress // Send the complete address back
+            });
         } else {
             res.send({ status: 'error', data: 'address verification failed from server 1' });
         }

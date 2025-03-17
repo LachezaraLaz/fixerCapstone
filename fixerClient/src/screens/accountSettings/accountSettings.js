@@ -87,6 +87,23 @@ const AccountSettingsPage = () => {
             );
 
             if (response.data.isAddressValid) {
+                // Fill in missing fields if available
+                if (response.data.completeAddress) {
+                    const complete = response.data.completeAddress;
+
+                    // Create a new form data object with filled in fields
+                    const newFormData = {
+                        ...formData,
+                        // Only update empty fields
+                        postalCode: formData.postalCode || complete.postalCode || '',
+                        provinceOrState: formData.provinceOrState || complete.provinceOrState || '',
+                        country: formData.country || complete.country || ''
+                    };
+
+                    // Update the form state
+                    setFormData(newFormData);
+                }
+
                 setAddressValidated(true);
                 Alert.alert("Success", "Address verified successfully.");
                 return true;
@@ -196,7 +213,7 @@ const AccountSettingsPage = () => {
         }
     };
 
-    // Add a verification button for the address
+    // Verification button for the address
     const AddressVerificationButton = () => {
         if (!isEditing) return null;
 

@@ -69,6 +69,66 @@ describe('ContractOffer Component', () => {
         });
     });
 
+    test('shows an alert if price is zero or negative', async () => {
+        const { getByPlaceholderText, getByText } = render(
+            <ContractOffer route={mockRoute} navigation={mockNavigation} />
+        );
+
+        const priceInput = getByPlaceholderText('Enter price for this issue');
+        fireEvent.changeText(priceInput, '-50');
+
+        const submitButton = getByText('Submit');
+        fireEvent.press(submitButton);
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Invalid Price',
+                'Please enter a valid positive number for the price.'
+            );
+        });
+    });
+
+    test('shows an alert if price exceeds limit', async () => {
+        const { getByPlaceholderText, getByText } = render(
+            <ContractOffer route={mockRoute} navigation={mockNavigation} />
+        );
+
+        const priceInput = getByPlaceholderText('Enter price for this issue');
+        fireEvent.changeText(priceInput, '200000');
+
+        const submitButton = getByText('Submit');
+        fireEvent.press(submitButton);
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Invalid Price',
+                'Price should not exceed $100,000.'
+            );
+        });
+    });
+
+    test('shows an alert if issue details are incomplete', async () => {
+        const incompleteRoute = { params: { issue: {} } };
+
+        const { getByPlaceholderText, getByText } = render(
+            <ContractOffer route={incompleteRoute} navigation={mockNavigation} />
+        );
+
+        const priceInput = getByPlaceholderText('Enter price for this issue');
+        fireEvent.changeText(priceInput, '150');
+
+        const submitButton = getByText('Submit');
+        fireEvent.press(submitButton);
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Error',
+                'Unable to retrieve complete issue details. Please try again.'
+            );
+        });
+    });
+
+
 //   test('shows error alert if user profile fetch fails', async () => {
 //     axios.get.mockRejectedValueOnce({
 //       response: {

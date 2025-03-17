@@ -59,6 +59,68 @@ describe('CreateIssue Component', () => {
         );
     });
 
+    test('shows an alert if description is too short', async () => {
+        const { getByPlaceholderText, getByTestId } = setup();
+
+        fireEvent.changeText(getByPlaceholderText('Describe your service'), 'Too short');
+        fireEvent.press(getByTestId('post-job-button'));
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Invalid Description',
+                'Some fields are empty. Please complete everything for the professional to give you the most informed quote!'
+            );
+        });
+    });
+
+    test('shows an alert if location is too short', async () => {
+        const { getByPlaceholderText, getByTestId } = setup();
+
+        fireEvent.changeText(getByPlaceholderText('Describe your service'), 'Valid Description');
+        fireEvent.changeText(getByPlaceholderText('Enter Location'), '123');
+        fireEvent.press(getByTestId('post-job-button'));
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Invalid Location',
+                'Please provide a valid location with at least 5 characters.'
+            );
+        });
+    });
+
+    test('shows an alert if timeline is not selected', async () => {
+        const { getByPlaceholderText, getByTestId } = setup();
+
+        fireEvent.changeText(getByPlaceholderText('Describe your service'), 'Valid Description');
+        fireEvent.changeText(getByPlaceholderText('Enter Location'), 'Valid Location');
+        fireEvent.press(getByTestId('post-job-button'));
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Invalid Timeline',
+                'Please select an urgency timeline.'
+            );
+        });
+    });
+
+    test('shows an alert for unsupported image formats', async () => {
+        ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
+            canceled: false,
+            assets: [{ uri: 'invalid-image.bmp' }], // Unsupported format
+        });
+
+        const { getByText } = setup();
+
+        fireEvent.press(getByText('Take from your gallery'));
+
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith(
+                'Invalid Image',
+                'Only JPEG and PNG images are supported.'
+            );
+        });
+    });
+
     test('posts an issue successfully', async () => {
         // Mock necessary dependencies
         AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');

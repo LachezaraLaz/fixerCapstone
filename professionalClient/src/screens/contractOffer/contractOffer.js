@@ -80,8 +80,21 @@ export default function ContractOffer({ route, navigation }) {
      * @returns {Promise<void>}
      */
     const submitQuote = async () => {
-        if (!price) {
-            Alert.alert('Error', 'Please enter a price before submitting the quote.');
+        const parsedPrice = parseFloat(price);
+
+        if (!price || isNaN(parsedPrice) || parsedPrice <= 0) {
+            Alert.alert('Invalid Price', 'Please enter a valid positive number for the price.');
+            return;
+        }
+
+        if (parsedPrice > 100000) {
+            Alert.alert('Invalid Price', 'Price should not exceed $100,000.');
+            return;
+        }
+
+        // Ensures that selectedIssue has necessary details
+        if (!selectedIssue || !selectedIssue.userEmail || !selectedIssue._id) {
+            Alert.alert('Error', 'Unable to retrieve complete issue details. Please try again.');
             return;
         }
 

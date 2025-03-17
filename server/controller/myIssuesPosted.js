@@ -2,6 +2,7 @@ const { getJobsByUserEmail, updateJobStatus, getJobByIdRepo } = require('../repo
 const { jobDTO } = require('../DTO/jobDTO');
 const {Jobs} = require("../model/createIssueModel");
 const {logger} = require("../utils/logger");
+const AppError = require('../utils/AppError');
 
 // GET /issue/user/:email route to fetch jobs for a specific user
 const getJobsByUser = async (req, res) => {
@@ -12,7 +13,7 @@ const getJobsByUser = async (req, res) => {
         const jobs = await getJobsByUserEmail(userEmail);
 
         if (!jobs) {
-            return res.status(404).json({ message: 'No jobs found for the user' });
+            throw new AppError('No jobs found for the user', 404);
         }
 
         // Use DTO to format the jobs before returning them
@@ -21,7 +22,7 @@ const getJobsByUser = async (req, res) => {
         res.status(200).json({ jobs: formattedJobs });
     } catch (error) {
         console.error(`Error fetching jobs for user ${userEmail}:`, error);
-        res.status(500).json({ message: 'Failed to fetch jobs', error: error.message });
+        next(new AppError(`Failed to fetch jobs: ${error.message}`, 500));
     }
 };
 
@@ -30,20 +31,20 @@ const getJobById = async (req, res) => {
     const jobId = req.params?.jobId ?? req;
 
     if (!jobId) {
-        return res.status(400).json({ message: 'Job ID is required' });
+        return next(new AppError('Job ID is required', 400));
     }
 
     try {
         const job = await Jobs.findById(jobId);
         if (!job) {
-            return res.status(404).json({ message: 'Job not found' });
+            throw new AppError('Job not found', 404);
         }
         // Use DTO to format the job before returning it
         res.status(200).json(jobDTO(job));
     } catch (error) {
         console.error('Error fetching job:', error);
         logger.error('Error fetching job:', error);
-        res.status(500).json({ message: 'Failed to fetch job', error: error.message });
+        next(new AppError(`Failed to fetch job: ${error.message}`, 500));
     }
 };
 
@@ -58,14 +59,14 @@ const deleteReopenIssue = async (req, res) => {
         const updatedJob = await updateJobStatus(jobId, status);
 
         if (!updatedJob) {
-            return res.status(404).json({ message: 'Job not found' });
+            throw new AppError('Job not found', 404);
         }
 
         res.status(200).json({ message: `Job status updated to ${status}`, job: jobDTO(updatedJob) });
     } catch (error) {
         console.error('Error updating job status:', error);
         logger.error('Error updating job status:', error);
-        res.status(500).json({ message: 'Failed to update job status', error: error.message });
+        next(new AppError(`Failed to update job status: ${error.message}`, 500));
     }
 };
 
@@ -86,7 +87,7 @@ const updateJob = async (req, res) => {
         if (!existingJob) {
             console.log(`Job not found with jobId: ${jobId}`);
             logger.error(`Job not found with jobId: ${jobId}`);
-            return res.status(404).json({ message: 'Job not found' });
+            throw new AppError('Job not found', 404);
         }
 
         const updatedJobData = {
@@ -102,7 +103,7 @@ const updateJob = async (req, res) => {
         if (!updatedJob) {
             console.log(`Failed to update job with jobID: ${jobId}`);
             logger.error(`Failed to update job with jobID: ${jobId}`);
-            return res.status(500).json({ message: 'Failed to update job' });
+            throw new AppError('Failed to update job', 500);
         }
 
         console.log('Job updated successfully:', updatedJob);
@@ -111,7 +112,7 @@ const updateJob = async (req, res) => {
     } catch (error) {
         console.error('Error updating job:', error);
         logger.error('Error updating job:', error);
-        return res.status(500).json({ message: 'Failed to update job', error: error.message });
+        next(new AppError(`Failed to update job: ${error.message}`, 500));
     }
 };
 

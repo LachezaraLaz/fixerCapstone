@@ -20,19 +20,11 @@ const cors = require('cors');
 app.use(cors({
   origin: ['https://fixercapstone-production.up.railway.app'],
 }));
+const { errorHandler } = require('./middlewares/errorHandler');
+const AppError = require('./utils/AppError');
 
 
 app.use(bodyParser.json());
-
-const PORT = process.env.PORT || 3000;
-
-mongoose.connect(process.env.MONGO_URL)
-    .then(() => console.log("Connected to MongoDB"))
-    .catch(err => console.log(err));
-
-const server = app.listen(PORT, () => {
-  console.log("server is running on port", server.address().port);
-});
 
 app.use('/professional', professionalClientRoute.professionalRouter);
 app.use('/client', fixerClientRoute.fixerClientRouter);
@@ -51,5 +43,27 @@ app.use('/notification', notificationRouter);
 app.use('/reviews', reviewRouter.reviewRouter);
 
 app.use('/users', userRouter.userRouter);
+
+
+// If a route is not found
+app.all('*', (req, res, next) => {
+  // Using the custom AppError:
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+});
+
+// Custom Error Handling Middleware (ALWAYS call it last in order to catch errors from
+// middlewares and routes called above
+app.use(errorHandler);
+
+
+const PORT = process.env.PORT || 3000;
+
+mongoose.connect(process.env.MONGO_URL)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch(err => console.log(err));
+
+const server = app.listen(PORT, () => {
+  console.log("server is running on port", server.address().port);
+});
 
 module.exports = app;

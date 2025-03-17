@@ -1,5 +1,6 @@
 const ProfessionalDTO = require('../DTO/professionalDTO');
 const professionalRepository = require('../repository/professionalRepository');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -19,18 +20,18 @@ dotenv.config();
  * @throws {Error} - Throws an error if user creation fails.
  */
 const registerUser = async (req, res) => {
-    const professionalData = ProfessionalDTO.fromRequestBody(req.body);
-
-    // Check if user already exists
-    const existedUser = await professionalRepository.findProfessionalByEmail(professionalData.email);
-    if (existedUser) {
-        return res.status(400).send({ statusText: 'Account already exists' });
-    }
-
-    // Hash password
-    professionalData.password = await professionalRepository.hashPassword(professionalData.password);
-
     try {
+        const professionalData = ProfessionalDTO.fromRequestBody(req.body);
+
+        // Check if user already exists
+        const existedUser = await professionalRepository.findProfessionalByEmail(professionalData.email);
+        if (existedUser) {
+            throw new AppError('Account already exists', 400);
+        }
+
+        // Hash password
+        professionalData.password = await professionalRepository.hashPassword(professionalData.password);
+
         // Create the new user object
         const newUser = await professionalRepository.createProfessional(professionalData);
 
@@ -47,7 +48,7 @@ const registerUser = async (req, res) => {
         res.send({ status: 'success', data: 'Account created successfully. Please check your email to verify your account.' });
     } catch (e) {
         console.error(e);
-        res.status(500).send({ status: 'error', data: 'User creation failed' });
+        next(new AppError(`User creation failed: ${e.message}`, 500));
     }
 };
 

@@ -99,7 +99,7 @@ export default function CreateIssue({ navigation }) {
      * @throws Will throw an error if the request fails or if required fields are empty.
      */
     const postIssue = async () => {
-        if (!description || description.trim().length < 10) {
+        if (!description) {
             Alert.alert("Invalid Description", "Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
             return;
         }

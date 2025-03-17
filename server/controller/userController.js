@@ -1,5 +1,6 @@
 const { fixerClient } = require('../model/fixerClientModel');
 const { logger } = require('../utils/logger');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -17,21 +18,21 @@ const { logger } = require('../utils/logger');
  * @throws {Error} - If there is an error fetching the user profile.
  */
 const getUserProfile = async (req, res) => {
-    const email = req.params.email;
-
-    // confirm that an email is properly provided
-    if (!email) {
-        console.log('No email provided in request query.');
-        return res.status(400).json({ message: 'Email is required.' });
-    }
-
     try {
+        const email = req.params.email;
+
+        // confirm that an email is properly provided
+        if (!email) {
+            console.log('No email provided in request query.');
+            throw new AppError('Email is required', 400);
+        }
+
         //find the user linked to that email
         const user = await fixerClient.findOne({ email });
 
         if (!user) {
             console.log('User not found for email:', email);
-            return res.status(404).json({ message: 'User not found.' });
+            throw new AppError('User not found', 404);
         }
 
         res.status(200).json({
@@ -47,7 +48,7 @@ const getUserProfile = async (req, res) => {
         logger.info("user has been found with id: ", user.id, ", email: ", user.email, " and full name: ", user.firstName, " ", user.lastName);
     } catch (error) {
         console.error('Error fetching user profile:', error);
-        res.status(500).json({ message: 'Internal server error.' });
+        next(new AppError(`Internal server error: ${error.message}`, 500));
     }
 };
 

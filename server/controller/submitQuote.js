@@ -83,7 +83,7 @@ const submitQuote = async (req, res) => {
             isRead: false
         });
         await notification.save();
-        logger.info("new quote has been created for issue number:", issueId, "and a notification has been sent to the client");        
+        logger.info("new quote has been created for issue number:", issueId, "and a notification has been sent to the client");
 
         res.status(201).json({ message: 'Quote created successfully', quote: newQuote });
     } catch (error) {
@@ -91,7 +91,6 @@ const submitQuote = async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 };
-
 
 // GET /quotes/job/:jobId route to fetch quotes for a specific job
 const getQuotesByJob = async (req, res) => {
@@ -128,7 +127,7 @@ const getQuotesByJob = async (req, res) => {
 // GET /quotes/:quoteId route to update quotes status
 const updateQuoteStatus = async (req, res) => {
     const { quoteId } = req.params;
-    const { status } = req.body;
+    const { status, agreedAmount } = req.body;
 
     if (!['accepted', 'rejected'].includes(status)) {
         return res.status(400).json({ message: 'Invalid status value.' });
@@ -142,6 +141,10 @@ const updateQuoteStatus = async (req, res) => {
         }
 
         if (status === 'accepted') {
+            // Store the agreed amount
+            quote.agreedAmount = agreedAmount;
+            await quote.save();
+
             // Accept quote
             const updatedQuote = await Quotes.findByIdAndUpdate(
                 quoteId,
@@ -155,7 +158,7 @@ const updateQuoteStatus = async (req, res) => {
 
             // Update the status of the associated issue to "in progress"
             await Jobs.findByIdAndUpdate(quote.issueId, { status: 'In progress' });
-            //logger.info("issue number", issueId, "has been updated to in progress because the client accepted a quote");
+            logger.info("issue number", quote.issueId, "has been updated to in progress because the client accepted a quote");
 
             // Automatically reject all other quotes for the same job
             await Quotes.updateMany(
@@ -179,10 +182,10 @@ const updateQuoteStatus = async (req, res) => {
                 isRead: false,
             });
             await notification.save();
-            logger.info("the accepted quote recieved a notification");
+            logger.info("the accepted quote received a notification");
 
             // initChat
-            const  clientId  = req.user.id;
+            const clientId = req.user.id;
             await initChat(issue.title, clientId, professional._id.toString());
 
             // Notify other professionals whose quotes were rejected
@@ -203,7 +206,7 @@ const updateQuoteStatus = async (req, res) => {
                 }
             }
 
-            logger.info("the rejected quotes recieved a notification");
+            logger.info("the rejected quotes received a notification");
             res.status(200).json({ message: `Quote accepted, others rejected and job updated to "in progress".`, quote: updatedQuote });
         } else if (status === 'rejected') {
             // Handle manual rejection of a quote
@@ -232,8 +235,7 @@ const updateQuoteStatus = async (req, res) => {
             });
             await notification.save();
 
-            logger.info("a rejected quote recieved a notification for issue number", issueId);
-
+            logger.info("a rejected quote received a notification for issue number", issueId);
             res.status(200).json({ message: `Quote rejected successfully.`, quote: updatedQuote });
         }
     } catch (error) {
@@ -241,6 +243,5 @@ const updateQuoteStatus = async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 };
-
 
 module.exports = { authenticateJWT, submitQuote, getQuotesByJob, updateQuoteStatus };

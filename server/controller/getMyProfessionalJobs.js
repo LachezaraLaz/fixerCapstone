@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -20,20 +21,20 @@ const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
 
     if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return next(new AppError('Unauthorized: No authorization header provided', 401));
     }
 
     const token = authorizationHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return next(new AppError('Unauthorized: No token found in header', 401));
     }
 
     console.log('Token received:', token);  // Log the token
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return res.status(403).json({ message: 'Forbidden' });
+            return next(new AppError('Forbidden: Invalid or expired token', 403));
         }
 
         console.log('User data from token:', user);  // Log user data
@@ -101,7 +102,7 @@ const getMyProfessionalJobs = async (req, res) => {
         res.status(200).json(jobsByStatus);
     } catch (error) {
         console.error('Error fetching professional jobs:', error);
-        res.status(500).json({ error: 'An error occurred while fetching jobs.' });
+        next(new AppError('An error occurred while fetching jobs.', 500));
     }
 };
 

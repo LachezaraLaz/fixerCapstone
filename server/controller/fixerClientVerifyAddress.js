@@ -10,7 +10,6 @@ const app = express();
 app.use(express.json());
 
 const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY;
-let coordinates;
 
 /**
  * Verifies an address using the Google Address Validation API.

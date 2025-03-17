@@ -1,5 +1,6 @@
 const NotificationRepository = require('../repository/notificationRepository');
 const NotificationDto = require('../DTO/notificationDto.js');
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -20,7 +21,7 @@ const getNotifications = async (req, res) => {
         res.json(notifications.map(notification => new NotificationDto(notification)));
     } catch (error) {
         console.error('Error fetching notifications:', error);
-        res.status(500).json({ message: 'Failed to fetch notifications' });
+        next(new AppError('Failed to fetch notifications', 500));
     }
 };
 
@@ -50,7 +51,7 @@ const getNotificationHistory = async (req, res) => {
         res.status(200).json(notifications.map(notification => new NotificationDto(notification)));
     } catch (error) {
         console.error('Error fetching notifications history:', error);
-        res.status(500).json({ message: 'Failed to fetch notifications history' });
+        next(new AppError('Failed to fetch notifications history', 500));
     }
 };
 
@@ -68,13 +69,13 @@ const markAsRead = async (req, res) => {
         const notification = await NotificationRepository.markNotificationAsRead(req.params.id);
 
         if (!notification) {
-            return res.status(404).json({ message: 'Notification not found' });
+            throw new AppError('Notification not found', 404);
         }
 
         res.json({ message: 'Notification marked as read', notification: new NotificationDto(notification) });
     } catch (error) {
         console.error('Error marking notification as read:', error);
-        res.status(500).json({ message: 'Failed to mark notification as read' });
+        next(new AppError('Failed to mark notification as read', 500));
     }
 };
 
@@ -96,7 +97,7 @@ const createNotification = async (req, res) => {
         res.status(201).json({ message: 'Notification created', notification: new NotificationDto(notification) });
     } catch (error) {
         console.error('Error creating notification:', error);
-        res.status(500).json({ message: 'Failed to create notification' });
+        next(new AppError('Failed to create notification', 500));
     }
 };
 
@@ -115,7 +116,7 @@ const getUnreadNotificationCount = async (req, res) => {
         res.status(200).json({ unreadCount: count });
     } catch (error) {
         console.error('Error counting unread notifications:', error);
-        res.status(500).json({ message: 'Failed to fetch unread notification count' });
+        next(new AppError('Failed to fetch unread notification count', 500));
     }
 };
 

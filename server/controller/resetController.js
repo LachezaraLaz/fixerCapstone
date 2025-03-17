@@ -2,6 +2,7 @@ const fixerClientObject = require('../model/professionalClientModel');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const moment = require('moment'); // Import Moment.js
+const AppError = require('../utils/AppError');
 
 /**
  * @module server/controller
@@ -50,16 +51,16 @@ function generatePin() {
  * @throws {Error} - Throws an error if the user is not found, or if there is a failure in updating the user or sending the email.
  */
 async function forgotPassword(req, res) {
-    const user = await fixerClientObject.fixerClient.findOne({ email: req.body.email });
-
-    if (!user) {
-        return res.status(404).json({ error: 'Could not find your account'});
-    }
-
-    const pin = generatePin();
-    const expiresIn = moment().add(5, 'minutes').toISOString(); // Set expiration to 5 minutes from now
-
     try {
+        const user = await fixerClientObject.fixerClient.findOne({ email: req.body.email });
+
+        if (!user) {
+            throw new AppError('Could not find your account', 404);
+        }
+
+        const pin = generatePin();
+        const expiresIn = moment().add(5, 'minutes').toISOString(); // Set expiration to 5 minutes from now
+
         // Store the PIN and its expiration time
         await fixerClientObject.fixerClient.updateOne(
             { _id: user._id },
@@ -82,7 +83,7 @@ async function forgotPassword(req, res) {
         res.json({ message: 'Password reset PIN sent' });
     } catch (err) {
         console.error('Failed to update user or send email:', err);
-        res.status(500).json({ error: 'Failed to update user or send password reset email' });
+        next(new AppError('Failed to update user or send password reset email', 500));
     }
 }
 
@@ -110,14 +111,14 @@ async function validatePin(req, res) {
 
         if (!user) {
             console.log('User not found or PIN expired for email:', email);
-            return res.status(401).json({ error: 'Invalid or expired PIN' });
+            throw new AppError('Invalid or expired PIN', 401);
         }
 
         console.log('PIN validated successfully for email:', email);
         res.status(200).json({ message: 'PIN is valid' });
     } catch (error) {
         console.error('Error validating PIN:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        next(new AppError('Internal server error while validating PIN', 500));
     }
 }
 
@@ -138,7 +139,7 @@ async function resetPassword(req, res) {
         const user = await fixerClientObject.fixerClient.findOne({ email });
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            throw new AppError('User not found', 404);
         }
 
         // Hash the new password before saving
@@ -167,7 +168,7 @@ async function resetPassword(req, res) {
         res.json({ message: 'Password reset successful' });
     } catch (err) {
         console.error('Error during password reset:', err);
-        res.status(500).json({ error: 'An error occurred during the password reset process' });
+        next(new AppError('An error occurred during the password reset process', 500));
     }
 }
 

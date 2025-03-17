@@ -66,4 +66,22 @@ const server = app.listen(PORT, () => {
   console.log("server is running on port", server.address().port);
 });
 
+// Testing the middleware to see if the error is caught
+// Comment the following when done with testing
+// app.get('/test-error', (req, res, next) => {
+//   // Force an error
+//   next(new AppError());
+// });
+//
+// const IP_ADDRESS = 'XXX.XXX.X.XX'; // Input your IP address to see custom error
+//
+// fetch(`http://${IP_ADDRESS}:${PORT}/test-error`)
+//     .then(response => response.json())
+//     .then(data => {
+//       console.log('Response data:', data);
+//     })
+//     .catch(error => {
+//       console.error('Error:', error);
+//     });
+
 module.exports = app;

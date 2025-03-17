@@ -10,6 +10,7 @@ function errorHandler(err, req, res, next) {
     return res.status(statusCode).json({
         success: false,
         status: err.status || 'error',
+        statusMessage: err.statusCode,
         message: message
     });
 }

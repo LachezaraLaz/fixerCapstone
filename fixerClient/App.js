@@ -26,6 +26,7 @@ import { ChatProvider } from "./src/screens/chat/chatContext";
 import addReview from "./src/screens/addReview/addReview";
 import AccountSettingsPage from "./src/screens/accountSettings/accountSettings"
 import issueDetails from "./src/screens/issueDetails/issueDetails";
+import { LanguageProvider } from "./context/LanguageContext";
 
 
 import { Text } from "react-native";
@@ -72,6 +73,7 @@ export default function App() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1 }}>
+                <LanguageProvider>
                 <NavigationContainer>
                     {isLoggedIn ? (
                         <ChatProvider>
@@ -128,6 +130,7 @@ export default function App() {
                         </Stack.Navigator>
                     )}
                 </NavigationContainer>
+                </LanguageProvider>
             </SafeAreaView>
         </GestureHandlerRootView>
     );

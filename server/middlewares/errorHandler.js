@@ -4,7 +4,8 @@ function errorHandler(err, req, res, next) {
     const message = err.message || 'Internal Server Error';
 
     // Logging error stack for debugging
-    console.error('Error stack:', err.stack);
+    // Keep commented since it can expose directory structure (security risk)
+    // console.error('Error stack:', err.stack);
 
     // JSON response with the status code and message
     return res.status(statusCode).json({

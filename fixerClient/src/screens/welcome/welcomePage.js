@@ -1,16 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
-import {View, StyleSheet, Dimensions, Animated,Button } from 'react-native';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {View, StyleSheet, Dimensions, Animated, Button, TouchableOpacity, Text} from 'react-native';
 import OrangeButton from "../../../components/orangeButton";
 import {en, fr} from '../../../localization'
 import * as Localization from 'expo-localization'
 import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import {LanguageContext} from "../../../context/LanguageContext";
 
 const { width, height } = Dimensions.get('window');
 
 // more animation if i have time one day
 export default function WelcomePage({ navigation }) {
-    let [locale, setLocale] = useState(Localization.getLocales()[0].languageCode);
+    let [modalVisible, setModalVisible] = useState(false);
+
     console.log("Current language is " + Localization.getLocales()[0].languageCode);
+    const {locale, setLocale}  = useContext(LanguageContext);
     const i18n = new I18n(en,fr);
     i18n.fallbacks = true;
     i18n.translations = {en,fr}
@@ -38,8 +43,15 @@ export default function WelcomePage({ navigation }) {
 
     return (
         <View style={styles.container}>
-            {locale !== "en" ? <Button title="Switch to English" onPress={()=> setLocale("en") }/> : undefined}
-            {locale !== "fr" ? <Button title="Switch to French" onPress={()=> setLocale("fr")}/> : undefined}
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
+                <Text style={languageStyle.languageButtonText}>🌍 Change Language</Text>
+            </TouchableOpacity>
+
+            <LanguageModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                setLocale={setLocale}
+            />
             <View style={styles.content}>
                  {/* Animated Title */}
                  <Animated.Text

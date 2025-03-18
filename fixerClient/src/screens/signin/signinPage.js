@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import axios from "axios";
@@ -7,6 +7,12 @@ import { CommonActions } from '@react-navigation/native';
 import OrangeButton from "../../../components/orangeButton";
 import InputField  from '../../../components/inputField';
 import PasswordField from '../../../components/passwordField';
+import {en, fr} from '../../../localization'
+import * as Localization from 'expo-localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -17,6 +23,10 @@ import { IPAddress } from '../../../ipAddress';
 export default function SignInPage({ navigation, setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     /**
      * Handles the sign-in process for a client user.
@@ -77,17 +87,26 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
+                <Text style={languageStyle.languageButtonText}>🌍 {i18n.t('change_language')}</Text>
+            </TouchableOpacity>
+
+            <LanguageModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                setLocale={setLocale}
+            />
 
             <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
                 <Ionicons name="arrow-back" size={28} color="#1E90FF" />
-                <Text style={styles.backText}>Back</Text>
+                <Text style={styles.backText}>{i18n.t('back')}</Text>
             </TouchableOpacity>
 
-            <Text style={styles.title} testID='signInTitle'>Sign In</Text>
+            <Text style={styles.title} testID='signInTitle'>{i18n.t('sign_in')}</Text>
 
             {/* Email Field */}
             <InputField
-                placeholder="Email"
+                placeholder={i18n.t('email')}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -96,20 +115,20 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
 
             {/* Password Field */}
             <PasswordField
-                placeholder="Password"
+                placeholder={i18n.t('password')}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={true} // Always hide password by default
             />
 
-            <OrangeButton title="Sign In" onPress={handleSignIn} testID="sign-in-button" variant="normal" />
+            <OrangeButton title={i18n.t('sign_in')} onPress={handleSignIn} testID="sign-in-button" variant="normal" />
            
             <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
-                <Text style={styles.signUpText}>Don't have an account? Sign up</Text>
+                <Text style={styles.signUpText}>{i18n.t('do_not_have_an_account')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordPage')}>
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                <Text style={styles.forgotPasswordText}>{i18n.t('forgot_password')}</Text>
             </TouchableOpacity>
         </View>
     );

@@ -1,12 +1,20 @@
-import React, { useEffect, useRef } from 'react';
-import {View, StyleSheet, Dimensions, Animated } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {View, StyleSheet, Dimensions, Animated,Button } from 'react-native';
 import OrangeButton from "../../../components/orangeButton";
+import {en, fr} from '../../../localization'
+import * as Localization from 'expo-localization'
+import { I18n } from "i18n-js";
 
 const { width, height } = Dimensions.get('window');
 
 // more animation if i have time one day
 export default function WelcomePage({ navigation }) {
-
+    let [locale, setLocale] = useState(Localization.getLocales()[0].languageCode);
+    console.log("Current language is " + Localization.getLocales()[0].languageCode);
+    const i18n = new I18n(en,fr);
+    i18n.fallbacks = true;
+    i18n.translations = {en,fr}
+    i18n.locale = locale;
         // Create animated values
         const fadeAnim = useRef(new Animated.Value(0)).current; // Start with opacity 0
         const slideAnim = useRef(new Animated.Value(30)).current; // Start 30 units below
@@ -30,6 +38,8 @@ export default function WelcomePage({ navigation }) {
 
     return (
         <View style={styles.container}>
+            {locale !== "en" ? <Button title="Switch to English" onPress={()=> setLocale("en") }/> : undefined}
+            {locale !== "fr" ? <Button title="Switch to French" onPress={()=> setLocale("fr")}/> : undefined}
             <View style={styles.content}>
                  {/* Animated Title */}
                  <Animated.Text
@@ -41,14 +51,14 @@ export default function WelcomePage({ navigation }) {
                         },
                     ]}
                 >
-                    Welcome to Fixr!
+                     {i18n.t('welcome')} Fixr!
                 </Animated.Text>
 
                 {/* Buttons */}
 
                 {/* <Text style={styles.title}>Welcome to Fixr!</Text> */}
-                <OrangeButton title="Sign In" onPress={() => navigation.navigate('SignInPage')} variant="normal" />
-                <OrangeButton title="Sign Up" onPress={() => navigation.navigate('SignUpPage')} variant="normal" />
+                <OrangeButton title={i18n.t('sign_in')} onPress={() => navigation.navigate('SignInPage')} variant="normal" />
+                <OrangeButton title={i18n.t('sign_up')} onPress={() => navigation.navigate('SignUpPage')} variant="normal" />
             </View>
         </View>
     );

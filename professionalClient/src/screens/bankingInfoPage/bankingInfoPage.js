@@ -1,70 +1,113 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { CardField, useStripe } from '@stripe/stripe-react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
 
 const BankingInfoPage = () => {
-    const [accountNumber, setAccountNumber] = useState('');
-    const [routingNumber, setRoutingNumber] = useState('');
     const [loading, setLoading] = useState(false);
+    const { createPaymentMethod } = useStripe();
     const navigation = useNavigation();
+    const isUnmounted = React.useRef(false);
+
+    useEffect(() => {
+        return () => {
+            isUnmounted.current = true;
+        };
+    }, []);
 
     const handleSubmit = async () => {
-        if (!accountNumber || !routingNumber) {
-            Alert.alert('Error', 'Please fill in all fields.');
-            return;
-        }
-
         setLoading(true);
 
         try {
+            console.log("Before createPaymentMethod");
+            const { paymentMethod, error } = await createPaymentMethod({
+                paymentMethodType: 'Card',
+            });
+
+            console.log("After createPaymentMethod");
+            if (error) {
+                if (!isUnmounted.current) Alert.alert('Error', error.message);
+                return;
+            }
+
             const userId = await AsyncStorage.getItem('userId');
             const token = await AsyncStorage.getItem('token');
 
-            // Send banking information to the backend
             const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/professional/add-banking-info`,
-                { userId, accountNumber, routingNumber },
+                `http://10.0.0.148:3000/professional/add-banking-info`,
+                { professionalId: userId, paymentMethodId: paymentMethod.id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            if (response.data.success) {
-                Alert.alert('Success', 'Banking information added successfully.');
-                navigation.goBack(); // Go back to the previous screen
+            console.log("Before success");
+            if (response.data.status === 'success') {
+                if (!isUnmounted.current) {
+                    Alert.alert('Success', 'Credit card added successfully.', [
+                        {
+                            text: 'OK',
+                            onPress: () => {
+                                console.log("Success, but not navigating"); // Temporarily remove navigation
+                            },
+                        },
+                    ]);
+                    console.log("After success");
+                }
             } else {
-                Alert.alert('Error', response.data.message || 'Failed to add banking information.');
+                if (!isUnmounted.current) Alert.alert('Error', response.data.data || 'Failed to add credit card.');
             }
         } catch (error) {
-            console.error('Error adding banking information:', error);
-            Alert.alert('Error', 'An error occurred while adding banking information.');
+            console.error('Error adding credit card:', error);
+            if (!isUnmounted.current) Alert.alert('Error', 'An error occurred while adding credit card.');
         } finally {
-            setLoading(false);
+            console.log("Before unmounting");
+            if (!isUnmounted.current) setLoading(false); // Prevent state updates after unmount
+            console.log("After unmounting");
+        }
+    };
+
+    const handleNavigation = () => {
+        try {
+            console.log("Before test navigation");
+            // Navigate back to MainTabs
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: 'MainTabs' }],
+                })
+            );
+            console.log("After test navigation");
+        } catch (error) {
+            console.error("Navigation error:", error);
+            Alert.alert("Navigation Error", "Could not navigate to Home screen");
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Add Banking Information</Text>
+            <Text style={styles.title}>Add Credit Card</Text>
             <Text style={styles.subtitle}>
-                Please enter your bank account details to receive payments.
+                Please enter your credit card details to enable payments.
             </Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Account Number"
-                value={accountNumber}
-                onChangeText={setAccountNumber}
-                keyboardType="numeric"
+            {/* Stripe CardField for collecting credit card details */}
+            <CardField
+                postalCodeEnabled={false}
+                placeholder={{
+                    number: '4242 4242 4242 4242', // Placeholder for card number
+                }}
+                cardStyle={styles.cardField}
+                style={styles.cardFieldContainer}
             />
 
-            <TextInput
-                style={styles.input}
-                placeholder="Routing Number"
-                value={routingNumber}
-                onChangeText={setRoutingNumber}
-                keyboardType="numeric"
-            />
+            <TouchableOpacity
+                style={styles.button}
+                onPress={handleNavigation}
+            >
+                <Text style={styles.buttonText}>Test Navigation</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
                 style={styles.button}
@@ -96,14 +139,15 @@ const styles = StyleSheet.create({
         color: '#666',
         marginBottom: 24,
     },
-    input: {
-        height: 50,
+    cardField: {
+        backgroundColor: '#ffffff',
         borderColor: '#ccc',
-        borderWidth: 1,
         borderRadius: 8,
-        paddingHorizontal: 16,
+        borderWidth: 1,
+    },
+    cardFieldContainer: {
+        height: 50,
         marginBottom: 16,
-        fontSize: 16,
     },
     button: {
         backgroundColor: 'orange',

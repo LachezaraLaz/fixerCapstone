@@ -403,7 +403,7 @@ export default function SignUpPage({ navigation }) {
                         <OrangeButton title={i18n.t('verify_address')} onPress={handleVerifyAddress} variant="normal" />
 
                         {isAddressValid && (
-                                <Text style={styles.text}>Valid Address entered</Text>
+                                <Text style={styles.text}>{i18n.t('valid_address_entered')}</Text>
                         )}
 
                         {coordinates && (
@@ -421,7 +421,7 @@ export default function SignUpPage({ navigation }) {
                         )}
 
                         {/* Sign Up Button (Enabled only if address is verified) */}
-                        <OrangeButton title="Sign Up" onPress={handleSignUp} testID="sign-up-button" disabled={!isAddressValid} variant="normal" />
+                        <OrangeButton title={i18n.t('sign_up')} onPress={handleSignUp} testID="sign-up-button" disabled={!isAddressValid} variant="normal" />
                     </>
                 )}
 

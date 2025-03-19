@@ -3,11 +3,16 @@ import { View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet, SafeAreaVi
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CardComponent from '../cardComponent/CardComponent';
-import { useEffect } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import { useChatContext } from '../chat/chatContext';
 import OrangeButton from "../../../components/orangeButton";
 import NotificationButton from "../../../components/notificationButton";
 import SearchBar from "../../../components/searchBar";
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 /**
  * @module fixerClient
@@ -15,6 +20,10 @@ import SearchBar from "../../../components/searchBar";
 
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const { chatClient } = useChatContext();
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     useEffect(() => {
         navigation.setOptions({
@@ -64,11 +73,12 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 <Text style={styles.headerLogo}>Fixr</Text>
 
                 {/* Page Title */}
-                <Text style={styles.headerTitle}>Home Screen</Text>
+                <Text style={styles.headerTitle}>{i18n.t('home_screen')}</Text>
 
                 {/* Notification Button */}
                 <NotificationButton testID="notification-button" onPress={() => navigation.navigate('NotificationPage')} />
             </View>
+
 
             {/* Searchbar */}
             <SearchBar
@@ -95,13 +105,13 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
                 {/* Create Issue Button */ }
                 <View>
-                    <OrangeButton title="Create Issue" onPress={() => navigation.navigate('CreateIssue')} variant="normal" />
+                    <OrangeButton title={i18n.t('create_issue')} onPress={() => navigation.navigate('CreateIssue')} variant="normal" />
                 </View>
 
                 {/* Logout Button */}
                 <View style={styles.logoutContainer}>
                     <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                        <Text style={styles.logoutText}>Logout</Text>
+                        <Text style={styles.logoutText}>{i18n.t('logout')}</Text>
                     </TouchableOpacity>
                 </View>
 

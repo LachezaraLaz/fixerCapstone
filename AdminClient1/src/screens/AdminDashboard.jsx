@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
@@ -8,6 +9,16 @@ export default function AdminDashboard() {
 
     // State to track active tab
     const [activeTab, setActiveTab] = useState("home");
+
+    // Password change state
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [passwordChangeStatus, setPasswordChangeStatus] = useState(null);
 
     const handleLogout = () => {
         // Clear authentication data
@@ -18,6 +29,68 @@ export default function AdminDashboard() {
 
         // Redirect to sign-in
         navigate("/signin");
+    };
+
+    // Handle password change submission
+    const handlePasswordChange = async (e) => {
+        e.preventDefault();
+
+        // Validate passwords match
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            setPasswordChangeStatus({
+                type: 'error',
+                message: 'New passwords do not match.'
+            });
+            return;
+        }
+
+        setIsChangingPassword(true);
+
+        try {
+            // Get token from localStorage
+            const token = localStorage.getItem("authToken");
+
+            // Make API request to change password
+            const response = await axios.post(
+                "http://localhost:5003/admin/change-password",
+                {
+                    currentPassword: passwordData.currentPassword,
+                    newPassword: passwordData.newPassword
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setPasswordChangeStatus({
+                type: 'success',
+                message: 'Password changed successfully!'
+            });
+
+            // Reset form after successful password change
+            setPasswordData({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            });
+
+            // Close modal after 2 seconds
+            setTimeout(() => {
+                setShowPasswordModal(false);
+                setPasswordChangeStatus(null);
+            }, 2000);
+
+        } catch (error) {
+            const errorMsg = error.response?.data?.message || "Error changing password. Please try again.";
+            setPasswordChangeStatus({
+                type: 'error',
+                message: errorMsg
+            });
+        } finally {
+            setIsChangingPassword(false);
+        }
     };
 
     // Tab content rendering
@@ -140,11 +213,113 @@ export default function AdminDashboard() {
                             <div style={styles.profileDetails}>
                                 <h3>{firstName} {lastName}</h3>
                                 <p>Role: Administrator</p>
-                                <button style={styles.changePasswordButton}>
+                                <button
+                                    style={styles.changePasswordButton}
+                                    onClick={() => setShowPasswordModal(true)}
+                                >
                                     Change Password
                                 </button>
                             </div>
                         </div>
+
+                        {/* Password Change Modal */}
+                        {showPasswordModal && (
+                            <div style={styles.modalOverlay}>
+                                <div style={styles.modalContent}>
+                                    <h3 style={styles.modalTitle}>Change Password</h3>
+
+                                    {passwordChangeStatus && (
+                                        <div style={{
+                                            ...styles.statusMessage,
+                                            backgroundColor: passwordChangeStatus.type === 'success' ? '#d4edda' : '#f8d7da',
+                                            color: passwordChangeStatus.type === 'success' ? '#155724' : '#721c24'
+                                        }}>
+                                            {passwordChangeStatus.message}
+                                        </div>
+                                    )}
+
+                                    <form onSubmit={handlePasswordChange} style={styles.passwordForm}>
+                                        <div style={styles.formField}>
+                                            <label htmlFor="currentPassword">Current Password</label>
+                                            <input
+                                                type="password"
+                                                id="currentPassword"
+                                                value={passwordData.currentPassword}
+                                                onChange={(e) => setPasswordData({
+                                                    ...passwordData,
+                                                    currentPassword: e.target.value
+                                                })}
+                                                style={styles.input}
+                                                required
+                                            />
+                                        </div>
+
+                                        <div style={styles.formField}>
+                                            <label htmlFor="newPassword">New Password</label>
+                                            <input
+                                                type="password"
+                                                id="newPassword"
+                                                value={passwordData.newPassword}
+                                                onChange={(e) => setPasswordData({
+                                                    ...passwordData,
+                                                    newPassword: e.target.value
+                                                })}
+                                                style={styles.input}
+                                                required
+                                            />
+                                        </div>
+
+                                        <div style={styles.formField}>
+                                            <label htmlFor="confirmPassword">Confirm New Password</label>
+                                            <input
+                                                type="password"
+                                                id="confirmPassword"
+                                                value={passwordData.confirmPassword}
+                                                onChange={(e) => setPasswordData({
+                                                    ...passwordData,
+                                                    confirmPassword: e.target.value
+                                                })}
+                                                style={styles.input}
+                                                required
+                                            />
+                                            {passwordData.newPassword !== passwordData.confirmPassword && passwordData.confirmPassword && (
+                                                <p style={styles.errorText}>Passwords do not match</p>
+                                            )}
+                                        </div>
+
+                                        <div style={styles.modalButtons}>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setShowPasswordModal(false);
+                                                    setPasswordData({
+                                                        currentPassword: '',
+                                                        newPassword: '',
+                                                        confirmPassword: ''
+                                                    });
+                                                    setPasswordChangeStatus(null);
+                                                }}
+                                                style={styles.cancelButton}
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                style={styles.saveButton}
+                                                disabled={
+                                                    !passwordData.currentPassword ||
+                                                    !passwordData.newPassword ||
+                                                    passwordData.newPassword !== passwordData.confirmPassword ||
+                                                    isChangingPassword
+                                                }
+                                            >
+                                                {isChangingPassword ? 'Changing...' : 'Change Password'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
             default:
@@ -446,5 +621,82 @@ const styles = {
         display: "inline-block",
         width: "50px",
         height: "24px",
+    },
+
+    // Modal styles
+    modalOverlay: {
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 2000,
+    },
+    modalContent: {
+        backgroundColor: "#fff",
+        borderRadius: "8px",
+        padding: "25px",
+        width: "400px",
+        maxWidth: "90%",
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    },
+    modalTitle: {
+        margin: "0 0 20px 0",
+        color: "#2c3e50",
+        borderBottom: "1px solid #eee",
+        paddingBottom: "10px",
+    },
+    passwordForm: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "15px",
+    },
+    formField: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "5px",
+    },
+    input: {
+        padding: "10px",
+        border: "1px solid #ddd",
+        borderRadius: "5px",
+        fontSize: "14px",
+    },
+    modalButtons: {
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: "10px",
+        marginTop: "20px",
+    },
+    cancelButton: {
+        padding: "10px 15px",
+        backgroundColor: "#f1f1f1",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+        color: "#333",
+    },
+    saveButton: {
+        padding: "10px 15px",
+        backgroundColor: "#3498db",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+        color: "#fff",
+    },
+    statusMessage: {
+        padding: "10px",
+        borderRadius: "5px",
+        marginBottom: "15px",
+        textAlign: "center",
+    },
+    errorText: {
+        color: "#dc3545",
+        fontSize: "12px",
+        marginTop: "5px",
     },
 };

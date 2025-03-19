@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import { IPAddress } from '../../../ipAddress';
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 /**
  * @module fixerClient
@@ -11,6 +16,10 @@ export default function ResetPasswordPage({ route, navigation }) {
     const { email } = route.params; // Get the email from the previous page
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     /**
      * Handles the password reset process.
@@ -55,6 +64,15 @@ export default function ResetPasswordPage({ route, navigation }) {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
+                <Text style={languageStyle.languageButtonText}>🌍 {i18n.t('change_language')}</Text>
+            </TouchableOpacity>
+
+            <LanguageModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                setLocale={setLocale}
+            />
             <Text style={styles.title}>Reset Password</Text>
 
             <TextInput

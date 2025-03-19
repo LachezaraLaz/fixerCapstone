@@ -21,15 +21,23 @@ import NotificationButton from "../../../components/notificationButton";
 import OrangeButton from "../../../components/orangeButton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback } from "react";
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 const IssueDetails = () => {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [modalVisible, setModalVisible] = useState(false);
     const route = useRoute();
     const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
     const {jobId} = route.params;
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     useEffect(() => {
         fetchJobDetails();

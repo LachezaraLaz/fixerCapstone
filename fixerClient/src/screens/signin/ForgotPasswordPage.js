@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from "axios";
 import { IPAddress } from '../../../ipAddress';
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 /**
  * @module fixerClient
@@ -10,6 +15,10 @@ import { IPAddress } from '../../../ipAddress';
 export default function ForgotPasswordPage({ navigation }) {
     const [email, setEmail] = useState('');
     const [isPinSent, setIsPinSent] = useState(false); // Track if PIN has been sent
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     /**
      * Handles the forgot password process by sending a password reset request to the server.
@@ -45,11 +54,20 @@ export default function ForgotPasswordPage({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Forgot Password</Text>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
+                <Text style={languageStyle.languageButtonText}>🌍 {i18n.t('change_language')}</Text>
+            </TouchableOpacity>
+
+            <LanguageModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                setLocale={setLocale}
+            />
+            <Text style={styles.title}>{i18n.t('forgot_password_no_question_mark')}</Text>
 
             <TextInput
                 style={styles.input}
-                placeholder="Enter your email"
+                placeholder={i18n.t('email')}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -57,17 +75,17 @@ export default function ForgotPasswordPage({ navigation }) {
             />
 
             <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
-                <Text style={styles.buttonText}>Send Reset PIN</Text>
+                <Text style={styles.buttonText}>{i18n.t('send_reset_pin')}</Text>
             </TouchableOpacity>
 
             {isPinSent && (
                 <TouchableOpacity onPress={() => navigation.navigate('EnterPin', { email })}>
-                    <Text style={styles.pinText}>Enter PIN</Text>
+                    <Text style={styles.pinText}>{i18n.t('enter_pin')}</Text>
                 </TouchableOpacity>
             )}
 
             <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
-                <Text style={styles.signInText}>Back to Sign In</Text>
+                <Text style={styles.signInText}>{i18n.t('sign_in')}</Text>
             </TouchableOpacity>
         </View>
     );

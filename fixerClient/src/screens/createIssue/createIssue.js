@@ -16,7 +16,7 @@ import {
     ActivityIndicator,
     StyleSheet
 } from 'react-native';
-import { useState } from 'react';
+import {useContext, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
@@ -26,12 +26,23 @@ import * as ImagePicker from 'expo-image-picker';
 import { IPAddress } from '../../../ipAddress';
 import OrangeButton from "../../../components/orangeButton";
 import MapView, { Marker } from "react-native-maps";
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 /**
  * @module fixerClient
  */
 
 export default function CreateIssue({ navigation }) {
+    //translation
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
+    //AI
     const [loadingAi, setLoadingAi] = useState(false);
     const [aiSuggestion, setAiSuggestion] = useState('');
     const [showAiPreview, setShowAiPreview] = useState(false);
@@ -40,8 +51,8 @@ export default function CreateIssue({ navigation }) {
     const [selectedService, setSelectedService] = useState(null);
     const [items, setItems] = useState([
         { label: 'Select Service', value: '' },
-        { label: 'Plumbing', value: 'plumbing' },
-        { label: 'Electrical', value: 'electrical' },
+        { label: `${i18n.t('plumbing')}`, value: 'plumbing' },
+        { label: `${i18n.t('electrical')}`, value: 'electrical' },
     ]);
     const [selectedImage, setSelectedImage] = useState(null);
     {/*TimeLine Dropdown*/}
@@ -49,8 +60,8 @@ export default function CreateIssue({ navigation }) {
     const [selectedTimeLine, setSelectedTimeLine] = useState(null);
     const [itemsTimeLine, setItemsTimeLine] = useState([
         { label: 'Select Timeline', value: '' },
-        { label: 'Low Priority', value: 'Low-Priority' },
-        { label: 'High Priority', value: 'High-Priority' },
+        { label: `${i18n.t('low_priority')}`, value: 'Low-Priority' },
+        { label: `${i18n.t('high_priority')}`, value: 'High-Priority' },
     ]);
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [location, setLocation] = useState("");
@@ -59,6 +70,7 @@ export default function CreateIssue({ navigation }) {
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [other, setOther] = useState(false);
+
 
     /**
      * Asynchronously picks an image from the user's media library.
@@ -286,7 +298,7 @@ export default function CreateIssue({ navigation }) {
                 {/* title field */}
                 <View style={{ position: 'relative' }}>
                     <TextInput
-                        placeholder= "Describe your service"
+                        placeholder= {`${i18n.t('describe_your_service')}`}
                         value={description}
                         onChangeText={setDescription}
                         style={{
@@ -358,7 +370,7 @@ export default function CreateIssue({ navigation }) {
                         {description.length} chars
                     </Text>
                 </View>
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>Select Type</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_type')}</Text>
                 <View style={styles.pickerContainer}>
                     <DropDownPicker
                         style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
@@ -413,11 +425,11 @@ export default function CreateIssue({ navigation }) {
                     </MapView>
                 </View>
                 {/*location label*/}
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15, marginTop: 20 }}>Location</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15, marginTop: 20 }}>{i18n.t('location')}</Text>
                 {/* location field */}
                 <View style={{ flex: 1 }}>
                     <TextInput
-                        placeholder="Enter Location"
+                        placeholder={i18n.t('enter_location')}
                         value={location}
                         onChangeText={setLocation}
                         style={{
@@ -449,7 +461,7 @@ export default function CreateIssue({ navigation }) {
                 </View>
                 {/* Create Issue Button */ }
                 <View>
-                    <OrangeButton testID={'post-job-button'} title="Create Job" variant="normal" onPress={postIssue}/>
+                    <OrangeButton testID={'post-job-button'} title={i18n.t('create_issue')} variant="normal" onPress={postIssue}/>
                 </View>
             </ScrollView>
         </TouchableWithoutFeedback>

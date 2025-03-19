@@ -1,5 +1,7 @@
-const { getJobsByUserEmail, updateJobStatus } = require('../repository/jobRepository');
+const { getJobsByUserEmail, updateJobStatus, getJobByIdRepo } = require('../repository/jobRepository');
 const { jobDTO } = require('../DTO/jobDTO');
+const {Jobs} = require("../model/createIssueModel");
+const {logger} = require("../utils/logger");
 
 // GET /issue/user/:email route to fetch jobs for a specific user
 const getJobsByUser = async (req, res) => {
@@ -25,29 +27,32 @@ const getJobsByUser = async (req, res) => {
 
 // GET /issue/:jobId route to fetch a single job by its ID
 const getJobById = async (req, res) => {
-    const { jobId } = req.params;
-    console.log('Received jobId:', jobId);
+    const jobId = req.params?.jobId ?? req;
+
+    if (!jobId) {
+        return res.status(400).json({ message: 'Job ID is required' });
+    }
 
     try {
-        const job = await getJobById(jobId);
-
+        const job = await Jobs.findById(jobId);
         if (!job) {
             return res.status(404).json({ message: 'Job not found' });
         }
-
         // Use DTO to format the job before returning it
         res.status(200).json(jobDTO(job));
     } catch (error) {
         console.error('Error fetching job:', error);
+        logger.error('Error fetching job:', error);
         res.status(500).json({ message: 'Failed to fetch job', error: error.message });
     }
 };
 
 // DELETE /issue/:id route to update job status (Reopen job)
-const deleteReopenJob = async (req, res) => {
+const deleteReopenIssue = async (req, res) => {
     const jobId = req.params.id;
-    const { status } = req.body;
+    const status = req.query.status;
     console.log(`Updating job status with ID: ${jobId} to ${status}`);
+    logger.info(`Updating job status with ID: ${jobId} to ${status}`);
 
     try {
         const updatedJob = await updateJobStatus(jobId, status);
@@ -59,6 +64,7 @@ const deleteReopenJob = async (req, res) => {
         res.status(200).json({ message: `Job status updated to ${status}`, job: jobDTO(updatedJob) });
     } catch (error) {
         console.error('Error updating job status:', error);
+        logger.error('Error updating job status:', error);
         res.status(500).json({ message: 'Failed to update job status', error: error.message });
     }
 };
@@ -71,12 +77,15 @@ const updateJob = async (req, res) => {
 
     console.log('Updating jobId:', jobId);
     console.log('Update data:', { title, description, professionalNeeded, status, imageUrl });
+    logger.info('Updating jobId:', jobId);
+    logger.info('Update data:', { title, description, professionalNeeded, status, imageUrl });
 
     try {
-        const existingJob = await getJobById(jobId);
+        const existingJob = await getJobByIdRepo(req);
 
         if (!existingJob) {
             console.log(`Job not found with jobId: ${jobId}`);
+            logger.error(`Job not found with jobId: ${jobId}`);
             return res.status(404).json({ message: 'Job not found' });
         }
 
@@ -88,19 +97,22 @@ const updateJob = async (req, res) => {
             ...(imageUrl && { imageUrl }), // Update imageUrl only if it's provided
         };
 
-        const updatedJob = await updateJob(jobId, updatedJobData);
+        const updatedJob = await Jobs.findByIdAndUpdate(jobId, updatedJobData, { new: true, runValidators: true });
 
         if (!updatedJob) {
-            console.log(`Failed to update job with jobId: ${jobId}`);
+            console.log(`Failed to update job with jobID: ${jobId}`);
+            logger.error(`Failed to update job with jobID: ${jobId}`);
             return res.status(500).json({ message: 'Failed to update job' });
         }
 
         console.log('Job updated successfully:', updatedJob);
+        logger.info('Job updated successfully:', updatedJob);
         res.status(200).json(jobDTO(updatedJob));
     } catch (error) {
         console.error('Error updating job:', error);
-        res.status(500).json({ message: 'Failed to update job', error: error.message });
+        logger.error('Error updating job:', error);
+        return res.status(500).json({ message: 'Failed to update job', error: error.message });
     }
 };
 
-module.exports = { getJobsByUser, getJobById, deleteReopenJob, updateJob };
+module.exports = { getJobsByUser, getJobById, deleteReopenIssue, updateJob };

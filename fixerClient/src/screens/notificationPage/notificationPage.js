@@ -5,6 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module fixerClient
+ */
+
 const NotificationPage = () => {
     const [notifications, setNotifications] = useState([]); // Store notifications
     const [loading, setLoading] = useState(false);          // Track loading state
@@ -16,6 +20,19 @@ const NotificationPage = () => {
         fetchNotifications();
     }, []);
 
+    /**
+     * Fetches notifications from the server.
+     * 
+     * This function retrieves the user's token from AsyncStorage and uses it to
+     * make an authenticated GET request to the notifications endpoint. The
+     * notifications are then stored in the state. If an error occurs during the
+     * request, it is logged to the console. The loading state is managed before
+     * and after the request.
+     * 
+     * @async
+     * @function fetchNotifications
+     * @returns {Promise<void>} A promise that resolves when the notifications have been fetched and the state has been updated.
+     */
     const fetchNotifications = async () => {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
@@ -31,6 +48,18 @@ const NotificationPage = () => {
         }
     };
 
+    /**
+     * Fetches more notifications from the server and updates the state.
+     * 
+     * This function will fetch additional notifications from the server if not currently loading and if there are more notifications to fetch.
+     * It retrieves the token from AsyncStorage and makes a GET request to the notification history endpoint.
+     * If new notifications are received, they are added to the existing notifications state.
+     * If no more notifications are available, it updates the state to indicate that there are no more notifications.
+     * 
+     * @async
+     * @function fetchMoreNotifications
+     * @returns {Promise<void>} A promise that resolves when the notifications have been fetched and the state has been updated.
+     */
     const fetchMoreNotifications = async () => {
         if (loading || !hasMore) return;
 
@@ -59,6 +88,14 @@ const NotificationPage = () => {
         }
     };
 
+    /**
+     * Toggles the read status of a notification.
+     *
+     * @param {string} id - The ID of the notification to update.
+     * @param {boolean} isRead - The current read status of the notification.
+     * @returns {Promise<void>} - A promise that resolves when the read status has been updated.
+     * @throws {Error} - Throws an error if the update request fails.
+     */
     const toggleReadStatus = async (id, isRead) => {
         const token = await AsyncStorage.getItem('token');
         try {
@@ -77,6 +114,17 @@ const NotificationPage = () => {
         }
     };
 
+    /**
+     * Renders a notification item.
+     *
+     * @param {Object} param - The parameter object.
+     * @param {Object} param.item - The notification item.
+     * @param {string} param.item._id - The unique identifier of the notification.
+     * @param {boolean} param.item.isRead - The read status of the notification.
+     * @param {string} param.item.message - The message content of the notification.
+     * @param {string} param.item.createdAt - The creation date of the notification.
+     * @returns {JSX.Element} The rendered notification component.
+     */
     const renderNotification = ({ item }) => (
         <TouchableOpacity
             onPress={() => {

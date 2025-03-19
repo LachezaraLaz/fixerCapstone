@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import {IPAddress} from "../../../ipAddress";
+/**
+ * @module fixerClient
+ */
 
 const AddReview = ({ navigation, route }) => {
     const { jobId } = route.params; // Get the jobId from navigation parameters
@@ -9,6 +12,19 @@ const AddReview = ({ navigation, route }) => {
     const [rating, setRating] = useState('');
     const [comment, setComment] = useState('');
 
+    /**
+     * Handles the submission of a review.
+     * 
+     * This function validates the rating and comment inputs, sends the review data to the backend,
+     * and provides feedback to the user based on the success or failure of the submission.
+     * 
+     * @async
+     * @function handleSubmit
+     * @returns {Promise<void>}
+     * 
+     * @throws Will alert an error message if the rating or comment is missing, if the rating is not a number between 1 and 5,
+     *         or if there is an error during the submission process.
+     */
     const handleSubmit = async () => {
         if (!rating || !comment) {
             Alert.alert('Error', 'Please provide both a rating and a comment.');

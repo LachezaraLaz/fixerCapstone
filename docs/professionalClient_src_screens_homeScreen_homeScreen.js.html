@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>professionalClient/src/screens/homeScreen/homeScreen.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module-server_repository-NotificationRepository.html">NotificationRepository</a></li><li><a href="module-server_repository-ProfessionalRepository.html">ProfessionalRepository</a></li><li><a href="module-server_repository-UserRepository.html">UserRepository</a></li></ul><h3>Modules</h3><ul><li><a href="module-fixerClient.html">fixerClient</a><ul class='methods'><li data-type='method'><a href="module-fixerClient.html#~fetchJobDetails">fetchJobDetails</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchJobsForUser">fetchJobsForUser</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchMoreNotifications">fetchMoreNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchOffers">fetchOffers</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-fixerClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleVerifyAddress">handleVerifyAddress</a></li><li data-type='method'><a href="module-fixerClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~postIssue">postIssue</a></li><li data-type='method'><a href="module-fixerClient.html#~updateJob">updateJob</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-professionalClient.html">professionalClient</a><ul class='methods'><li data-type='method'><a href="module-professionalClient.html#~calculateDistance">calculateDistance</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchAllIssues">fetchAllIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchJobs">fetchJobs</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchReviews">fetchReviews</a></li><li data-type='method'><a href="module-professionalClient.html#~filteredIssues">filteredIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~getCurrentLocation">getCurrentLocation</a></li><li data-type='method'><a href="module-professionalClient.html#~handleApplyFilters">handleApplyFilters</a></li><li data-type='method'><a href="module-professionalClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleImagePick">handleImagePick</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~handleRecenterMap">handleRecenterMap</a></li><li data-type='method'><a href="module-professionalClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-professionalClient.html#~requestCameraPermission">requestCameraPermission</a></li><li data-type='method'><a href="module-professionalClient.html#~submitQuote">submitQuote</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_controller.html">server/controller</a><ul class='methods'><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~createIssue">createIssue</a></li><li data-type='method'><a href="module-server_controller.html#~createNotification">createNotification</a></li><li data-type='method'><a href="module-server_controller.html#~deleteReopenJob">deleteReopenJob</a></li><li data-type='method'><a href="module-server_controller.html#~forgotPassword">forgotPassword</a></li><li data-type='method'><a href="module-server_controller.html#~generatePin">generatePin</a></li><li data-type='method'><a href="module-server_controller.html#~getAllIssues">getAllIssues</a></li><li data-type='method'><a href="module-server_controller.html#~getCoordinates">getCoordinates</a></li><li data-type='method'><a href="module-server_controller.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_controller.html#~getJobsByUser">getJobsByUser</a></li><li data-type='method'><a href="module-server_controller.html#~getMyProfessionalJobs">getMyProfessionalJobs</a></li><li data-type='method'><a href="module-server_controller.html#~getNotificationHistory">getNotificationHistory</a></li><li data-type='method'><a href="module-server_controller.html#~getNotifications">getNotifications</a></li><li data-type='method'><a href="module-server_controller.html#~getQuotesByJob">getQuotesByJob</a></li><li data-type='method'><a href="module-server_controller.html#~getUnreadNotificationCount">getUnreadNotificationCount</a></li><li data-type='method'><a href="module-server_controller.html#~getUserProfile">getUserProfile</a></li><li data-type='method'><a href="module-server_controller.html#~initChat">initChat</a></li><li data-type='method'><a href="module-server_controller.html#~markAsRead">markAsRead</a></li><li data-type='method'><a href="module-server_controller.html#~professionalUploadID">professionalUploadID</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~resetPassword">resetPassword</a></li><li data-type='method'><a href="module-server_controller.html#~sendVerificationEmail">sendVerificationEmail</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~submitQuote">submitQuote</a></li><li data-type='method'><a href="module-server_controller.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_controller.html#~updateQuoteStatus">updateQuoteStatus</a></li><li data-type='method'><a href="module-server_controller.html#~validatePin">validatePin</a></li><li data-type='method'><a href="module-server_controller.html#~verifyAddress">verifyAddress</a></li><li data-type='method'><a href="module-server_controller.html#~verifyCredentials">verifyCredentials</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_repository.html">server/repository</a><ul class='methods'><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#countUnreadNotifications">NotificationRepository#countUnreadNotifications</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#createNotification">NotificationRepository#createNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#deleteNotification">NotificationRepository#deleteNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationHistoryByUserId">NotificationRepository#getNotificationHistoryByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationsByUserId">NotificationRepository#getNotificationsByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#markNotificationAsRead">NotificationRepository#markNotificationAsRead</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#comparePassword">ProfessionalRepository#comparePassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createProfessional">ProfessionalRepository#createProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createStreamToken">ProfessionalRepository#createStreamToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#findProfessionalByEmail">ProfessionalRepository#findProfessionalByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateToken">ProfessionalRepository#generateToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateVerificationToken">ProfessionalRepository#generateVerificationToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#hashPassword">ProfessionalRepository#hashPassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#saveProfessional">ProfessionalRepository#saveProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#sendVerificationEmail">ProfessionalRepository#sendVerificationEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#upsertStreamUser">ProfessionalRepository#upsertStreamUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#createUser">UserRepository#createUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findByEmail">UserRepository#findByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findById">UserRepository#findById</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#updateUser">UserRepository#updateUser</a></li><li data-type='method'><a href="module-server_repository.html#~getAllJobs">getAllJobs</a></li><li data-type='method'><a href="module-server_repository.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_repository.html#~getJobsByUserEmail">getJobsByUserEmail</a></li><li data-type='method'><a href="module-server_repository.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_repository.html#~updateJobStatus">updateJobStatus</a></li></ul></li><li></li><li></li><li></li><li></li><li><a href="module-server_services.html">server/services</a><ul class='methods'><li data-type='method'><a href="module-server_services.html#~getCoordinatesFromAddress">getCoordinatesFromAddress</a></li><li data-type='method'><a href="module-server_services.html#~storage">storage</a></li><li data-type='method'><a href="module-server_services.html#~upload">upload</a></li><li data-type='method'><a href="module-server_services.html#~uploadImageToCloudinary">uploadImageToCloudinary</a></li></ul></li><li></li><li><a href="module-server_utils.html">server/utils</a><ul class='methods'><li data-type='method'><a href="module-server_utils.html#~setLogLevel">setLogLevel</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">professionalClient/src/screens/homeScreen/homeScreen.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as React from 'react';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Linking } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import axios from 'axios';
+import { styles } from '../../../style/homescreen/homeScreenStyle';
+import * as Location from 'expo-location';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useChatContext } from '../chat/chatContext';
+import { useNavigation } from '@react-navigation/native';
+
+/**
+ * @module professionalClient
+ */
+
+/**
+ * Calculates the distance between two geographical coordinates using the Haversine formula.
+ *
+ * @param {number} lat1 - Latitude of the first point in degrees.
+ * @param {number} lon1 - Longitude of the first point in degrees.
+ * @param {number} lat2 - Latitude of the second point in degrees.
+ * @param {number} lon2 - Longitude of the second point in degrees.
+ * @returns {number} - The distance between the two points in kilometers.
+ */
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const toRadians = (degrees) => degrees * (Math.PI / 180);
+    const R = 6371; // Earth radius in km
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+};
+
+export default function HomeScreen({ route, setIsLoggedIn }) {
+    const [issues, setIssues] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [currentLocation, setCurrentLocation] = React.useState(null);
+    const [selectedFilters, setSelectedFilters] = React.useState([]);
+    const [typesOfWork, setTypesOfWork] = React.useState([]);
+    const scrollY = React.useRef(new Animated.Value(0)).current;
+    const { chatClient } = useChatContext();
+    const mapRef = React.useRef(null);
+    const scrollViewRef = React.useRef(null);
+    const navigation = useNavigation();
+
+    /**
+     * Fetches all issues from the server and updates the state with the fetched data.
+     * 
+     * This function makes an asynchronous GET request to the specified endpoint to retrieve
+     * a list of issues. Upon successful retrieval, it updates the state with the list of issues
+     * and extracts unique types of work required by the issues. If an error occurs during the
+     * fetch operation, it logs the error and displays an alert to the user.
+     * 
+     * @async
+     * @function fetchAllIssues
+     * @returns {Promise&lt;void>} A promise that resolves when the fetch operation is complete.
+     */
+    const fetchAllIssues = async () => {
+        try {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
+            const fixedIssues = response.data.jobs
+                .map(issue => ({
+                    ...issue,
+                    latitude: issue.latitude ? parseFloat(issue.latitude) : null,
+                    longitude: issue.longitude ? parseFloat(issue.longitude) : null,
+                }))
+                .filter(issue => issue.latitude !== null &amp;&amp; issue.longitude !== null); // Remove invalid locations
+            setIssues(fixedIssues);
+
+            const uniqueTypes = [...new Set(fixedIssues.map(issue => issue.professionalNeeded))];
+            setTypesOfWork(uniqueTypes);
+        } catch (error) {
+            console.error('Error fetching issues:', error);
+            Alert.alert('Error', 'An error occurred while fetching issues.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    /**
+     * Asynchronously gets the current location of the user.
+     * 
+     * This function checks for location permissions and requests them if not already granted.
+     * If permissions are granted, it retrieves the current position and updates the state with the latitude and longitude.
+     * If permissions are denied, it prompts the user to enable location services in the settings.
+     * 
+     * @async
+     * @function getCurrentLocation
+     * @returns {Promise&lt;void>} A promise that resolves when the location is retrieved or permission status is handled.
+     */
+    const getCurrentLocation = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert("Location Permission Denied", "To use this feature, enable location services in settings.", [{ text: "OK", onPress: () => Linking.openSettings() }]);
+            return;
+        }
+        const location = await Location.getCurrentPositionAsync({});
+        if (location &amp;&amp; location.coords) {
+            setCurrentLocation({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+            });
+        }
+    };
+
+    React.useEffect(() => {
+        fetchAllIssues();
+        getCurrentLocation();
+    }, []);
+
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            if (route.params?.selectedFilters || route.params?.distanceRange) {
+                setSelectedFilters(route.params.selectedFilters || []);
+            }
+        });
+        return unsubscribe;
+    }, [navigation, route.params?.selectedFilters, route.params?.distanceRange]);
+
+    /**
+     * Handles the user logout process.
+     * 
+     * This function performs the following steps:
+     * 1. Disconnects the user from the chat client if it exists.
+     * 2. Removes the user's token, stream token, user ID, and user name from AsyncStorage.
+     * 3. Displays an alert indicating the user has been logged out successfully.
+     * 4. Sets the `isLoggedIn` state to false.
+     * 
+     * If an error occurs during the logout process, it logs the error to the console
+     * and displays an alert indicating that an error occurred.
+     * 
+     * @async
+     * @function handleLogout
+     * @returns {Promise&lt;void>} A promise that resolves when the logout process is complete.
+     */
+    const handleLogout = async () => {
+        try {
+            if (chatClient) await chatClient.disconnectUser();
+            await AsyncStorage.multiRemove(['token', 'streamToken', 'userId', 'userName']);
+            Alert.alert('Logged out', 'You have been logged out successfully');
+            setIsLoggedIn(false);
+        } catch (error) {
+            console.error("Error logging out: ", error);
+            Alert.alert('Error', 'An error occurred while logging out');
+        }
+    };
+
+    /**
+     * Filters and returns a list of unique issues based on selected filters and distance range.
+     *
+     * @function
+     * @name filteredIssues
+     * @returns {Array} - The filtered list of unique issues.
+     *
+     * @example
+     * // Example usage:
+     * const issues = [
+     *   { _id: '1', professionalNeeded: 'plumber', latitude: 40.7128, longitude: -74.0060 },
+     *   { _id: '2', professionalNeeded: 'electrician', latitude: 34.0522, longitude: -118.2437 }
+     * ];
+     * const selectedFilters = ['plumber'];
+     * const currentLocation = { latitude: 37.7749, longitude: -122.4194 };
+     * const route = { params: { distanceRange: [0, 100] } };
+     * const result = filteredIssues(issues, selectedFilters, currentLocation, route.params.distanceRange);
+     * console.log(result);
+     *
+     * @param {Array} issues - The list of issues to filter.
+     * @param {Array} selectedFilters - The list of selected filters for professionals needed.
+     * @param {Object} currentLocation - The current location with latitude and longitude.
+     * @param {Array} route.params.distanceRange - The distance range [minDistance, maxDistance] to filter issues by.
+     */
+    const filteredIssues = React.useMemo(() => {
+        return issues.filter(issue => {
+            const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
+            let matchesDistance = true;
+            if (currentLocation &amp;&amp; route.params?.distanceRange) {
+                const [minDistance, maxDistance] = route.params.distanceRange;
+                const distance = calculateDistance(
+                    currentLocation.latitude,
+                    currentLocation.longitude,
+                    issue.latitude,
+                    issue.longitude
+                );
+                matchesDistance = distance >= minDistance &amp;&amp; distance &lt;= maxDistance;
+            }
+            return matchesProfessional &amp;&amp; matchesDistance;
+        });
+    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange]);
+
+    if (loading) {
+        return (
+            &lt;View style={styles.container}>
+                &lt;ActivityIndicator size="large" color="#0000ff" />
+            &lt;/View>
+        );
+    }
+
+    const mapHeight = scrollY.interpolate({
+        inputRange: [0, 500],
+        outputRange: [450, 150],
+        extrapolate: 'clamp',
+    });
+
+    /**
+     * Handles the click event on an issue.
+     * Scrolls the scroll view to the top and animates the map to the issue's location.
+     *
+     * @param {Object} issue - The issue object containing location details.
+     * @param {number} issue.latitude - The latitude of the issue's location.
+     * @param {number} issue.longitude - The longitude of the issue's location.
+     */
+    const handleIssueClick = (issue) => {
+        if (scrollViewRef.current) {
+            scrollViewRef.current.scrollTo({ y: 0, animated: true });
+        }
+
+        if (mapRef.current) {
+            mapRef.current.animateToRegion({
+                latitude: issue.latitude,
+                longitude: issue.longitude,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
+            }, 500);
+        }
+    };
+
+    /**
+     * Re-centers the map to the current location with a smooth animation.
+     * 
+     * @function handleRecenterMap
+     * @returns {void}
+     */
+    const handleRecenterMap = () => {
+        if (mapRef.current &amp;&amp; currentLocation) {
+            mapRef.current.animateToRegion({
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
+            }, 500);
+        }
+    };
+
+    return (
+        &lt;SafeAreaView style={styles.container}>
+            {/* Profile Button */}
+            &lt;View style={styles.profileButton}>
+                &lt;TouchableOpacity onPress={() => navigation.navigate('ProfilePage')}>
+                    &lt;Ionicons name="person-circle" size={32} color="#333" />
+                &lt;/TouchableOpacity>
+            &lt;/View>
+
+            {/* Notification Button */}
+            &lt;View style={styles.notificationButton}>
+                &lt;TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
+                    &lt;Ionicons name="notifications-outline" size={28} color="#333" />
+                &lt;/TouchableOpacity>
+            &lt;/View>
+
+            {/* Recenter Button */}
+            &lt;View style={styles.recenterButtonContainer}>
+                &lt;TouchableOpacity style={styles.recenterButton} onPress={handleRecenterMap}>
+                    &lt;Ionicons name="locate" size={30} color="#333" />
+                &lt;/TouchableOpacity>
+            &lt;/View>
+
+            &lt;Animated.ScrollView ref={scrollViewRef} contentContainerStyle={{ paddingBottom: 100 }} scrollEventThrottle={16}>
+                {/* Map Section */}
+                &lt;Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
+                    &lt;MapView
+                        ref={mapRef}
+                        style={styles.map}
+                        showsUserLocation={true}
+                        showsMyLocationButton={false}
+                        shouldRasterizeIOS={true}
+                        renderToHardwareTextureAndroid={true}
+                        region={currentLocation ? {
+                            latitude: currentLocation.latitude,
+                            longitude: currentLocation.longitude,
+                            latitudeDelta: 0.0122,
+                            longitudeDelta: 0.0121,
+                        } : {
+                            latitude: 37.78825,
+                            longitude: -122.4324,
+                            latitudeDelta: 0.0122,
+                            longitudeDelta: 0.0121,
+                        }}
+                    >
+                        {filteredIssues.map((issue) => (
+                            &lt;Marker
+                                key={issue._id}
+                                coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
+                                title={issue.title}
+                                description={issue.description}
+                            />
+                        ))}
+                    &lt;/MapView>
+                &lt;/Animated.View>
+
+                {/* Filter Button */}
+                &lt;View style={styles.searchContainer}>
+                    &lt;TouchableOpacity
+                        style={styles.filterButton}
+                        onPress={() => navigation.navigate('FilterIssue', {
+                            typesOfWork,
+                            selectedFilters,
+                            distanceRange: route.params?.distanceRange || [0, 50], // Pass current distance range or default
+                        })}
+                    >
+                        &lt;Ionicons name="filter" size={24} color="#333" />
+                    &lt;/TouchableOpacity>
+                &lt;/View>
+
+                {/* Issues List */}
+                &lt;View style={styles.sectionContainer}>
+                    &lt;Text style={styles.sectionTitle}>Issues&lt;/Text>
+                    {filteredIssues.map((issue) => (
+                        &lt;TouchableOpacity
+                            key={issue._id}
+                            style={styles.card}
+                            onPress={() => handleIssueClick(issue)}
+                        >
+                            &lt;Text style={styles.cardTitle}>{issue.title}&lt;/Text>
+                            &lt;Text style={styles.cardSubtitle}>Status: {issue.status}&lt;/Text>
+                        &lt;/TouchableOpacity>
+                    ))}
+                &lt;/View>
+
+                {/* Logout Button */}
+                &lt;View style={styles.logoutContainer}>
+                    &lt;TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                        &lt;Text style={styles.logoutText}>Logout&lt;/Text>
+                    &lt;/TouchableOpacity>
+                &lt;/View>
+            &lt;/Animated.ScrollView>
+        &lt;/SafeAreaView>
+    );
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Tue Mar 11 2025 11:53:54 GMT-0400 (Eastern Daylight Saving Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

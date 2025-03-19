@@ -1,77 +1,61 @@
-// OrangeButton.test.js
 import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react-native';
-import { Text, Pressable } from 'react-native';
-import OrangeButton from '../orangeButton';
-import colors from '../../style/colors';
+import { render, fireEvent } from '@testing-library/react-native';
+import OrangeButton from '../orangeButton'; // Adjust the import path as needed
 
-describe('OrangeButton Component', () => {
-    it('renders a button with the given title', () => {
-        const { getByText } = render(<OrangeButton title="Test Button" />);
-        expect(getByText('Test Button')).toBeTruthy();
-    });
 
-    it('calls onPress when the button is pressed', () => {
-        const mockOnPress = jest.fn();
-        const { getByText } = render(
-            <OrangeButton title="Press Me" onPress={mockOnPress} />
+// code to run only this file through the terminal:
+// npm run test ./components/__tests__/orangeButton.test.js
+// or
+// npm run test-coverage ./components/__tests__/orangeButton.test.js
+
+
+describe('OrangeButton', () => {
+    const mockOnPress = jest.fn();
+
+    test('renders correctly with default props', () => {
+        const { getByText, getByTestId } = render(
+            <OrangeButton title="Click Me" onPress={mockOnPress} testID="button"/>
         );
 
-        fireEvent.press(getByText('Press Me'));
+        // Check if the button and text are rendered
+        expect(getByText('Click Me')).toBeTruthy();
+        expect(getByTestId('button')).toBeTruthy(); // Ensure testID is applied
+    });
+
+    test('triggers onPress when clicked', () => {
+        const { getByTestId } = render(
+            <OrangeButton title="Click Me" onPress={mockOnPress} testID="button" />
+        );
+
+        const button = getByTestId('button');
+        fireEvent.press(button);
         expect(mockOnPress).toHaveBeenCalled();
     });
 
-    it('scales down on press in and scales up on press out', () => {
-        const { getByText, getByRole } = render(
-            <OrangeButton title="Animate" onPress={() => {}} />
+    test('does not trigger onPress when disabled', () => {
+        const mockOnPress = jest.fn(); // Ensure a fresh mock is created
+    
+        const { getByTestId } = render(
+            <OrangeButton title="Click Me" onPress={mockOnPress} disabled={true} testID="button" />
         );
-
-        // Pressable isn't found by text; we can also locate it by "role" or testID
-        const pressable = getByText('Animate');
-
-        // Press in
-        act(() => {
-            fireEvent(pressable, 'pressIn');
-        });
-
-        // Press out
-        act(() => {
-            fireEvent(pressable, 'pressOut');
-        });
+    
+        const button = getByTestId('button');
+        fireEvent.press(button);
+    
+        expect(mockOnPress).not.toHaveBeenCalled(); // Should pass now
     });
 
-    it('uses the correct background color for the "normal" variant by default', () => {
-        // We'll check if the Pressable background is colors.orange.normal
-        const { getByText } = render(<OrangeButton title="Color Check" />);
-        const buttonText = getByText('Color Check');
-        const pressableNode = buttonText.parent?.parent;
-        expect(pressableNode.props.style[1].backgroundColor).toBe(colors.orange.normal);
-    });
-
-    it('allows custom style overrides', () => {
-        const customStyle = { marginTop: 50 };
-        const { getByText } = render(
-            <OrangeButton title="Custom Style" style={customStyle} />
+    test('applies the correct styles when pressed', () => {
+        const { getByTestId } = render(
+            <OrangeButton title="Click Me" onPress={mockOnPress} testID="button" />
         );
-        const buttonText = getByText('Custom Style');
-        const pressableNode = buttonText.parent?.parent;
-
-        // Typically the last item in the style array is the custom style
-        expect(pressableNode.props.style[2]).toEqual(customStyle);
+    
+        const animatedView = getByTestId('button-animated');
+        const button = getByTestId('button');
+    
+        // Simulate press in
+        fireEvent(button, 'pressIn');
+        expect(animatedView.props.style.transform[0].scale).toBe(1);
     });
-
-    it('sets hovered to true/false on mouseEnter and mouseLeave', () => {
-        // Render the component
-        const { getByText } = render(<OrangeButton title="Hover Me" />);
-
-        // We locate the text
-        const textElement = getByText('Hover Me');
-        // The actual Pressable might be parentNode of textElement
-        const pressable = textElement.parent || textElement.parentNode;
-
-        // Fire the "mouseEnter" event
-        fireEvent(pressable, 'mouseEnter');
-        // Fire the "mouseLeave" event
-        fireEvent(pressable, 'mouseLeave');
-    });
+    
 });

@@ -3,11 +3,27 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios from 'axios';
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module professionalClient
+ */
+
 export default function ResetPasswordPage({ route, navigation }) {
     const { email } = route.params; // Get the email from the previous page
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    /**
+     * Handles the password reset process.
+     * 
+     * This function validates the new password and confirm password fields,
+     * checks if they match, and then sends a request to update the password.
+     * If successful, it navigates the user back to the sign-in page.
+     * 
+     * @async
+     * @function handleResetPassword
+     * @returns {Promise<void>}
+     * @throws Will alert an error message if the fields are empty, passwords do not match, or the request fails.
+     */
     const handleResetPassword = async () => {
         if (!newPassword || !confirmPassword) {
             Alert.alert('Error', 'All fields are required');

@@ -6,12 +6,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
+/**
+ * @module professionalClient
+ */
 
 export default function SignInPage({ setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
 
+    /**
+     * Handles the sign-in process for a professional user.
+     * 
+     * This function validates the email and password fields, sends a sign-in request to the server,
+     * and handles the response by storing tokens and navigating to the main tabs screen upon successful sign-in.
+     * 
+     * @async
+     * @function handleSignIn
+     * @returns {Promise<void>}
+     * @throws Will alert an error message if the email or password fields are empty, or if the sign-in request fails.
+     */
     const handleSignIn = async () => {
         if (!email || !password) {
             Alert.alert('Error', 'Both fields are required');

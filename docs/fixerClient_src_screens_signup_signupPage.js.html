@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>fixerClient/src/screens/signup/signupPage.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module-server_repository-NotificationRepository.html">NotificationRepository</a></li><li><a href="module-server_repository-ProfessionalRepository.html">ProfessionalRepository</a></li><li><a href="module-server_repository-UserRepository.html">UserRepository</a></li></ul><h3>Modules</h3><ul><li><a href="module-fixerClient.html">fixerClient</a><ul class='methods'><li data-type='method'><a href="module-fixerClient.html#~fetchJobDetails">fetchJobDetails</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchJobsForUser">fetchJobsForUser</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchMoreNotifications">fetchMoreNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchOffers">fetchOffers</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-fixerClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleVerifyAddress">handleVerifyAddress</a></li><li data-type='method'><a href="module-fixerClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~postIssue">postIssue</a></li><li data-type='method'><a href="module-fixerClient.html#~updateJob">updateJob</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-professionalClient.html">professionalClient</a><ul class='methods'><li data-type='method'><a href="module-professionalClient.html#~calculateDistance">calculateDistance</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchAllIssues">fetchAllIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchJobs">fetchJobs</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchReviews">fetchReviews</a></li><li data-type='method'><a href="module-professionalClient.html#~filteredIssues">filteredIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~getCurrentLocation">getCurrentLocation</a></li><li data-type='method'><a href="module-professionalClient.html#~handleApplyFilters">handleApplyFilters</a></li><li data-type='method'><a href="module-professionalClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleImagePick">handleImagePick</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~handleRecenterMap">handleRecenterMap</a></li><li data-type='method'><a href="module-professionalClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-professionalClient.html#~requestCameraPermission">requestCameraPermission</a></li><li data-type='method'><a href="module-professionalClient.html#~submitQuote">submitQuote</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_controller.html">server/controller</a><ul class='methods'><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~createIssue">createIssue</a></li><li data-type='method'><a href="module-server_controller.html#~createNotification">createNotification</a></li><li data-type='method'><a href="module-server_controller.html#~deleteReopenJob">deleteReopenJob</a></li><li data-type='method'><a href="module-server_controller.html#~forgotPassword">forgotPassword</a></li><li data-type='method'><a href="module-server_controller.html#~generatePin">generatePin</a></li><li data-type='method'><a href="module-server_controller.html#~getAllIssues">getAllIssues</a></li><li data-type='method'><a href="module-server_controller.html#~getCoordinates">getCoordinates</a></li><li data-type='method'><a href="module-server_controller.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_controller.html#~getJobsByUser">getJobsByUser</a></li><li data-type='method'><a href="module-server_controller.html#~getMyProfessionalJobs">getMyProfessionalJobs</a></li><li data-type='method'><a href="module-server_controller.html#~getNotificationHistory">getNotificationHistory</a></li><li data-type='method'><a href="module-server_controller.html#~getNotifications">getNotifications</a></li><li data-type='method'><a href="module-server_controller.html#~getQuotesByJob">getQuotesByJob</a></li><li data-type='method'><a href="module-server_controller.html#~getUnreadNotificationCount">getUnreadNotificationCount</a></li><li data-type='method'><a href="module-server_controller.html#~getUserProfile">getUserProfile</a></li><li data-type='method'><a href="module-server_controller.html#~initChat">initChat</a></li><li data-type='method'><a href="module-server_controller.html#~markAsRead">markAsRead</a></li><li data-type='method'><a href="module-server_controller.html#~professionalUploadID">professionalUploadID</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~resetPassword">resetPassword</a></li><li data-type='method'><a href="module-server_controller.html#~sendVerificationEmail">sendVerificationEmail</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~submitQuote">submitQuote</a></li><li data-type='method'><a href="module-server_controller.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_controller.html#~updateQuoteStatus">updateQuoteStatus</a></li><li data-type='method'><a href="module-server_controller.html#~validatePin">validatePin</a></li><li data-type='method'><a href="module-server_controller.html#~verifyAddress">verifyAddress</a></li><li data-type='method'><a href="module-server_controller.html#~verifyCredentials">verifyCredentials</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_repository.html">server/repository</a><ul class='methods'><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#countUnreadNotifications">NotificationRepository#countUnreadNotifications</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#createNotification">NotificationRepository#createNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#deleteNotification">NotificationRepository#deleteNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationHistoryByUserId">NotificationRepository#getNotificationHistoryByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationsByUserId">NotificationRepository#getNotificationsByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#markNotificationAsRead">NotificationRepository#markNotificationAsRead</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#comparePassword">ProfessionalRepository#comparePassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createProfessional">ProfessionalRepository#createProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createStreamToken">ProfessionalRepository#createStreamToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#findProfessionalByEmail">ProfessionalRepository#findProfessionalByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateToken">ProfessionalRepository#generateToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateVerificationToken">ProfessionalRepository#generateVerificationToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#hashPassword">ProfessionalRepository#hashPassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#saveProfessional">ProfessionalRepository#saveProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#sendVerificationEmail">ProfessionalRepository#sendVerificationEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#upsertStreamUser">ProfessionalRepository#upsertStreamUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#createUser">UserRepository#createUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findByEmail">UserRepository#findByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findById">UserRepository#findById</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#updateUser">UserRepository#updateUser</a></li><li data-type='method'><a href="module-server_repository.html#~getAllJobs">getAllJobs</a></li><li data-type='method'><a href="module-server_repository.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_repository.html#~getJobsByUserEmail">getJobsByUserEmail</a></li><li data-type='method'><a href="module-server_repository.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_repository.html#~updateJobStatus">updateJobStatus</a></li></ul></li><li></li><li></li><li></li><li></li><li><a href="module-server_services.html">server/services</a><ul class='methods'><li data-type='method'><a href="module-server_services.html#~getCoordinatesFromAddress">getCoordinatesFromAddress</a></li><li data-type='method'><a href="module-server_services.html#~storage">storage</a></li><li data-type='method'><a href="module-server_services.html#~upload">upload</a></li><li data-type='method'><a href="module-server_services.html#~uploadImageToCloudinary">uploadImageToCloudinary</a></li></ul></li><li></li><li><a href="module-server_utils.html">server/utils</a><ul class='methods'><li data-type='method'><a href="module-server_utils.html#~setLogLevel">setLogLevel</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">fixerClient/src/screens/signup/signupPage.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import axios from 'axios';
+import MapView, { Marker } from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
+import OrangeButton from "../../../components/orangeButton";
+import InputField from '../../../components/inputField';
+import PasswordField from '../../../components/passwordField';
+import Dropdown from '../../../components/dropdown';
+
+import { IPAddress } from '../../../ipAddress';
+
+/**
+ * @module fixerClient
+ */
+
+// List of Canadian provinces
+const CANADIAN_PROVINCES = [
+    'Alberta',
+    'British Columbia',
+    'Manitoba',
+    'New Brunswick',
+    'Newfoundland and Labrador',
+    'Nova Scotia',
+    'Ontario',
+    'Prince Edward Island',
+    'Quebec',
+    'Saskatchewan',
+];
+
+export default function SignUpPage({ navigation }) {
+    //general fields for page
+    const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [street, setStreet] = useState('');
+    const [postalCode, setPostalCode] = useState('');
+    const [provinceOrState, setProvinceOrState] = useState('');
+    const [country, setCountry] = useState('Canada');
+
+    //for verification of address
+    const [coordinates, setCoordinates] = useState(null);
+    const [isAddressValid, setIsAddressValid] = useState(false);
+
+    //valid inputs or not
+    const [isValid, setIsValid] = useState(false);
+    const [isError, setIsError] = useState(false);
+
+    //once email and password are valid, then the rest of the fields appear
+    const [showNameAndAddressFields, setShowNameAndAddressFields] = useState(false);
+
+    // Password criteria states
+    const [hasMinLength, setHasMinLength] = useState(false);
+    const [hasNumber, setHasNumber] = useState(false);
+    const [hasUppercase, setHasUppercase] = useState(false);
+    const [hasLowercase, setHasLowercase] = useState(false);
+    const [hasSpecialChar, setHasSpecialChar] = useState(false)
+    const isPasswordValid = hasMinLength &amp;&amp; hasNumber &amp;&amp; hasUppercase &amp;&amp; hasLowercase &amp;&amp; hasSpecialChar;
+
+    // Show/hide password state
+    const [showPassword, setShowPassword] = useState(false); // For password field
+
+
+    // functions for input validation:
+    //email
+    // Function ot validate email
+    const validateEmail = (text) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (text === '') {
+            setIsValid(false);
+            setIsError(false);
+        } else if (emailRegex.test(text)) {
+            setIsValid(true);
+            setIsError(false);
+        } else {
+            setIsValid(false);
+            setIsError(true);
+        }
+        setEmail(text);
+    };
+
+
+    //password
+    // Function to validate password strength
+    const validatePassword = (password) => {
+        setHasMinLength(password.length >= 8);
+        setHasNumber(/\d/.test(password));
+        setHasUppercase(/[A-Z]/.test(password));
+        setHasLowercase(/[a-z]/.test(password));
+        setHasSpecialChar(/[\W_]/.test(password)); // Special characters include anything that's not a letter or number
+    };
+
+    // Use useEffect to validate password whenever it changes
+    useEffect(() => {
+        validatePassword(password);
+    }, [password])
+
+    // Handle password input change
+    const handlePasswordChange = (text) => {
+        setPassword(text);
+        validatePassword(text); // Validate password in real-time
+    };
+
+    // Handle confirm password input change
+    const handleConfirmPasswordChange = (text) => {
+        setConfirmPassword(text);
+    };
+
+    // Handle password and confirm password validation
+    const validatePasswords = () => {
+        return (
+            hasMinLength &amp;&amp;
+            hasNumber &amp;&amp;
+            hasUppercase &amp;&amp;
+            hasLowercase &amp;&amp;
+            hasSpecialChar &amp;&amp;
+            password === confirmPassword
+        );
+    };
+
+    // first and last name fields validation
+    const validateName = (name) => {
+        if (!name) return false; // Name cannot be empty
+        const nameRegex = /^[A-Za-z-' ]+$/; // Only letters, hyphens, apostrophes, and spaces
+        return nameRegex.test(name) &amp;&amp; name.charAt(0) === name.charAt(0).toUpperCase(); // First letter must be capitalized
+    };
+
+    const filterNameInput = (text) => {
+        // Use a regular expression to allow only letters, hyphens, and apostrophes
+        return text.replace(/[^A-Za-z-' ]/g, '');
+    };
+
+    // Format postal code as A1B 2C3
+    const formatPostalCode = (text) => {
+        // Remove all non-alphanumeric characters
+        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '');
+
+        // Insert a space after the first 3 characters
+        if (formattedText.length > 3) {
+            formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
+        }
+
+        // Convert to uppercase
+        formattedText = formattedText.toUpperCase();
+
+        setPostalCode(formattedText);
+    };
+
+    // Check if email and password are valid to show name and address fields
+    const checkEmailAndPassword = () => {
+        if (isValid &amp;&amp; validatePasswords()) {
+            setShowNameAndAddressFields(true); // Show name and address fields
+        } else {
+            Alert.alert('Error', 'Please enter a valid email and matching passwords');
+        }
+    }
+
+    /**
+     * Handles the sign-up process for a new user.
+     *
+     * This function performs the following steps:
+     * 1. Validates that all required fields are filled.
+     * 2. Checks if the password and confirm password fields match.
+     * 3. Sends a POST request to the server to register the new user.
+     * 4. Handles various error scenarios including user already exists, network errors, and unexpected errors.
+     *
+     * @async
+     * @function handleSignUp
+     * @returns {Promise&lt;void>} - A promise that resolves when the sign-up process is complete.
+     */
+    async function handleSignUp() {
+        if (!email || !password || !confirmPassword || !street || !postalCode) {
+            Alert.alert('Error', 'All fields are required');
+            return;
+        }
+        if (!isValid) {
+            Alert.alert('Error', 'Please enter a valid email address');
+            return;
+        }
+        if (!validatePasswords()) {
+            Alert.alert('Error', 'Password does not meet the required criteria');
+            return;
+        }
+        if (password !== confirmPassword) {
+            Alert.alert('Error', 'Passwords do not match');
+            return;
+        }
+        if (!validateName(firstName) || !validateName(lastName)) {
+            Alert.alert('Error', 'First name and last name must start with a capital letter.');
+            return;
+        }
+        if (!isAddressValid) {
+            Alert.alert('Error', 'Please verify your address');
+            return;
+        } else {
+            try {
+                const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/register`, {
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName,
+                    password: password,
+                    street: street,
+                    postalCode: postalCode,
+                    provinceOrState: provinceOrState,
+                    country: country
+                })
+                if (response.status !== 400) {
+                    Alert.alert("Account created successfully. An email was sent to verify your email.")
+                }
+            } catch (error) {
+                if (error.response) {
+                    // Check if the response indicates the user already exists
+                    if (error.response.status === 400) {
+                        Alert.alert("Error", "User already exists");
+                    } else {
+                        Alert.alert("Error", error.response.data.message || 'An unexpected error occurred');
+                    }
+                } else if (error.request) {
+                    Alert.alert("Error", "Network error");
+                } else {
+                    Alert.alert("Error", "An unexpected error occurred");
+                }
+            }
+        }
+    }
+
+    /**
+     * Asynchronously verifies the address by sending a POST request to the server.
+     *
+     * This function sends the street and postal code to the server for verification.
+     * If the address is verified successfully, it updates the state with the validity
+     * of the address and its coordinates. In case of an error, it displays an alert
+     * with the appropriate error message.
+     *
+     * @async
+     * @function handleVerifyAddress
+     * @returns {Promise&lt;void>} A promise that resolves when the address verification is complete.
+     * @throws Will display an alert with an error message if the request fails.
+     */
+    const handleVerifyAddress = async () => {
+        try {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
+                street: street,
+                postalCode: postalCode,
+            })
+            if (response.status === 'success') {
+                Alert.alert("Address verified successfully from client")
+            }
+
+            const { isAddressValid, coordinates } = response.data;
+
+            setIsAddressValid(isAddressValid);
+            setCoordinates(coordinates);
+
+        } catch (error) {
+            if (error.response) {
+                Alert.alert("Error", error.response.data.message || 'An unexpected error occurred Ad.Ver.');
+            } else if (error.request) {
+                Alert.alert("Error", "Network error Ad.Ver.");
+            } else {
+                Alert.alert("Error", "An unexpected error occurred Ad.Ver.");
+            }
+        }
+    };
+
+    return (
+        &lt;ScrollView >
+            &lt;View style={styles.container}>
+                &lt;TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                    &lt;Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                    &lt;Text style={styles.backText}>Back&lt;/Text>
+                &lt;/TouchableOpacity>
+
+                &lt;Text style={styles.title}>Sign Up&lt;/Text>
+
+                &lt;InputField
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={validateEmail}
+                    isValid={isValid}
+                    isError={isError}
+                    autoCapitalize="none"
+                />
+
+                {!isValid &amp;&amp; email.length > 0 &amp;&amp; (
+                    &lt;Text style={styles.errorText}>Please enter a valid email address&lt;/Text>
+                )}
+
+                {/* Password Field */}
+                &lt;PasswordField
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={handlePasswordChange}
+                    secureTextEntry={!showPassword}
+                    isValid={isPasswordValid} // Green when all criteria are met
+                    isError={!isPasswordValid &amp;&amp; password.length > 0} // Red when criteria are not met
+                />
+
+                {/* Password Criteria */}
+                {password.length > 0 &amp;&amp; (
+                    &lt;View style={styles.passwordCriteriaContainer}>
+                        &lt;Text style={[styles.criteriaText, hasMinLength &amp;&amp; styles.criteriaMet]}>
+                            {hasMinLength ? '✓' : '•'} At least 8 characters
+                        &lt;/Text>
+                        &lt;Text style={[styles.criteriaText, hasNumber &amp;&amp; styles.criteriaMet]}>
+                            {hasNumber ? '✓' : '•'} At least one number
+                        &lt;/Text>
+                        &lt;Text style={[styles.criteriaText, hasUppercase &amp;&amp; styles.criteriaMet]}>
+                            {hasUppercase ? '✓' : '•'} At least one uppercase letter
+                        &lt;/Text>
+                        &lt;Text style={[styles.criteriaText, hasLowercase &amp;&amp; styles.criteriaMet]}>
+                            {hasLowercase ? '✓' : '•'} At least one lowercase letter
+                        &lt;/Text>
+                        &lt;Text style={[styles.criteriaText, hasSpecialChar &amp;&amp; styles.criteriaMet]}>
+                            {hasSpecialChar ? '✓' : '•'} At least one special character
+                        &lt;/Text>
+                    &lt;/View>
+                )}
+
+                {/* Confirm Password Field */}
+                &lt;PasswordField
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChangeText={handleConfirmPasswordChange}
+                    secureTextEntry={!showPassword}
+                    isValid={confirmPassword === password &amp;&amp; confirmPassword.length > 0} // Green when passwords match
+                    isError={confirmPassword !== password &amp;&amp; confirmPassword.length > 0} // Red when passwords do not match
+                    errorMessage={confirmPassword !== password &amp;&amp; confirmPassword.length > 0 ? "Passwords do not match" : null}
+                />
+
+                {/* Button to Proceed to Name and Address Fields */}
+                {!showNameAndAddressFields &amp;&amp; (
+                    &lt;OrangeButton title="Next" onPress={checkEmailAndPassword} variant="normal" />
+                )}
+
+                {/* Name and Address Fields (Conditional Rendering) */}
+                {showNameAndAddressFields &amp;&amp; (
+                    &lt;>
+                        &lt;InputField
+                            placeholder="First Name"
+                            value={firstName}
+                            onChangeText={(text) => setFirstName(filterNameInput(text))} // Filter invalid characters
+                            autoCapitalize="words"
+                        />
+
+                        &lt;InputField
+                            placeholder="Last Name"
+                            value={lastName}
+                            onChangeText={(text) => setLastName(filterNameInput(text))} // Filter invalid characters
+                        />
+
+                        &lt;InputField
+                            placeholder="House Number and Street"
+                            value={street}
+                            onChangeText={setStreet}
+                            autoCapitalize="words"
+                        />
+
+                        &lt;InputField
+                            placeholder="Postal Code"
+                            value={postalCode}
+                            onChangeText={formatPostalCode}
+                            maxLength={7}
+                        />
+
+                        {/* &lt;Dropdown
+                            placeholder="Select Province"
+                            items={CANADIAN_PROVINCES.map((province) => ({
+                                label: province,
+                                value: province,
+                            }))}
+                            onValueChange={(value) => setProvinceOrState(value)}
+                            value={provinceOrState}
+                        />
+
+                        &lt;InputField
+                            placeholder="Country"
+                            value={country}
+                            disabled
+                        /> */}
+
+                        &lt;OrangeButton title="Verify Address" onPress={handleVerifyAddress} variant="normal" />
+
+                        {isAddressValid &amp;&amp; (
+                                &lt;Text style={styles.text}>Valid Address entered&lt;/Text>
+                        )}
+
+                        {coordinates &amp;&amp; (
+                            &lt;MapView
+                                style={styles.map}
+                                initialRegion={{
+                                    latitude: coordinates.latitude,
+                                    longitude: coordinates.longitude,
+                                    latitudeDelta: 0.01,
+                                    longitudeDelta: 0.01,
+                                }}
+                            >
+                                &lt;Marker coordinate={coordinates} />
+                            &lt;/MapView>
+                        )}
+
+                        {/* Sign Up Button (Enabled only if address is verified) */}
+                        &lt;OrangeButton title="Sign Up" onPress={handleSignUp} testID="sign-up-button" disabled={!isAddressValid} variant="normal" />
+                    &lt;/>
+                )}
+
+                {/* Sign In Link */}
+                &lt;TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
+                    &lt;Text style={styles.signInText}>Already have an account? Sign in&lt;/Text>
+                &lt;/TouchableOpacity>
+            &lt;/View>
+        &lt;/ScrollView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        padding: 20,
+        backgroundColor: '#fff',
+        paddingTop: 100,
+        paddingBottom: 300,
+    },
+    backButton: {
+        position: 'absolute',
+        top: 40,
+        left: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        zIndex: 1,
+    },
+    backText: {
+        marginLeft: 8,
+        fontSize: 18,
+        color: '#1E90FF',
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    passwordCriteriaContainer: {
+        marginBottom: 15,
+    },
+    criteriaText: {
+        color: 'gray',
+        fontSize: 14,
+    },
+    criteriaMet: {
+        color: 'green', // Green for met criteria
+    },
+    signInText: {
+        color: '#1E90FF',
+        textAlign: 'center',
+        marginTop: 15,
+        fontSize: 16,
+    },
+    map: {
+        width: '100%',
+        height: 200,
+        marginTop: 20,
+        marginBottom: 20,
+    },
+});
+
+
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        height: 50,
+        borderColor: '#ddd',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingHorizontal: 15,
+        marginBottom: 15,
+        color: 'black',
+    },
+    inputAndroid: {
+        height: 50,
+        borderColor: '#ddd',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingHorizontal: 15,
+        marginBottom: 15,
+        color: 'black',
+    },
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Tue Mar 11 2025 11:53:54 GMT-0400 (Eastern Daylight Saving Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>fixerClient/src/screens/homeScreen/homeScreen.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module-server_repository-NotificationRepository.html">NotificationRepository</a></li><li><a href="module-server_repository-ProfessionalRepository.html">ProfessionalRepository</a></li><li><a href="module-server_repository-UserRepository.html">UserRepository</a></li></ul><h3>Modules</h3><ul><li><a href="module-fixerClient.html">fixerClient</a><ul class='methods'><li data-type='method'><a href="module-fixerClient.html#~fetchJobDetails">fetchJobDetails</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchJobsForUser">fetchJobsForUser</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchMoreNotifications">fetchMoreNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchOffers">fetchOffers</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-fixerClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleVerifyAddress">handleVerifyAddress</a></li><li data-type='method'><a href="module-fixerClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~postIssue">postIssue</a></li><li data-type='method'><a href="module-fixerClient.html#~updateJob">updateJob</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-professionalClient.html">professionalClient</a><ul class='methods'><li data-type='method'><a href="module-professionalClient.html#~calculateDistance">calculateDistance</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchAllIssues">fetchAllIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchJobs">fetchJobs</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchReviews">fetchReviews</a></li><li data-type='method'><a href="module-professionalClient.html#~filteredIssues">filteredIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~getCurrentLocation">getCurrentLocation</a></li><li data-type='method'><a href="module-professionalClient.html#~handleApplyFilters">handleApplyFilters</a></li><li data-type='method'><a href="module-professionalClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleImagePick">handleImagePick</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~handleRecenterMap">handleRecenterMap</a></li><li data-type='method'><a href="module-professionalClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-professionalClient.html#~requestCameraPermission">requestCameraPermission</a></li><li data-type='method'><a href="module-professionalClient.html#~submitQuote">submitQuote</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_controller.html">server/controller</a><ul class='methods'><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~createIssue">createIssue</a></li><li data-type='method'><a href="module-server_controller.html#~createNotification">createNotification</a></li><li data-type='method'><a href="module-server_controller.html#~deleteReopenJob">deleteReopenJob</a></li><li data-type='method'><a href="module-server_controller.html#~forgotPassword">forgotPassword</a></li><li data-type='method'><a href="module-server_controller.html#~generatePin">generatePin</a></li><li data-type='method'><a href="module-server_controller.html#~getAllIssues">getAllIssues</a></li><li data-type='method'><a href="module-server_controller.html#~getCoordinates">getCoordinates</a></li><li data-type='method'><a href="module-server_controller.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_controller.html#~getJobsByUser">getJobsByUser</a></li><li data-type='method'><a href="module-server_controller.html#~getMyProfessionalJobs">getMyProfessionalJobs</a></li><li data-type='method'><a href="module-server_controller.html#~getNotificationHistory">getNotificationHistory</a></li><li data-type='method'><a href="module-server_controller.html#~getNotifications">getNotifications</a></li><li data-type='method'><a href="module-server_controller.html#~getQuotesByJob">getQuotesByJob</a></li><li data-type='method'><a href="module-server_controller.html#~getUnreadNotificationCount">getUnreadNotificationCount</a></li><li data-type='method'><a href="module-server_controller.html#~getUserProfile">getUserProfile</a></li><li data-type='method'><a href="module-server_controller.html#~initChat">initChat</a></li><li data-type='method'><a href="module-server_controller.html#~markAsRead">markAsRead</a></li><li data-type='method'><a href="module-server_controller.html#~professionalUploadID">professionalUploadID</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~resetPassword">resetPassword</a></li><li data-type='method'><a href="module-server_controller.html#~sendVerificationEmail">sendVerificationEmail</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~submitQuote">submitQuote</a></li><li data-type='method'><a href="module-server_controller.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_controller.html#~updateQuoteStatus">updateQuoteStatus</a></li><li data-type='method'><a href="module-server_controller.html#~validatePin">validatePin</a></li><li data-type='method'><a href="module-server_controller.html#~verifyAddress">verifyAddress</a></li><li data-type='method'><a href="module-server_controller.html#~verifyCredentials">verifyCredentials</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_repository.html">server/repository</a><ul class='methods'><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#countUnreadNotifications">NotificationRepository#countUnreadNotifications</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#createNotification">NotificationRepository#createNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#deleteNotification">NotificationRepository#deleteNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationHistoryByUserId">NotificationRepository#getNotificationHistoryByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationsByUserId">NotificationRepository#getNotificationsByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#markNotificationAsRead">NotificationRepository#markNotificationAsRead</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#comparePassword">ProfessionalRepository#comparePassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createProfessional">ProfessionalRepository#createProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createStreamToken">ProfessionalRepository#createStreamToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#findProfessionalByEmail">ProfessionalRepository#findProfessionalByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateToken">ProfessionalRepository#generateToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateVerificationToken">ProfessionalRepository#generateVerificationToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#hashPassword">ProfessionalRepository#hashPassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#saveProfessional">ProfessionalRepository#saveProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#sendVerificationEmail">ProfessionalRepository#sendVerificationEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#upsertStreamUser">ProfessionalRepository#upsertStreamUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#createUser">UserRepository#createUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findByEmail">UserRepository#findByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findById">UserRepository#findById</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#updateUser">UserRepository#updateUser</a></li><li data-type='method'><a href="module-server_repository.html#~getAllJobs">getAllJobs</a></li><li data-type='method'><a href="module-server_repository.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_repository.html#~getJobsByUserEmail">getJobsByUserEmail</a></li><li data-type='method'><a href="module-server_repository.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_repository.html#~updateJobStatus">updateJobStatus</a></li></ul></li><li></li><li></li><li></li><li></li><li><a href="module-server_services.html">server/services</a><ul class='methods'><li data-type='method'><a href="module-server_services.html#~getCoordinatesFromAddress">getCoordinatesFromAddress</a></li><li data-type='method'><a href="module-server_services.html#~storage">storage</a></li><li data-type='method'><a href="module-server_services.html#~upload">upload</a></li><li data-type='method'><a href="module-server_services.html#~uploadImageToCloudinary">uploadImageToCloudinary</a></li></ul></li><li></li><li><a href="module-server_utils.html">server/utils</a><ul class='methods'><li data-type='method'><a href="module-server_utils.html#~setLogLevel">setLogLevel</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">fixerClient/src/screens/homeScreen/homeScreen.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import * as React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CardComponent from '../cardComponent/CardComponent';
+import { useEffect } from 'react';
+import { useChatContext } from '../chat/chatContext';
+import OrangeButton from "../../../components/orangeButton";
+import NotificationButton from "../../../components/notificationButton";
+import SearchBar from "../../../components/searchBar";
+
+/**
+ * @module fixerClient
+ */
+
+export default function HomeScreen({ navigation, setIsLoggedIn }) {
+    const { chatClient } = useChatContext();
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerShown: false,
+        });
+    }, [navigation]);
+
+    /**
+     * Handles the user logout process.
+     * 
+     * This function performs the following steps:
+     * 1. Disconnects the user from the chat client if it exists.
+     * 2. Removes authentication and user-related data from AsyncStorage.
+     * 3. Displays an alert indicating successful logout.
+     * 4. Sets the login state to false.
+     * 
+     * If an error occurs during the process, it logs the error to the console and displays an error alert.
+     * 
+     * @async
+     * @function handleLogout
+     * @returns {Promise&lt;void>} A promise that resolves when the logout process is complete.
+     */
+    const handleLogout = async () => {
+        try {
+            if (chatClient) {
+                await chatClient.disconnectUser();
+            }
+
+            await AsyncStorage.removeItem('token');
+            await AsyncStorage.removeItem('streamToken');
+            await AsyncStorage.removeItem('userId');
+            await AsyncStorage.removeItem('userName');
+
+            Alert.alert('Logged out', 'You have been logged out successfully');
+            setIsLoggedIn(false);
+        } catch (error) {
+            console.error("Error logging out: ", error);
+            Alert.alert('Error', 'An error occurred while logging out');
+        }
+    };
+
+    return (
+        &lt;SafeAreaView style={styles.safeArea}>
+            {/* Custom Header */}
+            &lt;View style={styles.customHeader}>
+                {/* Fixr Logo/Text */}
+                &lt;Text style={styles.headerLogo}>Fixr&lt;/Text>
+
+                {/* Page Title */}
+                &lt;Text style={styles.headerTitle}>Home Screen&lt;/Text>
+
+                {/* Notification Button */}
+                &lt;NotificationButton testID="notification-button" onPress={() => navigation.navigate('NotificationPage')} />
+            &lt;/View>
+
+            {/* Searchbar */}
+            &lt;SearchBar
+                testID="search-button"
+                onSearch={() => console.log("Search button pressed")}
+                onFilter={() => console.log("Filter button pressed")}
+                filterButtonTestID="filter-button"
+            />
+
+            &lt;ScrollView contentContainerStyle={styles.container}>
+                {/* Current Jobs Requested Section */}
+                &lt;View style={styles.section}>
+                    &lt;Text style={styles.sectionTitle}>Current Jobs Requested&lt;/Text>
+                    &lt;CardComponent title="Plumbing Repair" status="In Progress" professionalName="John Doe" />
+                    &lt;CardComponent title="Electrical Work" status="Pending" professionalName="Jane Smith" />
+                &lt;/View>
+
+                {/* Outstanding Payments Section */}
+                &lt;View style={styles.section}>
+                    &lt;Text style={styles.sectionTitle}>Outstanding Payments&lt;/Text>
+                    &lt;CardComponent title="Invoice #1234" status="Overdue" showProgress={false} showProfessional={false} />
+                    &lt;CardComponent title="Invoice #5678" status="Due Soon" showProgress={false} showProfessional={false} />
+                &lt;/View>
+
+                {/* Create Issue Button */ }
+                &lt;View>
+                    &lt;OrangeButton title="Create Issue" onPress={() => navigation.navigate('CreateIssue')} variant="normal" />
+                &lt;/View>
+
+                {/* Logout Button */}
+                &lt;View style={styles.logoutContainer}>
+                    &lt;TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                        &lt;Text style={styles.logoutText}>Logout&lt;/Text>
+                    &lt;/TouchableOpacity>
+                &lt;/View>
+
+                {/* Footer */}
+                &lt;View style={styles.footer}>
+                    &lt;Text style={styles.footerText}>Copyright © 2024 Fixr. All rights reserved.&lt;/Text>
+                &lt;/View>
+            &lt;/ScrollView>
+        &lt;/SafeAreaView>
+    );
+}
+
+const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+    },
+    customHeader: {
+        width: '100%',
+        height: 70,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+    },
+    headerLogo: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'orange',
+    },
+    headerTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+    },
+    container: {
+        flexGrow: 1,
+        paddingHorizontal: 16,
+        backgroundColor: '#ffffff',
+    },
+    section: {
+        marginBottom: 24,
+        width: '100%',
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 8,
+    },
+    createIssueSection: {
+        paddingHorizontal: 16,
+        marginVertical: 16,
+        width: '100%',
+    },
+    logoutContainer: {
+        paddingHorizontal: 16,
+        marginVertical: 16,
+        width: '100%',
+    },
+    logoutButton: {
+        backgroundColor: '#ffdddd',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    logoutText: {
+        fontSize: 16,
+        color: '#d9534f',
+        fontWeight: 'bold',
+    },
+    footer: {
+        padding: 16,
+        alignItems: 'center',
+        borderTopWidth: 1,
+        borderColor: '#e0e0e0',
+        marginTop: 16,
+        width: '100%',
+    },
+    footerText: {
+        fontSize: 12,
+        color: '#666',
+    },
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Tue Mar 11 2025 11:53:54 GMT-0400 (Eastern Daylight Saving Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

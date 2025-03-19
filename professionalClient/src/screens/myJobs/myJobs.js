@@ -8,6 +8,9 @@ import JobBox from '../../../components/jobBox';
 import { styles } from '../../../style/myJobs/myJobsStyle';
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module professionalClient
+ */
 
 export default function MyJobsProfessional() {
     const [jobs, setJobs] = useState({ all: [], done: [], pending: [], active: [] });
@@ -17,6 +20,18 @@ export default function MyJobsProfessional() {
     const [amountEarned, setAmountEarned] = useState(0);
     const navigation = useNavigation();
 
+    /**
+     * Fetches jobs from the server and updates the state with the retrieved data.
+     * 
+     * This function retrieves the user token from AsyncStorage and uses it to make an
+     * authenticated request to the server to fetch job data. The response data is then
+     * used to update the state with the list of jobs and the amount earned.
+     * 
+     * @async
+     * @function fetchJobs
+     * @returns {Promise<void>} A promise that resolves when the job data has been fetched and the state has been updated.
+     * @throws Will alert an error message if the user token is not found or if there is an error fetching the jobs.
+     */
     const fetchJobs = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
@@ -69,8 +84,13 @@ export default function MyJobsProfessional() {
             </View>
         );
     }
-
-    // Function to render the job list based on the selected tab
+    
+    /**
+     * Renders a list of jobs based on the given status.
+     *
+     * @param {string} status - The status of the jobs to be rendered.
+     * @returns {JSX.Element} A list of JobBox components if jobs are available, otherwise a Text component indicating no jobs are available.
+     */
     const renderJobs = (status) => {
         let jobList = jobs[status] || [];
 

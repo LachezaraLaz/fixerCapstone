@@ -16,6 +16,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module fixerClient
+ */
+
 export default function EditIssue({ route, navigation }) {
     const { jobId } = route.params;
 
@@ -26,6 +30,21 @@ export default function EditIssue({ route, navigation }) {
     const [loading, setLoading] = useState(true);
     const [other, setOther] = useState(false);
 
+    /**
+     * Fetches the details of a job from the server and updates the state with the retrieved data.
+     * 
+     * @async
+     * @function fetchJobDetails
+     * @returns {Promise<void>}
+     * @throws Will alert the user if there is an invalid session, job ID, or if an error occurs during the fetch.
+     * 
+     * @description
+     * This function retrieves the job details using the provided job ID and token stored in AsyncStorage.
+     * If the token or job ID is invalid, it alerts the user and navigates back.
+     * On successful fetch, it updates the state with the job details including title, description, professional needed, and image.
+     * It also sets a flag if the description is not in the predefined list of common issues.
+     * If the fetch fails, it alerts the user about the failure.
+     */
     const fetchJobDetails = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
@@ -60,6 +79,16 @@ export default function EditIssue({ route, navigation }) {
         fetchJobDetails();
     }, []);
 
+    /**
+     * Asynchronously picks an image from the device's media library.
+     * Requests permission to access the media library if not already granted.
+     * If permission is granted, opens the image picker allowing the user to select an image.
+     * If an image is selected and not canceled, sets the image URI.
+     *
+     * @async
+     * @function pickImage
+     * @returns {Promise<void>} A promise that resolves when the image picking process is complete.
+     */
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
@@ -79,10 +108,45 @@ export default function EditIssue({ route, navigation }) {
         }
     };
 
+    /**
+     * Updates the job with the provided details.
+     * 
+     * This function performs the following steps:
+     * 1. Validates that all required fields (title, professionalNeeded, description) are filled.
+     * 2. Retrieves the authentication token from AsyncStorage.
+     * 3. Constructs a FormData object with the job details and optional image.
+     * 4. Sends a PUT request to update the job on the server.
+     * 5. Handles the server response and displays appropriate alerts based on the outcome.
+     * 6. Manages loading state during the update process.
+     * 
+     * @async
+     * @function updateJob
+     * @returns {Promise<void>} - A promise that resolves when the job update process is complete.
+     * @throws Will display an alert if any error occurs during the update process.
+     */
     const updateJob = async () => {
-        if (!title || !professionalNeeded || !description) {
-            Alert.alert("Please complete all fields for the professional to provide an accurate quote.");
+        if (!title || title.trim().length < 5) {
+            Alert.alert("Invalid Title", "Title must be at least 5 characters long.");
             return;
+        }
+
+        if (!professionalNeeded) {
+            Alert.alert("Invalid Professional", "Please select a professional type (Plumber/Electrician).");
+            return;
+        }
+
+        if (!description || description.trim().length < 10) {
+            Alert.alert("Invalid Description", "Please provide a description with at least 10 characters.");
+            return;
+        }
+
+        if (image) {
+            const validImageTypes = ['image/jpeg', 'image/png'];
+            const imageType = image.split('.').pop().toLowerCase();
+            if (!validImageTypes.includes(`image/${imageType}`)) {
+                Alert.alert("Invalid Image", "Only JPEG and PNG images are supported.");
+                return;
+            }
         }
 
         setLoading(true);
@@ -103,7 +167,7 @@ export default function EditIssue({ route, navigation }) {
             if (image) {
                 formData.append('image', {
                     uri: image,
-                    type: 'image/jpeg',
+                    type: `image/${image.split('.').pop().toLowerCase()}`,
                     name: 'issue_image.jpg',
                 });
             }

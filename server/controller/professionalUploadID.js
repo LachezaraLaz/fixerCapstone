@@ -1,6 +1,22 @@
 const fixerClientObject = require('../model/professionalClientModel');
 
-// Endpoint to handle image upload
+/**
+ * @module server/controller
+ */
+
+/**
+ * Handles the upload of a professional's ID image, updates the user's record with the Cloudinary image URL,
+ * and sets the form completion status to true.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {Object} req.file - The file object containing the uploaded file information.
+ * @param {string} req.file.path - The Cloudinary URL of the uploaded file.
+ * @param {Object} req.user - The user object.
+ * @param {string} req.user.id - The ID of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves to void.
+ */
 const professionalUploadID = async (req, res) => {
     console.log('Received request for ID upload:', req.body);
 

@@ -4,6 +4,7 @@ import { styles } from '../style/myIssues/myIssuesStyle';
 
 const JobBox = ({ job, navigation }) => {
     return (
+        <TouchableOpacity onPress={() => navigation.navigate('IssueDetails', { jobId: job.id })}>
         <View style={styles.jobCard}>
             <Image
                 testID="job-image"
@@ -19,6 +20,7 @@ const JobBox = ({ job, navigation }) => {
                 <Text style={styles.jobPriceText}>${job.price}</Text>
             </View>
         </View>
+        </TouchableOpacity>
     );
 };
 

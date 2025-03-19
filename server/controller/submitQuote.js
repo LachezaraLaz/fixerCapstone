@@ -7,7 +7,23 @@ const { Jobs } = require('../model/createIssueModel');
 const { logger } = require('../utils/logger');
 const { initChat } = require('./initChat');
 
-// Middleware to authenticate JWT
+/**
+ * @module server/controller
+ */
+
+/**
+ * Middleware to authenticate JWT token from the request headers.
+ * 
+ * @param {Object} req - The request object.
+ * @param {Object} req.headers - The headers of the request.
+ * @param {Object} req.headers.authorization - The authorization header containing the JWT token.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * 
+ * @returns {Object} - Returns a 401 status with a message 'Unauthorized' if the authorization header or token is missing.
+ *                     Returns a 403 status with a message 'Forbidden' if the token verification fails.
+ *                     Calls the next middleware function if the token is successfully verified.
+ */
 const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
 
@@ -34,7 +50,19 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-// POST /quotes/create route to create a new quote
+/**
+ * Handles the submission of a quote by a professional.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.user - The user object containing the professional's information.
+ * @param {string} req.user.email - The professional's email.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.clientEmail - The client's email.
+ * @param {number} req.body.price - The price of the quote.
+ * @param {string} req.body.issueId - The ID of the issue.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - Returns a promise that resolves to void.
+ */
 const submitQuote = async (req, res) => {
     console.log('User data in submitQuote:', req.user); // Log the user data
 
@@ -92,8 +120,15 @@ const submitQuote = async (req, res) => {
     }
 };
 
-
-// GET /quotes/job/:jobId route to fetch quotes for a specific job
+/**
+ * Fetches quotes for a specific job that are not rejected and populates them with professional's full name.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.jobId - The ID of the job to fetch quotes for.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the quotes are fetched and the response is sent.
+ */
 const getQuotesByJob = async (req, res) => {
     const { jobId } = req.params;
 
@@ -125,7 +160,21 @@ const getQuotesByJob = async (req, res) => {
     }
 };
 
-// GET /quotes/:quoteId route to update quotes status
+/**
+ * Updates the status of a quote and performs related actions such as notifying professionals and updating job status.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.quoteId - The ID of the quote to update.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.status - The new status of the quote ('accepted' or 'rejected').
+ * @param {Object} req.user - The authenticated user making the request.
+ * @param {Object} res - The response object.
+ *
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ *
+ * @throws {Error} - Throws an error if there is an issue updating the quote status.
+ */
 const updateQuoteStatus = async (req, res) => {
     const { quoteId } = req.params;
     const { status } = req.body;

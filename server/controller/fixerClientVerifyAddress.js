@@ -1,12 +1,26 @@
 const express = require("express");
 const axios = require('axios');
 
+/**
+ * @module server/controller
+ */
+
 const app = express();
 app.use(express.json());
 
 const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY;
 let coordinates;
 
+/**
+ * Verifies an address using the Google Address Validation API.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.street - The street address to verify.
+ * @param {string} req.body.postalCode - The postal code of the address to verify.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the address verification is complete.
+ */
 const verifyAddress = async (req, res) => {
     const { street, postalCode } = req.body;
 
@@ -77,6 +91,13 @@ const verifyAddress = async (req, res) => {
     }
 };
 
+/**
+ * Fetches the geographical coordinates (latitude and longitude) for a given address using the Google Geocoding API.
+ *
+ * @param {string} fullAddress - The full address to geocode.
+ * @returns {Promise<void>} A promise that resolves when the coordinates have been fetched and stored.
+ * @throws Will log an error message if the Geocoding API request fails.
+ */
 const getCoordinates = async (fullAddress) => {
     try {
         const geoResponse = await axios.get(

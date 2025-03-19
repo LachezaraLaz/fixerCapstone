@@ -5,6 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IPAddress } from '../../../ipAddress';
 import { useNavigation } from '@react-navigation/native';
 
+/**
+ * @module fixerClient
+ */
+
 export default function OffersPage({ route }) {
     const { jobId } = route.params; // Extract jobId from route.params
 
@@ -13,7 +17,23 @@ export default function OffersPage({ route }) {
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();   
 
-    // Function to fetch offers from the database
+    /**
+     * Fetches offers for a specific job and updates the state with the retrieved offers.
+     * 
+     * This function performs the following steps:
+     * 1. Sets the loading state to true.
+     * 2. Retrieves the authentication token from AsyncStorage.
+     * 3. If the token is not found, displays an alert and exits the function.
+     * 4. Makes an API request to fetch offers for the specified job using the retrieved token.
+     * 5. If the response is successful and contains offers, updates the state with the offers.
+     * 6. If no offers are found, displays an alert.
+     * 7. If an error occurs during the API request, logs the error and displays an alert.
+     * 8. Finally, sets the loading state to false.
+     * 
+     * @async
+     * @function fetchOffers
+     * @returns {Promise<void>} A promise that resolves when the function completes.
+     */
     const fetchOffers = async () => {
         setLoading(true);
         try {
@@ -48,6 +68,13 @@ export default function OffersPage({ route }) {
         fetchOffers();
     }, []);
 
+    /**
+     * Handles the acceptance of an offer.
+     *
+     * @param {string} offerId - The ID of the offer to accept.
+     * @returns {Promise<void>} - A promise that resolves when the offer is accepted.
+     * @throws {Error} - Throws an error if there is an issue accepting the offer.
+     */
     const handleAcceptOffer = async (offerId) => {
         try {
             const token = await AsyncStorage.getItem('token');
@@ -68,6 +95,16 @@ export default function OffersPage({ route }) {
         }
     };
 
+    /**
+     * Handles the rejection of an offer.
+     *
+     * This function sends a PUT request to update the status of an offer to 'rejected'.
+     * If the request is successful, it alerts the user and refreshes the offers.
+     * If the request fails, it alerts the user of the failure.
+     *
+     * @param {string} offerId - The ID of the offer to be rejected.
+     * @returns {Promise<void>} - A promise that resolves when the offer rejection process is complete.
+     */
     const handleRejectOffer = async (offerId) => {
         try {
             const token = await AsyncStorage.getItem('token');

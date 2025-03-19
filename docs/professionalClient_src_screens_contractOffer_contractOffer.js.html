@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>professionalClient/src/screens/contractOffer/contractOffer.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module-server_repository-NotificationRepository.html">NotificationRepository</a></li><li><a href="module-server_repository-ProfessionalRepository.html">ProfessionalRepository</a></li><li><a href="module-server_repository-UserRepository.html">UserRepository</a></li></ul><h3>Modules</h3><ul><li><a href="module-fixerClient.html">fixerClient</a><ul class='methods'><li data-type='method'><a href="module-fixerClient.html#~fetchJobDetails">fetchJobDetails</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchJobsForUser">fetchJobsForUser</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchMoreNotifications">fetchMoreNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchOffers">fetchOffers</a></li><li data-type='method'><a href="module-fixerClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-fixerClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-fixerClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-fixerClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-fixerClient.html#~handleVerifyAddress">handleVerifyAddress</a></li><li data-type='method'><a href="module-fixerClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~pickImage">pickImage</a></li><li data-type='method'><a href="module-fixerClient.html#~postIssue">postIssue</a></li><li data-type='method'><a href="module-fixerClient.html#~updateJob">updateJob</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-professionalClient.html">professionalClient</a><ul class='methods'><li data-type='method'><a href="module-professionalClient.html#~calculateDistance">calculateDistance</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchAllIssues">fetchAllIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchJobs">fetchJobs</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchNotifications">fetchNotifications</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchProfileData">fetchProfileData</a></li><li data-type='method'><a href="module-professionalClient.html#~fetchReviews">fetchReviews</a></li><li data-type='method'><a href="module-professionalClient.html#~filteredIssues">filteredIssues</a></li><li data-type='method'><a href="module-professionalClient.html#~getCurrentLocation">getCurrentLocation</a></li><li data-type='method'><a href="module-professionalClient.html#~handleApplyFilters">handleApplyFilters</a></li><li data-type='method'><a href="module-professionalClient.html#~handleForgotPassword">handleForgotPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleImagePick">handleImagePick</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handleLogout">handleLogout</a></li><li data-type='method'><a href="module-professionalClient.html#~handlePinSubmit">handlePinSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~handleRecenterMap">handleRecenterMap</a></li><li data-type='method'><a href="module-professionalClient.html#~handleResetPassword">handleResetPassword</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignIn">handleSignIn</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSignUp">handleSignUp</a></li><li data-type='method'><a href="module-professionalClient.html#~handleSubmit">handleSubmit</a></li><li data-type='method'><a href="module-professionalClient.html#~initChat">initChat</a></li><li data-type='method'><a href="module-professionalClient.html#~requestCameraPermission">requestCameraPermission</a></li><li data-type='method'><a href="module-professionalClient.html#~submitQuote">submitQuote</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_controller.html">server/controller</a><ul class='methods'><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~authenticateJWT">authenticateJWT</a></li><li data-type='method'><a href="module-server_controller.html#~createIssue">createIssue</a></li><li data-type='method'><a href="module-server_controller.html#~createNotification">createNotification</a></li><li data-type='method'><a href="module-server_controller.html#~deleteReopenJob">deleteReopenJob</a></li><li data-type='method'><a href="module-server_controller.html#~forgotPassword">forgotPassword</a></li><li data-type='method'><a href="module-server_controller.html#~generatePin">generatePin</a></li><li data-type='method'><a href="module-server_controller.html#~getAllIssues">getAllIssues</a></li><li data-type='method'><a href="module-server_controller.html#~getCoordinates">getCoordinates</a></li><li data-type='method'><a href="module-server_controller.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_controller.html#~getJobsByUser">getJobsByUser</a></li><li data-type='method'><a href="module-server_controller.html#~getMyProfessionalJobs">getMyProfessionalJobs</a></li><li data-type='method'><a href="module-server_controller.html#~getNotificationHistory">getNotificationHistory</a></li><li data-type='method'><a href="module-server_controller.html#~getNotifications">getNotifications</a></li><li data-type='method'><a href="module-server_controller.html#~getQuotesByJob">getQuotesByJob</a></li><li data-type='method'><a href="module-server_controller.html#~getUnreadNotificationCount">getUnreadNotificationCount</a></li><li data-type='method'><a href="module-server_controller.html#~getUserProfile">getUserProfile</a></li><li data-type='method'><a href="module-server_controller.html#~initChat">initChat</a></li><li data-type='method'><a href="module-server_controller.html#~markAsRead">markAsRead</a></li><li data-type='method'><a href="module-server_controller.html#~professionalUploadID">professionalUploadID</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~profile">profile</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~registerUser">registerUser</a></li><li data-type='method'><a href="module-server_controller.html#~resetPassword">resetPassword</a></li><li data-type='method'><a href="module-server_controller.html#~sendVerificationEmail">sendVerificationEmail</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~signinUser">signinUser</a></li><li data-type='method'><a href="module-server_controller.html#~submitQuote">submitQuote</a></li><li data-type='method'><a href="module-server_controller.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_controller.html#~updateQuoteStatus">updateQuoteStatus</a></li><li data-type='method'><a href="module-server_controller.html#~validatePin">validatePin</a></li><li data-type='method'><a href="module-server_controller.html#~verifyAddress">verifyAddress</a></li><li data-type='method'><a href="module-server_controller.html#~verifyCredentials">verifyCredentials</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li><li data-type='method'><a href="module-server_controller.html#~verifyEmail">verifyEmail</a></li></ul></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li><a href="module-server_repository.html">server/repository</a><ul class='methods'><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#countUnreadNotifications">NotificationRepository#countUnreadNotifications</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#createNotification">NotificationRepository#createNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#deleteNotification">NotificationRepository#deleteNotification</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationHistoryByUserId">NotificationRepository#getNotificationHistoryByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#getNotificationsByUserId">NotificationRepository#getNotificationsByUserId</a></li><li data-type='method'><a href="module-server_repository.html#.NotificationRepository#markNotificationAsRead">NotificationRepository#markNotificationAsRead</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#comparePassword">ProfessionalRepository#comparePassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createProfessional">ProfessionalRepository#createProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#createStreamToken">ProfessionalRepository#createStreamToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#findProfessionalByEmail">ProfessionalRepository#findProfessionalByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateToken">ProfessionalRepository#generateToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#generateVerificationToken">ProfessionalRepository#generateVerificationToken</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#hashPassword">ProfessionalRepository#hashPassword</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#saveProfessional">ProfessionalRepository#saveProfessional</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#sendVerificationEmail">ProfessionalRepository#sendVerificationEmail</a></li><li data-type='method'><a href="module-server_repository.html#.ProfessionalRepository#upsertStreamUser">ProfessionalRepository#upsertStreamUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#createUser">UserRepository#createUser</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findByEmail">UserRepository#findByEmail</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#findById">UserRepository#findById</a></li><li data-type='method'><a href="module-server_repository.html#.UserRepository#updateUser">UserRepository#updateUser</a></li><li data-type='method'><a href="module-server_repository.html#~getAllJobs">getAllJobs</a></li><li data-type='method'><a href="module-server_repository.html#~getJobById">getJobById</a></li><li data-type='method'><a href="module-server_repository.html#~getJobsByUserEmail">getJobsByUserEmail</a></li><li data-type='method'><a href="module-server_repository.html#~updateJob">updateJob</a></li><li data-type='method'><a href="module-server_repository.html#~updateJobStatus">updateJobStatus</a></li></ul></li><li></li><li></li><li></li><li></li><li><a href="module-server_services.html">server/services</a><ul class='methods'><li data-type='method'><a href="module-server_services.html#~getCoordinatesFromAddress">getCoordinatesFromAddress</a></li><li data-type='method'><a href="module-server_services.html#~storage">storage</a></li><li data-type='method'><a href="module-server_services.html#~upload">upload</a></li><li data-type='method'><a href="module-server_services.html#~uploadImageToCloudinary">uploadImageToCloudinary</a></li></ul></li><li></li><li><a href="module-server_utils.html">server/utils</a><ul class='methods'><li data-type='method'><a href="module-server_utils.html#~setLogLevel">setLogLevel</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">professionalClient/src/screens/contractOffer/contractOffer.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
+import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Modal, Image, StyleSheet} from 'react-native';
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { styles } from '../../../style/contractOffer/contractOfferStyle';
+import { IPAddress } from '../../../ipAddress';
+
+/**
+ * @module professionalClient
+ */
+
+export default function ContractOffer({ route, navigation }) {
+    const { issue } = route.params;
+    const [price, setPrice] = React.useState('');
+    const [selectedIssue, setSelectedIssue] = React.useState(null);
+    const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
+    const [userAddress, setUserAddress] = useState(null);
+
+    /**
+     * Fetches the user profile based on the provided email.
+     * 
+     * @param {string} email - The email of the user whose profile is to be fetched.
+     * @returns {Promise&lt;void>} - A promise that resolves when the user profile is fetched and the user address is set.
+     * @throws {Error} - Throws an error if the user profile cannot be fetched.
+     */
+    const fetchUserProfile = async (email) => {
+        try {
+            console.log('Fetching profile for email:', email);
+    
+            const token = await AsyncStorage.getItem('token');
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/users/user/${email}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+    
+            // Log the response data for debugging
+            console.log('Response data:', response.data);
+    
+            // Handle a successful response
+            if (response.status === 200) {
+                setUserAddress({
+                    street: response.data.street,
+                    postalCode: response.data.postalCode,
+                    provinceOrState: response.data.provinceOrState,
+                    country: response.data.country,
+                });
+            }
+        } catch (error) {
+            // Log detailed error information for debugging
+            console.error(
+                'Error fetching user profile:',
+                error.response?.data || error.message
+            );
+    
+            // Show an error alert to the user
+            Alert.alert(
+                'Error',
+                error.response?.data?.message || 'Unable to fetch user address.'
+            );
+        }
+    };
+    
+    React.useEffect(() => {
+        if (issue) {
+            setSelectedIssue(issue);
+            fetchUserProfile(issue.userEmail);
+        }
+    }, [issue]);
+
+    /**
+     * Submits a quote for the selected issue.
+     * 
+     * This function checks if a price is entered and retrieves the user token from AsyncStorage.
+     * It then validates the selected issue and client email before sending a POST request to create a quote.
+     * If the quote is successfully submitted, an alert is shown and the user is navigated back.
+     * If an error occurs, appropriate error messages are displayed.
+     * 
+     * @async
+     * @function submitQuote
+     * @returns {Promise&lt;void>}
+     */
+    const submitQuote = async () => {
+        if (!price) {
+            Alert.alert('Error', 'Please enter a price before submitting the quote.');
+            return;
+        }
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('Error', 'User token not found.');
+                return;
+            }
+            console.log('selectedIssue:', selectedIssue);
+
+            if (!selectedIssue || !selectedIssue.userEmail) {
+                console.log('clientEmail is null or undefined');
+                Alert.alert('Error', 'Unable to retrieve client email from the selected issue.');
+                return;
+            }
+
+            const clientEmail = selectedIssue.userEmail; // Use userEmail from the schema
+            const issueId = selectedIssue._id;
+
+            const response = await axios.post(
+                `https://fixercapstone-production.up.railway.app/quotes/create`,
+                { clientEmail, price, issueId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 201) {
+                Alert.alert('Success', 'Quote submitted successfully!', [
+                    { text: 'OK', onPress: () => navigation.goBack() }
+                ]);
+            } else {
+                Alert.alert('Error', 'Failed to submit the quote.');
+            }
+        } catch (error) {
+            if (error.response?.status === 400) {
+                Alert.alert('Error', 'You have already submitted a quote for this issue.', [
+                    { text: 'OK', onPress: () => navigation.goBack() }
+            ]);
+            } else {
+                console.error('Error submitting quote:', error);
+                Alert.alert('Error', 'An error occurred while submitting the quote.');
+            }
+        }
+    };
+    
+    return (
+        &lt;ScrollView contentContainerStyle={styles.container}>
+            &lt;Text style={styles.title}>{issue.title}&lt;/Text>
+            &lt;Text style={styles.subtitle}>Detailed Information&lt;/Text>
+
+            &lt;View style={styles.infoContainer}>
+                &lt;Text style={styles.label}>Description:&lt;/Text>
+                &lt;Text style={styles.value}>{issue.description}&lt;/Text>
+
+                &lt;Text style={styles.label}>Status:&lt;/Text>
+                &lt;Text style={styles.value}>{issue.status}&lt;/Text>
+
+                &lt;Text style={styles.label}>Professional Needed:&lt;/Text>
+                &lt;Text style={styles.value}>{issue.professionalNeeded}&lt;/Text>
+
+                &lt;Text style={styles.label}>Coordinates:&lt;/Text>
+                {userAddress &amp;&amp; (
+                    &lt;View >
+                        &lt;Text style={styles.value}>Street: {userAddress.street || 'N/A'}&lt;/Text>
+                        &lt;Text style={styles.value}>Postal Code: {userAddress.postalCode || 'N/A'}&lt;/Text>
+                        &lt;Text style={styles.value}>Province/State: {userAddress.provinceOrState || 'N/A'}&lt;/Text>
+                        &lt;Text style={styles.value}>Country: {userAddress.country || 'N/A'}&lt;/Text>
+                        &lt;Text style={styles.value}>Latitude: {issue.latitude}&lt;/Text>
+                        &lt;Text style={styles.value}>Longitude: {issue.longitude}&lt;/Text>
+                    &lt;/View>
+                )}
+            &lt;/View>
+
+            {/* Additional Section */}
+            &lt;View style={styles.section}>
+                &lt;Text style={styles.sectionTitle}>Job Requirements&lt;/Text>
+                &lt;Text style={styles.sectionContent}>
+                    {issue.requirements || 'No specific requirements provided for this job.'}
+                &lt;/Text>
+            &lt;/View>
+
+            {/* Placeholder for Images/Documents */}
+            &lt;View style={styles.section}>
+                &lt;Text style={styles.sectionTitle}>Related Images/Documents&lt;/Text>
+                {issue.imageUrl ? (
+                    &lt;TouchableOpacity onPress={() => setModalVisible(true)}>
+                        &lt;Text style={[styles.sectionContent, { color: 'blue', textDecorationLine: 'underline' }]}>
+                            Image 1
+                        &lt;/Text>
+                    &lt;/TouchableOpacity>
+                ) : (
+                    &lt;Text style={styles.sectionContent}>No attachments provided for this issue.&lt;/Text>
+                )}
+            &lt;/View>
+
+            {/* Modal for Image */}
+            &lt;Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setModalVisible(false)}
+                testID="modal" // testID here
+            >
+                &lt;View style={modalStyles.modalContainer}>
+                    &lt;Image
+                        source={{ uri: issue.imageUrl }}
+                        style={modalStyles.image}
+                        resizeMode="contain"
+                    />
+                    &lt;TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        style={modalStyles.closeButton}
+                    >
+                        &lt;Text style={modalStyles.closeButtonText}>Close&lt;/Text>
+                    &lt;/TouchableOpacity>
+                &lt;/View>
+            &lt;/Modal>
+
+            &lt;View style={styles.section}>
+                &lt;Text style={styles.sectionTitle}>Fee&lt;/Text>
+                &lt;TextInput
+                    placeholder="Enter price for this issue"
+                    value={price}
+                    keyboardType="numeric"
+                    onChangeText={setPrice}
+                    style={styles.input}
+                />
+            &lt;/View>
+
+            {/* Go Back Button */}
+            &lt;View style={styles.buttonsContainer}>
+                &lt;TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
+                    &lt;Text style={styles.buttonText}>Go Back&lt;/Text>
+                &lt;/TouchableOpacity>
+                &lt;TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
+                    &lt;Text style={styles.buttonText}>Submit&lt;/Text>
+                &lt;/TouchableOpacity>
+            &lt;/View>
+        &lt;/ScrollView>
+    );
+}
+
+
+const modalStyles = StyleSheet.create({
+    modalContainer: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    image: {
+        width: '90%',
+        height: '70%',
+    },
+    closeButton: {
+        marginTop: 20,
+        padding: 10,
+        backgroundColor: '#fff',
+        borderRadius: 5,
+    },
+    closeButtonText: {
+        color: 'black',
+        fontWeight: 'bold',
+    },
+});
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> on Tue Mar 11 2025 11:53:54 GMT-0400 (Eastern Daylight Saving Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

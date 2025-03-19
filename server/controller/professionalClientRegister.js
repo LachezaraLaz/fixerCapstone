@@ -1,10 +1,23 @@
 const ProfessionalDTO = require('../DTO/professionalDTO');
 const professionalRepository = require('../repository/professionalRepository');
 
+/**
+ * @module server/controller
+ */
+
 dotenv = require('dotenv');
 dotenv.config();
 
-// Register user
+/**
+ * Registers a new professional user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request containing user data.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the user is registered.
+ *
+ * @throws {Error} - Throws an error if user creation fails.
+ */
 const registerUser = async (req, res) => {
     const professionalData = ProfessionalDTO.fromRequestBody(req.body);
 

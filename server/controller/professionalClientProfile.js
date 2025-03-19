@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const fixerClientObject = require('../model/professionalClientModel');
-const { squareClient } = require("../utils/stripeConfig");
+const { stripeConfig } = require("../utils/stripeConfig");
 const professionalPaymentSchema = require("../model/professionalPaymentModel");
 const mongoose = require('mongoose'); // Import mongoose
 

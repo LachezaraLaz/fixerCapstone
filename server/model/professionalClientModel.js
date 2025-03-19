@@ -5,14 +5,14 @@ const professionalClientModel = new mongoose.Schema({
     lastName: String,
     email: { type: String, unique: true, required: true },
     password: String,
-    approved: Boolean,
+    approved: Boolean, // has admin team approved the professionals' trade credentials
     approvedAt: Date,
     accountType: String,
-    formComplete: Boolean,
+    formComplete: Boolean, // has the professional completed the form
     idImageUrl: String,
     passwordResetPin: String,
     passwordResetExpires: Date,
-    verified: { type: Boolean, default: false },
+    verified: { type: Boolean, default: false }, // has email been verified?
     verificationToken: String,
     totalRating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },

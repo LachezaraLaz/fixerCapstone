@@ -96,9 +96,15 @@ const BankingInfoPage = () => {
             <CardField
                 postalCodeEnabled={false}
                 placeholder={{
-                    number: '4242 4242 4242 4242', // Placeholder for card number
+                    number: '4242 4242 4242 4242',
                 }}
-                cardStyle={styles.cardField}
+                cardStyle={{
+                    backgroundColor: '#FFFFFF', // Ensure background color is valid
+                    borderWidth: 1,
+                    borderColor: '#000000', // Ensure border color is valid
+                    borderRadius: 8,
+                    textColor: '#000000', // Ensure text color is valid
+                }}
                 style={styles.cardFieldContainer}
             />
 

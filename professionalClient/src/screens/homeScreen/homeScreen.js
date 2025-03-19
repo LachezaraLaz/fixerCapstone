@@ -39,7 +39,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
+            const response = await axios.get(`http://10.0.0.148:3000/issues`);
             setIssues(response.data.jobs);
 
             const uniqueTypes = [
@@ -56,17 +56,22 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     const fetchBankingInfoStatus = async () => {
         try {
-            const userId = await AsyncStorage.getItem('userId'); // Get the logged-in user's ID
-            console.log("Fetched userId:", userId); // Log userId to confirm it's not null/undefined
+            const userId = await AsyncStorage.getItem('userId');
+            const token = await AsyncStorage.getItem('token'); // Retrieve the token
 
-            if (!userId) {
-                console.error("No userId found in AsyncStorage");
+            console.log("Fetched userId:", userId);
+            console.log("Fetched token:", token); // Log the token
+
+            if (!userId || !token) {
+                console.error("No userId or token found in AsyncStorage");
                 return;
             }
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
-                params: { userId }
+            const response = await axios.get(`http://10.0.0.148:3000/professional/banking-info-status`, {
+                params: { userId },
+                headers: { Authorization: `Bearer ${token}` }, // Include the token in the headers
             });
+
             setBankingInfoAdded(response.data.bankingInfoAdded);
         } catch (error) {
             console.error('Error fetching banking info status:', error.response?.data || error.message);
@@ -211,15 +216,15 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     <Text style={styles.noticeText}>
                         Please add your banking information to start submitting quotes.
                     </Text>
+
+                    <TouchableOpacity
+                        style={styles.addBankingButton}
+                        onPress={() => navigation.navigate('BankingInfoPage')}
+                    >
+                        <Text style={styles.addBankingButtonText}>Add Banking Information</Text>
+                    </TouchableOpacity>
                 </View>
             )}
-
-            <TouchableOpacity
-                style={styles.addBankingButton}
-                onPress={() => navigation.navigate('BankingInfoPage')}
-            >
-                <Text style={styles.addBankingButtonText}>Add Banking Information</Text>
-            </TouchableOpacity>
 
             <View style={styles.notificationButton}>
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>

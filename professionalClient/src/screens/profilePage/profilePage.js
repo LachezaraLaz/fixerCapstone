@@ -16,7 +16,7 @@ const ProfilePage = () => {
             try {
                 const token = await AsyncStorage.getItem('token');
                 if (token) {
-                    const response = await axios.get(`http://10.0.0.148:3000/professional/profile`, {
+                    const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/profile`, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -48,7 +48,7 @@ const ProfilePage = () => {
                 return;
             }
 
-            const response = await axios.get(`http://10.0.0.148:3000/professional/banking-info-status`, {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
                 params: { userId },
                 headers: { Authorization: `Bearer ${token}` },
             });

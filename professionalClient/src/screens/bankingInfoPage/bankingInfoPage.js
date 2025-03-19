@@ -37,7 +37,7 @@ const BankingInfoPage = () => {
             const token = await AsyncStorage.getItem('token');
 
             const response = await axios.post(
-                `http://10.0.0.148:3000/professional/add-banking-info`,
+                `https://fixercapstone-production.up.railway.app/professional/add-banking-info`,
                 { professionalId: userId, paymentMethodId: paymentMethod.id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

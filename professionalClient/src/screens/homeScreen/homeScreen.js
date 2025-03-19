@@ -39,7 +39,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`http://10.0.0.148:3000/issues`);
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
             setIssues(response.data.jobs);
 
             const uniqueTypes = [
@@ -67,7 +67,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 return;
             }
 
-            const response = await axios.get(`http://10.0.0.148:3000/professional/banking-info-status`, {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
                 params: { userId },
                 headers: { Authorization: `Bearer ${token}` }, // Include the token in the headers
             });

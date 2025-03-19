@@ -8,7 +8,6 @@ import OrangeButton from "../../../components/orangeButton";
 import InputField  from '../../../components/inputField';
 import PasswordField from '../../../components/passwordField';
 import {en, fr} from '../../../localization'
-import * as Localization from 'expo-localization'
 import { I18n } from "i18n-js";
 import LanguageModal from "../../../components/LanguageModal";
 import languageStyle from '../../../style/languageStyle';

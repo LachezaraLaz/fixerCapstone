@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios from 'axios';
 import MapView, { Marker } from 'react-native-maps';
@@ -6,7 +6,11 @@ import { Ionicons } from '@expo/vector-icons';
 import OrangeButton from "../../../components/orangeButton";
 import InputField from '../../../components/inputField';
 import PasswordField from '../../../components/passwordField';
-import Dropdown from '../../../components/dropdown';
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -39,6 +43,12 @@ export default function SignUpPage({ navigation }) {
     const [postalCode, setPostalCode] = useState('');
     const [provinceOrState, setProvinceOrState] = useState('');
     const [country, setCountry] = useState('Canada');
+
+    //language
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     //for verification of address
     const [coordinates, setCoordinates] = useState(null);
@@ -268,15 +278,24 @@ export default function SignUpPage({ navigation }) {
     return (
         <ScrollView >
             <View style={styles.container}>
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={28} color="#1E90FF" />
-                    <Text style={styles.backText}>Back</Text>
+                <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
+                    <Text style={languageStyle.languageButtonText}>🌍 {i18n.t('change_language')}</Text>
                 </TouchableOpacity>
 
-                <Text style={styles.title}>Sign Up</Text>
+                <LanguageModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    setLocale={setLocale}
+                />
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                    <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                    <Text style={styles.backText}>{i18n.t('back')}</Text>
+                </TouchableOpacity>
+
+                <Text style={styles.title}>{i18n.t('sign_up')}</Text>
 
                 <InputField
-                    placeholder="Email"
+                    placeholder={i18n.t('email')}
                     value={email}
                     onChangeText={validateEmail}
                     isValid={isValid}
@@ -285,12 +304,12 @@ export default function SignUpPage({ navigation }) {
                 />
 
                 {!isValid && email.length > 0 && (
-                    <Text style={styles.errorText}>Please enter a valid email address</Text>
+                    <Text style={styles.errorText}>{i18n.t('valid_address')}</Text>
                 )}
 
                 {/* Password Field */}
                 <PasswordField
-                    placeholder="Password"
+                    placeholder={i18n.t('password')}
                     value={password}
                     onChangeText={handlePasswordChange}
                     secureTextEntry={!showPassword}
@@ -321,7 +340,7 @@ export default function SignUpPage({ navigation }) {
 
                 {/* Confirm Password Field */}
                 <PasswordField
-                    placeholder="Confirm Password"
+                    placeholder={i18n.t('confirm_password')}
                     value={confirmPassword}
                     onChangeText={handleConfirmPasswordChange}
                     secureTextEntry={!showPassword}
@@ -332,34 +351,34 @@ export default function SignUpPage({ navigation }) {
 
                 {/* Button to Proceed to Name and Address Fields */}
                 {!showNameAndAddressFields && (
-                    <OrangeButton title="Next" onPress={checkEmailAndPassword} variant="normal" />
+                    <OrangeButton title={i18n.t('next')} onPress={checkEmailAndPassword} variant="normal" />
                 )}
 
                 {/* Name and Address Fields (Conditional Rendering) */}
                 {showNameAndAddressFields && (
                     <>
                         <InputField
-                            placeholder="First Name"
+                            placeholder={i18n.t('first_name')}
                             value={firstName}
                             onChangeText={(text) => setFirstName(filterNameInput(text))} // Filter invalid characters
                             autoCapitalize="words"
                         />
 
                         <InputField
-                            placeholder="Last Name"
+                            placeholder={i18n.t('last_name')}
                             value={lastName}
                             onChangeText={(text) => setLastName(filterNameInput(text))} // Filter invalid characters
                         />
 
                         <InputField
-                            placeholder="House Number and Street"
+                            placeholder={i18n.t('street_address')}
                             value={street}
                             onChangeText={setStreet}
                             autoCapitalize="words"
                         />
 
                         <InputField
-                            placeholder="Postal Code"
+                            placeholder={i18n.t('postal_code')}
                             value={postalCode}
                             onChangeText={formatPostalCode}
                             maxLength={7}
@@ -381,7 +400,7 @@ export default function SignUpPage({ navigation }) {
                             disabled
                         /> */}
 
-                        <OrangeButton title="Verify Address" onPress={handleVerifyAddress} variant="normal" />
+                        <OrangeButton title={i18n.t('verify_address')} onPress={handleVerifyAddress} variant="normal" />
 
                         {isAddressValid && (
                                 <Text style={styles.text}>Valid Address entered</Text>
@@ -408,7 +427,7 @@ export default function SignUpPage({ navigation }) {
 
                 {/* Sign In Link */}
                 <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
-                    <Text style={styles.signInText}>Already have an account? Sign in</Text>
+                    <Text style={styles.signInText}>{i18n.t('already_have_an_account')}</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>

@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
     const firstName = localStorage.getItem("firstName") || "Admin";
+    const lastName = localStorage.getItem("lastName") || "";
+
+    // State to track active tab
+    const [activeTab, setActiveTab] = useState("home");
 
     const handleLogout = () => {
         // Clear authentication data
@@ -14,6 +18,138 @@ export default function AdminDashboard() {
 
         // Redirect to sign-in
         navigate("/signin");
+    };
+
+    // Tab content rendering
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case "home":
+                return (
+                    <div style={styles.tabContent}>
+                        <h2 style={styles.tabTitle}>Dashboard Overview</h2>
+                        <div style={styles.statsContainer}>
+                            <div style={styles.statCard}>
+                                <h3>Total Clients</h3>
+                                <p style={styles.statNumber}>0</p>
+                            </div>
+                            <div style={styles.statCard}>
+                                <h3>Total Professionals</h3>
+                                <p style={styles.statNumber}>0</p>
+                            </div>
+                            <div style={styles.statCard}>
+                                <h3>Active Jobs</h3>
+                                <p style={styles.statNumber}>0</p>
+                            </div>
+                            <div style={styles.statCard}>
+                                <h3>Completed Jobs</h3>
+                                <p style={styles.statNumber}>0</p>
+                            </div>
+                        </div>
+                        <div style={styles.recentActivity}>
+                            <h3>Recent Activity</h3>
+                            <p style={styles.emptyState}>No recent activities to show.</p>
+                        </div>
+                    </div>
+                );
+            case "clients":
+                return (
+                    <div style={styles.tabContent}>
+                        <h2 style={styles.tabTitle}>Client Management</h2>
+                        <div style={styles.searchFilterBar}>
+                            <input
+                                type="text"
+                                placeholder="Search clients..."
+                                style={styles.searchInput}
+                            />
+                            <select style={styles.filterDropdown}>
+                                <option value="all">All Clients</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div style={styles.tableContainer}>
+                            <table style={styles.table}>
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td colSpan="6" style={styles.emptyTableCell}>
+                                        No clients available
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                );
+            case "professionals":
+                return (
+                    <div style={styles.tabContent}>
+                        <h2 style={styles.tabTitle}>Professional Management</h2>
+                        <div style={styles.searchFilterBar}>
+                            <input
+                                type="text"
+                                placeholder="Search professionals..."
+                                style={styles.searchInput}
+                            />
+                            <select style={styles.filterDropdown}>
+                                <option value="all">All Professionals</option>
+                                <option value="verified">Verified</option>
+                                <option value="pending">Pending Verification</option>
+                            </select>
+                        </div>
+                        <div style={styles.tableContainer}>
+                            <table style={styles.table}>
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Specialty</th>
+                                    <th>Joined Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td colSpan="6" style={styles.emptyTableCell}>
+                                        No professionals available
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                );
+            case "profile":
+                return (
+                    <div style={styles.tabContent}>
+                        <h2 style={styles.tabTitle}>Admin Profile</h2>
+                        <div style={styles.profileContainer}>
+                            <div style={styles.profileAvatar}>
+                                {firstName.charAt(0)}{lastName.charAt(0)}
+                            </div>
+                            <div style={styles.profileDetails}>
+                                <h3>{firstName} {lastName}</h3>
+                                <p>Role: Administrator</p>
+                                <button style={styles.changePasswordButton}>
+                                    Change Password
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            default:
+                return <div>Tab content not found.</div>;
+        }
     };
 
     return (
@@ -29,14 +165,61 @@ export default function AdminDashboard() {
                 </button>
             </header>
 
-            <div style={styles.container}>
-                <h1 style={styles.title}>Admin Dashboard</h1>
-                <p style={styles.welcomeText}>Welcome, {firstName}!</p>
-                <p style={styles.infoText}>
-                    Your administrator dashboard is currently under construction.
-                    <br />
-                    More features will be available soon.
-                </p>
+            <div style={styles.mainContainer}>
+                {/* Sidebar Navigation */}
+                <div style={styles.sidebar}>
+                    <div style={styles.adminInfo}>
+                        <div style={styles.adminAvatar}>
+                            {firstName.charAt(0)}
+                        </div>
+                        <div style={styles.adminName}>
+                            Welcome, {firstName}!
+                        </div>
+                    </div>
+                    <ul style={styles.navList}>
+                        <li
+                            style={{
+                                ...styles.navItem,
+                                ...(activeTab === "home" && styles.activeNavItem)
+                            }}
+                            onClick={() => setActiveTab("home")}
+                        >
+                            <span style={styles.navIcon}>🏠</span> Home
+                        </li>
+                        <li
+                            style={{
+                                ...styles.navItem,
+                                ...(activeTab === "clients" && styles.activeNavItem)
+                            }}
+                            onClick={() => setActiveTab("clients")}
+                        >
+                            <span style={styles.navIcon}>👥</span> Clients
+                        </li>
+                        <li
+                            style={{
+                                ...styles.navItem,
+                                ...(activeTab === "professionals" && styles.activeNavItem)
+                            }}
+                            onClick={() => setActiveTab("professionals")}
+                        >
+                            <span style={styles.navIcon}>👷</span> Professionals
+                        </li>
+                        <li
+                            style={{
+                                ...styles.navItem,
+                                ...(activeTab === "profile" && styles.activeNavItem)
+                            }}
+                            onClick={() => setActiveTab("profile")}
+                        >
+                            <span style={styles.navIcon}>👤</span> Profile
+                        </li>
+                    </ul>
+                </div>
+
+                {/* Main Content Area */}
+                <div style={styles.content}>
+                    {renderTabContent()}
+                </div>
             </div>
         </div>
     );
@@ -45,7 +228,7 @@ export default function AdminDashboard() {
 const styles = {
     header: {
         backgroundColor: "#f4f4f4",
-        padding: "20px 0px",
+        padding: "15px 0px",
         textAlign: "left",
         width: "100%",
         boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
@@ -59,7 +242,7 @@ const styles = {
     },
     headerText: {
         fontFamily: "'Poppins', sans-serif",
-        fontSize: "28px",
+        fontSize: "24px",
         fontWeight: "700",
         margin: 0,
         color: "#333",
@@ -75,30 +258,193 @@ const styles = {
         marginRight: "20px",
         fontWeight: "500",
     },
-    container: {
-        maxWidth: "800px",
-        margin: "120px auto",
-        padding: "30px",
-        border: "1px solid #ddd",
-        borderRadius: "10px",
-        textAlign: "center",
-        backgroundColor: "#fff",
-        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    mainContainer: {
+        display: "flex",
+        minHeight: "100vh",
+        marginTop: "60px",
     },
-    title: {
-        fontSize: "28px",
-        marginBottom: "20px",
-        color: "#333",
+    sidebar: {
+        width: "250px",
+        backgroundColor: "#2c3e50",
+        color: "#fff",
+        padding: "20px 0",
+        position: "fixed",
+        height: "calc(100vh - 60px)",
+        overflowY: "auto",
     },
-    welcomeText: {
-        fontSize: "20px",
-        marginBottom: "20px",
-        color: "#007bff",
+    adminInfo: {
+        padding: "15px 20px",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+        marginBottom: "15px",
+        display: "flex",
+        alignItems: "center",
+    },
+    adminAvatar: {
+        width: "40px",
+        height: "40px",
+        borderRadius: "50%",
+        backgroundColor: "#3498db",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "18px",
+        fontWeight: "bold",
+        marginRight: "10px",
+    },
+    adminName: {
+        fontSize: "14px",
         fontWeight: "500",
     },
-    infoText: {
-        fontSize: "16px",
-        lineHeight: "1.6",
-        color: "#555",
-    }
+    navList: {
+        listStyle: "none",
+        padding: 0,
+        margin: 0,
+    },
+    navItem: {
+        padding: "12px 20px",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        display: "flex",
+        alignItems: "center",
+    },
+    activeNavItem: {
+        backgroundColor: "rgba(52, 152, 219, 0.5)",
+        borderLeft: "4px solid #3498db",
+    },
+    navIcon: {
+        marginRight: "10px",
+        fontSize: "18px",
+    },
+    content: {
+        flex: 1,
+        marginLeft: "250px",
+        padding: "20px",
+    },
+    tabContent: {
+        backgroundColor: "#fff",
+        padding: "20px",
+        borderRadius: "8px",
+        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    },
+    tabTitle: {
+        borderBottom: "2px solid #f1f1f1",
+        paddingBottom: "10px",
+        marginBottom: "20px",
+        color: "#2c3e50",
+    },
+    statsContainer: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+        gap: "20px",
+        marginBottom: "30px",
+    },
+    statCard: {
+        backgroundColor: "#f8f9fa",
+        padding: "15px",
+        borderRadius: "8px",
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
+        textAlign: "center",
+    },
+    statNumber: {
+        fontSize: "30px",
+        fontWeight: "bold",
+        color: "#3498db",
+        margin: "10px 0",
+    },
+    recentActivity: {
+        backgroundColor: "#f8f9fa",
+        padding: "15px",
+        borderRadius: "8px",
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
+    },
+    searchFilterBar: {
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: "20px",
+    },
+    searchInput: {
+        flex: 1,
+        padding: "10px",
+        border: "1px solid #ddd",
+        borderRadius: "5px",
+        marginRight: "10px",
+    },
+    filterDropdown: {
+        padding: "10px",
+        border: "1px solid #ddd",
+        borderRadius: "5px",
+        minWidth: "150px",
+    },
+    tableContainer: {
+        overflowX: "auto",
+    },
+    table: {
+        width: "100%",
+        borderCollapse: "collapse",
+    },
+    emptyTableCell: {
+        textAlign: "center",
+        padding: "20px",
+        color: "#999",
+    },
+    emptyState: {
+        textAlign: "center",
+        color: "#999",
+        padding: "20px",
+    },
+    profileContainer: {
+        display: "flex",
+        alignItems: "center",
+        padding: "20px",
+        backgroundColor: "#f8f9fa",
+        borderRadius: "8px",
+        marginBottom: "20px",
+    },
+    profileAvatar: {
+        width: "80px",
+        height: "80px",
+        backgroundColor: "#3498db",
+        color: "#fff",
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "30px",
+        fontWeight: "bold",
+        marginRight: "20px",
+    },
+    profileDetails: {
+        flex: 1,
+    },
+    changePasswordButton: {
+        backgroundColor: "#3498db",
+        color: "#fff",
+        border: "none",
+        padding: "8px 15px",
+        borderRadius: "5px",
+        cursor: "pointer",
+        marginTop: "10px",
+    },
+    preferencesSection: {
+        backgroundColor: "#f8f9fa",
+        padding: "20px",
+        borderRadius: "8px",
+    },
+    preferencesForm: {
+        marginTop: "15px",
+    },
+    formGroup: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "15px",
+        padding: "10px 0",
+        borderBottom: "1px solid #eee",
+    },
+    toggleSwitch: {
+        position: "relative",
+        display: "inline-block",
+        width: "50px",
+        height: "24px",
+    },
 };

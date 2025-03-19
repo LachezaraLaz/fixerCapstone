@@ -20,6 +20,7 @@ export default function SignInPage() {
         return newErrors;
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validateForm();
@@ -30,19 +31,18 @@ export default function SignInPage() {
 
         setLoading(true);
         try {
-            const response = await axios.post(`/api/signin`, formData);
+            const response = await axios.post(`/api/admin/signin`, formData);
 
-            const { token, isAdmin } = response.data; // Assuming backend sends `isAdmin`
-            localStorage.setItem("authToken", token); // Store JWT in localStorage
-            localStorage.setItem("isAdmin", isAdmin); // Store admin status
+            const { token, isAdmin, firstName, lastName } = response.data;
+            localStorage.setItem("authToken", token);
+            localStorage.setItem("isAdmin", isAdmin);
+            localStorage.setItem("firstName", firstName);
+            localStorage.setItem("lastName", lastName);
 
-            if (isAdmin) {
-                navigate("/admin"); // Redirect admins to the admin page
-            } else {
-                navigate("/dashboard"); // Redirect regular users to their dashboard
-            }
+            navigate("/admin-dashboard"); // Update the navigation path
         } catch (error) {
-            alert("Error during sign-in. Please check your credentials.");
+            const errorMessage = error.response?.data?.message || "Error during sign-in. Please check your credentials.";
+            alert(errorMessage);
         } finally {
             setLoading(false);
         }

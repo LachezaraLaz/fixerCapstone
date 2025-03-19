@@ -1,7 +1,7 @@
 import React from 'react';
 import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
-import SignUpPage from "./screens/SignUpPage";
-import SignInPage from "./screens/SignInPage";
+import SignUpPage from "./screens/SignUp/SignUpPage";
+import SignInPage from "./screens/SignIn/SignInPage";
 import VerificationStatus from "./screens/VerificationStatus";
 import VerifyEmailPage from "./screens/VerifyEmailPage";
 import AdminDashboard from "./screens/AdminDashboard";

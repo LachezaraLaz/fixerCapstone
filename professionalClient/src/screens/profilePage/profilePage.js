@@ -16,7 +16,7 @@ const ProfilePage = () => {
             try {
                 const token = await AsyncStorage.getItem('token');
                 if (token) {
-                    const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/profile`, {
+                    const response = await axios.get(`http://10.0.0.148:3000/professional/profile`, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -37,17 +37,22 @@ const ProfilePage = () => {
 
     const fetchBankingInfoStatus = async () => {
         try {
-            const userId = await AsyncStorage.getItem('userId'); // Get the logged-in user's ID
-            console.log("Fetched userId:", userId); // Log userId to confirm it's not null/undefined
+            const userId = await AsyncStorage.getItem('userId');
+            const token = await AsyncStorage.getItem('token'); // Get the JWT token
 
-            if (!userId) {
-                console.error("No userId found in AsyncStorage");
+            console.log("Fetched userId:", userId);
+            console.log("Fetched token:", token);
+
+            if (!userId || !token) {
+                console.error("No userId or token found in AsyncStorage");
                 return;
             }
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
-                params: { userId }
+            const response = await axios.get(`http://10.0.0.148:3000/professional/banking-info-status`, {
+                params: { userId },
+                headers: { Authorization: `Bearer ${token}` },
             });
+
             setBankingInfoAdded(response.data.bankingInfoAdded);
         } catch (error) {
             console.error('Error fetching banking info status:', error.response?.data || error.message);

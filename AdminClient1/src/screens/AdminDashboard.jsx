@@ -142,19 +142,21 @@ export default function AdminDashboard() {
                         </div>
                         <div style={styles.tableContainer}>
                             <table style={styles.table}>
+                                <colgroup>
+                                    <col style={{width: "33%"}} />
+                                    <col style={{width: "33%"}} />
+                                    <col style={{width: "34%"}} />
+                                </colgroup>
                                 <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th style={styles.tableHeader}>ID</th>
+                                    <th style={styles.tableHeader}>Name</th>
+                                    <th style={styles.tableHeader}>Email</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td colSpan="6" style={styles.emptyTableCell}>
+                                    <td colSpan="3" style={styles.emptyTableCell}>
                                         No clients available
                                     </td>
                                 </tr>
@@ -181,20 +183,128 @@ export default function AdminDashboard() {
                         </div>
                         <div style={styles.tableContainer}>
                             <table style={styles.table}>
+                                <colgroup>
+                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "20%"}} />
+                                    <col style={{width: "20%"}} />
+                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "15%"}} />
+                                </colgroup>
                                 <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Specialty</th>
-                                    <th>Joined Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th style={styles.tableHeader}>ID</th>
+                                    <th style={styles.tableHeader}>Name</th>
+                                    <th style={styles.tableHeader}>Specialty</th>
+                                    <th style={styles.tableHeader}>Joined Date</th>
+                                    <th style={styles.tableHeader}>Status</th>
+                                    <th style={styles.tableHeader}>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
                                     <td colSpan="6" style={styles.emptyTableCell}>
                                         No professionals available
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                );
+            case "jobs":
+                return (
+                    <div style={styles.tabContent}>
+                        <h2 style={styles.tabTitle}>Jobs Management</h2>
+                        <div style={styles.searchFilterBar}>
+                            <input
+                                type="text"
+                                placeholder="Search jobs..."
+                                style={styles.searchInput}
+                            />
+                            <select style={styles.filterDropdown}>
+                                <option value="all">All Jobs</option>
+                                <option value="pending">Pending</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div style={styles.tableContainer}>
+                            <table style={styles.table}>
+                                <colgroup>
+                                    <col style={{width: "10%"}} />
+                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "20%"}} />
+                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "10%"}} />
+                                    <col style={{width: "15%"}} />
+                                </colgroup>
+                                <thead>
+                                <tr>
+                                    <th style={styles.tableHeader}>ID</th>
+                                    <th style={styles.tableHeader}>Title</th>
+                                    <th style={styles.tableHeader}>Description</th>
+                                    <th style={styles.tableHeader}>Professional Needed</th>
+                                    <th style={styles.tableHeader}>User Email</th>
+                                    <th style={styles.tableHeader}>Status</th>
+                                    <th style={styles.tableHeader}>Created At</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td colSpan="7" style={styles.emptyTableCell}>
+                                        No jobs available
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                );
+            case "quotes":
+                return (
+                    <div style={styles.tabContent}>
+                        <h2 style={styles.tabTitle}>Quotes Management</h2>
+                        <div style={styles.searchFilterBar}>
+                            <input
+                                type="text"
+                                placeholder="Search quotes..."
+                                style={styles.searchInput}
+                            />
+                            <select style={styles.filterDropdown}>
+                                <option value="all">All Quotes</option>
+                                <option value="pending">Pending</option>
+                                <option value="accepted">Accepted</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="expired">Expired</option>
+                            </select>
+                        </div>
+                        <div style={styles.tableContainer}>
+                            <table style={styles.table}>
+                                <colgroup>
+                                    <col style={{width: "10%"}} />
+                                    <col style={{width: "25%"}} />
+                                    <col style={{width: "25%"}} />
+                                    <col style={{width: "10%"}} />
+                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "15%"}} />
+                                </colgroup>
+                                <thead>
+                                <tr>
+                                    <th style={styles.tableHeader}>ID</th>
+                                    <th style={styles.tableHeader}>Professional Email</th>
+                                    <th style={styles.tableHeader}>Client Email</th>
+                                    <th style={styles.tableHeader}>Price</th>
+                                    <th style={styles.tableHeader}>Status</th>
+                                    <th style={styles.tableHeader}>Issue ID</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td colSpan="6" style={styles.emptyTableCell}>
+                                        No quotes available
                                     </td>
                                 </tr>
                                 </tbody>
@@ -378,6 +488,24 @@ export default function AdminDashboard() {
                             onClick={() => setActiveTab("professionals")}
                         >
                             <span style={styles.navIcon}>👷</span> Professionals
+                        </li>
+                        <li
+                            style={{
+                                ...styles.navItem,
+                                ...(activeTab === "jobs" && styles.activeNavItem)
+                            }}
+                            onClick={() => setActiveTab("jobs")}
+                        >
+                            <span style={styles.navIcon}>📋</span> Jobs
+                        </li>
+                        <li
+                            style={{
+                                ...styles.navItem,
+                                ...(activeTab === "quotes" && styles.activeNavItem)
+                            }}
+                            onClick={() => setActiveTab("quotes")}
+                        >
+                            <span style={styles.navIcon}>💰</span> Quotes
                         </li>
                         <li
                             style={{
@@ -698,5 +826,13 @@ const styles = {
         color: "#dc3545",
         fontSize: "12px",
         marginTop: "5px",
+    },
+    tableHeader: {
+        backgroundColor: "#f8f9fa",
+        padding: "12px 15px",
+        textAlign: "left",
+        borderBottom: "2px solid #ddd",
+        fontWeight: "600",
+        color: "#2c3e50",
     },
 };

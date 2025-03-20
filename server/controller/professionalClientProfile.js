@@ -127,4 +127,51 @@ const getBankingInfoStatus = async (req, res) => {
     }
 };
 
-module.exports = { profile, authenticateJWT, addBankingInfo: addCreditCard, getBankingInfoStatus };
+/**
+ * Fetches the payment method details for a professional.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.user - The user object containing the user ID.
+ * @param {string} req.user.id - The ID of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves to void.
+ */
+const getPaymentMethod = async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: 'Unauthorized - User ID missing' });
+        }
+
+        const userId = new mongoose.Types.ObjectId(req.user.id);
+
+        const professionalPayment = await professionalPaymentSchema.findOne({ professionalId: userId });
+
+        if (!professionalPayment || !professionalPayment.stripeCustomerId) {
+            return res.status(404).json({ message: 'No payment method found' });
+        }
+
+        const paymentMethods = await stripe.paymentMethods.list({
+            customer: professionalPayment.stripeCustomerId,
+            type: 'card',
+        });
+
+        if (paymentMethods.data.length === 0) {
+            return res.status(404).json({ message: 'No payment methods found' });
+        }
+
+        const paymentMethod = paymentMethods.data[0];
+        res.json({
+            cardBrand: paymentMethod.card.brand,
+            cardLast4: paymentMethod.card.last4,
+            expiryDate: `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`,
+        });
+    } catch (error) {
+        console.error('Error fetching payment method:', error);
+        if (error.type === 'StripeInvalidRequestError') {
+            return res.status(400).json({ message: 'Invalid Stripe request' });
+        }
+        res.status(500).json({ message: 'Failed to fetch payment method' });
+    }
+};
+
+module.exports = { profile, authenticateJWT, addBankingInfo: addCreditCard, getBankingInfoStatus, getPaymentMethod };

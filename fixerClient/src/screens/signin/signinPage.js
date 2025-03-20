@@ -59,7 +59,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 await AsyncStorage.setItem('userId', userId);
                 await AsyncStorage.setItem('userName', userName);
 
-                Alert.alert("Signed in successfully");
+                Alert.alert(`${i18n.t('signed_in_successfully')}`);
                 setIsLoggedIn(true);
 
                 setTimeout(() => {
@@ -75,11 +75,11 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         } catch (error) {
             console.log('Error:', error); // Add this line
             if (error.response && error.response.status === 400) {
-                Alert.alert("Error", error.response.data.statusText || 'Wrong email or password');
+                Alert.alert(`${i18n.t('error')}`, error.response.data.statusText || 'Wrong email or password');
             } else if (error.response && error.response.status === 403) {
-                Alert.alert('Please verify your email before logging in.');
+                Alert.alert(`${i18n.t('please_verify_your_email_before_logging_in')}`);
             } else {
-                Alert.alert("Error", 'An unexpected error occurred');
+                Alert.alert(`${i18n.t('error')}`, `${i18n.t('an_unexpected_error_occurred')}`);
             }
         }
     };

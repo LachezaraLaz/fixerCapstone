@@ -50,7 +50,7 @@ export default function CreateIssue({ navigation }) {
     const [description, setDescription] = useState('');
     const [selectedService, setSelectedService] = useState(null);
     const [items, setItems] = useState([
-        { label: 'Select Service', value: '' },
+        { label: `${i18n.t('select_service')}`, value: '' },
         { label: `${i18n.t('plumbing')}`, value: 'plumbing' },
         { label: `${i18n.t('electrical')}`, value: 'electrical' },
     ]);
@@ -59,7 +59,7 @@ export default function CreateIssue({ navigation }) {
     const [open, setOpen] = useState(false);
     const [selectedTimeLine, setSelectedTimeLine] = useState(null);
     const [itemsTimeLine, setItemsTimeLine] = useState([
-        { label: 'Select Timeline', value: '' },
+        { label: `${i18n.t('select_timeline')}`, value: '' },
         { label: `${i18n.t('low_priority')}`, value: 'Low-Priority' },
         { label: `${i18n.t('high_priority')}`, value: 'High-Priority' },
     ]);
@@ -232,7 +232,7 @@ export default function CreateIssue({ navigation }) {
                 setOther(false);
 
                 navigation.goBack();
-                Alert.alert('Job posted successfully');
+                Alert.alert(`${i18n.t('job_posted_successfully')}`);
             } else {
                 Alert.alert('Failed to post the job');
             }
@@ -294,7 +294,7 @@ export default function CreateIssue({ navigation }) {
             <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
                         contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
             >
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>Job Description</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('job_description')}</Text>
                 {/* title field */}
                 <View style={{ position: 'relative' }}>
                     <TextInput
@@ -374,7 +374,7 @@ export default function CreateIssue({ navigation }) {
                 <View style={styles.pickerContainer}>
                     <DropDownPicker
                         style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
-                        translation={{ PLACEHOLDER: "Select Service" }}
+                        translation={{ PLACEHOLDER: `${i18n.t('select_service')}` }}
                         open={open}
                         value={selectedService}
                         items={items}
@@ -400,8 +400,8 @@ export default function CreateIssue({ navigation }) {
                         ) : (
                             <View style={styles.placeholder}>
                                 <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
-                                <Text style={{ ...styles.text }}>Take from your gallery</Text>
-                                <Text style={{...styles.supportedFormats}}>Supported formats: JPEG, PNG, MP4</Text>
+                                <Text style={{ ...styles.text }}>{i18n.t('take_from_your_gallery')}</Text>
+                                <Text style={{...styles.supportedFormats}}>JPEG, PNG, MP4</Text>
                             </View>
                         )}
                     </TouchableOpacity>
@@ -442,11 +442,11 @@ export default function CreateIssue({ navigation }) {
                         }}
                     />
                 </View>
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>Urgency Timeline</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>{i18n.t('select_timeline')}</Text>
                 <View style={styles.pickerContainer}>
                     <DropDownPicker
                         style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
-                        translation={{ PLACEHOLDER: "Select Timeline" }}
+                        translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
                         open={openTimeLine}
                         value={selectedTimeLine}
                         items={itemsTimeLine}

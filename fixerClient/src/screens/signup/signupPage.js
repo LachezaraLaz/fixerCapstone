@@ -225,7 +225,7 @@ export default function SignUpPage({ navigation }) {
                     if (error.response.status === 400) {
                         Alert.alert("Error", "User already exists");
                     } else {
-                        Alert.alert("Error", error.response.data.message || 'An unexpected error occurred');
+                        Alert.alert("Error", error.response.data.message || `${i18n.t('an_unexpected_error_occurred')}`);
                     }
                 } else if (error.request) {
                     Alert.alert("Error", "Network error");

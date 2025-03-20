@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import {
     View,
     Text,
@@ -23,8 +23,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback } from "react";
 import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
-import LanguageModal from "../../../components/LanguageModal";
-import languageStyle from '../../../style/languageStyle';
 import { LanguageContext } from "../../../context/LanguageContext";
 
 const IssueDetails = () => {
@@ -270,11 +268,11 @@ const IssueDetails = () => {
                 ) : job.status.toLowerCase() === "open" || job.status.toLowerCase() === "pending" ? (
                     <>
                         <OrangeButton
-                            title="Modify Issue"
+                            title={i18n.t('modify_issue')}
                             onPress={() => navigation.navigate("EditIssue", {jobId})}
                         />
                         <OrangeButton
-                            title="Delete Issue"
+                            title={i18n.t('delete_issue')}
                             onPress={() => deleteReopenIssue(job, job.status)}
                         />
                     </>

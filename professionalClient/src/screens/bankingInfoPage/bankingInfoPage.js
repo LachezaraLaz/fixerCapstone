@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
+import { InteractionManager } from 'react-native';
 
 const BankingInfoPage = () => {
     const [loading, setLoading] = useState(false);
@@ -23,12 +24,15 @@ const BankingInfoPage = () => {
 
         try {
             console.log("Before createPaymentMethod");
+
             const { paymentMethod, error } = await createPaymentMethod({
                 paymentMethodType: 'Card',
             });
 
             console.log("After createPaymentMethod");
+
             if (error) {
+                console.log("Payment error:", error);
                 if (!isUnmounted.current) Alert.alert('Error', error.message);
                 return;
             }
@@ -36,52 +40,106 @@ const BankingInfoPage = () => {
             const userId = await AsyncStorage.getItem('userId');
             const token = await AsyncStorage.getItem('token');
 
+            console.log("User ID:", userId);
+            console.log("Token:", token);
+
+            console.log("Navigation state BEFORE API call:", navigation.getState());
+
+            // Set timeout to prevent unmounting too soon
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
             const response = await axios.post(
                 `https://fixercapstone-production.up.railway.app/professional/add-banking-info`,
                 { professionalId: userId, paymentMethodId: paymentMethod.id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log("Before success");
+            console.log("Server response:", response.data);
+            console.log("Navigation state AFTER API call:", navigation.getState());
+
             if (response.data.status === 'success') {
+                console.log("Success response received");
+
                 if (!isUnmounted.current) {
                     Alert.alert('Success', 'Credit card added successfully.', [
                         {
                             text: 'OK',
                             onPress: () => {
-                                console.log("Success, but not navigating"); // Temporarily remove navigation
+                                handleNavigation();
                             },
                         },
                     ]);
-                    console.log("After success");
                 }
             } else {
+                console.log("Error response from backend:", response.data);
                 if (!isUnmounted.current) Alert.alert('Error', response.data.data || 'Failed to add credit card.');
             }
         } catch (error) {
             console.error('Error adding credit card:', error);
-            if (!isUnmounted.current) Alert.alert('Error', 'An error occurred while adding credit card.');
+
+            if (!isUnmounted.current) {
+                if (axios.isCancel(error)) {
+                    Alert.alert('Request Canceled', 'The request was canceled.');
+                } else {
+                    Alert.alert('Error', 'An error occurred while adding credit card.');
+                }
+            }
         } finally {
             console.log("Before unmounting");
-            if (!isUnmounted.current) setLoading(false); // Prevent state updates after unmount
+            if (!isUnmounted.current) setLoading(false);
             console.log("After unmounting");
         }
     };
 
+    const [showCardField, setShowCardField] = useState(true);
+
     const handleNavigation = () => {
+        if (isUnmounted.current) {
+            console.log("Component is unmounted, skipping navigation reset.");
+            return;
+        }
+
         try {
             console.log("Before test navigation");
-            // Navigate back to MainTabs
-            navigation.dispatch(
-                CommonActions.reset({
-                    index: 0,
-                    routes: [{ name: 'MainTabs' }],
-                })
-            );
+
+            if (!navigation) {
+                console.error("Navigation object is not available");
+                Alert.alert("Navigation Error", "Navigation object is not available.");
+                return;
+            }
+
+            console.log("Navigation state before reset:", navigation.getState());
+
+            // Hide CardField before navigation reset
+            setShowCardField(false);
+
+            InteractionManager.runAfterInteractions(() => {
+                setTimeout(() => {
+                    if (isUnmounted.current) {
+                        console.log("Component is unmounted after delay, skipping navigation reset.");
+                        return;
+                    }
+
+                    try {
+                        console.log("Navigation state just before reset:", navigation.getState());
+
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'MainTabs' }],
+                        });
+
+                        console.log("Navigation dispatched successfully");
+                    } catch (navError) {
+                        console.error("Navigation dispatch error:", navError);
+                        Alert.alert("Navigation Error", `Error: ${navError.message}`);
+                    }
+                }, 2000);
+            });
+
             console.log("After test navigation");
         } catch (error) {
             console.error("Navigation error:", error);
-            Alert.alert("Navigation Error", "Could not navigate to Home screen");
+            Alert.alert("Navigation Error", `Unhandled Error: ${error.message}`);
         }
     };
 
@@ -93,27 +151,29 @@ const BankingInfoPage = () => {
             </Text>
 
             {/* Stripe CardField for collecting credit card details */}
-            <CardField
-                postalCodeEnabled={false}
-                placeholder={{
-                    number: '4242 4242 4242 4242',
-                }}
-                cardStyle={{
-                    backgroundColor: '#FFFFFF', // Ensure background color is valid
-                    borderWidth: 1,
-                    borderColor: '#000000', // Ensure border color is valid
-                    borderRadius: 8,
-                    textColor: '#000000', // Ensure text color is valid
-                }}
-                style={styles.cardFieldContainer}
-            />
+            {showCardField && (
+                <CardField
+                    postalCodeEnabled={false}
+                    placeholder={{
+                        number: '4242 4242 4242 4242',
+                    }}
+                    cardStyle={{
+                        backgroundColor: '#FFFFFF',
+                        borderWidth: 1,
+                        borderColor: '#000000',
+                        borderRadius: 8,
+                        textColor: '#000000',
+                    }}
+                    style={styles.cardFieldContainer}
+                />
+            )}
 
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleNavigation}
-            >
-                <Text style={styles.buttonText}>Test Navigation</Text>
-            </TouchableOpacity>
+            {/*<TouchableOpacity*/}
+            {/*    style={styles.button}*/}
+            {/*    onPress={handleNavigation}*/}
+            {/*>*/}
+            {/*    <Text style={styles.buttonText}>Test Navigation</Text>*/}
+            {/*</TouchableOpacity>*/}
 
             <TouchableOpacity
                 style={styles.button}

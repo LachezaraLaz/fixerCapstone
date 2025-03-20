@@ -47,7 +47,7 @@ export default function ForgotPasswordPage({ navigation }) {
             if (error.response) {
                 Alert.alert("Error", error.response.data.error || 'Failed to send reset PIN');
             } else {
-                Alert.alert("Error", 'An unexpected error occurred');
+                Alert.alert("Error", `${i18n.t('an_unexpected_error_occurred')}`);
             }
         }
     };

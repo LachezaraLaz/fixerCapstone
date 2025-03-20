@@ -49,7 +49,7 @@ export default function EnterPinPage({ route, navigation }) {
             if (error.response) {
                 Alert.alert('Error', error.response.data.error || 'Invalid or expired PIN');
             } else {
-                Alert.alert('Error', 'An unexpected error occurred');
+                Alert.alert('Error', `${i18n.t('an_unexpected_error_occurred')}`);
             }
         }
     };

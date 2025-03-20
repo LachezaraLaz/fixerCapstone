@@ -1,7 +1,9 @@
 const express = require("express");
 const { registerAdmin } = require("../controller/adminRegister");
-const { verifyAdminEmailPost } = require("../controller/adminVerificationController");
+const { verifyAdminEmailPost } = require("../controller/adminVerification");
 const { loginAdmin } = require("../controller/adminLogin");
+const { changePassword } = require("../controller/changePassword");
+const { authMiddleware } = require("../middleware/authMiddleware");
 
 
 const adminRouter = express.Router();
@@ -14,6 +16,10 @@ adminRouter.post("/verify-email", verifyAdminEmailPost);
 
 // Admin login route
 adminRouter.post("/signin", loginAdmin);
+
+// Password change route (protected)
+adminRouter.post("/change-password", authMiddleware, changePassword);
+
 
 module.exports = { adminRouter };
 

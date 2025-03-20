@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatContext } from '../chat/chatContext';
 import { useNavigation } from '@react-navigation/native';
 import { AppState } from 'react-native';
+import { Platform } from 'react-native';
 
 /**
  * @module professionalClient
@@ -320,20 +321,22 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     return (
         <SafeAreaView style={styles.container}>
             {/* Notice for banking information */}
-            {!bankingInfoAdded && (
+            {!bankingInfoAdded && Platform.OS !== 'ios' && (
                 <View style={styles.noticeContainer}>
+                    <Ionicons name="alert-circle-outline" size={24} color="#d84315" style={styles.noticeIcon} />
                     <Text style={styles.noticeText}>
-                        Please add your banking information to start submitting quotes.
+                        ⚠️ To submit quotes, please add your banking information.
                     </Text>
-
                     <TouchableOpacity
                         style={styles.addBankingButton}
                         onPress={() => navigation.navigate('BankingInfoPage')}
+                        activeOpacity={0.8}
                     >
-                        <Text style={styles.addBankingButtonText}>Add Banking Information</Text>
+                        <Text style={styles.addBankingButtonText}>➕ Add Banking</Text>
                     </TouchableOpacity>
                 </View>
             )}
+
 
             <View style={styles.notificationButton}>
                 <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>

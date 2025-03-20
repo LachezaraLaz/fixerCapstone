@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../../style/profilePage/profilePageStyle';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import SettingsButton from "../../../components/settingsButton";
+import { Platform } from 'react-native';
 
 /**
  * @module professionalClient
@@ -17,6 +18,7 @@ const ProfilePage = () => {
     const [bankingInfoAdded, setBankingInfoAdded] = useState(false); // New state for banking info status
     const [reviews, setReviews] = useState([]);
     const navigation = useNavigation();
+    const [paymentMethod, setPaymentMethod] = useState(null);
 
     useEffect(() => {
         /**
@@ -117,8 +119,39 @@ const ProfilePage = () => {
         }
     };
 
+    const fetchPaymentMethod = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const userId = await AsyncStorage.getItem('userId');
+
+            if (!token || !userId) {
+                console.error('Token or userId not found in AsyncStorage');
+                return;
+            }
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/payment-method`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { userId },
+            });
+
+            if (response.data) {
+                setPaymentMethod(response.data);
+            } else {
+                console.error('No payment method data found in response');
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                console.log('No payment method found for the user');
+                setPaymentMethod(null); // Clear the payment method state
+            } else {
+                console.error('Error fetching payment method:', error);
+            }
+        }
+    };
+
     useEffect(() => {
         fetchBankingInfoStatus();
+        fetchPaymentMethod();
     }, []);
 
     if (loading) return <Text>Loading...</Text>;
@@ -159,21 +192,19 @@ const ProfilePage = () => {
                 </View>
 
                 {/* Notice for banking information */}
-                {!bankingInfoAdded && (
+                {!bankingInfoAdded && Platform.OS !== 'ios' && (
                     <View style={styles.noticeContainer}>
                         <Text style={styles.noticeText}>
-                            Please add your banking information to start submitting quotes.
+                            ⚠️ To submit quotes, please add your banking information.
                         </Text>
+                        <TouchableOpacity
+                            style={styles.addBankingButton}
+                            onPress={() => navigation.navigate('BankingInfoPage')}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.addBankingButtonText}>➕ Add Banking</Text>
+                        </TouchableOpacity>
                     </View>
-                )}
-
-                {!bankingInfoAdded && (
-                    <TouchableOpacity
-                        style={styles.addBankingButton}
-                        onPress={() => navigation.navigate('BankingInfoPage')}
-                    >
-                        <Text style={styles.addBankingButtonText}>Add Banking Information</Text>
-                    </TouchableOpacity>
                 )}
 
                 <View style={styles.profileContainer}>
@@ -253,8 +284,16 @@ const ProfilePage = () => {
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Payment Method</Text>
                     <View style={styles.inputBox}>
-                        <Text>💳 Visa ending in 1234</Text>
-                        <Text>Expiry 06/2024</Text>
+                        {paymentMethod ? (
+                            <>
+                                <Text>
+                                    💳 {paymentMethod.cardBrand} ending in {paymentMethod.cardLast4}
+                                </Text>
+                                <Text>Expiry {paymentMethod.expiryDate}</Text>
+                            </>
+                        ) : (
+                            <Text>No payment method added.</Text>
+                        )}
                     </View>
                 </View>
 

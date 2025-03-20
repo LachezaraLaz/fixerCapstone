@@ -10,7 +10,11 @@ const adminRoute = require("./routes/fixerAdminRoutes");
 const app = express();
 app.use(bodyParser.json());
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // Your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 const PORT = process.env.PORT || 5003; // Change the port if needed
 

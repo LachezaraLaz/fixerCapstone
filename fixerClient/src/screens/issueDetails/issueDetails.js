@@ -120,7 +120,7 @@ const IssueDetails = () => {
                 `Are you sure you want to ${actionText} this issue?`,
                 [
                     {
-                        text: "Cancel",
+                        text: `${i18n.t('cancel')}`,
                         style: "cancel"
                     },
                     {
@@ -174,26 +174,26 @@ const IssueDetails = () => {
                 </View>
 
                 <Text style={styles.jobTitle}>{job.title}</Text>
-                <Text style={styles.detailLabel}>Professional Needed </Text>
+                <Text style={styles.detailLabel}>{i18n.t('professional_needed')}</Text>
                 <Text style={styles.detailValue}>{job.professionalNeeded || "Not specified"}</Text>
 
-                <Text style={styles.detailLabel}>Status </Text>
+                <Text style={styles.detailLabel}>{i18n.t('status')}</Text>
                 <View style={[styles.statusContainer, {
                     backgroundColor: statusStyle.background,
                     borderColor: statusStyle.border
                 }]}>
                     <Text style={[styles.statusText, {color: statusStyle.text}]}>
-                        {job.status}
+                        {i18n.t(`status_client.${job.status.toLowerCase()}`)}
                     </Text>
                 </View>
 
                 {job.professionalEmail && (
                     <View>
-                        <Text style={styles.detailLabel}>Assigned Professional</Text>
+                        <Text style={styles.detailLabel}>{i18n.t('assigned_professional')}</Text>
                         <Text style={styles.detailValue}> {job.professionalEmail} </Text>
                     </View>
                 )}
-                <Text style={styles.detailLabel}>Created On</Text>
+                <Text style={styles.detailLabel}>{i18n.t('created_on')}</Text>
                 <Text style={styles.detailValue}>
                     {new Date(job.createdAt).toDateString()}{" "}
                     {new Date(job.createdAt).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}
@@ -212,8 +212,8 @@ const IssueDetails = () => {
                     </View>
                 ) : (
                     <View>
-                        <Text style={styles.detailLabel}>Attached Images</Text>
-                        <Text style={styles.detailValue}>No image attached yet</Text>
+                        <Text style={styles.detailLabel}>{i18n.t('attached_images')}</Text>
+                        <Text style={styles.detailValue}>{i18n.t('no_image_attached')}</Text>
                     </View>
                 )}
                 <Modal visible={modalVisible} transparent={true} animationType="fade">
@@ -240,13 +240,13 @@ const IssueDetails = () => {
 
                 {job.rating && (
                     <View>
-                        <Text style={styles.detailLabel}>Review</Text>
+                        <Text style={styles.detailLabel}>{i18n.t('review')}</Text>
                         <Text>
-                            <Text style={styles.detailSubLabel}>Rating: </Text>
+                            <Text style={styles.detailSubLabel}>{i18n.t('rating')}: </Text>
                             <Text style={styles.detailValue}>{job.rating} Stars</Text>
                         </Text>
                         <Text>
-                            <Text style={styles.detailSubLabel}>Comment: </Text>
+                            <Text style={styles.detailSubLabel}>{i18n.t('comment')}: </Text>
                             <Text style={styles.detailValue}>{job.comment || "No comment"}</Text>
                         </Text>
 

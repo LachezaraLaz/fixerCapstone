@@ -237,6 +237,7 @@ const IssueDetails = () => {
                 >
                     <Marker coordinate={{latitude: job.latitude || 0.0, longitude: job.longitude || 0.0}}/>
                 </MapView>
+
                 {job.rating && (
                     <View>
                         <Text style={styles.detailLabel}>{i18n.t('review')}</Text>

@@ -19,6 +19,7 @@ import { IPAddress } from '../../../ipAddress';
  * @module fixerClient
  */
 
+
 export default function SignInPage({ navigation, setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

@@ -20,8 +20,14 @@ const cors = require('cors');
 app.use(cors({
   origin: ['https://fixercapstone-production.up.railway.app'],
 }));
+
+// custom error imports
 const { errorHandler } = require('./middlewares/errorHandler');
-const AppError = require('./utils/AppError');
+const NotFoundError = require("./utils/errors/NotFoundError");
+const BadRequestError = require("./utils/errors/BadRequestError");
+const UnauthorizedError = require("./utils/errors/UnauthorizedError");
+const ForbiddenError = require("./utils/errors/ForbiddenError");
+const InternalServerError = require("./utils/errors/InternalServerError");
 
 
 app.use(bodyParser.json());
@@ -47,12 +53,19 @@ app.use('/users', userRouter.userRouter);
 
 // If a route is not found
 app.all('*', (req, res, next) => {
-  // Using the custom AppError:
-  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+    next(new NotFoundError('index.js', `${req.originalUrl} is not found!`, 404 ));
+
+    // Testing
+    // Uncomment only one at a time to see different error displayed:
+  //   next(new NotFoundError('index.js', `${req.originalUrl}: From Not Found Error`, 404));
+  //   next(new BadRequestError('index.js', `${req.originalUrl}: From Bad Request Error`, 400));
+  //   next(new UnauthorizedError('index.js', `${req.originalUrl}: From Unauthorized Error`, 401));
+  //   next(new ForbiddenError('index.js', `${req.originalUrl}: From Forbidden Error`, 403));
+  //   next(new InternalServerError('index.js', `${req.originalUrl}: From Internal Server Error`, 500));
 });
 
 // Custom Error Handling Middleware (ALWAYS call it last in order to catch errors from
-// middlewares and routes called above
+// middlewares and routes called above)
 app.use(errorHandler);
 
 
@@ -70,10 +83,10 @@ const server = app.listen(PORT, () => {
 // Comment the following when done with testing
 // app.get('/test-error', (req, res, next) => {
 //   // Force an error
-//   next(new AppError());
+//   next(new NotFoundError());
 // });
 //
-// const IP_ADDRESS = 'XXX.XXX.X.XX'; // Input your IP address to see custom error
+// const IP_ADDRESS = 'xxx.xxx.xxx.xxx'; // Input your IP address to see custom error
 //
 // fetch(`http://${IP_ADDRESS}:${PORT}/test-error`)
 //     .then(response => response.json())

@@ -53,6 +53,6 @@ app.use('/reviews', reviewRouter.reviewRouter);
 
 app.use('/users', userRouter.userRouter);
 
-app.use('/payment', paymentRoutes);
+app.use('/payment', paymentRoutes.paymentRouter);
 
 module.exports = app;

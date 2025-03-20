@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT verification
 const fixerClientObject = require('../model/fixerClientModel'); // Mongoose model for professional
-const AppError = require('../utils/AppError');
+const UnauthorizedError = require("../utils/errors/UnauthorizedError");
+const ForbiddenError = require("../utils/errors/ForbiddenError");
+const NotFoundError = require("../utils/errors/NotFoundError");
+const {logger} = require("../utils/logger");
 
 /**
  * @module server/controller
@@ -23,18 +26,18 @@ const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;  // Get authorization header
 
     if (!authorizationHeader) {
-        return next(new AppError('Unauthorized', 401))  // No token provided
+        return next(new UnauthorizedError('client profile', 'Missing auth header', 401))  // No token provided
     }
 
     const token = authorizationHeader.split(' ')[1];  // Extract token from Authorization header
 
     if (!token) {
-        return next(new AppError('Unauthorized', 401))  // No token
+        return next(new UnauthorizedError('client profile', 'Missing auth token', 401))  // No token
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return next(new AppError('Forbidden', 403)); // Token invalid
+            return next(new ForbiddenError('client profile', 'Token invalid', 403)); // Token invalid
         }
         req.user = user;  // Attach user details from the token to the request
         next();  // Proceed to the next middleware or route handler
@@ -58,13 +61,13 @@ const profile = async (req, res) => {
         const client = await fixerClientObject.fixerClient.findById(req.user.id);
 
         if (!client) {
-            throw new AppError('Client not found', 404);
+            throw new NotFoundError('client profile','Client not found', 404);
         }
 
         // Respond with professional's data
         res.json(client);
     } catch (error) {
-        console.error('Error fetching client data:', error);
+        logger.error('Error fetching client data:', error);
         next(error); // custom error handler
     }
 };

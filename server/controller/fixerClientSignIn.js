@@ -4,7 +4,8 @@ const { serverClient } = require('../services/streamClient');
 const UserRepository = require('../repository/userRepository');
 const {AuthResponseDto}  = require('../DTO/userDto');
 const { logger } = require("../utils/logger");
-const AppError = require('../utils/AppError');
+const BadRequestError = require("../utils/errors/BadRequestError");
+const ForbiddenError = require("../utils/errors/ForbiddenError");
 
 /**
  * @module server/controller
@@ -22,18 +23,18 @@ const AppError = require('../utils/AppError');
  */
 const signinUser = async (req, res) => {
     try {
-        console.log(AuthResponseDto);  // Should NOT be undefined
+        logger.info(AuthResponseDto);  // Should NOT be undefined
         logger.info(AuthResponseDto);  // Should NOT be undefined
         const { email, password } = req.body;
         const user = await UserRepository.findByEmail(email);
 
-        if (!user || user.accountType !== 'client') throw new AppError('User not found', 400);
+        if (!user || user.accountType !== 'client') throw new BadRequestError('client sign in', 'User not found', 400);
 
-        if (!user.verified) throw new AppError('Account not verified yet', 403);
+        if (!user.verified) throw new ForbiddenError('client sign in', 'Account not verified yet', 403);
 
 
         const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) throw new AppError('Invalid password', 400);
+        if (!validPassword) throw new BadRequestError('client sign in', 'Invalid password', 400);
 
         const token = jwt.sign({
             id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName,

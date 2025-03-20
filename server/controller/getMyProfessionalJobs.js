@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
-const AppError = require('../utils/AppError');
+const {logger} = require("../utils/logger");
+const ForbiddenError = require("../utils/errors/ForbiddenError");
+const UnauthorizedError = require("../utils/errors/UnauthorizedError");
+const InternalServerError = require("../utils/errors/InternalServerError");
 
 /**
  * @module server/controller
@@ -21,23 +24,23 @@ const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
 
     if (!authorizationHeader) {
-        return next(new AppError('Unauthorized: No authorization header provided', 401));
+        return next(new UnauthorizedError('professional jobs','No authorization header provided', 401));
     }
 
     const token = authorizationHeader.split(' ')[1];
 
     if (!token) {
-        return next(new AppError('Unauthorized: No token found in header', 401));
+        return next(new UnauthorizedError('professional jobs','No token found in header', 401));
     }
 
-    console.log('Token received:', token);  // Log the token
+    logger.info('Token received:', token);  // Log the token
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return next(new AppError('Forbidden: Invalid or expired token', 403));
+            return next(new ForbiddenError('professional jobs', 'Invalid or expired token', 403));
         }
 
-        console.log('User data from token:', user);  // Log user data
+        logger.info('User data from token:', user);  // Log user data
         req.user = user;
         next();
     });
@@ -101,8 +104,8 @@ const getMyProfessionalJobs = async (req, res) => {
         jobsByStatus.amountEarned = amountEarned;
         res.status(200).json(jobsByStatus);
     } catch (error) {
-        console.error('Error fetching professional jobs:', error);
-        next(new AppError('An error occurred while fetching jobs.', 500));
+        logger.error('Error fetching professional jobs:', error);
+        next(new InternalServerError('professional jobs','An error occurred while fetching jobs.', 500));
     }
 };
 

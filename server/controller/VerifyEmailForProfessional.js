@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const { fixerClient } = require('../model/professionalClientModel');
 const dotenv = require('dotenv');
-const AppError = require('../utils/AppError');
+const BadRequestError = require("../utils/errors/BadRequestError");
+const NotFoundError = require("../utils/errors/NotFoundError");
 
 /**
  * @module server/controller
@@ -23,7 +24,7 @@ async function verifyEmail(req, res) {
         const { token } = req.query;  // Extract token from the query params
 
         if (!token) {
-            throw new AppError('No verification token provided.', 400);
+            throw new BadRequestError('pro email verification', 'No verification token provided.', 400);
         }
 
         // Verify the token
@@ -33,7 +34,7 @@ async function verifyEmail(req, res) {
         // Find the user by ID
         const user = await fixerClient.findById(userId);
         if (!user) {
-            throw new AppError('Account not found.', 404);
+            throw new NotFoundError('pro email verification', 'Account not found.', 404);
         }
 
         // If the user is already verified, return a message
@@ -43,7 +44,7 @@ async function verifyEmail(req, res) {
 
         // If the token doesn't match or has expired, return an error
         if (user.verificationToken !== token) {
-            throw new AppError('Invalid or expired token.', 400);
+            throw new BadRequestError('pro email verification', 'Invalid or expired token.', 400);
         }
 
         // Mark the user as verified
@@ -54,7 +55,7 @@ async function verifyEmail(req, res) {
         res.status(200).json({ message: 'Email verified successfully! You can now log in.' });
     } catch (error) {
         console.error(error);
-        next(new AppError('Invalid or expired token.', 400));
+        next(new BadRequestError('pro email verification', 'Invalid or expired token.', 400));
     }
 }
 

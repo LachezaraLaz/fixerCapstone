@@ -1,6 +1,6 @@
 const { getAllJobs } = require('../repository/issueRepository');
 const { issueDTO } = require('../DTO/issueDTO');
-const AppError = require('../utils/AppError');
+const InternalServerError = require("../utils/errors/InternalServerError");
 
 /**
  * @module server/controller
@@ -24,7 +24,7 @@ const getAllIssues = async (req, res) => {
 
         res.status(200).json({ jobs: formattedJobs });
     } catch (error) {
-        next(new AppError(`Failed to fetch jobs: ${error.message}`, 500));
+        next(new InternalServerError('all issues', `Failed to fetch jobs: ${error.message}`, 500));
     }
 };
 

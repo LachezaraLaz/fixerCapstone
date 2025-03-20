@@ -1,6 +1,7 @@
 const NotificationRepository = require('../repository/notificationRepository');
 const NotificationDto = require('../DTO/notificationDto.js');
-const AppError = require('../utils/AppError');
+const {logger} = require("../utils/logger");
+const InternalServerError = require("../utils/errors/InternalServerError");
 
 /**
  * @module server/controller
@@ -20,8 +21,8 @@ const getNotifications = async (req, res) => {
         const notifications = await NotificationRepository.getNotificationsByUserId(req.user.id);
         res.json(notifications.map(notification => new NotificationDto(notification)));
     } catch (error) {
-        console.error('Error fetching notifications:', error);
-        next(new AppError('Failed to fetch notifications', 500));
+        logger.error('Error fetching notifications:', error);
+        next(new InternalServerError('notifications', 'Failed to fetch notifications', 500));
     }
 };
 
@@ -50,8 +51,8 @@ const getNotificationHistory = async (req, res) => {
 
         res.status(200).json(notifications.map(notification => new NotificationDto(notification)));
     } catch (error) {
-        console.error('Error fetching notifications history:', error);
-        next(new AppError('Failed to fetch notifications history', 500));
+        logger.error('Error fetching notifications history:', error);
+        next(new InternalServerError('notifications', 'Failed to fetch notifications history', 500));
     }
 };
 
@@ -74,8 +75,8 @@ const markAsRead = async (req, res) => {
 
         res.json({ message: 'Notification marked as read', notification: new NotificationDto(notification) });
     } catch (error) {
-        console.error('Error marking notification as read:', error);
-        next(new AppError('Failed to mark notification as read', 500));
+        logger.error('Error marking notification as read:', error);
+        next(new InternalServerError('notifications', 'Failed to mark notification as read', 500));
     }
 };
 
@@ -96,8 +97,8 @@ const createNotification = async (req, res) => {
 
         res.status(201).json({ message: 'Notification created', notification: new NotificationDto(notification) });
     } catch (error) {
-        console.error('Error creating notification:', error);
-        next(new AppError('Failed to create notification', 500));
+        logger.error('Error creating notification:', error);
+        next(new InternalServerError('notifications', 'Failed to create notification', 500));
     }
 };
 
@@ -115,8 +116,8 @@ const getUnreadNotificationCount = async (req, res) => {
         const count = await NotificationRepository.countUnreadNotifications(req.user.id);
         res.status(200).json({ unreadCount: count });
     } catch (error) {
-        console.error('Error counting unread notifications:', error);
-        next(new AppError('Failed to fetch unread notification count', 500));
+        logger.error('Error counting unread notifications:', error);
+        next(new InternalServerError('notifications', 'Failed to fetch unread notification count', 500));
     }
 };
 

@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require('axios');
-const AppError = require('../utils/AppError');
+const {logger} = require("../utils/logger");
+const BadRequestError = require("../utils/errors/BadRequestError");
 
 /**
  * @module server/controller
@@ -26,7 +27,7 @@ const verifyAddress = async (req, res) => {
         const { street, postalCode } = req.body;
 
         if (!street || !postalCode) {
-            throw new AppError('Street and postal code are required.', 400);
+            throw new BadRequestError('address verification', 'Street and postal code are required.', 400);
         }
 
         const response = await axios.post(
@@ -46,17 +47,17 @@ const verifyAddress = async (req, res) => {
             const coordinates = await getCoordinates(fullAddress);
 
             if (!coordinates) {
-                throw new AppError('Geocoding failed for the given address.', 400);
+                throw new BadRequestError('address verification', 'Geocoding failed for the given address.', 400);
             }
 
             res.send({ status: 'success', data: 'Address verified successfully from server',
                 isAddressValid: true,
                 coordinates: coordinates});
         } else {
-            throw new AppError('Address verification failed from server 1.', 400);
+            throw new BadRequestError('address verification', 'Address verification failed from server 1.', 400);
         }
     } catch (err) {
-        console.error(err);
+        logger.error(err);
         next(err);
     }
 };
@@ -84,7 +85,7 @@ const getCoordinates = async (fullAddress) => {
             return null;
         }
     } catch (err) {
-        console.error('Geocoding API Error:', err.response?.data || err.message);
+        logger.error('Geocoding API Error:', err.response?.data || err.message);
         return null;
     }
 };

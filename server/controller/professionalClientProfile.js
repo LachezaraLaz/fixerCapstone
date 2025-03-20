@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT verification
 const fixerClientObject = require('../model/professionalClientModel'); // Mongoose model for professional
-const AppError = require('../utils/AppError');
+const UnauthorizedError = require("../utils/errors/UnauthorizedError");
+const ForbiddenError = require("../utils/errors/ForbiddenError");
+const NotFoundError = require("../utils/errors/NotFoundError");
+const InternalServerError = require("../utils/errors/InternalServerError");
+const {logger} = require("../utils/logger");
 
 /**
  * @module server/controller
@@ -21,18 +25,18 @@ const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;  // Get authorization header
 
     if (!authorizationHeader) {
-        return next(new AppError('Unauthorized', 401));  // No token provided
+        return next(new UnauthorizedError('pro profile', 'Authorization header missing', 401));  // No token provided
     }
 
     const token = authorizationHeader.split(' ')[1];  // Extract token from Authorization header
 
     if (!token) {
-        return next(new AppError('Unauthorized: Missing token', 401));  // No token
+        return next(new UnauthorizedError('pro profile', 'Missing token', 401));  // No token
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return next(new AppError('Forbidden: Invalid token', 403));  // Token invalid
+            return next(new ForbiddenError('pro profile', 'Invalid token', 403));  // Token invalid
         }
         req.user = user;  // Attach user details from the token to the request
         next();  // Proceed to the next middleware or route handler
@@ -54,14 +58,14 @@ const profile = async (req, res) => {
         const professional = await fixerClientObject.fixerClient.findById(req.user.id);
 
         if (!professional) {
-            throw new AppError('Professional not found', 404);
+            throw new NotFoundError('pro profile', 'Professional not found', 404);
         }
 
         // Respond with professional's data
         res.json(professional);
     } catch (error) {
-        console.error('Error fetching professional data:', error);
-        next(new AppError('Server error while fetching professional data', 500));
+        logger.error('Error fetching professional data:', error);
+        next(new InternalServerError('pro profile', 'Server error while fetching professional data', 500));
     }
 };
 

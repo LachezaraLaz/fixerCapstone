@@ -1,5 +1,6 @@
 const axios = require('axios');
-const AppError = require('../utils/AppError');
+const {logger} = require("../utils/logger");
+const InternalServerError = require("../utils/errors/InternalServerError");
 
 async function enhanceIssueDescription(userDescription) {
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -46,8 +47,8 @@ async function enhanceIssueDescription(userDescription) {
 
         return { improvedDescription: aiMessage };
     } catch (error) {
-        console.error('Error calling OpenAI API:', error);
-        throw new AppError(`Error calling OpenAI API: ${error.message}`, 500);
+        logger.error('Error calling OpenAI API:', error);
+        throw new InternalServerError('AI service', `Error calling OpenAI API: ${error.message}`, 500);
     }
 }
 

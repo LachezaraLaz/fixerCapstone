@@ -1,6 +1,8 @@
 const ProfessionalDTO = require('../DTO/professionalDTO');
 const professionalRepository = require('../repository/professionalRepository');
-const AppError = require('../utils/AppError');
+const BadRequestError = require("../utils/errors/BadRequestError");
+const InternalServerError = require("../utils/errors/InternalServerError");
+const {logger} = require("../utils/logger");
 
 /**
  * @module server/controller
@@ -26,7 +28,7 @@ const registerUser = async (req, res) => {
         // Check if user already exists
         const existedUser = await professionalRepository.findProfessionalByEmail(professionalData.email);
         if (existedUser) {
-            throw new AppError('Account already exists', 400);
+            throw new BadRequestError('pro register', 'Account already exists', 400);
         }
 
         // Hash password
@@ -47,8 +49,8 @@ const registerUser = async (req, res) => {
 
         res.send({ status: 'success', data: 'Account created successfully. Please check your email to verify your account.' });
     } catch (e) {
-        console.error(e);
-        next(new AppError(`User creation failed: ${e.message}`, 500));
+        logger.error(e);
+        next(new InternalServerError('pro register', `User creation failed: ${e.message}`, 500));
     }
 };
 

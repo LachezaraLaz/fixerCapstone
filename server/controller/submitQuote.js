@@ -6,7 +6,11 @@ const { fixerClient } = require('../model/fixerClientModel');
 const { Jobs } = require('../model/createIssueModel');
 const { logger } = require('../utils/logger');
 const { initChat } = require('./initChat');
-const AppError = require('../utils/AppError');
+const ForbiddenError = require("../utils/errors/ForbiddenError");
+const UnauthorizedError = require("../utils/errors/UnauthorizedError");
+const BadRequestError = require("../utils/errors/BadRequestError");
+const NotFoundError = require("../utils/errors/NotFoundError");
+const InternalServerError = require("../utils/errors/InternalServerError");
 
 /**
  * @module server/controller
@@ -29,20 +33,20 @@ const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
 
     if (!authorizationHeader) {
-        return next(new AppError('Unauthorized: Missing authorization header', 401));
+        return next(new UnauthorizedError('submit quote', 'Missing authorization header', 401));
     }
 
     const token = authorizationHeader.split(' ')[1];
 
     if (!token) {
-        return next(new AppError('Unauthorized: Token not found', 401));
+        return next(new UnauthorizedError('submit quote', 'Token not found', 401));
     }
 
     // console.log('Token received:', token); // Log the token
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return next(new AppError('Forbidden: Invalid token', 403));
+            return next(new ForbiddenError('submit quote', 'Invalid token', 403));
         }
 
         // console.log('User data from token:', user); // Log user data
@@ -66,35 +70,35 @@ const authenticateJWT = (req, res, next) => {
  */
 const submitQuote = async (req, res) => {
     try {
-        console.log('User data in submitQuote:', req.user); // Log the user data
+        logger.info('User data in submitQuote:', req.user); // Log the user data
 
         const { clientEmail, price, issueId } = req.body;
 
         if (!clientEmail || !price || !issueId) {
-            throw new AppError('Missing required fields: clientEmail, price, and issueId.', 400);
+            throw new BadRequestError('submit quote', 'Missing required fields: clientEmail, price, and issueId.', 400);
         }
 
         const professionalEmail = req.user.email; // This should come from req.user if it's set correctly
         if (!professionalEmail) {
-            throw new AppError('Professional email not found in token.', 400);
+            throw new BadRequestError('submit quote', 'Professional email not found in token.', 400);
         }
 
         // Check if a quote already exists
         const existingQuote = await Quotes.findOne({ issueId, professionalEmail });
         if (existingQuote) {
-            throw new AppError('You have already submitted a quote for this issue.', 400);
+            throw new BadRequestError('submit quote', 'You have already submitted a quote for this issue.', 400);
         }
 
         // Fetch client information
         const clientInfo = await fixerClient.findOne({ email: clientEmail });
         if (!clientInfo) {
-            throw new AppError('Client information not found', 404);
+            throw new NotFoundError('submit quote', 'Client information not found', 404);
         }
 
         // Fetch the issue to get the title
         const issue = await Jobs.findById(issueId);
         if (!issue) {
-            throw new AppError('Issue not found.', 404);
+            throw new NotFoundError('submit quote', 'Issue not found.', 404);
         }
 
         const newQuote = await Quotes.create({
@@ -115,8 +119,8 @@ const submitQuote = async (req, res) => {
 
         res.status(201).json({ message: 'Quote created successfully', quote: newQuote });
     } catch (error) {
-        console.error('Error creating quote:', error);
-        next(new AppError(`Internal server error while creating quote: ${error.message}`, 500));
+        logger.error('Error creating quote:', error);
+        next(new InternalServerError('submit quote', `Internal server error while creating quote: ${error.message}`, 500));
     }
 };
 
@@ -134,7 +138,7 @@ const getQuotesByJob = async (req, res) => {
         const { jobId } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(jobId)) {
-            throw new AppError('Invalid job ID.', 400);
+            throw new BadRequestError('submit quote', 'Invalid job ID.', 400);
         }
 
         // Only fetch quotes that are not rejected
@@ -155,8 +159,8 @@ const getQuotesByJob = async (req, res) => {
 
         res.status(200).json({ offers: populatedQuotes || [] });
     } catch (error) {
-        console.error('Error fetching quotes:', error);
-        next(new AppError(`Error fetching quotes for the job: ${error.message}`, 500));
+        logger.error('Error fetching quotes:', error);
+        next(new InternalServerError('submit quote', `Error fetching quotes for the job: ${error.message}`, 500));
     }
 };
 
@@ -181,13 +185,13 @@ const updateQuoteStatus = async (req, res) => {
         const { status } = req.body;
 
         if (!['accepted', 'rejected'].includes(status)) {
-            throw new AppError('Invalid status value. Must be "accepted" or "rejected".', 400);
+            throw new BadRequestError('submit quote', 'Invalid status value. Must be "accepted" or "rejected".', 400);
         }
 
         // Fetch the quote to get the associated job (issueId)
         const quote = await Quotes.findById(quoteId);
         if (!quote) {
-            throw new AppError('Quote not found.', 404);
+            throw new NotFoundError('submit quote', 'Quote not found.', 404);
         }
 
         if (status === 'accepted') {
@@ -199,7 +203,7 @@ const updateQuoteStatus = async (req, res) => {
             );
 
             if (!updatedQuote) {
-                throw new AppError('Failed to update the quote.', 404);
+                throw new NotFoundError('submit quote', 'Failed to update the quote.', 404);
             }
 
             // Update the status of the associated issue to "in progress"
@@ -218,7 +222,7 @@ const updateQuoteStatus = async (req, res) => {
             const issue = await Jobs.findById(updatedQuote.issueId);
 
             if (!professional || !issue) {
-                throw new AppError('Professional or issue not found.', 404);
+                throw new NotFoundError('submit quote', 'Professional or issue not found.', 404);
             }
 
             // Notify the professional whose quote was accepted
@@ -263,7 +267,7 @@ const updateQuoteStatus = async (req, res) => {
             );
 
             if (!updatedQuote) {
-                throw new AppError('Failed to update the quote.', 404);
+                throw new NotFoundError('submit quote', 'Failed to update the quote.', 404);
             }
 
             // Notify the professional whose quote was rejected
@@ -271,7 +275,7 @@ const updateQuoteStatus = async (req, res) => {
             const issue = await Jobs.findById(updatedQuote.issueId);
 
             if (!professional || !issue) {
-                throw new AppError('Professional or issue not found.', 404);
+                throw new NotFoundError('submit quote', 'Professional or issue not found.', 404);
             }
 
             const notification = new Notification({
@@ -286,8 +290,8 @@ const updateQuoteStatus = async (req, res) => {
             res.status(200).json({ message: `Quote rejected successfully.`, quote: updatedQuote });
         }
     } catch (error) {
-        console.error('Error updating quote status:', error);
-        next(new AppError(`Internal server error while updating quote status: ${error.message}`, 500));
+        logger.error('Error updating quote status:', error);
+        next(new InternalServerError('submit quote', `Internal server error while updating quote status: ${error.message}`, 500));
     }
 };
 

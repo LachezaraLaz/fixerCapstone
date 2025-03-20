@@ -3,7 +3,8 @@ const { Jobs } = require('../model/createIssueModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { getCoordinatesFromAddress } = require('../services/geoCodingService');
 const { logger } = require('../utils/logger');
-const AppError = require('../utils/AppError');
+const NotFoundError = require("../utils/errors/NotFoundError");
+const BadRequestError = require("../utils/errors/BadRequestError");
 
 /**
  * @module server/controller
@@ -31,7 +32,7 @@ const createIssue = async (req, res) => {
     let imageUrl = null;
 
     if (!title || !description || !professionalNeeded) {
-        throw new AppError('Some required fields are missing.', 400);
+        throw new BadRequestError('create issue', 'Some required fields are missing.', 400);
     }
 
     if (req.file) {
@@ -41,7 +42,7 @@ const createIssue = async (req, res) => {
     try {
         const clientInfo = await fixerClient.findOne({ email });
         if (!clientInfo) {
-            throw new AppError('Client information not found', 404);
+            throw new NotFoundError('create issue', 'Client information not found', 404);
         }
 
         const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;

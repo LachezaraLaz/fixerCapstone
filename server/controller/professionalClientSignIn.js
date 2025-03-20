@@ -1,6 +1,7 @@
 const ProfessionalDTO = require('../DTO/professionalDTO');
 const professionalRepository = require('../repository/professionalRepository');
-const AppError = require('../utils/AppError');
+const BadRequestError = require("../utils/errors/BadRequestError");
+const ForbiddenError = require("../utils/errors/ForbiddenError");
 
 /**
  * @module server/controller
@@ -24,17 +25,17 @@ const signinUser = async (req, res) => {
         // Check if user exists and is a professional
         const user = await professionalRepository.findProfessionalByEmail(professionalData.email);
         if (!user || user.accountType !== 'professional') {
-            throw new AppError('User not found', 400);
+            throw new BadRequestError('pro sign in', 'User not found', 400);
         }
 
         if (!user.verified) {
-            throw new AppError('Account not verified yet', 403);
+            throw new ForbiddenError('pro sign in','Account not verified yet', 403);
         }
 
         // Compare password
         const validPassword = await professionalRepository.comparePassword(professionalData.password, user.password);
         if (!validPassword) {
-            throw new AppError('Invalid password', 400);
+            throw new BadRequestError('pro sign in','Invalid password', 400);
         }
 
         // Create JWT token

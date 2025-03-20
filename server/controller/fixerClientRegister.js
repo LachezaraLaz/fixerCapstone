@@ -4,7 +4,8 @@ const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 const UserRepository = require('../repository/userRepository');
 const { RegisterUserDto } = require('../DTO/userDto');
-const AppError = require('../utils/AppError');
+const BadRequestError = require("../utils/errors/BadRequestError");
+const {logger} = require("../utils/logger");
 
 /**
  * @module server/controller
@@ -52,7 +53,7 @@ const registerUser = async (req, res) => {
     const existedUser = await UserRepository.findByEmail(userDto.email);
 
     if (existedUser) {
-        throw new AppError('User already exists', 400);
+        throw new BadRequestError('client register', 'User already exists', 400);
     }
 
 
@@ -70,7 +71,7 @@ const registerUser = async (req, res) => {
 
         res.send({ status: 'success', data: 'Account created successfully. Check your email to verify your account.' });
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         next(error); // custom error handler
     }
 };

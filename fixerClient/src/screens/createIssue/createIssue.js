@@ -110,7 +110,7 @@ export default function CreateIssue({ navigation }) {
             setLoadingAi(true);
             // Call AI endpoint
             const response = await axios.post(
-                'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
+                'http://192.168.1.143:3000/issue/aiEnhancement',
                 //'http://192.168.0.19:3000/issue/aiEnhancement',
                 { description }
             );
@@ -215,7 +215,7 @@ export default function CreateIssue({ navigation }) {
                 image: selectedImage ? "✅ Image Attached" : "❌ No Image",
             });
 
-            const response = await axios.post(`https://fixercapstone-production.up.railway.app/issue/create`, formData, {
+            const response = await axios.post(`http://192.168.1.143:3000/issue/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`

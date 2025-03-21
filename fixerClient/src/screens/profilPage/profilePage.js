@@ -35,7 +35,7 @@ const ProfilePage = () => {
                 const token = await AsyncStorage.getItem('token');
 
                 if (token) {
-                    const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile`, {
+                    const response = await axios.get(`http://192.168.1.143:3000/client/profile`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     setClient(response.data);

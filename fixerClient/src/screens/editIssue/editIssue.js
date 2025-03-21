@@ -54,7 +54,7 @@ export default function EditIssue({ route, navigation }) {
                 return;
             }
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, {
+            const response = await axios.get(`http://192.168.1.143:3000/issue/${jobId}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
@@ -172,7 +172,7 @@ export default function EditIssue({ route, navigation }) {
                 });
             }
 
-            const response = await axios.put(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, formData, {
+            const response = await axios.put(`http://192.168.1.143:3000/issue/${jobId}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',

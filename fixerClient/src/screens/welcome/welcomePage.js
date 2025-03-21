@@ -14,7 +14,7 @@ const { width, height } = Dimensions.get('window');
 export default function WelcomePage({ navigation }) {
     let [modalVisible, setModalVisible] = useState(false);
 
-    console.log("Current language is " + Localization.getLocales()[0].languageCode);
+
     const {locale, setLocale}  = useContext(LanguageContext);
     const i18n = new I18n(en,fr);
     i18n.fallbacks = true;

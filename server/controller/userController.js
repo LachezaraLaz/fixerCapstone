@@ -29,7 +29,7 @@ const getUserProfile = async (req, res) => {
             throw new BadRequestError('user', 'Email is required', 400);
         }
 
-    try {
+
         const user = await fixerClient.findOne({ email });
 
         if (!user) {

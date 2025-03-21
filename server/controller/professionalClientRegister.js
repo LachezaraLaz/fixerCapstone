@@ -39,9 +39,6 @@ const registerUser = async (req, res) => {
         // Hash password
         professionalData.password = await professionalRepository.hashPassword(professionalData.password);
 
-        // Create the new user object
-
-    try {
         // Check if a Stripe Customer record already exists
         const customers = await stripe.customers.list({
             email: professionalData.email,

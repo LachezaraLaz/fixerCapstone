@@ -86,6 +86,48 @@ async function forgotPassword(req, res) {
     }
 }
 
+
+// Function to update password (validating old password first)
+async function updatePassword(req, res) {
+
+    const { email, currentPassword, newPassword } = req.body;
+
+    try {
+        // Find user by email
+        const user = await fixerClientObject.fixerClient.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Compare current password with hashed password stored in database
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Current password is incorrect' });
+        }
+
+        // Hash the new password before saving
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+        // Update password
+        await fixerClientObject.fixerClient.updateOne(
+            { _id: user._id },
+            {
+                $set: {
+                    password: hashedPassword,
+                },
+            }
+        );
+
+        res.json({ message: 'Password updated successfully' });
+    } catch (err) {
+        console.error('Error updating password:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+// Function to validate the PIN
 /**
  * Validates the password reset PIN for a user.
  *
@@ -171,4 +213,34 @@ async function resetPassword(req, res) {
     }
 }
 
-module.exports = { forgotPassword, validatePin, resetPassword };
+async function validateCurrentPassword(req, res) {
+    const { email, currentPassword } = req.body;
+    console.log(`Attempting to validate password for: ${email}`);
+
+    try {
+        const user = await fixerClientObject.fixerClient.findOne({ email });
+
+        if (!user) {
+            console.log(`User not found with email: ${email}`);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        console.log(`User found: ${user.email}`);
+
+        // Check if the current password is correct
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        console.log(`Password match result: ${isMatch}`);
+
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Current password is incorrect' });
+        }
+
+        res.status(200).json({ message: 'Current password validated successfully' });
+    } catch (err) {
+        console.error('Error validating current password:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+module.exports = { forgotPassword, validatePin, resetPassword, updatePassword, validateCurrentPassword };

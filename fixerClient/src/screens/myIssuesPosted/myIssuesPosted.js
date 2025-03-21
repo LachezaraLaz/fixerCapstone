@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, RefreshControl, SafeAreaView } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,6 +7,11 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { styles } from '../../../style/myIssues/myIssuesStyle';
 import JobBox from '../../../components/jobBox';
 import NotificationButton from "../../../components/notificationButton";
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 import { IPAddress } from '../../../ipAddress';
 
 /**
@@ -20,6 +25,11 @@ export default function MyIssuesPosted() {
     const [refreshing, setRefreshing] = useState(false);
     const navigation = useNavigation();
     const isFocused = useIsFocused();
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    const inProgressLabel = i18n.locale === "fr" ? "En cours" : "in progress";
+    i18n.locale = locale;
 
     useEffect(() => {
         if (isFocused) {
@@ -55,10 +65,11 @@ export default function MyIssuesPosted() {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
+
             setJobs({
                 all: response.data.jobs,
                 inProgress: response.data.jobs.filter(job =>
-                    job.status === 'In Progress' || job.status === 'Open'
+                    job.status === inProgressLabel || job.status === 'Open'
                 ),
                 completed: response.data.jobs.filter(job =>
                     job.status === 'Completed' || job.status === 'Closed'
@@ -90,7 +101,7 @@ export default function MyIssuesPosted() {
                 <Text style={styles.headerLogo}>Fixr</Text>
 
                 {/* ✅ Updated Title to "My Issues" */}
-                <Text style={styles.headerTitle}>My Issues</Text>
+                <Text style={styles.headerTitle}>{i18n.t('my_issues')}</Text>
 
                 {/* Notification Button */}
                 <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
@@ -99,8 +110,8 @@ export default function MyIssuesPosted() {
             {/* ✅ Fixed Tabs */}
             <View style={styles.tabsContainer}>
                 {[
-                    { key: "inProgress", label: "In Progress" },
-                    { key: "completed", label: "Completed" }
+                    { key: "inProgress", label: `${i18n.t('in_progress')}` },
+                    { key: "completed", label: `${i18n.t('completed')}` }
                 ].map(({ key, label }) => (
                     <TouchableOpacity
                         key={key}
@@ -121,7 +132,7 @@ export default function MyIssuesPosted() {
                 {jobs[selectedTab].length > 0 ? (
                     jobs[selectedTab].map(job => <JobBox key={job.id} job={job} navigation={navigation} />)
                 ) : (
-                    <Text style={styles.noJobsText}>No jobs available</Text>
+                    <Text style={styles.noJobsText}>`${i18n.t('jobs_available')}`</Text>
                 )}
             </ScrollView>
         </SafeAreaView>

@@ -1,59 +1,73 @@
-import {Platform, StyleSheet} from "react-native";
+import { Platform, StyleSheet, Dimensions } from "react-native";
+
+const SCREEN_WIDTH = Dimensions.get("window").width; // Get full screen width
+const SEARCH_BAR_WIDTH = SCREEN_WIDTH - 32; // Ensures it matches the orange section (with margins)
 
 const styles = StyleSheet.create({
     wrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 35,  // Adds space above and below the whole component
-        marginHorizontal: 20,
+        justifyContent: 'center',
+        width: SEARCH_BAR_WIDTH,
+        alignSelf: "center",
+        marginVertical: 10,
     },
+
     searchContainer: {
-        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#fff',
-        borderRadius: 10,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: '#ddd',
         paddingHorizontal: 15,
-        height: 45,
+        height: 50,
+        flex: 1,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 2,
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 3,
     },
+
     input: {
         flex: 1,
         fontSize: 16,
-        textAlign: 'center', // Center text horizontally
-        textAlignVertical: 'center', // Works for Android
+        textAlign: 'left',
+        paddingVertical: 14,
+        color: '#333',
         ...Platform.select({
             ios: {
-                lineHeight: 40, // Aligns text in center on iOS
+                lineHeight: 22,
+            },
+            android: {
+                paddingTop: 0,
+                paddingBottom: 0,
             },
         }),
-        color: '#333'
     },
+
     iconButton: {
-        padding: 8,
+        padding: 12,
     },
+
     filterButton: {
-        marginLeft: 10, // Space between search bar and filter button
+        marginLeft: 12,
         backgroundColor: '#fff',
-        borderRadius: 8,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: '#ddd',
-        padding: 8,
+        padding: 12,
         justifyContent: 'center',
         alignItems: 'center',
-        height: 45,
-        width: 40,
+        height: 50,
+        width: 55,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 2,
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 3,
     },
 });
+
 export default styles;

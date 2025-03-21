@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet, Keyboard, Platform } from 'react-native';
 import HomeScreen from '../homeScreen/homeScreen';
@@ -6,11 +6,20 @@ import MyIssuesPosted from "../myIssuesPosted/myIssuesPosted";
 import ChatScreens from '../chat/chatScreens';
 import { Ionicons } from '@expo/vector-icons';
 import ProfilePage from '../profilPage/profilePage';
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 const Tab = createBottomTabNavigator();
 
 export default function NavBar({ setIsLoggedIn }) {
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
@@ -28,8 +37,8 @@ export default function NavBar({ setIsLoggedIn }) {
     }, []);
 
     const labels = {
-        Home: 'Home',
-        JobsPosted: 'My Jobs',
+        Home: `${i18n.t('home_screen')}`,
+        JobsPosted: `${i18n.t('mission')}`,
         Chat: 'Chat',
         Profile: 'Profile',
     };

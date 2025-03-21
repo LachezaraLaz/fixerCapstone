@@ -93,7 +93,7 @@ export default function ContractOffer({ route, navigation }) {
         }
 
         // Ensures that selectedIssue has necessary details
-        if (!selectedIssue || !selectedIssue.userEmail || !selectedIssue._id) {
+        if (!selectedIssue || !selectedIssue.userEmail || !selectedIssue.id) {
             Alert.alert('Error', 'Unable to retrieve complete issue details. Please try again.');
             return;
         }
@@ -104,7 +104,8 @@ export default function ContractOffer({ route, navigation }) {
                 Alert.alert('Error', 'User token not found.');
                 return;
             }
-            console.log('selectedIssue:', selectedIssue);
+            console.log('Selected Issue:', selectedIssue);  // Log the whole issue object
+            console.log('Issue ID:', selectedIssue?.id);    // Log the issue ID specifically
 
             if (!selectedIssue || !selectedIssue.userEmail) {
                 console.log('clientEmail is null or undefined');
@@ -113,7 +114,8 @@ export default function ContractOffer({ route, navigation }) {
             }
 
             const clientEmail = selectedIssue.userEmail; // Use userEmail from the schema
-            const issueId = selectedIssue._id;
+            const issueId = selectedIssue._id || selectedIssue.id;
+            console.log('Resolved Issue ID:', issueId);
 
             const response = await axios.post(
                 `https://fixercapstone-production.up.railway.app/quotes/create`,

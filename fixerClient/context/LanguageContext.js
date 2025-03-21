@@ -6,7 +6,6 @@ export const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
     const [locale, setLocale] = useState(Localization.getLocales()[0].languageCode);
-
     useEffect(() => {
         // Load saved language
         const loadLanguage = async () => {

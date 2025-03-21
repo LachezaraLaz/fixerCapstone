@@ -160,7 +160,6 @@ const fr = {
     rating: "Évaluation",
     comment: "Commentaire",
     review: "Avis",
-
 }
 
 export {en, fr}

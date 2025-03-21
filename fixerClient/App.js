@@ -27,10 +27,7 @@ import addReview from "./src/screens/addReview/addReview";
 import AccountSettingsPage from "./src/screens/accountSettings/accountSettings"
 import issueDetails from "./src/screens/issueDetails/issueDetails";
 import { LanguageProvider } from "./context/LanguageContext";
-
-
 import { Text } from "react-native";
-
 import { LogBox } from 'react-native';
 
 // Suppress the specific warning

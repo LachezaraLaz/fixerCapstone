@@ -52,7 +52,7 @@ const IssueDetails = () => {
     const fetchJobDetails = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://192.168.1.143:3000/issue/${jobId}`);
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/${jobId}`);
             setJob(response.data);
         } catch (error) {
             Alert.alert("Error", "Failed to fetch issue details");
@@ -127,7 +127,7 @@ const IssueDetails = () => {
                         text: `Yes`,
                         onPress: async () => {
                             try {
-                                const response = await axios.delete(`http://192.168.1.143:3000/issue/delete/${job.id}?status=${newStatus}`,
+                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/delete/${job.id}?status=${newStatus}`,
                                     {headers: {Authorization: `Bearer ${token}`}}
                                 );
 

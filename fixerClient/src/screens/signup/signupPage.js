@@ -206,7 +206,7 @@ export default function SignUpPage({ navigation }) {
             return;
         } else {
             try {
-                const response = await axios.post(`http://192.168.1.143:3000/client/register`, {
+                const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/register`, {
                     email: email,
                     firstName: firstName,
                     lastName: lastName,
@@ -251,7 +251,7 @@ export default function SignUpPage({ navigation }) {
      */
     const handleVerifyAddress = async () => {
         try {
-            const response = await axios.post(`http://192.168.1.143:3000/client/verifyAddress`, {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
                 street: street,
                 postalCode: postalCode,
             })

@@ -143,7 +143,7 @@ const fr = {
     requests:"Demandes",
     accept:"Accepter",
     reject:"Refuser",
-    professional_needed:"Profession est Nécessaire",
+    professional_needed:"Profession Recherché",
     created_on:"Créé le",
     status:"État",
     cancel:"Annuler",

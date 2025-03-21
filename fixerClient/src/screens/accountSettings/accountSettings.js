@@ -38,7 +38,7 @@ const AccountSettingsPage = () => {
                 }
 
                 const response = await axios.get(
-                    `http://192.168.1.143:3000/client/profile`,
+                    `https://fixercapstone-production.up.railway.app/client/profile`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -77,7 +77,7 @@ const AccountSettingsPage = () => {
     const handleVerifyAddress = async () => {
         try {
             const response = await axios.post(
-                `http://192.168.1.143:3000/client/verifyAddress`,
+                `https://fixercapstone-production.up.railway.app/client/verifyAddress`,
                 {
                     street: formData.street,
                     postalCode: formData.postalCode,
@@ -128,7 +128,7 @@ const AccountSettingsPage = () => {
             }
 
             const response = await axios.post(
-                `http://192.168.1.143:3000/reset/validateCurrentPassword`,
+                `https://fixercapstone-production.up.railway.app/reset/validateCurrentPassword`,
                 { email: formData.email, currentPassword: formData.currentPassword },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -182,7 +182,7 @@ const AccountSettingsPage = () => {
             };
 
             await axios.put(
-                `http://192.168.1.143:3000/client/updateProfile`,
+                `https://fixercapstone-production.up.railway.app/client/updateProfile`,
                 updatedData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -196,7 +196,7 @@ const AccountSettingsPage = () => {
                 };
 
                 await axios.post(
-                    `http://192.168.1.143:3000/reset/updatePasswordWithOld`,
+                    `https://fixercapstone-production.up.railway.app/reset/updatePasswordWithOld`,
                     passwordData,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );

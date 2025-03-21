@@ -61,7 +61,7 @@ export default function MyIssuesPosted() {
             const decodedToken = jwtDecode(token);
             const userEmail = decodedToken.email;
 
-            const response = await axios.get(`http://192.168.1.143:3000/issue/user/${userEmail}`, {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 

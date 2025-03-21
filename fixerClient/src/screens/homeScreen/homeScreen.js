@@ -41,7 +41,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 const token = await AsyncStorage.getItem('token');
                 if (!token) return;
 
-                const response = await axios.get(`http://192.168.1.143:3000/client/profile`, {
+                const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 

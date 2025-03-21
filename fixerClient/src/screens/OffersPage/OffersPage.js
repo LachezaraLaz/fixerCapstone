@@ -45,7 +45,7 @@ export default function OffersPage({ route }) {
             }
 
             const response = await axios.get(
-                `http://192.168.1.143:3000/quotes/job/${jobId}`,
+                `https://fixercapstone-production.up.railway.app/quotes/job/${jobId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -79,7 +79,7 @@ export default function OffersPage({ route }) {
         try {
             const token = await AsyncStorage.getItem('token');
             const response = await axios.put(
-                `http://192.168.1.143:3000/quotes/${offerId}`,
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
                 { status: 'accepted' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -109,7 +109,7 @@ export default function OffersPage({ route }) {
         try {
             const token = await AsyncStorage.getItem('token');
             const response = await axios.put(
-                `http://192.168.1.143:3000/quotes/${offerId}`,
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
                 { status: 'rejected' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

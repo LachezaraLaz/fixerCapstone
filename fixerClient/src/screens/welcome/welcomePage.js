@@ -1,12 +1,25 @@
-import React, { useEffect, useRef } from 'react';
-import {View, StyleSheet, Dimensions, Animated } from 'react-native';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {View, StyleSheet, Dimensions, Animated, Button, TouchableOpacity, Text} from 'react-native';
 import OrangeButton from "../../../components/orangeButton";
+import {en, fr} from '../../../localization'
+import * as Localization from 'expo-localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import {LanguageContext} from "../../../context/LanguageContext";
 
 const { width, height } = Dimensions.get('window');
 
 // more animation if i have time one day
 export default function WelcomePage({ navigation }) {
+    let [modalVisible, setModalVisible] = useState(false);
 
+
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n(en,fr);
+    i18n.fallbacks = true;
+    i18n.translations = {en,fr}
+    i18n.locale = locale;
         // Create animated values
         const fadeAnim = useRef(new Animated.Value(0)).current; // Start with opacity 0
         const slideAnim = useRef(new Animated.Value(30)).current; // Start 30 units below
@@ -30,6 +43,15 @@ export default function WelcomePage({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
+                <Text style={languageStyle.languageButtonText}>🌍 Change Language</Text>
+            </TouchableOpacity>
+
+            <LanguageModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                setLocale={setLocale}
+            />
             <View style={styles.content}>
                  {/* Animated Title */}
                  <Animated.Text
@@ -41,14 +63,14 @@ export default function WelcomePage({ navigation }) {
                         },
                     ]}
                 >
-                    Welcome to Fixr!
+                     {i18n.t('welcome')} Fixr!
                 </Animated.Text>
 
                 {/* Buttons */}
 
                 {/* <Text style={styles.title}>Welcome to Fixr!</Text> */}
-                <OrangeButton title="Sign In" onPress={() => navigation.navigate('SignInPage')} variant="normal" />
-                <OrangeButton title="Sign Up" onPress={() => navigation.navigate('SignUpPage')} variant="normal" />
+                <OrangeButton title={i18n.t('sign_in')} onPress={() => navigation.navigate('SignInPage')} variant="normal" />
+                <OrangeButton title={i18n.t('sign_up')} onPress={() => navigation.navigate('SignUpPage')} variant="normal" />
             </View>
         </View>
     );

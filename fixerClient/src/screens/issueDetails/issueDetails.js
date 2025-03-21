@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import {
     View,
     Text,
@@ -21,15 +21,21 @@ import NotificationButton from "../../../components/notificationButton";
 import OrangeButton from "../../../components/orangeButton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback } from "react";
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import { LanguageContext } from "../../../context/LanguageContext";
 
 const IssueDetails = () => {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [modalVisible, setModalVisible] = useState(false);
     const route = useRoute();
     const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
     const {jobId} = route.params;
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     useEffect(() => {
         fetchJobDetails();
@@ -114,7 +120,7 @@ const IssueDetails = () => {
                 `Are you sure you want to ${actionText} this issue?`,
                 [
                     {
-                        text: "Cancel",
+                        text: `${i18n.t('cancel')}`,
                         style: "cancel"
                     },
                     {
@@ -168,26 +174,26 @@ const IssueDetails = () => {
                 </View>
 
                 <Text style={styles.jobTitle}>{job.title}</Text>
-                <Text style={styles.detailLabel}>Professional Needed </Text>
+                <Text style={styles.detailLabel}>{i18n.t('professional_needed')}</Text>
                 <Text style={styles.detailValue}>{job.professionalNeeded || "Not specified"}</Text>
 
-                <Text style={styles.detailLabel}>Status </Text>
+                <Text style={styles.detailLabel}>{i18n.t('status')}</Text>
                 <View style={[styles.statusContainer, {
                     backgroundColor: statusStyle.background,
                     borderColor: statusStyle.border
                 }]}>
                     <Text style={[styles.statusText, {color: statusStyle.text}]}>
-                        {job.status}
+                        {i18n.t(`status_client.${job.status.toLowerCase()}`)}
                     </Text>
                 </View>
 
                 {job.professionalEmail && (
                     <View>
-                        <Text style={styles.detailLabel}>Assigned Professional</Text>
+                        <Text style={styles.detailLabel}>{i18n.t('assigned_professional')}</Text>
                         <Text style={styles.detailValue}> {job.professionalEmail} </Text>
                     </View>
                 )}
-                <Text style={styles.detailLabel}>Created On</Text>
+                <Text style={styles.detailLabel}>{i18n.t('created_on')}</Text>
                 <Text style={styles.detailValue}>
                     {new Date(job.createdAt).toDateString()}{" "}
                     {new Date(job.createdAt).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}
@@ -206,8 +212,8 @@ const IssueDetails = () => {
                     </View>
                 ) : (
                     <View>
-                        <Text style={styles.detailLabel}>Attached Images</Text>
-                        <Text style={styles.detailValue}>No image attached yet</Text>
+                        <Text style={styles.detailLabel}>{i18n.t('attached_images')}</Text>
+                        <Text style={styles.detailValue}>{i18n.t('no_image_attached')}</Text>
                     </View>
                 )}
                 <Modal visible={modalVisible} transparent={true} animationType="fade">
@@ -234,13 +240,13 @@ const IssueDetails = () => {
 
                 {job.rating && (
                     <View>
-                        <Text style={styles.detailLabel}>Review</Text>
+                        <Text style={styles.detailLabel}>{i18n.t('review')}</Text>
                         <Text>
-                            <Text style={styles.detailSubLabel}>Rating: </Text>
+                            <Text style={styles.detailSubLabel}>{i18n.t('rating')}: </Text>
                             <Text style={styles.detailValue}>{job.rating} Stars</Text>
                         </Text>
                         <Text>
-                            <Text style={styles.detailSubLabel}>Comment: </Text>
+                            <Text style={styles.detailSubLabel}>{i18n.t('comment')}: </Text>
                             <Text style={styles.detailValue}>{job.comment || "No comment"}</Text>
                         </Text>
 
@@ -262,11 +268,11 @@ const IssueDetails = () => {
                 ) : job.status.toLowerCase() === "open" || job.status.toLowerCase() === "pending" ? (
                     <>
                         <OrangeButton
-                            title="Modify Issue"
+                            title={i18n.t('modify_issue')}
                             onPress={() => navigation.navigate("EditIssue", {jobId})}
                         />
                         <OrangeButton
-                            title="Delete Issue"
+                            title={i18n.t('delete_issue')}
                             onPress={() => deleteReopenIssue(job, job.status)}
                         />
                     </>

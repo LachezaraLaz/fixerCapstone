@@ -1,7 +1,7 @@
 import 'react-native-reanimated';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
@@ -30,7 +30,7 @@ import BankingInfoPage from "./src/screens/bankingInfoPage/bankingInfoPage";
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { Text } from "react-native";
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const linking = {
     prefixes: ['yourapp://'], // Replace 'yourapp' with your actual app scheme

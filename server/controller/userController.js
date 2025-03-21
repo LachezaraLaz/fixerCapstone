@@ -29,7 +29,7 @@ const getUserProfile = async (req, res) => {
             throw new BadRequestError('user', 'Email is required', 400);
         }
 
-        //find the user linked to that email
+    try {
         const user = await fixerClient.findOne({ email });
 
         if (!user) {
@@ -54,4 +54,4 @@ const getUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { getUserProfile };
+module.exports = { getUserProfile};

@@ -1,6 +1,7 @@
+import 'react-native-reanimated';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
@@ -25,10 +26,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ChatProvider } from "./src/screens/chat/chatContext";
 import ReviewsPage from "./src/screens/reviewsPage/reviewsPage";
 import SettingsPage from "./src/screens/settingsPage/settingsPage";
+import BankingInfoPage from "./src/screens/bankingInfoPage/bankingInfoPage";
+import { StripeProvider } from '@stripe/stripe-react-native';
 import { Text } from "react-native";
 
-
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const linking = {
     prefixes: ['yourapp://'], // Replace 'yourapp' with your actual app scheme
@@ -73,64 +75,73 @@ export default function App() {
     }
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={{ flex: 1 }}>
-                <NavigationContainer>
-                    {isLoggedIn ? (
-                        <ChatProvider>
+        <StripeProvider
+            publishableKey="pk_test_51R2Idt4EguzjUpYJuPu476vH5Q5L7MFhTKtZlTW5YqljPd4GdahB0GtQByATLzwc9CpVS9tuQ4sWx9PKhm8qwZ9Z00X2Z9JnWQ"
+        >
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <SafeAreaView style={{ flex: 1 }}>
+                    <NavigationContainer>
+                        {isLoggedIn ? (
+                            <ChatProvider>
+                                <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
+                                    <>
+                                        {/* MainTabs with ProfessionalNavBar */}
+                                        <Stack.Screen
+                                            name="MainTabs"
+                                            options={{ headerShown: false }}
+                                        >
+                                            {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                        </Stack.Screen>
+
+                                        <Stack.Screen
+                                            name="Home"
+                                            options={{ headerShown: false }} // Remove header for HomeScreen
+                                        >
+                                            {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                        </Stack.Screen>
+                                        {/* Additional screens accessible from MainTabs */}
+
+                                        <Stack.Screen
+                                            name="ProfilePage"
+                                            component={ProfilePage}
+                                            options={{ headerShown: false }}  // This hides the default navigation header
+                                        />
+                                        <Stack.Screen name="ContractOffer" component={ContractOffer} />
+                                        <Stack.Screen name="FilterIssue" component={FilterIssuePage} />
+                                        <Stack.Screen name="MyJobs" component={MyJobsPage} />
+                                        <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
+                                        <Stack.Screen name="UploadID" component={UploadID} />
+                                        <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
+                                        <Stack.Screen name="NotificationPage" component={NotificationPage} />
+                                        <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
+                                        <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
+                                        <Stack.Screen name="SettingsPage" component={SettingsPage} />
+                                        {/* Add BankingInfoPage here */}
+                                        <Stack.Screen
+                                            name="BankingInfoPage"
+                                            component={BankingInfoPage}
+                                            options={{ headerShown: false }} // Hide header if needed
+                                        />
+                                    </>
+                                </Stack.Navigator>
+                            </ChatProvider>
+                        ) : (
                             <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                                 <>
-                                    {/* MainTabs with ProfessionalNavBar */}
-                                    <Stack.Screen
-                                        name="MainTabs"
-                                        options={{ headerShown: false }}
-                                    >
-                                        {props => <ProfessionalNavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                    <Stack.Screen name="welcomePage" component={WelcomePage} />
+                                    <Stack.Screen name="SignInPage">
+                                        {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                     </Stack.Screen>
-
-                                    <Stack.Screen
-                                        name="HomeScreen"
-                                        options={{ headerShown: false }} // Remove header for HomeScreen
-                                    >
-                                        {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                    </Stack.Screen>
-                                    {/* Additional screens accessible from MainTabs */}
-
-                                    <Stack.Screen
-                                        name="ProfilePage"
-                                        component={ProfilePage}
-                                        options={{ headerShown: false }}  // This hides the default navigation header
-                                    />
-                                    <Stack.Screen name="ContractOffer" component={ContractOffer} />
-                                    <Stack.Screen name="FilterIssue" component={FilterIssuePage} />
-                                    <Stack.Screen name="MyJobs" component={MyJobsPage} />
-                                    <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
-                                    <Stack.Screen name="UploadID" component={UploadID} />
-                                    <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
-                                    <Stack.Screen name="NotificationPage" component={NotificationPage} />
-                                    <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
-                                    <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
-                                    <Stack.Screen name="SettingsPage" component={SettingsPage} />
+                                    <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                    <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                    <Stack.Screen name="EnterPin" component={EnterPin} />
+                                    <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
                                 </>
                             </Stack.Navigator>
-                        </ChatProvider>
-                    ) : (
-                        <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
-                            <>
-                                <Stack.Screen name="welcomePage" component={WelcomePage} />
-                                <Stack.Screen name="SignInPage">
-                                    {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                </Stack.Screen>
-                                <Stack.Screen name="SignUpPage" component={SignUpPage} />
-                                <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
-                                <Stack.Screen name="EnterPin" component={EnterPin} />
-                                <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
-                            </>
-                        </Stack.Navigator>
-                    )}
-                </NavigationContainer>
-            </SafeAreaView>
-        </GestureHandlerRootView>
+                        )}
+                    </NavigationContainer>
+                </SafeAreaView>
+            </GestureHandlerRootView>
+        </StripeProvider>
     );
 }
-

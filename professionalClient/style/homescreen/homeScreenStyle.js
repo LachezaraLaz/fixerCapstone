@@ -209,4 +209,47 @@ export const styles = StyleSheet.create({
         color: '#f39c12',
     },
 
+    noticeContainer: {
+        backgroundColor: '#FFF3E0', // Light orange background
+        padding: 12, // Reduced padding
+        borderRadius: 10,
+        marginVertical: 12, // Reduced margin
+        marginHorizontal: 16, // Reduced margin
+        flexDirection: 'row', // Arrange icon, text, and button horizontally
+        alignItems: 'center', // Center items vertically
+        justifyContent: 'space-between', // Distribute space evenly
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3, // Android shadow
+    },
+
+    noticeIcon: {
+        marginRight: 8, // Reduced space between icon and text
+    },
+
+    noticeText: {
+        fontSize: 14, // Slightly smaller font size
+        fontWeight: '500',
+        color: '#d84315', // Warning-like color
+        flex: 1, // Allow text to take remaining space
+        flexShrink: 1, // Ensure text wraps properly
+        marginRight: 8, // Space between text and button
+    },
+
+    addBankingButton: {
+        backgroundColor: '#FF9800', // Vibrant orange
+        paddingVertical: 8, // Reduced padding
+        paddingHorizontal: 12, // Reduced padding
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center', // Center button text
+        minWidth: 120, // Ensure button has a minimum width
+    },
+
+    addBankingButtonText: {
+        color: '#fff',
+        fontSize: 14, // Slightly smaller font size
+        fontWeight: 'bold',
+    },
 });

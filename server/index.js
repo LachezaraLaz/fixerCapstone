@@ -15,13 +15,7 @@ const userRouter = require('./routes/userRoute');
 const getMyProfessionalJobsRouter = require('./routes/getMyProfessionalJobsRoute'); // Import the new route
 const { serverClient } = require('./services/streamClient');
 const reviewRouter = require('./routes/reviewRoute');
-const app = express();
-const cors = require('cors');
-app.use(cors({
-  origin: ['https://fixercapstone-production.up.railway.app'],
-}));
-
-// custom error imports
+const paymentRoutes = require('./routes/paymentRoute');
 const { errorHandler } = require('./middlewares/errorHandler');
 const NotFoundError = require("./utils/errors/NotFoundError");
 const BadRequestError = require("./utils/errors/BadRequestError");
@@ -29,8 +23,13 @@ const UnauthorizedError = require("./utils/errors/UnauthorizedError");
 const ForbiddenError = require("./utils/errors/ForbiddenError");
 const InternalServerError = require("./utils/errors/InternalServerError");
 
-
+const app = express();
+const cors = require('cors');
+app.use(cors({
+    origin: ['https://fixercapstone-production.up.railway.app'],
+}));
 app.use(bodyParser.json());
+
 
 app.use('/professional', professionalClientRoute.professionalRouter);
 app.use('/client', fixerClientRoute.fixerClientRouter);
@@ -49,7 +48,7 @@ app.use('/notification', notificationRouter);
 app.use('/reviews', reviewRouter.reviewRouter);
 
 app.use('/users', userRouter.userRouter);
-
+app.use('/payment', paymentRoutes.paymentRouter);
 
 // If a route is not found
 app.all('*', (req, res, next) => {

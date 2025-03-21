@@ -4,74 +4,19 @@
       "name": "jest"
     },
     "summary": {
-      "tests": 94,
-      "passed": 81,
-      "failed": 13,
+      "tests": 99,
+      "passed": 88,
+      "failed": 11,
       "pending": 0,
       "skipped": 0,
       "other": 0,
-      "start": 1741318284464,
-      "stop": 1741318286719
+      "start": 1742572707881,
+      "stop": 1742572713826
     },
     "tests": [
       {
-        "name": "SettingsButton Component renders an Ionicons settings icon by default",
-        "duration": 259,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "settingsButton.test.js > SettingsButton Component"
-      },
-      {
-        "name": "SettingsButton Component calls onPress when pressed",
-        "duration": 2,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "settingsButton.test.js > SettingsButton Component"
-      },
-      {
-        "name": "SettingsButton Component scales down on press in and up on press out",
-        "duration": 3,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "settingsButton.test.js > SettingsButton Component"
-      },
-      {
-        "name": "SettingsButton Component handles mouseEnter/mouseLeave to set hovered state for web usage",
-        "duration": 4,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "settingsButton.test.js > SettingsButton Component"
-      },
-      {
-        "name": "SettingsButton Component renders custom icon, size, and color if passed",
-        "duration": 3,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "settingsButton.test.js > SettingsButton Component"
-      },
-      {
         "name": "NotificationDetail Component renders notification details correctly",
-        "duration": 265,
+        "duration": 295,
         "status": "failed",
         "message": "Error: Unable to find an element with text: 1/25/2025, 12:00:00 PM\n\n<View>\n  <Text>\n    Test Notification\n  </Text>\n  <Text>\n    This is a test notification message.\n  </Text>\n  <Text>\n    2025-01-25, 7:00:00 a.m.\n  </Text>\n</View>\n",
         "trace": "at Object.getByText (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/notificationDetail/__tests__/notificationDetail.test.js:26:16)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat processTicksAndRejections (node:internal/process/task_queues:95:5)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
@@ -83,8 +28,52 @@
         "suite": "notificationDetail.test.js > NotificationDetail Component"
       },
       {
+        "name": "signIn Component displays an error alert when sign in fields are empty",
+        "duration": 287,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signinPage.test.js > signIn Component"
+      },
+      {
+        "name": "signIn Component handles sign-in correctly and navigates to MainTabs",
+        "duration": 32,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signinPage.test.js > signIn Component"
+      },
+      {
+        "name": "signIn Component displays an error alert when email does not exist",
+        "duration": 12,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signinPage.test.js > signIn Component"
+      },
+      {
+        "name": "signIn Component navigates to SignUpPage when \"Sign up\" link is pressed",
+        "duration": 7,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "signinPage.test.js > signIn Component"
+      },
+      {
         "name": "SettingsPage Component renders all options correctly",
-        "duration": 300,
+        "duration": 310,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -95,7 +84,7 @@
       },
       {
         "name": "SettingsPage Component shows alert when feature is unavailable",
-        "duration": 18,
+        "duration": 14,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -106,7 +95,7 @@
       },
       {
         "name": "SettingsPage Component navigates back when back button is pressed",
-        "duration": 26,
+        "duration": 24,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -117,7 +106,7 @@
       },
       {
         "name": "SettingsPage Component handles logout correctly",
-        "duration": 58,
+        "duration": 79,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -128,17 +117,6 @@
       },
       {
         "name": "SettingsPage Component shows alert when Appearance is pressed",
-        "duration": 9,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/settingsPage/__tests__/settingsPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "settingsPage.test.js > SettingsPage Component"
-      },
-      {
-        "name": "SettingsPage Component shows alert when Language is pressed",
         "duration": 10,
         "status": "passed",
         "rawStatus": "passed",
@@ -149,8 +127,19 @@
         "suite": "settingsPage.test.js > SettingsPage Component"
       },
       {
+        "name": "SettingsPage Component shows alert when Language is pressed",
+        "duration": 12,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/settingsPage/__tests__/settingsPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "settingsPage.test.js > SettingsPage Component"
+      },
+      {
         "name": "SettingsPage Component shows alert when Wallet is pressed",
-        "duration": 13,
+        "duration": 11,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -172,7 +161,7 @@
       },
       {
         "name": "SettingsPage Component shows alert when View Tax Documents is pressed",
-        "duration": 7,
+        "duration": 8,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -183,7 +172,7 @@
       },
       {
         "name": "SettingsPage Component shows alert when Privacy Policy is pressed",
-        "duration": 6,
+        "duration": 11,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -204,229 +193,8 @@
         "suite": "settingsPage.test.js > SettingsPage Component"
       },
       {
-        "name": "ContractOffer Component renders correctly with issue details",
-        "duration": 309,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "contractOffer.test.js > ContractOffer Component"
-      },
-      {
-        "name": "ContractOffer Component fetches user profile on mount",
-        "duration": 65,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "contractOffer.test.js > ContractOffer Component"
-      },
-      {
-        "name": "ContractOffer Component handles quote submission successfully and shows alert",
-        "duration": 60,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "contractOffer.test.js > ContractOffer Component"
-      },
-      {
-        "name": "ContractOffer Component shows error if quote submission fails",
-        "duration": 59,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "contractOffer.test.js > ContractOffer Component"
-      },
-      {
-        "name": "ContractOffer Component opens and closes image modal",
-        "duration": 18,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "contractOffer.test.js > ContractOffer Component"
-      },
-      {
-        "name": "ContractOffer Component calls navigation.goBack when Go Back button is pressed",
-        "duration": 4,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "contractOffer.test.js > ContractOffer Component"
-      },
-      {
-        "name": "ContractOffer Component shows an alert if price is not provided when submitting a quote",
-        "duration": 5,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "contractOffer.test.js > ContractOffer Component"
-      },
-      {
-        "name": "ChatScreens renders null when chatClient is null",
-        "duration": 11,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatScreens.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatScreens.test.js > ChatScreens"
-      },
-      {
-        "name": "ChatScreens renders Chat and navigator when chatClient is provided",
-        "duration": 13,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatScreens.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatScreens.test.js > ChatScreens"
-      },
-      {
-        "name": "displays an error alert when PIN field is empty",
-        "duration": 111,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/EnterPinPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "EnterPinPage.test.js"
-      },
-      {
-        "name": "displays an error alert when incorrect PIN is entered",
-        "duration": 66,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/EnterPinPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "EnterPinPage.test.js"
-      },
-      {
-        "name": "displays an error alert when expired PIN is entered",
-        "duration": 60,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/EnterPinPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "EnterPinPage.test.js"
-      },
-      {
-        "name": "displays a generic error alert on unexpected error",
-        "duration": 59,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/EnterPinPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "EnterPinPage.test.js"
-      },
-      {
-        "name": "HomeScreen should render the loading indicator initially",
-        "duration": 346,
-        "status": "failed",
-        "message": "TypeError: Location.getForegroundPermissionsAsync is not a function\n",
-        "trace": "at getForegroundPermissionsAsync (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/homeScreen.js:57:43)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12\nat apply (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/homeScreen.js:56:29)\nat getCurrentLocation (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/homeScreen.js:93:9)\nat commitHookEffectListMount (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13038:26)\nat commitPassiveMountOnFiber (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14461:11)\nat commitPassiveMountEffects_complete (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14421:9)\nat commitPassiveMountEffects_begin (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14408:7)\nat commitPassiveMountEffects (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14396:3)\nat flushPassiveEffectsImpl (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16287:3)\nat flushPassiveEffects (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16236:14)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16051:9\nat flushActQueue (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react/cjs/react.development.js:2667:24)\nat act (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react/cjs/react.development.js:2521:11)\nat actImplementation (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/act.ts:30:25)\nat renderWithAct (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/render-act.ts:12:11)\nat renderInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/render.tsx:81:33)\nat renderInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/render.tsx:44:10)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js:108:41)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat processTicksAndRejections (node:internal/process/task_queues:95:5)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
-        "rawStatus": "failed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "homeScreen.test.js > HomeScreen"
-      },
-      {
-        "name": "HomeScreen should display an alert if fetching issues fails",
-        "duration": 8,
-        "status": "failed",
-        "message": "TypeError: Location.getForegroundPermissionsAsync is not a function\n",
-        "trace": "at getForegroundPermissionsAsync (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/homeScreen.js:57:43)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12\nat apply (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/homeScreen.js:56:29)\nat getCurrentLocation (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/homeScreen.js:93:9)\nat commitHookEffectListMount (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13038:26)\nat commitPassiveMountOnFiber (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14461:11)\nat commitPassiveMountEffects_complete (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14421:9)\nat commitPassiveMountEffects_begin (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14408:7)\nat commitPassiveMountEffects (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14396:3)\nat flushPassiveEffectsImpl (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16287:3)\nat flushPassiveEffects (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16236:14)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16051:9\nat flushActQueue (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react/cjs/react.development.js:2667:24)\nat act (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react/cjs/react.development.js:2521:11)\nat actImplementation (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/act.ts:30:25)\nat renderWithAct (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/render-act.ts:12:11)\nat renderInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/render.tsx:81:33)\nat renderInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/render.tsx:44:10)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js:198:41)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
-        "rawStatus": "failed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "homeScreen.test.js > HomeScreen"
-      },
-      {
-        "name": "HomeScreen should log out the user when the logout button is pressed",
-        "duration": 55,
-        "status": "failed",
-        "message": "TypeError: Location.getForegroundPermissionsAsync is not a function\n",
-        "trace": "at getForegroundPermissionsAsync (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/homeScreen.js:57:43)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12\nat apply (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/homeScreen.js:56:29)\nat getCurrentLocation (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/homeScreen.js:93:9)\nat commitHookEffectListMount (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13038:26)\nat commitPassiveMountOnFiber (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14461:11)\nat commitPassiveMountEffects_complete (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14421:9)\nat commitPassiveMountEffects_begin (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14408:7)\nat commitPassiveMountEffects (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14396:3)\nat flushPassiveEffectsImpl (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16287:3)\nat flushPassiveEffects (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16236:14)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16051:9\nat flushActQueue (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react/cjs/react.development.js:2667:24)\nat act (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/react/cjs/react.development.js:2521:11)\nat actImplementation (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/act.ts:30:25)\nat renderWithAct (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/render-act.ts:12:11)\nat renderInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/render.tsx:81:33)\nat renderInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@testing-library/react-native/src/render.tsx:44:10)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js:236:37)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
-        "rawStatus": "failed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "homeScreen.test.js > HomeScreen"
-      },
-      {
-        "name": "HomeScreen should filter the list of jobs based on selected professionalNeeded",
-        "duration": 1,
-        "status": "failed",
-        "message": "ReferenceError: navigation is not defined\n",
-        "trace": "at Object.navigation (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js:280:37)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
-        "rawStatus": "failed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "homeScreen.test.js > HomeScreen"
-      },
-      {
-        "name": "HomeScreen should open a quote",
-        "duration": 0,
-        "status": "failed",
-        "message": "ReferenceError: navigation is not defined\n",
-        "trace": "at Object.navigation (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js:347:37)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
-        "rawStatus": "failed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "homeScreen.test.js > HomeScreen"
-      },
-      {
-        "name": "HomeScreen should allow submitting a quote successfully",
-        "duration": 0,
-        "status": "failed",
-        "message": "ReferenceError: navigation is not defined\n",
-        "trace": "at Object.navigation (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js:395:37)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
-        "rawStatus": "failed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "homeScreen.test.js > HomeScreen"
-      },
-      {
         "name": "SignUpPage Tests shows \"All fields are required\" alert when fields are empty",
-        "duration": 287,
+        "duration": 296,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -437,7 +205,7 @@
       },
       {
         "name": "SignUpPage Tests shows \"Passwords do not match\" alert when passwords do not match",
-        "duration": 44,
+        "duration": 29,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -448,7 +216,7 @@
       },
       {
         "name": "SignUpPage Tests successfully creates an account",
-        "duration": 58,
+        "duration": 60,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -459,7 +227,7 @@
       },
       {
         "name": "SignUpPage Tests displays \"Account already exists\" alert when email is already in use",
-        "duration": 57,
+        "duration": 65,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -470,7 +238,7 @@
       },
       {
         "name": "SignUpPage Tests displays a network error alert when no response is received",
-        "duration": 57,
+        "duration": 61,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -481,7 +249,7 @@
       },
       {
         "name": "SignUpPage Tests displays an unexpected error alert when no request or response exists",
-        "duration": 56,
+        "duration": 72,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -492,7 +260,7 @@
       },
       {
         "name": "SignUpPage Tests navigates to SignInPage when the Sign In button is pressed",
-        "duration": 3,
+        "duration": 2,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -503,7 +271,7 @@
       },
       {
         "name": "UploadID Component requests camera permission on mount",
-        "duration": 321,
+        "duration": 387,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -514,7 +282,7 @@
       },
       {
         "name": "UploadID Component shows permission denied alert when camera access is denied",
-        "duration": 53,
+        "duration": 54,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -525,7 +293,7 @@
       },
       {
         "name": "UploadID Component shows an alert if camera is launched without permission",
-        "duration": 54,
+        "duration": 60,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -536,7 +304,7 @@
       },
       {
         "name": "UploadID Component uploads image and navigates to ThankYouPage on success",
-        "duration": 55,
+        "duration": 57,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -547,7 +315,7 @@
       },
       {
         "name": "UploadID Component shows network error alert when no response is received",
-        "duration": 54,
+        "duration": 59,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -558,7 +326,7 @@
       },
       {
         "name": "UploadID Component shows server error alert when server responds with an error",
-        "duration": 53,
+        "duration": 54,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -568,8 +336,52 @@
         "suite": "uploadID.test.js > UploadID Component"
       },
       {
+        "name": "ReviewsPage Component renders loading indicator initially",
+        "duration": 59,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/reviewsPage/__tests__/reviewsPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "reviewsPage.test.js > ReviewsPage Component"
+      },
+      {
+        "name": "ReviewsPage Component renders no reviews message if no reviews are available",
+        "duration": 52,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/reviewsPage/__tests__/reviewsPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "reviewsPage.test.js > ReviewsPage Component"
+      },
+      {
+        "name": "ReviewsPage Component renders reviews correctly when available",
+        "duration": 60,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/reviewsPage/__tests__/reviewsPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "reviewsPage.test.js > ReviewsPage Component"
+      },
+      {
+        "name": "ReviewsPage Component handles API errors gracefully",
+        "duration": 2,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/reviewsPage/__tests__/reviewsPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "reviewsPage.test.js > ReviewsPage Component"
+      },
+      {
         "name": "CredentialFormPage Component renders correctly",
-        "duration": 33,
+        "duration": 58,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -580,7 +392,7 @@
       },
       {
         "name": "CredentialFormPage Component updates trade license input value",
-        "duration": 5,
+        "duration": 3,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -602,17 +414,6 @@
       },
       {
         "name": "CredentialFormPage Component shows error if no token is found",
-        "duration": 54,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/credentialFormPage/__tests__/credentialFormPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "credentialFormPage.test.js > CredentialFormPage Component"
-      },
-      {
-        "name": "CredentialFormPage Component logs error if form submission fails",
         "duration": 53,
         "status": "passed",
         "rawStatus": "passed",
@@ -623,96 +424,19 @@
         "suite": "credentialFormPage.test.js > CredentialFormPage Component"
       },
       {
-        "name": "WelcomePage Navigation navigates to SignInPage when the \"Sign In\" button is pressed",
-        "duration": 50,
+        "name": "CredentialFormPage Component logs error if form submission fails",
+        "duration": 55,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/welcome/__tests__/welcomePage.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/credentialFormPage/__tests__/credentialFormPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "welcomePage.test.js > WelcomePage Navigation"
-      },
-      {
-        "name": "WelcomePage Navigation navigates to SignUpPage when the \"Sign Up\" button is pressed",
-        "duration": 2,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/welcome/__tests__/welcomePage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "welcomePage.test.js > WelcomePage Navigation"
-      },
-      {
-        "name": "ChatPage Tests renders message list and input when channel is selected",
-        "duration": 43,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatPage.test.js > ChatPage Tests"
-      },
-      {
-        "name": "ChatPage Tests displays no channel selected when no channel is present",
-        "duration": 1,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatPage.test.js > ChatPage Tests"
-      },
-      {
-        "name": "ChannelListScreen Tests renders correctly",
-        "duration": 24,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatList.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatList.test.js > ChannelListScreen Tests"
-      },
-      {
-        "name": "ChannelListScreen Tests calls setChannel and navigates to ChatPage when a channel is selected",
-        "duration": 2,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatList.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatList.test.js > ChannelListScreen Tests"
-      },
-      {
-        "name": "ChannelListScreen Tests passes correct filters and sort props when user is defined",
-        "duration": 1,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatList.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatList.test.js > ChannelListScreen Tests"
-      },
-      {
-        "name": "ChannelListScreen Tests passes correct filters and sort props when user is undefined",
-        "duration": 1,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatList.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatList.test.js > ChannelListScreen Tests"
+        "suite": "credentialFormPage.test.js > CredentialFormPage Component"
       },
       {
         "name": "ChatProvider does not initialize chat client if no credentials are found",
-        "duration": 51,
+        "duration": 56,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -723,17 +447,6 @@
       },
       {
         "name": "ChatProvider initializes chat client when valid credentials are found",
-        "duration": 51,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatContext.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "chatContext.test.js > ChatProvider"
-      },
-      {
-        "name": "ChatProvider initializes chat client with default name (\"NoName\") when storedUserName is missing",
         "duration": 52,
         "status": "passed",
         "rawStatus": "passed",
@@ -744,8 +457,19 @@
         "suite": "chatContext.test.js > ChatProvider"
       },
       {
+        "name": "ChatProvider initializes chat client with default name (\"NoName\") when storedUserName is missing",
+        "duration": 51,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatContext.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "chatContext.test.js > ChatProvider"
+      },
+      {
         "name": "ChatProvider handles errors during initialization (e.g., connectUser rejection)",
-        "duration": 1,
+        "duration": 2,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -767,7 +491,7 @@
       },
       {
         "name": "ChatProvider renders children inside the provider",
-        "duration": 2,
+        "duration": 6,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -799,52 +523,129 @@
         "suite": "chatContext.test.js > ChatProvider"
       },
       {
-        "name": "ReviewsPage Component renders loading indicator initially",
-        "duration": 62,
+        "name": "ChatPage Tests renders message list and input when channel is selected",
+        "duration": 41,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/reviewsPage/__tests__/reviewsPage.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "reviewsPage.test.js > ReviewsPage Component"
+        "suite": "chatPage.test.js > ChatPage Tests"
       },
       {
-        "name": "ReviewsPage Component renders no reviews message if no reviews are available",
-        "duration": 53,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/reviewsPage/__tests__/reviewsPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "reviewsPage.test.js > ReviewsPage Component"
-      },
-      {
-        "name": "ReviewsPage Component renders reviews correctly when available",
-        "duration": 56,
-        "status": "passed",
-        "rawStatus": "passed",
-        "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/reviewsPage/__tests__/reviewsPage.test.js",
-        "retries": 0,
-        "flaky": false,
-        "suite": "reviewsPage.test.js > ReviewsPage Component"
-      },
-      {
-        "name": "ReviewsPage Component handles API errors gracefully",
+        "name": "ChatPage Tests displays no channel selected when no channel is present",
         "duration": 2,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/reviewsPage/__tests__/reviewsPage.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "reviewsPage.test.js > ReviewsPage Component"
+        "suite": "chatPage.test.js > ChatPage Tests"
+      },
+      {
+        "name": "ChannelListScreen Tests renders correctly",
+        "duration": 29,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatList.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "chatList.test.js > ChannelListScreen Tests"
+      },
+      {
+        "name": "ChannelListScreen Tests calls setChannel and navigates to ChatPage when a channel is selected",
+        "duration": 3,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatList.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "chatList.test.js > ChannelListScreen Tests"
+      },
+      {
+        "name": "ChannelListScreen Tests passes correct filters and sort props when user is defined",
+        "duration": 1,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatList.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "chatList.test.js > ChannelListScreen Tests"
+      },
+      {
+        "name": "ChannelListScreen Tests passes correct filters and sort props when user is undefined",
+        "duration": 1,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatList.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "chatList.test.js > ChannelListScreen Tests"
+      },
+      {
+        "name": "SettingsButton Component renders an Ionicons settings icon by default",
+        "duration": 43,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "settingsButton.test.js > SettingsButton Component"
+      },
+      {
+        "name": "SettingsButton Component calls onPress when pressed",
+        "duration": 5,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "settingsButton.test.js > SettingsButton Component"
+      },
+      {
+        "name": "SettingsButton Component scales down on press in and up on press out",
+        "duration": 2,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "settingsButton.test.js > SettingsButton Component"
+      },
+      {
+        "name": "SettingsButton Component handles mouseEnter/mouseLeave to set hovered state for web usage",
+        "duration": 3,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "settingsButton.test.js > SettingsButton Component"
+      },
+      {
+        "name": "SettingsButton Component renders custom icon, size, and color if passed",
+        "duration": 1,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/components/__tests__/settingsButton.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "settingsButton.test.js > SettingsButton Component"
       },
       {
         "name": "ResetPasswordPage Component displays an error alert when fields are empty",
-        "duration": 85,
+        "duration": 368,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -855,7 +656,7 @@
       },
       {
         "name": "ResetPasswordPage Component displays an error alert when passwords do not match",
-        "duration": 12,
+        "duration": 17,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -866,7 +667,7 @@
       },
       {
         "name": "ResetPasswordPage Component displays an error alert when reset fails",
-        "duration": 59,
+        "duration": 60,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -876,52 +677,96 @@
         "suite": "ResetPasswordPage.test.js > ResetPasswordPage Component"
       },
       {
-        "name": "signIn Component displays an error alert when sign in fields are empty",
-        "duration": 26,
+        "name": "WelcomePage Navigation navigates to SignInPage when the \"Sign In\" button is pressed",
+        "duration": 41,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/welcome/__tests__/welcomePage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "signinPage.test.js > signIn Component"
+        "suite": "welcomePage.test.js > WelcomePage Navigation"
       },
       {
-        "name": "signIn Component handles sign-in correctly and navigates to MainTabs",
-        "duration": 6,
+        "name": "WelcomePage Navigation navigates to SignUpPage when the \"Sign Up\" button is pressed",
+        "duration": 5,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/welcome/__tests__/welcomePage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "signinPage.test.js > signIn Component"
+        "suite": "welcomePage.test.js > WelcomePage Navigation"
       },
       {
-        "name": "signIn Component displays an error alert when email does not exist",
-        "duration": 4,
+        "name": "displays an error alert when PIN field is empty",
+        "duration": 475,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/EnterPinPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "signinPage.test.js > signIn Component"
+        "suite": "EnterPinPage.test.js"
       },
       {
-        "name": "signIn Component navigates to SignUpPage when \"Sign up\" link is pressed",
-        "duration": 2,
+        "name": "displays an error alert when incorrect PIN is entered",
+        "duration": 63,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
-        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/signinPage.test.js",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/EnterPinPage.test.js",
         "retries": 0,
         "flaky": false,
-        "suite": "signinPage.test.js > signIn Component"
+        "suite": "EnterPinPage.test.js"
+      },
+      {
+        "name": "displays an error alert when expired PIN is entered",
+        "duration": 65,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/EnterPinPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "EnterPinPage.test.js"
+      },
+      {
+        "name": "displays a generic error alert on unexpected error",
+        "duration": 59,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/signin/__tests__/EnterPinPage.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "EnterPinPage.test.js"
+      },
+      {
+        "name": "ChatScreens renders null when chatClient is null",
+        "duration": 11,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatScreens.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "chatScreens.test.js > ChatScreens"
+      },
+      {
+        "name": "ChatScreens renders Chat and navigator when chatClient is provided",
+        "duration": 11,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/chat/__tests__/chatScreens.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "chatScreens.test.js > ChatScreens"
       },
       {
         "name": "ForgotPasswordPage Component displays an error alert when email is not provided",
-        "duration": 25,
+        "duration": 480,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -932,7 +777,7 @@
       },
       {
         "name": "ForgotPasswordPage Component displays success alert and shows Enter PIN button when email is valid",
-        "duration": 57,
+        "duration": 62,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -943,7 +788,7 @@
       },
       {
         "name": "ForgotPasswordPage Component displays error alert when email is invalid or request fails",
-        "duration": 57,
+        "duration": 60,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -954,7 +799,7 @@
       },
       {
         "name": "ForgotPasswordPage Component navigates to EnterPinPage when Enter PIN is pressed",
-        "duration": 71,
+        "duration": 79,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -965,7 +810,7 @@
       },
       {
         "name": "NotificationPage Component renders notifications correctly",
-        "duration": 1298,
+        "duration": 1283,
         "status": "failed",
         "message": "Error: Unable to find an element with text: 1/25/2025, 10:00:00 AM\n\n<View>\n  <Text>\n    Notifications\n  </Text>\n  <RCTScrollView>\n    <View>\n      <View>\n        <View\n          accessible={true}\n        >\n          <View>\n            <Text>\n              Notification 1\n            </Text>\n            <Text>\n              2025-01-25, 5:00:00 a.m.\n            </Text>\n          </View>\n        </View>\n      </View>\n      <View>\n        <View\n          accessible={true}\n        >\n          <View>\n            <Text>\n              Notification 2\n            </Text>\n            <Text>\n              2025-01-24, 5:00:00 a.m.\n            </Text>\n          </View>\n        </View>\n      </View>\n    </View>\n  </RCTScrollView>\n</View>\n",
         "trace": "at Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/notificationPage/__tests__/notificationPage.test.js:49:22)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat processTicksAndRejections (node:internal/process/task_queues:95:5)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
@@ -978,7 +823,7 @@
       },
       {
         "name": "NotificationPage Component navigates to NotificationDetail on notification press",
-        "duration": 62,
+        "duration": 64,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -988,8 +833,96 @@
         "suite": "notificationPage.test.js > NotificationPage Component"
       },
       {
+        "name": "HomeScreen handles logout correctly",
+        "duration": 165,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "homeScreen.test.js > HomeScreen"
+      },
+      {
+        "name": "HomeScreen fetches issues and renders them",
+        "duration": 54,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "homeScreen.test.js > HomeScreen"
+      },
+      {
+        "name": "HomeScreen filters issues based on selected filters",
+        "duration": 10,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "homeScreen.test.js > HomeScreen"
+      },
+      {
+        "name": "HomeScreen shows error alert if fetching fails",
+        "duration": 51,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "homeScreen.test.js > HomeScreen"
+      },
+      {
+        "name": "HomeScreen handles logout correctly",
+        "duration": 53,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "homeScreen.test.js > HomeScreen"
+      },
+      {
+        "name": "HomeScreen recenters map if location permission granted",
+        "duration": 90,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "homeScreen.test.js > HomeScreen"
+      },
+      {
+        "name": "HomeScreen calls getCurrentLocation when app returns to foreground",
+        "duration": 103,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "homeScreen.test.js > HomeScreen"
+      },
+      {
+        "name": "HomeScreen shows alert if location permission is not granted on recenter button press",
+        "duration": 54,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "homeScreen.test.js > HomeScreen"
+      },
+      {
         "name": "ProfilePage Component renders loading indicator initially",
-        "duration": 298,
+        "duration": 216,
         "status": "failed",
         "message": "Error: Unable to find an element with text: Loading...\n\n<Text>\n  Error loading profile.\n</Text>\n",
         "trace": "at Object.getByText (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/profilePage/__tests__/profilePage.test.js:46:16)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat processTicksAndRejections (node:internal/process/task_queues:95:5)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
@@ -1002,9 +935,9 @@
       },
       {
         "name": "ProfilePage Component renders profile data correctly",
-        "duration": 1007,
+        "duration": 1004,
         "status": "failed",
-        "message": "Error: Unable to find an element with text: ⭐ 4.5\n\n<RCTScrollView>\n  <View>\n    <View>\n      <View>\n        <Text>\n          Fixr\n        </Text>\n        <Text>\n          Profile\n        </Text>\n        <View>\n          <View\n            accessible={true}\n          />\n        </View>\n      </View>\n      <View>\n        <Image />\n        <Text>\n          John\n           \n          Doe\n        </Text>\n        <View>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n             (\n            4.5\n             )\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Description\n        </Text>\n        <Text>\n          No description provided.\n        </Text>\n      </View>\n      <View>\n        <View>\n          <Text>\n            Rating & Reviews\n          </Text>\n          <View\n            accessible={true}\n          >\n            <Text>\n               (\n              0\n              )\n            </Text>\n          </View>\n        </View>\n        <RCTScrollView>\n          <View>\n            <Text>\n              No reviews available.\n            </Text>\n          </View>\n        </RCTScrollView>\n      </View>\n      <View>\n        <Text>\n          Email Address\n        </Text>\n        <Text>\n          johndoe@example.com\n        </Text>\n      </View>\n      <View>\n        <Text>\n          Payment Method\n        </Text>\n        <View>\n          <Text>\n            💳 Visa ending in 1234\n          </Text>\n          <Text>\n            Expiry 06/2024\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Language\n        </Text>\n        <View>\n          <Text>\n            English\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Certificates\n        </Text>\n        <Text>\n          No certificates available.\n        </Text>\n      </View>\n      <View\n        accessible={true}\n      >\n        <Text>\n          Verify Credentials\n        </Text>\n      </View>\n    </View>\n  </View>\n</RCTScrollView>\n",
+        "message": "Error: Unable to find an element with text: ⭐ 4.5\n\n<RCTScrollView>\n  <View>\n    <View>\n      <View>\n        <Text>\n          Fixr\n        </Text>\n        <Text>\n          Profile\n        </Text>\n        <View>\n          <View\n            accessible={true}\n          />\n        </View>\n      </View>\n      <View>\n        <View>\n          <Image />\n          <View\n            accessible={true}\n          />\n        </View>\n        <Text>\n          John\n           \n          Doe\n        </Text>\n        <View>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n             (\n            4.5\n             )\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Description\n        </Text>\n        <Text>\n          No description provided.\n        </Text>\n      </View>\n      <View>\n        <View>\n          <Text>\n            Rating & Reviews\n          </Text>\n          <View\n            accessible={true}\n          >\n            <Text>\n               (\n              0\n              )\n            </Text>\n          </View>\n        </View>\n        <RCTScrollView>\n          <View>\n            <Text>\n              No reviews available.\n            </Text>\n          </View>\n        </RCTScrollView>\n      </View>\n      <View>\n        <Text>\n          Email Address\n        </Text>\n        <Text>\n          johndoe@example.com\n        </Text>\n      </View>\n      <View>\n        <Text>\n          Payment Method\n        </Text>\n        <View>\n          <Text>\n            No payment method added.\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Language\n        </Text>\n        <View>\n          <Text>\n            English\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Certificates\n        </Text>\n        <Text>\n          No certificates available.\n        </Text>\n      </View>\n      <View\n        accessible={true}\n      >\n        <Text>\n          Verify Credentials\n        </Text>\n      </View>\n    </View>\n  </View>\n</RCTScrollView>\n",
         "trace": "at Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/profilePage/__tests__/profilePage.test.js:55:22)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
         "rawStatus": "failed",
         "type": "unit",
@@ -1015,7 +948,7 @@
       },
       {
         "name": "ProfilePage Component navigates to CredentialFormPage when Verify Credentials is pressed",
-        "duration": 54,
+        "duration": 59,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -1026,9 +959,9 @@
       },
       {
         "name": "ProfilePage Component shows alert when edit button is pressed",
-        "duration": 52,
+        "duration": 66,
         "status": "failed",
-        "message": "Error: Unable to find an element with testID: edit-button\n\n<RCTScrollView>\n  <View>\n    <View>\n      <View>\n        <Text>\n          Fixr\n        </Text>\n        <Text>\n          Profile\n        </Text>\n        <View>\n          <View\n            accessible={true}\n          />\n        </View>\n      </View>\n      <View>\n        <Image />\n        <Text>\n          John\n           \n          Doe\n        </Text>\n        <View>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n             (\n            4.5\n             )\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Description\n        </Text>\n        <Text>\n          No description provided.\n        </Text>\n      </View>\n      <View>\n        <View>\n          <Text>\n            Rating & Reviews\n          </Text>\n          <View\n            accessible={true}\n          >\n            <Text>\n               (\n              0\n              )\n            </Text>\n          </View>\n        </View>\n        <RCTScrollView>\n          <View>\n            <Text>\n              No reviews available.\n            </Text>\n          </View>\n        </RCTScrollView>\n      </View>\n      <View>\n        <Text>\n          Email Address\n        </Text>\n        <Text>\n          johndoe@example.com\n        </Text>\n      </View>\n      <View>\n        <Text>\n          Payment Method\n        </Text>\n        <View>\n          <Text>\n            💳 Visa ending in 1234\n          </Text>\n          <Text>\n            Expiry 06/2024\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Language\n        </Text>\n        <View>\n          <Text>\n            English\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Certificates\n        </Text>\n        <Text>\n          No certificates available.\n        </Text>\n      </View>\n      <View\n        accessible={true}\n      >\n        <Text>\n          Verify Credentials\n        </Text>\n      </View>\n    </View>\n  </View>\n</RCTScrollView>\n",
+        "message": "Error: Unable to find an element with testID: edit-button\n\n<RCTScrollView>\n  <View>\n    <View>\n      <View>\n        <Text>\n          Fixr\n        </Text>\n        <Text>\n          Profile\n        </Text>\n        <View>\n          <View\n            accessible={true}\n          />\n        </View>\n      </View>\n      <View>\n        <View>\n          <Image />\n          <View\n            accessible={true}\n          />\n        </View>\n        <Text>\n          John\n           \n          Doe\n        </Text>\n        <View>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n             (\n            4.5\n             )\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Description\n        </Text>\n        <Text>\n          No description provided.\n        </Text>\n      </View>\n      <View>\n        <View>\n          <Text>\n            Rating & Reviews\n          </Text>\n          <View\n            accessible={true}\n          >\n            <Text>\n               (\n              0\n              )\n            </Text>\n          </View>\n        </View>\n        <RCTScrollView>\n          <View>\n            <Text>\n              No reviews available.\n            </Text>\n          </View>\n        </RCTScrollView>\n      </View>\n      <View>\n        <Text>\n          Email Address\n        </Text>\n        <Text>\n          johndoe@example.com\n        </Text>\n      </View>\n      <View>\n        <Text>\n          Payment Method\n        </Text>\n        <View>\n          <Text>\n            No payment method added.\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Language\n        </Text>\n        <View>\n          <Text>\n            English\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Certificates\n        </Text>\n        <Text>\n          No certificates available.\n        </Text>\n      </View>\n      <View\n        accessible={true}\n      >\n        <Text>\n          Verify Credentials\n        </Text>\n      </View>\n    </View>\n  </View>\n</RCTScrollView>\n",
         "trace": "at Object.getByTestId (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/profilePage/__tests__/profilePage.test.js:96:28)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\n\n[object Object]",
         "rawStatus": "failed",
         "type": "unit",
@@ -1039,7 +972,7 @@
       },
       {
         "name": "ProfilePage Component handles error state when profile data fails to load",
-        "duration": 2,
+        "duration": 4,
         "status": "passed",
         "rawStatus": "passed",
         "type": "unit",
@@ -1050,9 +983,9 @@
       },
       {
         "name": "ProfilePage Component navigates to ReviewsPage with professional email",
-        "duration": 53,
+        "duration": 54,
         "status": "failed",
-        "message": "Error: Unable to find an element with text: View Reviews\n\n<RCTScrollView>\n  <View>\n    <View>\n      <View>\n        <Text>\n          Fixr\n        </Text>\n        <Text>\n          Profile\n        </Text>\n        <View>\n          <View\n            accessible={true}\n          />\n        </View>\n      </View>\n      <View>\n        <Image />\n        <Text>\n          John\n           \n          Doe\n        </Text>\n        <View>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n             (\n            4.5\n             )\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Description\n        </Text>\n        <Text>\n          No description provided.\n        </Text>\n      </View>\n      <View>\n        <View>\n          <Text>\n            Rating & Reviews\n          </Text>\n          <View\n            accessible={true}\n          >\n            <Text>\n               (\n              0\n              )\n            </Text>\n          </View>\n        </View>\n        <RCTScrollView>\n          <View>\n            <Text>\n              No reviews available.\n            </Text>\n          </View>\n        </RCTScrollView>\n      </View>\n      <View>\n        <Text>\n          Email Address\n        </Text>\n        <Text>\n          johndoe@example.com\n        </Text>\n      </View>\n      <View>\n        <Text>\n          Payment Method\n        </Text>\n        <View>\n          <Text>\n            💳 Visa ending in 1234\n          </Text>\n          <Text>\n            Expiry 06/2024\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Language\n        </Text>\n        <View>\n          <Text>\n            English\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Certificates\n        </Text>\n        <Text>\n          No certificates available.\n        </Text>\n      </View>\n      <Text>\n        Credentials Verified!\n      </Text>\n    </View>\n  </View>\n</RCTScrollView>\n",
+        "message": "Error: Unable to find an element with text: View Reviews\n\n<RCTScrollView>\n  <View>\n    <View>\n      <View>\n        <Text>\n          Fixr\n        </Text>\n        <Text>\n          Profile\n        </Text>\n        <View>\n          <View\n            accessible={true}\n          />\n        </View>\n      </View>\n      <View>\n        <View>\n          <Image />\n          <View\n            accessible={true}\n          />\n        </View>\n        <Text>\n          John\n           \n          Doe\n        </Text>\n        <View>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n             (\n            4.5\n             )\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Description\n        </Text>\n        <Text>\n          No description provided.\n        </Text>\n      </View>\n      <View>\n        <View>\n          <Text>\n            Rating & Reviews\n          </Text>\n          <View\n            accessible={true}\n          >\n            <Text>\n               (\n              0\n              )\n            </Text>\n          </View>\n        </View>\n        <RCTScrollView>\n          <View>\n            <Text>\n              No reviews available.\n            </Text>\n          </View>\n        </RCTScrollView>\n      </View>\n      <View>\n        <Text>\n          Email Address\n        </Text>\n        <Text>\n          johndoe@example.com\n        </Text>\n      </View>\n      <View>\n        <Text>\n          Payment Method\n        </Text>\n        <View>\n          <Text>\n            No payment method added.\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Language\n        </Text>\n        <View>\n          <Text>\n            English\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Certificates\n        </Text>\n        <Text>\n          No certificates available.\n        </Text>\n      </View>\n      <Text>\n        Credentials Verified!\n      </Text>\n    </View>\n  </View>\n</RCTScrollView>\n",
         "trace": "at Object.getByText (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/profilePage/__tests__/profilePage.test.js:147:35)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\n\n[object Object]",
         "rawStatus": "failed",
         "type": "unit",
@@ -1063,9 +996,9 @@
       },
       {
         "name": "ProfilePage Component navigates to ReviewsPage with professional email",
-        "duration": 52,
+        "duration": 57,
         "status": "failed",
-        "message": "Error: Unable to find an element with text: View Reviews\n\n<RCTScrollView>\n  <View>\n    <View>\n      <View>\n        <Text>\n          Fixr\n        </Text>\n        <Text>\n          Profile\n        </Text>\n        <View>\n          <View\n            accessible={true}\n          />\n        </View>\n      </View>\n      <View>\n        <Image />\n        <Text>\n          John\n           \n          Doe\n        </Text>\n        <View>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n             (\n            4.5\n             )\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Description\n        </Text>\n        <Text>\n          No description provided.\n        </Text>\n      </View>\n      <View>\n        <View>\n          <Text>\n            Rating & Reviews\n          </Text>\n          <View\n            accessible={true}\n          >\n            <Text>\n               (\n              0\n              )\n            </Text>\n          </View>\n        </View>\n        <RCTScrollView>\n          <View>\n            <Text>\n              No reviews available.\n            </Text>\n          </View>\n        </RCTScrollView>\n      </View>\n      <View>\n        <Text>\n          Email Address\n        </Text>\n        <Text>\n          johndoe@example.com\n        </Text>\n      </View>\n      <View>\n        <Text>\n          Payment Method\n        </Text>\n        <View>\n          <Text>\n            💳 Visa ending in 1234\n          </Text>\n          <Text>\n            Expiry 06/2024\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Language\n        </Text>\n        <View>\n          <Text>\n            English\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Certificates\n        </Text>\n        <Text>\n          No certificates available.\n        </Text>\n      </View>\n      <Text>\n        Credentials Verified!\n      </Text>\n    </View>\n  </View>\n</RCTScrollView>\n",
+        "message": "Error: Unable to find an element with text: View Reviews\n\n<RCTScrollView>\n  <View>\n    <View>\n      <View>\n        <Text>\n          Fixr\n        </Text>\n        <Text>\n          Profile\n        </Text>\n        <View>\n          <View\n            accessible={true}\n          />\n        </View>\n      </View>\n      <View>\n        <View>\n          <Image />\n          <View\n            accessible={true}\n          />\n        </View>\n        <Text>\n          John\n           \n          Doe\n        </Text>\n        <View>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n            ⭐\n          </Text>\n          <Text>\n             (\n            4.5\n             )\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Description\n        </Text>\n        <Text>\n          No description provided.\n        </Text>\n      </View>\n      <View>\n        <View>\n          <Text>\n            Rating & Reviews\n          </Text>\n          <View\n            accessible={true}\n          >\n            <Text>\n               (\n              0\n              )\n            </Text>\n          </View>\n        </View>\n        <RCTScrollView>\n          <View>\n            <Text>\n              No reviews available.\n            </Text>\n          </View>\n        </RCTScrollView>\n      </View>\n      <View>\n        <Text>\n          Email Address\n        </Text>\n        <Text>\n          johndoe@example.com\n        </Text>\n      </View>\n      <View>\n        <Text>\n          Payment Method\n        </Text>\n        <View>\n          <Text>\n            No payment method added.\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Language\n        </Text>\n        <View>\n          <Text>\n            English\n          </Text>\n        </View>\n      </View>\n      <View>\n        <Text>\n          Certificates\n        </Text>\n        <Text>\n          No certificates available.\n        </Text>\n      </View>\n      <Text>\n        Credentials Verified!\n      </Text>\n    </View>\n  </View>\n</RCTScrollView>\n",
         "trace": "at Object.getByText (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/profilePage/__tests__/profilePage.test.js:183:35)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\n\n[object Object]",
         "rawStatus": "failed",
         "type": "unit",
@@ -1073,6 +1006,124 @@
         "retries": 0,
         "flaky": false,
         "suite": "profilePage.test.js > ProfilePage Component"
+      },
+      {
+        "name": "ContractOffer Component renders correctly with issue details",
+        "duration": 268,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
+      },
+      {
+        "name": "ContractOffer Component fetches user profile on mount",
+        "duration": 60,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
+      },
+      {
+        "name": "ContractOffer Component shows an alert if price is zero or negative",
+        "duration": 1019,
+        "status": "failed",
+        "message": "Error: expect(received).toHaveBeenCalledWith(...expected)\n\nMatcher error: received value must be a mock or spy function\n\nReceived has type:  function\nReceived has value: [Function alert]\n",
+        "trace": "at Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js:83:22)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
+        "rawStatus": "failed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
+      },
+      {
+        "name": "ContractOffer Component shows an alert if price exceeds limit",
+        "duration": 1013,
+        "status": "failed",
+        "message": "Error: expect(received).toHaveBeenCalledWith(...expected)\n\nMatcher error: received value must be a mock or spy function\n\nReceived has type:  function\nReceived has value: [Function alert]\n",
+        "trace": "at Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js:102:22)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
+        "rawStatus": "failed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
+      },
+      {
+        "name": "ContractOffer Component shows an alert if issue details are incomplete",
+        "duration": 1015,
+        "status": "failed",
+        "message": "Error: expect(received).toHaveBeenCalledWith(...expected)\n\nMatcher error: received value must be a mock or spy function\n\nReceived has type:  function\nReceived has value: [Function alert]\n",
+        "trace": "at Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js:123:22)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
+        "rawStatus": "failed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
+      },
+      {
+        "name": "ContractOffer Component handles quote submission successfully and shows alert",
+        "duration": 57,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
+      },
+      {
+        "name": "ContractOffer Component shows error if quote submission fails",
+        "duration": 55,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
+      },
+      {
+        "name": "ContractOffer Component opens and closes image modal",
+        "duration": 8,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
+      },
+      {
+        "name": "ContractOffer Component calls navigation.goBack when Go Back button is pressed",
+        "duration": 4,
+        "status": "passed",
+        "rawStatus": "passed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
+      },
+      {
+        "name": "ContractOffer Component shows an alert if price is not provided when submitting a quote",
+        "duration": 1005,
+        "status": "failed",
+        "message": "Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)\n\nExpected: \"Error\", \"Please enter a price before submitting the quote.\"\nReceived\n       1: \"Invalid Price\", \"Please enter a valid positive number for the price.\"\n       2: \"Error\", \"Unable to fetch user address.\"\n\nNumber of calls: 2\n",
+        "trace": "at Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js:253:18)\nat Generator.next (<anonymous>)\nat asyncGeneratorStep (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)\nat _next (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)\nat /home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7\nat new Promise (<anonymous>)\nat Object.<anonymous> (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12)\nat Promise.then.completed (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:298:28)\nat new Promise (<anonymous>)\nat callAsyncCircusFn (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/utils.js:231:10)\nat _callCircusTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:316:40)\nat _runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:252:3)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:126:9)\nat _runTestsForDescribeBlock (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:121:9)\nat run (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/run.js:71:3)\nat runAndTransformResultsToJestFormat (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)\nat jestAdapter (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)\nat runTestInternal (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:367:16)\nat runTest (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/runTest.js:444:34)\nat Object.worker (/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/node_modules/jest-runner/build/testWorker.js:106:12)\n\n[object Object]",
+        "rawStatus": "failed",
+        "type": "unit",
+        "filePath": "/home/mkandaleft/WebstormProjects/fixerCapstone/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js",
+        "retries": 0,
+        "flaky": false,
+        "suite": "contractOffer.test.js > ContractOffer Component"
       }
     ]
   }

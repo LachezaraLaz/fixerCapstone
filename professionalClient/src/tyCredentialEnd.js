@@ -8,7 +8,7 @@ const ThankYouPage = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.thankYouText}>Thank you for submitting your credentials!</Text>
-            <Button title="Return to Profile" onPress={() => navigation.navigate('HomeScreen')} />
+            <Button title="Return to Profile" onPress={() => navigation.navigate('Home')} />
         </View>
     );
 };

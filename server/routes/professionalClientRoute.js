@@ -1,13 +1,14 @@
 const express = require('express');
 const { registerUser } = require('../controller/professionalClientRegister');
 const { signinUser } = require('../controller/professionalClientSignIn');
-const { profile, authenticateJWT } = require('../controller/professionalClientProfile');
+const { profile, authenticateJWT, addBankingInfo, getBankingInfoStatus, getPaymentMethod} = require('../controller/professionalClientProfile');
 const { verifyCredentials } = require('../controller/professionalClientVerifyCredentials');
 const { professionalUploadID } = require('../controller/professionalUploadID');
 const { upload } = require('../services/cloudinaryService');  // Import the Cloudinary upload service
 const { forgotPassword, resetPassword } = require('../controller/resetController');
 const { verifyEmail } = require('../controller/VerifyEmailForProfessional');
 const { getReviewsByProfessionalEmail } = require('../controller/reviewController'); // Import review functions
+const { linkProfessionalAccount } = require('../controller/paymentController');
 
 const professionalRouter = express.Router();
 
@@ -28,5 +29,13 @@ professionalRouter.post('/reset/resetPassword', resetPassword); // Route to rese
 professionalRouter.post('/uploadID', authenticateJWT, upload('professional_ids').single('idImage'), professionalUploadID);
 
 professionalRouter.get('/:email/reviews', getReviewsByProfessionalEmail);
+
+// professionalRouter.post('/linkSquareAccount', authenticateJWT, linkProfessionalAccount);
+
+professionalRouter.post('/add-banking-info', authenticateJWT, addBankingInfo);
+
+professionalRouter.get('/banking-info-status', authenticateJWT, getBankingInfoStatus);
+
+professionalRouter.get('/payment-method', authenticateJWT, getPaymentMethod);
 
 module.exports = { professionalRouter };

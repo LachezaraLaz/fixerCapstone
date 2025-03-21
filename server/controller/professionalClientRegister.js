@@ -54,7 +54,6 @@ const registerUser = async (req, res) => {
                     email: professionalData.email,
                 });
                 stripeCustomerId = customer.id;
-                console.log(`Stripe customer created with ID: ${stripeCustomerId}`);
             } catch (stripeError) {
                 console.error('Stripe customer creation failed:', stripeError);
                 return res.status(500).send({ status: 'error', data: 'Stripe customer creation failed' });
@@ -69,7 +68,6 @@ const registerUser = async (req, res) => {
             professionalId: newUser._id,
             stripeCustomerId,
         });
-        console.log(`ProfessionalPayment record created for professionalId: ${newUser._id}`);
 
         // Generate the verification token using the repository
         const verificationToken = professionalRepository.generateVerificationToken(newUser._id);

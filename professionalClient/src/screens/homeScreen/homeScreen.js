@@ -100,9 +100,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
             const userId = await AsyncStorage.getItem('userId');
             const token = await AsyncStorage.getItem('token'); // Retrieve the token
 
-            console.log("Fetched userId:", userId);
-            console.log("Fetched token:", token); // Log the token
-
             if (!userId || !token) {
                 console.error("No userId or token found in AsyncStorage");
                 return;

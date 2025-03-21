@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../../style/profilePage/profilePageStyle';
-import { IPAddress } from '../../../ipAddress';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import SettingsButton from "../../../components/settingsButton";
+import { Platform } from 'react-native';
 
 /**
  * @module professionalClient
@@ -14,19 +15,20 @@ import SettingsButton from "../../../components/settingsButton";
 const ProfilePage = () => {
     const [professional, setProfessional] = useState(null);
     const [loading, setLoading] = useState(true);
-    const navigation = useNavigation();
+    const [bankingInfoAdded, setBankingInfoAdded] = useState(false); // New state for banking info status
     const [reviews, setReviews] = useState([]);
-
+    const navigation = useNavigation();
+    const [paymentMethod, setPaymentMethod] = useState(null);
 
     useEffect(() => {
         /**
          * Fetches the professional profile data from the server.
-         * 
+         *
          * This function retrieves the authentication token from AsyncStorage and uses it to make
          * an authenticated GET request to the professional profile endpoint. If the token is found,
          * it sets the professional data state with the response data. If no token is found, it logs
          * an error message. Any errors during the fetch process are caught and logged.
-         * 
+         *
          * @async
          * @function fetchProfileData
          * @returns {Promise<void>} A promise that resolves when the profile data has been fetched and the state has been updated.
@@ -55,11 +57,11 @@ const ProfilePage = () => {
 
     /**
      * Fetches the reviews for the professional from the server.
-     * 
+     *
      * This function makes a GET request to the professional reviews endpoint to fetch the reviews
      * for the professional. If the request is successful, it sets the reviews state with the response
      * data. Any errors during the fetch process are caught and logged.
-     * 
+     *
      * @async
      * @function fetchReviews
      * @returns {Promise<void>} A promise that resolves when the reviews have been fetched and the state has been
@@ -83,12 +85,81 @@ const ProfilePage = () => {
         fetchReviews();
     }, []);
 
+    /**
+     * Fetches the banking info status from the server.
+     *
+     * This function checks if the user has added their banking information.
+     * If not, it prompts the user to add it.
+     *
+     * @async
+     * @function fetchBankingInfoStatus
+     * @returns {Promise<void>} A promise that resolves when the banking info status is fetched.
+     */
+    const fetchBankingInfoStatus = async () => {
+        try {
+            const userId = await AsyncStorage.getItem('userId');
+            const token = await AsyncStorage.getItem('token'); // Get the JWT token
+
+            if (!userId || !token) {
+                console.error("No userId or token found in AsyncStorage");
+                return;
+            }
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
+                params: { userId },
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            setBankingInfoAdded(response.data.bankingInfoAdded);
+        } catch (error) {
+            console.error('Error fetching banking info status:', error.response?.data || error.message);
+        }
+    };
+
+    const fetchPaymentMethod = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const userId = await AsyncStorage.getItem('userId');
+
+            if (!token || !userId) {
+                console.error('Token or userId not found in AsyncStorage');
+                return;
+            }
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/payment-method`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { userId },
+            });
+
+            if (response.data) {
+                setPaymentMethod(response.data);
+            } else {
+                console.error('No payment method data found in response');
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                console.log('No payment method found for the user');
+                setPaymentMethod(null); // Clear the payment method state
+            } else {
+                console.error('Error fetching payment method:', error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchBankingInfoStatus();
+        fetchPaymentMethod();
+    }, []);
 
     if (loading) return <Text>Loading...</Text>;
     if (!professional) return <Text>Error loading profile.</Text>;
 
     const handleEditPress = () => {
-        alert("Editing is not available yet. Stay tuned for updates!");
+        Alert.alert(
+            "Feature Unavailable",
+            "The editing feature is not available yet, but please keep an eye out for future updates!",
+            [{ text: "OK", onPress: () => console.log("Alert closed") }]
+        );
     };
 
     const handleVerifyCredentials = () => {
@@ -117,8 +188,29 @@ const ProfilePage = () => {
                     <SettingsButton onPress={() => navigation.navigate('SettingsPage')} />
                 </View>
 
+                {/* Notice for banking information */}
+                {!bankingInfoAdded && Platform.OS !== 'ios' && (
+                    <View style={styles.noticeContainer}>
+                        <Text style={styles.noticeText}>
+                            ⚠️ To submit quotes, please add your banking information.
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.addBankingButton}
+                            onPress={() => navigation.navigate('BankingInfoPage')}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.addBankingButtonText}>➕ Add Banking</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
                 <View style={styles.profileContainer}>
-                    <Image source={{ uri: professional.idImageUrl || 'https://via.placeholder.com/50' }} style={styles.profileImage} />
+                    <View style={styles.imageWrapper}>
+                        <Image source={{ uri: professional.idImageUrl || 'https://via.placeholder.com/50' }} style={styles.profileImage} />
+                        <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
+                            <MaterialIcons name="edit" size={20} color="white" />
+                        </TouchableOpacity>
+                    </View>
                     <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
 
                     <View style={styles.ratingContainer}>
@@ -181,8 +273,6 @@ const ProfilePage = () => {
                     )}
                 </View>
 
-
-
                 <View style={styles.emailContainer}>
                     <Text style={styles.sectionTitle}>Email Address</Text>
                     <Text style={styles.emailText}>{professional.email}</Text>
@@ -191,8 +281,16 @@ const ProfilePage = () => {
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Payment Method</Text>
                     <View style={styles.inputBox}>
-                        <Text>💳 Visa ending in 1234</Text>
-                        <Text>Expiry 06/2024</Text>
+                        {paymentMethod ? (
+                            <>
+                                <Text>
+                                    💳 {paymentMethod.cardBrand} ending in {paymentMethod.cardLast4}
+                                </Text>
+                                <Text>Expiry {paymentMethod.expiryDate}</Text>
+                            </>
+                        ) : (
+                            <Text>No payment method added.</Text>
+                        )}
                     </View>
                 </View>
 
@@ -220,7 +318,6 @@ const ProfilePage = () => {
                         <Text style={styles.noCertificatesText}>No certificates available.</Text>
                     )}
                 </View>
-
 
                 {!professional.formComplete ? (
                     <TouchableOpacity style={styles.verifyButton} onPress={handleVerifyCredentials}>

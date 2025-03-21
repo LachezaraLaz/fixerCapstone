@@ -266,15 +266,6 @@ const AccountSettingsPage = () => {
                             />
                         </View>
 
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>Email</Text>
-                            <TextInput
-                                style={[styles.input, !isEditing && styles.disabledInput]}
-                                value={formData.email}
-                                editable={false}
-                            />
-                        </View>
-
                         {/* Address Fields with Visual Indicators */}
                         <View style={styles.formGroup}>
                             <Text style={styles.label}>Street</Text>

@@ -7,6 +7,7 @@ const { Jobs } = require('../model/createIssueModel');
 const { logger } = require('../utils/logger');
 const { initChat } = require('./initChat');
 
+
 /**
  * @module server/controller
  */
@@ -228,7 +229,7 @@ const updateQuoteStatus = async (req, res) => {
                 isRead: false,
             });
             await notification.save();
-            logger.info("the accepted quote recieved a notification");
+            logger.info("the accepted quote received a notification");
 
             // initChat
             const  clientId  = req.user.id;
@@ -252,7 +253,7 @@ const updateQuoteStatus = async (req, res) => {
                 }
             }
 
-            logger.info("the rejected quotes recieved a notification");
+            logger.info("the rejected quotes received a notification");
             res.status(200).json({ message: `Quote accepted, others rejected and job updated to "in progress".`, quote: updatedQuote });
         } else if (status === 'rejected') {
             // Handle manual rejection of a quote
@@ -281,7 +282,10 @@ const updateQuoteStatus = async (req, res) => {
             });
             await notification.save();
 
-            logger.info("a rejected quote recieved a notification for issue number", issueId);
+            logger.info(
+                "a rejected quote received a notification for issue number",
+                updatedQuote.issueId
+            );
 
             res.status(200).json({ message: `Quote rejected successfully.`, quote: updatedQuote });
         }
@@ -291,5 +295,19 @@ const updateQuoteStatus = async (req, res) => {
     }
 };
 
+/**
+ * Fetch all quotes for a given clientEmail
+ */
+const getQuotesByClientEmail = async (req, res) => {
+    try {
+        const { clientEmail } = req.params;
+        const quotes = await Quotes.find({ clientEmail });
+        return res.status(200).json(quotes);
+    } catch (error) {
+        console.error('Error fetching quotes by clientEmail:', error);
+        return res.status(500).json({ error: 'Failed to fetch quotes' });
+    }
+};
 
-module.exports = { authenticateJWT, submitQuote, getQuotesByJob, updateQuoteStatus };
+
+module.exports = { authenticateJWT, submitQuote, getQuotesByJob, updateQuoteStatus, getQuotesByClientEmail };

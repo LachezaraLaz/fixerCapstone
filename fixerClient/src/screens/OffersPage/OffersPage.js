@@ -1,91 +1,126 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    ScrollView,
+    ActivityIndicator,
+    Alert,
+    StyleSheet,
+    Image
+} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { IPAddress } from '../../../ipAddress';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import styles from '../../../style/homeScreenStyle';
 
-/**
- * @module fixerClient
- */
 
-export default function OffersPage({ route }) {
-    const { jobId } = route.params; // Extract jobId from route.params
-
-    // State for storing offers and loading state
+export default function OffersPage() {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigation = useNavigation();   
+    const [clientEmail, setClientEmail] = useState(null); // Store client email
+    const navigation = useNavigation();
 
     /**
-     * Fetches offers for a specific job and updates the state with the retrieved offers.
-     * 
-     * This function performs the following steps:
-     * 1. Sets the loading state to true.
-     * 2. Retrieves the authentication token from AsyncStorage.
-     * 3. If the token is not found, displays an alert and exits the function.
-     * 4. Makes an API request to fetch offers for the specified job using the retrieved token.
-     * 5. If the response is successful and contains offers, updates the state with the offers.
-     * 6. If no offers are found, displays an alert.
-     * 7. If an error occurs during the API request, logs the error and displays an alert.
-     * 8. Finally, sets the loading state to false.
-     * 
-     * @async
-     * @function fetchOffers
-     * @returns {Promise<void>} A promise that resolves when the function completes.
+     * Fetch client profile to get client email.
+     * Uses the same approach as the ProfilePage.
      */
-    const fetchOffers = async () => {
-        setLoading(true);
+    const fetchClientEmail = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
-                Alert.alert('You are not logged in');
+                Alert.alert('Error', 'You are not logged in.');
+                return;
+            }
+
+            const response = await axios.get(
+                //`https://fixercapstone-production.up.railway.app/client/profile`,
+                `http://192.168.0.19:3000/client/profile`,
+                {headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.status === 200 && response.data?.email) {
+                setClientEmail(response.data.email);
+            } else {
+                Alert.alert('Error', 'Failed to retrieve client email.');
+            }
+        } catch (error) {
+            console.error('Error fetching client email:', error.response?.data || error.message);
+            Alert.alert('Error fetching profile. Please try again later.');
+        }
+    };
+
+    /**
+     * Fetch all offers for the currently logged-in client,
+     * based on the fetched clientEmail.
+     */
+    const fetchOffers = async (email) => {
+        setLoading(true);
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token || !email) {
+                Alert.alert('Error', 'You are not logged in or no client email found.');
                 setLoading(false);
                 return;
             }
 
             const response = await axios.get(
-                `https://fixercapstone-production.up.railway.app/quotes/job/${jobId}`,
+                //`https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
+                `http://192.168.0.19:3000/quotes/client/${email}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // Check if response and required fields exist
-            if (response?.status === 200 && Array.isArray(response.data?.offers)) {
-                setOffers(response.data.offers);
+            if (response?.status === 200 && Array.isArray(response.data)) {
+                setOffers(response.data);
             } else {
-                Alert.alert('No offers found for this job');
+                Alert.alert('No offers found for your jobs.');
             }
         } catch (error) {
-            console.error('Error fetching offers:', error);
+            console.error('Error fetching offers:', error.response?.data || error.message);
             Alert.alert('Failed to fetch offers. Please try again later.');
         } finally {
             setLoading(false);
         }
     };
 
-    // Fetch offers when the component loads
+    /**
+     * Load client email first, then fetch offers using the retrieved email
+     */
     useEffect(() => {
-        fetchOffers();
+        const loadClientData = async () => {
+            await fetchClientEmail();
+        };
+        loadClientData();
     }, []);
 
     /**
-     * Handles the acceptance of an offer.
-     *
-     * @param {string} offerId - The ID of the offer to accept.
-     * @returns {Promise<void>} - A promise that resolves when the offer is accepted.
-     * @throws {Error} - Throws an error if there is an issue accepting the offer.
+     * Fetch offers when clientEmail is set
+     */
+    useEffect(() => {
+        if (clientEmail) {
+            fetchOffers(clientEmail);
+        }
+    }, [clientEmail]);
+
+    /**
+     * Accept an offer by ID
      */
     const handleAcceptOffer = async (offerId) => {
         try {
             const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
             const response = await axios.put(
-                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                //`https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                `http://192.168.0.19:3000/quotes/${offerId}`,
                 { status: 'accepted' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
+
             if (response.status === 200) {
                 Alert.alert('Offer Accepted', 'You have accepted the offer.');
-                navigation.navigate('ChatListPage');
+                fetchOffers(clientEmail); // Refresh offers
             } else {
                 Alert.alert('Failed to accept the offer.');
             }
@@ -96,26 +131,23 @@ export default function OffersPage({ route }) {
     };
 
     /**
-     * Handles the rejection of an offer.
-     *
-     * This function sends a PUT request to update the status of an offer to 'rejected'.
-     * If the request is successful, it alerts the user and refreshes the offers.
-     * If the request fails, it alerts the user of the failure.
-     *
-     * @param {string} offerId - The ID of the offer to be rejected.
-     * @returns {Promise<void>} - A promise that resolves when the offer rejection process is complete.
+     * Reject an offer by ID
      */
     const handleRejectOffer = async (offerId) => {
         try {
             const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
             const response = await axios.put(
-                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                //`https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                `http://192.168.0.19:3000/quotes/${offerId}`,
                 { status: 'rejected' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
+
             if (response.status === 200) {
                 Alert.alert('Offer Rejected', 'You have rejected the offer.');
-                fetchOffers(); // Refresh offers after the update
+                fetchOffers(clientEmail); // Refresh offers
             } else {
                 Alert.alert('Failed to reject the offer.');
             }
@@ -127,94 +159,71 @@ export default function OffersPage({ route }) {
 
     if (loading) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={styles.loadingContainer}>
                 <ActivityIndicator testID="loading-indicator" size="large" color="#0000ff" />
             </View>
         );
     }
 
     return (
-        <View style={{ flex: 1, padding: 15 }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
-                Offers for Job ID: {jobId}
-            </Text>
-            <ScrollView>
+        <View style={styles.container}>
+            <ScrollView style={styles.requestsContainer}>
                 {offers.length > 0 ? (
                     offers.map((offer) => (
-                        <View
-                            key={offer._id}
-                            style={{
-                                borderWidth: 1,
-                                borderRadius: 8,
-                                marginVertical: 8,
-                                padding: 12,
-                                borderColor:
-                                    offer.status === 'accepted'
-                                        ? 'green'
-                                        : offer.status === 'rejected'
-                                            ? 'red'
-                                            : 'gray',
-                            }}
-                        >
-                            <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>
-                                Professional:
-                            </Text>
-                            <Text >{offer.professionalFullName || offer.professionalEmail}</Text>
-                            <Text >{offer.professionalEmail}</Text>
-                            <Text ></Text>
-                            <Text>Price: ${offer.price}</Text>
-                            <Text>Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}</Text>
-                            {offer.status === 'pending' && (
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        marginTop: 10,
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        onPress={() => handleAcceptOffer(offer._id)}
-                                        style={{
-                                            backgroundColor: 'green',
-                                            borderRadius: 5,
-                                            paddingVertical: 8,
-                                            paddingHorizontal: 15,
-                                        }}
-                                    >
-                                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Accept</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={() => handleRejectOffer(offer._id)}
-                                        style={{
-                                            backgroundColor: 'red',
-                                            borderRadius: 5,
-                                            paddingVertical: 8,
-                                            paddingHorizontal: 15,
-                                        }}
-                                    >
-                                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Reject</Text>
-                                    </TouchableOpacity>
+                        <View key={offer._id} style={styles.requestCard}>
+                            {/* Profile Image on the Left */}
+                            <Image
+                                source={{ uri: 'https://via.placeholder.com/60' }}
+                                style={styles.requestUserImage}
+                            />
+
+                            {/* Right-side content */}
+                            <View style={styles.requestContent}>
+                                {/* Top Row: Name + Star Rating */}
+                                <View style={styles.requestTopRow}>
+                                    <Text style={styles.requestUserName}>
+                                        {offer.professionalFullName || offer.professionalEmail}
+                                    </Text>
+                                    <View style={styles.requestRating}>
+                                        <Ionicons name="star" size={16} color="#FFA500" />
+                                        <Text style={styles.ratingText}>4.8</Text>
+                                    </View>
                                 </View>
-                            )}
-                            <Text style={styles.date}>Quote made on: { new Date(offer.createdAt).toLocaleString() }</Text>
+
+                                {/* Price Row (replaces address) */}
+                                <View style={styles.requestAddressRow}>
+                                    <Ionicons name="cash-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
+                                    <Text style={styles.requestAddress}>Price: ${offer.price}</Text>
+                                </View>
+                                {/* Date */}
+                                <View style={styles.dateRow}>
+                                    <Ionicons name="calendar-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
+                                    <Text style={styles.date}>{new Date(offer.createdAt).toLocaleDateString()}</Text>
+                                </View>
+
+                                {/* Job Title (status) */}
+                                <Text style={styles.requestJob}>
+                                    Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
+                                </Text>
+
+                                {/* Accept/Reject Buttons */}
+                                {offer.status === 'pending' && (
+                                    <View style={styles.requestButtonsRow}>
+                                        <TouchableOpacity style={styles.rejectButton} onPress={() => handleRejectOffer(offer._id)}>
+                                            <Text style={styles.rejectText}>Reject</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.acceptButton} onPress={() => handleAcceptOffer(offer._id)}>
+                                            <Text style={styles.acceptText}>Accept</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </View>
                         </View>
                     ))
                 ) : (
-                    <Text style={{ textAlign: 'center', marginTop: 20 }}>
-                        No offers available for this job.
-                    </Text>
+                    <Text style={styles.emptyText}>No offers available for your jobs.</Text>
                 )}
             </ScrollView>
         </View>
     );
 }
-
-
-const styles = StyleSheet.create({
-    date: { 
-        fontSize: 12, 
-        color: 'gray',
-        paddingTop: 10
-    },
-});
-

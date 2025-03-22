@@ -72,6 +72,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         try {
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
             const fixedIssues = response.data.jobs
+                .filter(issue => issue.status.toLowerCase() === 'open') // I filter the issues with status = open
                 .map(issue => ({
                     ...issue,
                     latitude: issue.latitude ? parseFloat(issue.latitude) : null,
@@ -79,6 +80,11 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 }))
                 .filter(issue => issue.latitude !== null && issue.longitude !== null); // Remove invalid locations
             setIssues(fixedIssues);
+
+            // Log the status of each fetched issue
+            fixedIssues.forEach(issue => {
+                console.log(`Fetched issue: ${issue.title}, Status: ${issue.status}`);
+            });
 
             const uniqueTypes = [...new Set(fixedIssues.map(issue => issue.professionalNeeded))];
             setTypesOfWork(uniqueTypes);
@@ -438,7 +444,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     <Text style={styles.sectionTitle}>Issues</Text>
                     {filteredIssues.map((issue, index) => (
                         <TouchableOpacity
-                            key={issue._id || `marker-${index}`}
+                            key={issue._id || `issue-${index}`}
                             style={styles.issueCard}
                             onPress={() => handleIssueClick(issue)}
                         >

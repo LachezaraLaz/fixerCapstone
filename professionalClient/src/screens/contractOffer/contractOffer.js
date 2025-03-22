@@ -35,7 +35,7 @@ export default function ContractOffer({ route, navigation }) {
 
             const token = await AsyncStorage.getItem('token');
 
-            const response = await axios.get(`http://192.168.2.16:3000/users/user/${email}`, {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/users/user/${email}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
@@ -140,7 +140,7 @@ export default function ContractOffer({ route, navigation }) {
 
 
             const response = await axios.post(
-                `http://192.168.2.16:3000/quotes/create`,
+                `https://fixercapstone-production.up.railway.app/quotes/create`,
                 quoteData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );

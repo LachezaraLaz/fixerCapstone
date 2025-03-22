@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -6,6 +6,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../../style/profilePage/profilePageStyle';
 import { IPAddress } from '../../../ipAddress';
 import SettingsButton from "../../../components/settingsButton";
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
+import DropDownPicker from 'react-native-dropdown-picker';
 
 /**
  * @module fixerClient
@@ -15,7 +21,18 @@ const ProfilePage = () => {
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const { changeLanguage } = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
     //const [reviews, setReviews] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(locale); // default based on current locale
+    const [items, setItems] = useState([
+        { label: 'English', value: 'en' },
+        { label: 'Français', value: 'fr' }
+    ]);
 
 
     useEffect(() => {
@@ -52,6 +69,14 @@ const ProfilePage = () => {
         fetchProfileData();
     }, []);
 
+    useEffect(() => {
+        if (value !== locale) {
+            changeLanguage(value); // ✅ persist + update
+        }
+    }, [value]);
+
+
+
     // const fetchReviews = async () => {
     //     try {
     //         const response = await axios.get(`http://${IPAddress}:3000/professional/${professional.email}/reviews`);
@@ -81,7 +106,7 @@ const ProfilePage = () => {
     // };
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 150 }} showsVerticalScrollIndicator={false}>
             <View style={styles.globalFont}>
                 <View style={styles.customHeader}>
                     <Text style={styles.headerLogo}>Fixr</Text>
@@ -169,8 +194,28 @@ const ProfilePage = () => {
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Language</Text>
-                    <View style={styles.inputBox}>
-                        <Text>English</Text>
+                    <View>
+                        <DropDownPicker
+                            open={open}
+                            value={value}
+                            items={items}
+                            setOpen={setOpen}
+                            setValue={setValue}
+                            setItems={setItems}
+                            placeholder={locale === 'en' ? 'English' : 'Français'}
+                            style={{
+                                backgroundColor: '#E7E7E7',
+                                borderColor: '#ddd',
+                            }}
+                            textStyle={{ fontSize: 13, fontWeight: 'bold' }}
+                            dropDownContainerStyle={{
+                                backgroundColor: '#E7E7E7',
+                                borderColor: '#ddd',
+                                zIndex: 1000
+                            }}
+                            listMode="SCROLLVIEW"
+                            nestedScrollEnabled={true}
+                        />
                     </View>
                 </View>
                 <View style={styles.sectionContainer}>

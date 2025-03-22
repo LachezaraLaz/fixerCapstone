@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import { IPAddress } from '../../../ipAddress';
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 /**
  * @module fixerClient
@@ -10,6 +15,10 @@ import { IPAddress } from '../../../ipAddress';
 export default function EnterPinPage({ route, navigation }) {
     const { email } = route.params; // Get the email from the previous page
     const [pin, setPin] = useState('');
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     /**
      * Handles the submission of the PIN.
@@ -40,13 +49,22 @@ export default function EnterPinPage({ route, navigation }) {
             if (error.response) {
                 Alert.alert('Error', error.response.data.error || 'Invalid or expired PIN');
             } else {
-                Alert.alert('Error', 'An unexpected error occurred');
+                Alert.alert('Error', `${i18n.t('an_unexpected_error_occurred')}`);
             }
         }
     };
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
+                <Text style={languageStyle.languageButtonText}>🌍 {i18n.t('change_language')}</Text>
+            </TouchableOpacity>
+
+            <LanguageModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                setLocale={setLocale}
+            />
             <Text style={styles.title}>Enter PIN</Text>
 
             <TextInput

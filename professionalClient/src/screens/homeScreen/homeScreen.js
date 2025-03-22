@@ -9,6 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useChatContext } from '../chat/chatContext';
 import { useNavigation } from '@react-navigation/native';
 import { AppState } from 'react-native';
+import { Platform } from 'react-native';
+import IssueDetailScreen from '../issueDetailScreen/issueDetailScreen';
+
 
 /**
  * @module professionalClient
@@ -42,21 +45,25 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const [currentLocation, setCurrentLocation] = React.useState(null);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [typesOfWork, setTypesOfWork] = React.useState([]);
+    const [bankingInfoAdded, setBankingInfoAdded] = React.useState(false); // New state for banking info status
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
     const mapRef = React.useRef(null);
     const scrollViewRef = React.useRef(null);
     const navigation = useNavigation();
     const [locationPermission, setLocationPermission] = React.useState(null);
+    const [selectedIssue, setSelectedIssue] = React.useState(null);
+    const [selectedMarker, setSelectedMarker] = React.useState(null);
+    const modalTranslateY = React.useRef(new Animated.Value(500)).current; // Start off screen (500 px under screen)
 
     /**
      * Fetches all issues from the server and updates the state with the fetched data.
-     * 
+     *
      * This function makes an asynchronous GET request to the specified endpoint to retrieve
      * a list of issues. Upon successful retrieval, it updates the state with the list of issues
      * and extracts unique types of work required by the issues. If an error occurs during the
      * fetch operation, it logs the error and displays an alert to the user.
-     * 
+     *
      * @async
      * @function fetchAllIssues
      * @returns {Promise<void>} A promise that resolves when the fetch operation is complete.
@@ -64,6 +71,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const fetchAllIssues = async () => {
         try {
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
+            console.log('Response data:', response.data);
             const fixedIssues = response.data.jobs
                 .map(issue => ({
                     ...issue,
@@ -83,6 +91,36 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
+    /**
+     * Fetches the banking info status from the server.
+     *
+     * This function checks if the user has added their banking information.
+     * If not, it prompts the user to add it.
+     *
+     * @async
+     * @function fetchBankingInfoStatus
+     * @returns {Promise<void>} A promise that resolves when the banking info status is fetched.
+     */
+    const fetchBankingInfoStatus = async () => {
+        try {
+            const userId = await AsyncStorage.getItem('userId');
+            const token = await AsyncStorage.getItem('token'); // Retrieve the token
+
+            if (!userId || !token) {
+                console.error("No userId or token found in AsyncStorage");
+                return;
+            }
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
+                params: { userId },
+                headers: { Authorization: `Bearer ${token}` }, // Include the token in the headers
+            });
+
+            setBankingInfoAdded(response.data.bankingInfoAdded);
+        } catch (error) {
+            console.error('Error fetching banking info status:', error.response?.data || error.message);
+        }
+    };
 
     const checkLocationPermission = async () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
@@ -90,14 +128,13 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         return status;
     };
 
-
     /**
      * Asynchronously gets the current location of the user.
-     * 
+     *
      * This function checks for location permissions and requests them if not already granted.
      * If permissions are granted, it retrieves the current position and updates the state with the latitude and longitude.
      * If permissions are denied, it prompts the user to enable location services in the settings.
-     * 
+     *
      * @async
      * @function getCurrentLocation
      * @returns {Promise<void>} A promise that resolves when the location is retrieved or permission status is handled.
@@ -124,16 +161,10 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
-    /**
-     *
-     * These lines allow to update and actualize the location permission from the settings.
-     * We don't need to resign in to get the app updated.
-     *
-     */
-
     React.useEffect(() => {
         fetchAllIssues();
         getCurrentLocation();
+        fetchBankingInfoStatus(); // Fetch banking info status on component mount
         const focusListener = navigation.addListener('focus', getCurrentLocation);
         const appStateListener = AppState.addEventListener('change', (nextAppState) => {
             if (nextAppState === 'active') {
@@ -146,7 +177,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         };
     }, [navigation]);
 
-
     React.useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             if (route.params?.selectedFilters || route.params?.distanceRange) {
@@ -158,16 +188,16 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     /**
      * Handles the user logout process.
-     * 
+     *
      * This function performs the following steps:
      * 1. Disconnects the user from the chat client if it exists.
      * 2. Removes the user's token, stream token, user ID, and user name from AsyncStorage.
      * 3. Displays an alert indicating the user has been logged out successfully.
      * 4. Sets the `isLoggedIn` state to false.
-     * 
+     *
      * If an error occurs during the logout process, it logs the error to the console
      * and displays an alert indicating that an error occurred.
-     * 
+     *
      * @async
      * @function handleLogout
      * @returns {Promise<void>} A promise that resolves when the logout process is complete.
@@ -265,7 +295,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     /**
      * Re-centers the map to the current location with a smooth animation.
-     * 
+     *
      * @function handleRecenterMap
      * @returns {void}
      */
@@ -291,8 +321,59 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
+    /**
+     * Handles marker click: Opens bottom sheet with issue details.
+     */
+    const handleMarkerPress = (issue) => {
+        setSelectedMarker(issue);
+
+        modalTranslateY.setValue(500);
+        Animated.spring(modalTranslateY, {
+            toValue: 0,
+            friction: 8,
+            tension: 50,
+            useNativeDriver: true,
+        }).start();
+
+        if (mapRef.current) {
+            mapRef.current.animateToRegion({
+                latitude: issue.latitude,
+                longitude: issue.longitude,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
+            }, 500);
+        }
+    };
+
+    const handleCloseIssueDetail = () => {
+        Animated.timing(modalTranslateY, {
+            toValue: 500,  // go down (Out of screen)
+            duration: 250, // short time of closing (faster)
+            useNativeDriver: true,
+        }).start(() => {
+            setSelectedMarker(null); // close modal when animation is finished
+        });
+    };
+
     return (
         <SafeAreaView style={styles.container}>
+            {/* Notice for banking information */}
+            {!bankingInfoAdded && Platform.OS !== 'ios' && (
+                <View style={styles.noticeContainer}>
+                    <Ionicons name="alert-circle-outline" size={24} color="#d84315" style={styles.noticeIcon} />
+                    <Text style={styles.noticeText}>
+                        ⚠️ To submit quotes, please add your banking information.
+                    </Text>
+                    <TouchableOpacity
+                        style={styles.addBankingButton}
+                        onPress={() => navigation.navigate('BankingInfoPage')}
+                        activeOpacity={0.8}
+                    >
+                        <Text style={styles.addBankingButtonText}>➕ Add Banking</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
             <Animated.ScrollView ref={scrollViewRef} contentContainerStyle={{ paddingBottom: 100 }} scrollEventThrottle={16}>
                 {/* Map Section */}
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>
@@ -319,8 +400,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             <Marker
                                 key={issue._id}
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
-                                title={issue.title}
-                                description={issue.description}
+                                onPress={() => handleMarkerPress(issue)}
                             />
                         ))}
                     </MapView>
@@ -338,8 +418,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             {locationPermission !== 'granted' && <View style={styles.deniedSlash} />}
                         </TouchableOpacity>
                     </View>
-
-
                 </Animated.View>
 
                 {/* Filter Button */}
@@ -365,10 +443,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             style={styles.issueCard}
                             onPress={() => handleIssueClick(issue)}
                         >
-                            {/*<Image
-                                source={{uri: issue.imageUrl}} // Assume issue has imageUrl property
-                                style={styles.issueImage}
-                            />*/}
                             <View style={styles.issueDetails}>
                                 <Text style={styles.issueTitle}>{issue.title}</Text>
                                 <Text style={styles.issueDescription}>{issue.description}</Text>
@@ -377,9 +451,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                                     <Text style={styles.issueRating}>{issue.rating}</Text>
                                     <Text style={styles.issueReviews}>| {issue.comments} reviews</Text>
                                 </View>
-                            </View>
-                            <View style={styles.issuePriceContainer}>
-                                <Text style={styles.issuePrice}>${issue.price}</Text>
                             </View>
                         </TouchableOpacity>
                     ))}
@@ -392,6 +463,23 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     </TouchableOpacity>
                 </View>
             </Animated.ScrollView>
+            {selectedMarker && (
+                <Animated.View
+                    pointerEvents="box-none"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        transform: [{ translateY: modalTranslateY }],
+                    }}>
+                    <IssueDetailScreen
+                        issue={selectedMarker}
+                        onClose={handleCloseIssueDetail}
+                    />
+                </Animated.View>
+            )}
         </SafeAreaView>
     );
 }

@@ -67,9 +67,17 @@ const authenticateJWT = (req, res, next) => {
 const submitQuote = async (req, res) => {
     console.log('User data in submitQuote:', req.user); // Log the user data
 
-    const { clientEmail, price, issueId } = req.body;
+    const {
+        clientEmail,
+        issueTitle,
+        price,
+        issueId,
+        jobDescription,
+        toolsMaterials,
+        termsConditions,
+    } = req.body;
 
-    if (!clientEmail || !price || !issueId) {
+    if (!clientEmail || !issueTitle || !price || !issueId || !jobDescription || !toolsMaterials ) {
         return res.status(400).json({ message: 'Missing required fields.' });
     }
 
@@ -80,8 +88,13 @@ const submitQuote = async (req, res) => {
             return res.status(400).json({ message: 'Professional email not found.' });
         }
 
+        console.log("Received issue ID from request:", issueId);
+        const convertedIssueId = new mongoose.Types.ObjectId(issueId);
+        console.log("Converted issue ID to ObjectId:", convertedIssueId);
+
         // Check if a quote already exists
-        const existingQuote = await Quotes.findOne({ issueId, professionalEmail });
+        const existingQuote = await Quotes.findOne({ issueId: convertedIssueId, professionalEmail });
+
         if (existingQuote) {
             return res.status(400).json({ message: 'You have already submitted a quote for this issue.' });
         }
@@ -98,11 +111,16 @@ const submitQuote = async (req, res) => {
             return res.status(404).json({ message: 'Issue not found.' });
         }
 
+        // Create a new quote with the extended attributes
         const newQuote = await Quotes.create({
             professionalEmail,
             clientEmail,
+            issueTitle,
             price,
             issueId,
+            jobDescription,
+            toolsMaterials,
+            termsConditions,
         });
 
         // Create a notification for the quote

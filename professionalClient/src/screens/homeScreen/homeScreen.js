@@ -395,9 +395,9 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
-                        {filteredIssues.map((issue) => (
+                        {filteredIssues.map((issue, index) => (
                             <Marker
-                                key={issue._id}
+                                key={issue._id || `marker-${index}`}
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
                                 onPress={() => handleMarkerPress(issue)}
                             />
@@ -436,9 +436,9 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 {/* Issues List */}
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Issues</Text>
-                    {filteredIssues.map((issue) => (
+                    {filteredIssues.map((issue, index) => (
                         <TouchableOpacity
-                            key={issue._id}
+                            key={issue._id || `marker-${index}`}
                             style={styles.issueCard}
                             onPress={() => handleIssueClick(issue)}
                         >

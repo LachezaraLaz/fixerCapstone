@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Modal, Image, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert} from 'react-native';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
@@ -13,8 +13,14 @@ export default function ContractOffer({ route, navigation }) {
     const { issue } = route.params;
     const [price, setPrice] = React.useState('');
     const [selectedIssue, setSelectedIssue] = React.useState(null);
-    const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
     const [userAddress, setUserAddress] = useState(null);
+    const [jobDescription, setJobDescription] = useState('');
+    const [toolsMaterials, setToolsMaterials] = useState('');
+    const [termsConditions, setTermsConditions] = useState('');
+    // const [startTime, setStartTime] = useState(new Date());
+    // const [completionTime, setCompletionTime] = useState(new Date());
+    // const [showStartPicker, setShowStartPicker] = useState(false);
+    // const [showCompletionPicker, setShowCompletionPicker] = useState(false);
 
     /**
      * Fetches the user profile based on the provided email.
@@ -118,10 +124,22 @@ export default function ContractOffer({ route, navigation }) {
             const issueId = selectedIssue._id || selectedIssue.id;
             console.log('Resolved Issue ID:', issueId);
 
+            // Prepare the quote object
+            const quoteData = {
+                clientEmail,
+                issueId,
+                price: parsedPrice,
+                jobDescription,
+                toolsMaterials,
+                termsConditions,
+            };
+
+            console.log('Submitting Quote:', quoteData);  // Debugging info
+
 
             const response = await axios.post(
                 `http://192.168.2.16:3000/quotes/create`,
-                { clientEmail, price, issueId },
+                quoteData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -146,121 +164,32 @@ export default function ContractOffer({ route, navigation }) {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>{issue.title}</Text>
-            <Text style={styles.subtitle}>Detailed Information</Text>
-
-            <View style={styles.infoContainer}>
-                <Text style={styles.label}>Description:</Text>
-                <Text style={styles.value}>{issue.description}</Text>
-
-                <Text style={styles.label}>Status:</Text>
-                <Text style={styles.value}>{issue.status}</Text>
-
-                <Text style={styles.label}>Professional Needed:</Text>
-                <Text style={styles.value}>{issue.professionalNeeded}</Text>
-
-                <Text style={styles.label}>Coordinates:</Text>
-                {userAddress && (
-                    <View >
-                        <Text style={styles.value}>Street: {userAddress.street || 'N/A'}</Text>
-                        <Text style={styles.value}>Postal Code: {userAddress.postalCode || 'N/A'}</Text>
-                        <Text style={styles.value}>Province/State: {userAddress.provinceOrState || 'N/A'}</Text>
-                        <Text style={styles.value}>Country: {userAddress.country || 'N/A'}</Text>
-                        <Text style={styles.value}>Latitude: {issue.latitude}</Text>
-                        <Text style={styles.value}>Longitude: {issue.longitude}</Text>
-                    </View>
-                )}
+            <View style={styles.containerTitle}>
+                <Text style={styles.title}>{issue.title}</Text>
             </View>
 
-            {/* Additional Section */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Job Requirements</Text>
-                <Text style={styles.sectionContent}>
-                    {issue.requirements || 'No specific requirements provided for this job.'}
-                </Text>
-            </View>
+            <Text style={styles.label}>Job Description</Text>
+            <TextInput style={styles.inputContainer} placeholder="Describe your service" value={jobDescription} onChangeText={setJobDescription} multiline />
 
-            {/* Placeholder for Images/Documents */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Related Images/Documents</Text>
-                {issue.imageUrl ? (
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Text style={[styles.sectionContent, { color: 'blue', textDecorationLine: 'underline' }]}>
-                            Image 1
-                        </Text>
-                    </TouchableOpacity>
-                ) : (
-                    <Text style={styles.sectionContent}>No attachments provided for this issue.</Text>
-                )}
-            </View>
+            <Text style={styles.label}>Tools-Materials</Text>
+            <TextInput style={styles.inputContainer} placeholder="Enter Here" value={toolsMaterials} onChangeText={setToolsMaterials} multiline />
 
-            {/* Modal for Image */}
-            <Modal
-                visible={modalVisible}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setModalVisible(false)}
-                testID="modal" // testID here
-            >
-                <View style={modalStyles.modalContainer}>
-                    <Image
-                        source={{ uri: issue.imageUrl }}
-                        style={modalStyles.image}
-                        resizeMode="contain"
-                    />
-                    <TouchableOpacity
-                        onPress={() => setModalVisible(false)}
-                        style={modalStyles.closeButton}
-                    >
-                        <Text style={modalStyles.closeButtonText}>Close</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
+            <Text style={styles.label}>Terms and Conditions</Text>
+            <TextInput style={styles.inputContainer} placeholder="Enter Here" value={termsConditions} onChangeText={setTermsConditions} multiline />
+            <Text style={styles.labelPrice}>Pricing (Hourly Rate)</Text>
+            <TextInput
+                placeholder="50 $"
+                value={price}
+                keyboardType="numeric"
+                onChangeText={setPrice}
+                style={styles.input}
+            />
 
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Fee</Text>
-                <TextInput
-                    placeholder="Enter price for this issue"
-                    value={price}
-                    keyboardType="numeric"
-                    onChangeText={setPrice}
-                    style={styles.input}
-                />
-            </View>
+            <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
+                <Text style={styles.submitButtonText}>Submit Quote</Text>
+            </TouchableOpacity>
 
-            {/* Go Back Button */}
-            <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
-                    <Text style={styles.buttonText}>Go Back</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
-                    <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
-            </View>
         </ScrollView>
     );
 }
 
-
-const modalStyles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    image: {
-        width: '90%',
-        height: '70%',
-    },
-    closeButton: {
-        marginTop: 20,
-        padding: 10,
-        backgroundColor: '#fff',
-        borderRadius: 5,
-    },
-    closeButtonText: {
-        color: 'black',
-        fontWeight: 'bold',
-    },
-});

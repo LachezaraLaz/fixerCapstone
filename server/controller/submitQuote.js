@@ -66,7 +66,14 @@ const authenticateJWT = (req, res, next) => {
 const submitQuote = async (req, res) => {
     console.log('User data in submitQuote:', req.user); // Log the user data
 
-    const { clientEmail, price, issueId } = req.body;
+    const {
+        clientEmail,
+        price,
+        issueId,
+        jobDescription,
+        toolsMaterials,
+        termsConditions,
+    } = req.body;
 
     if (!clientEmail || !price || !issueId) {
         return res.status(400).json({ message: 'Missing required fields.' });
@@ -102,11 +109,15 @@ const submitQuote = async (req, res) => {
             return res.status(404).json({ message: 'Issue not found.' });
         }
 
+        // Create a new quote with the extended attributes
         const newQuote = await Quotes.create({
             professionalEmail,
             clientEmail,
             price,
             issueId,
+            jobDescription,
+            toolsMaterials,
+            termsConditions,
         });
 
         // Create a notification for the quote

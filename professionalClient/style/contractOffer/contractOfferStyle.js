@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
         borderColor: '#ccc',
         padding: 10,
         marginBottom: 10,
-        borderRadius: 5,
+        borderRadius: 10,
         height: 150,
         textAlignVertical: 'top', // Align placeholder at the top
     },
@@ -46,7 +46,7 @@ export const styles = StyleSheet.create({
         borderColor: '#ccc',
         padding: 10,
         marginBottom: 10,
-        borderRadius: 5,
+        borderRadius: 10,
         height: 50,
     },
 

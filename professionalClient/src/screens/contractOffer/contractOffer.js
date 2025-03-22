@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Platform, KeyboardAvoidingView} from 'react-native';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
-import { IPAddress } from '../../../ipAddress';
+// import { IPAddress } from '../../../ipAddress';
 
 /**
  * @module professionalClient
@@ -165,33 +165,59 @@ export default function ContractOffer({ route, navigation }) {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.containerTitle}>
-                <Text style={styles.title}>{issue.title}</Text>
-            </View>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <ScrollView
+                contentContainerStyle={styles.container}
+                keyboardShouldPersistTaps="handled"
+            >
+                <View style={styles.containerTitle}>
+                    <Text style={styles.title}>{issue.title}</Text>
+                </View>
 
-            <Text style={styles.label}>Job Description</Text>
-            <TextInput style={styles.inputContainer} placeholder="Describe your service" value={jobDescription} onChangeText={setJobDescription} multiline />
+                <Text style={styles.label}>Job Description</Text>
+                <TextInput
+                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    placeholder="Describe your service"
+                    value={jobDescription}
+                    onChangeText={setJobDescription}
+                    multiline
+                />
 
-            <Text style={styles.label}>Tools-Materials</Text>
-            <TextInput style={styles.inputContainer} placeholder="Enter Here" value={toolsMaterials} onChangeText={setToolsMaterials} multiline />
+                <Text style={styles.label}>Tools-Materials</Text>
+                <TextInput
+                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    placeholder="Enter Here"
+                    value={toolsMaterials}
+                    onChangeText={setToolsMaterials}
+                    multiline
+                />
 
-            <Text style={styles.label}>Terms and Conditions</Text>
-            <TextInput style={styles.inputContainer} placeholder="Enter Here" value={termsConditions} onChangeText={setTermsConditions} multiline />
-            <Text style={styles.labelPrice}>Pricing (Hourly Rate)</Text>
-            <TextInput
-                placeholder="50 $"
-                value={price}
-                keyboardType="numeric"
-                onChangeText={setPrice}
-                style={styles.input}
-            />
+                <Text style={styles.label}>Terms and Conditions</Text>
+                <TextInput
+                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    placeholder="Enter Here"
+                    value={termsConditions}
+                    onChangeText={setTermsConditions}
+                    multiline
+                />
 
-            <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
-                <Text style={styles.submitButtonText}>Submit Quote</Text>
-            </TouchableOpacity>
+                <Text style={styles.labelPrice}>Pricing $ (Hourly Rate)</Text>
+                <TextInput
+                    placeholder="50"
+                    value={price}
+                    keyboardType="numeric"
+                    onChangeText={setPrice}
+                    style={[styles.input, { height: 40 }]}
+                />
 
-        </ScrollView>
+                <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
+                    <Text style={styles.submitButtonText}>Submit Quote</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 

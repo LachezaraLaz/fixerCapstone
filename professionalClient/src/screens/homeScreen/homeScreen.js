@@ -459,9 +459,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                                     <Text style={styles.issueReviews}>| {issue.comments} reviews</Text>
                                 </View>
                             </View>
-                            <View style={styles.issuePriceContainer}>
-                                <Text style={styles.issuePrice}>${issue.price}</Text>
-                            </View>
                         </TouchableOpacity>
                     ))}
                 </View>

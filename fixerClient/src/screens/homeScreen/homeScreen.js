@@ -59,13 +59,19 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 if (!token) return;
 
                 // fetch client email
-                const profile = await axios.get('http://192.168.0.19:3000/client/profile', {
+                const profile = await axios.get(
+                    `https://fixercapstone-production.up.railway.app/client/profile`,
+                    //`http://192.168.0.19:3000/client/profile`,
+                    {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const email = profile.data.email;
 
                 // fetch all offers for client
-                const resp = await axios.get(`http://192.168.0.19:3000/quotes/client/${email}`, {
+                const resp = await axios.get(
+                    `https://fixercapstone-production.up.railway.app/client/${email}`,
+                    //`http://192.168.0.19:3000/quotes/client/${email}`,
+                    {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 //console.log('API Response:', resp.data);

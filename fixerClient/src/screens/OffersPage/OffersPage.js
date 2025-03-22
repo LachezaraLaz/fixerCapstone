@@ -35,8 +35,8 @@ export default function OffersPage() {
             }
 
             const response = await axios.get(
-                //`https://fixercapstone-production.up.railway.app/client/profile`,
-                `http://192.168.0.19:3000/client/profile`,
+                `https://fixercapstone-production.up.railway.app/client/profile`,
+                //`http://192.168.0.19:3000/client/profile`,
                 {headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -66,8 +66,8 @@ export default function OffersPage() {
             }
 
             const response = await axios.get(
-                //`https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
-                `http://192.168.0.19:3000/quotes/client/${email}`,
+                `https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
+                //`http://192.168.0.19:3000/quotes/client/${email}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -112,8 +112,8 @@ export default function OffersPage() {
             if (!token) return;
 
             const response = await axios.put(
-                //`https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
-                `http://192.168.0.19:3000/quotes/${offerId}`,
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                //`http://192.168.0.19:3000/quotes/${offerId}`,
                 { status: 'accepted' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -139,8 +139,8 @@ export default function OffersPage() {
             if (!token) return;
 
             const response = await axios.put(
-                //`https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
-                `http://192.168.0.19:3000/quotes/${offerId}`,
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                //`http://192.168.0.19:3000/quotes/${offerId}`,
                 { status: 'rejected' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

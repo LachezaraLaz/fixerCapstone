@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useContext} from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 import { IPAddress } from '../../../ipAddress';

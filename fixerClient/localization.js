@@ -78,6 +78,10 @@ const en = {
     rating: "Rating",
     comment: "Comment",
     review: "Review",
+    no_description_provided:"No description provided",
+    payment_method: "Payment Method",
+    visa_ending: "Visa ending in",
+    language: "Language",
 }
 
 const fr = {
@@ -160,6 +164,10 @@ const fr = {
     rating: "Évaluation",
     comment: "Commentaire",
     review: "Avis",
+    no_description_provided:"Aucune description fournie",
+    payment_method: "Méthode de paiement",
+    visa_ending: "Visa se terminant par",
+    language: "Langue",
 }
 
 export {en, fr}

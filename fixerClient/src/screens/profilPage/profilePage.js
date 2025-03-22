@@ -8,8 +8,6 @@ import { IPAddress } from '../../../ipAddress';
 import SettingsButton from "../../../components/settingsButton";
 import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
-import LanguageModal from "../../../components/LanguageModal";
-import languageStyle from '../../../style/languageStyle';
 import { LanguageContext } from "../../../context/LanguageContext";
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -127,7 +125,7 @@ const ProfilePage = () => {
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.sectionTitle}>Description</Text>
                     <Text style={styles.descriptionText}>
-                        {client.description || "No description provided."}
+                        {client.description || i18n.t('no_description_provided')}
                     </Text>
                 </View>
 
@@ -180,20 +178,20 @@ const ProfilePage = () => {
 
 
                 <View style={styles.emailContainer}>
-                    <Text style={styles.sectionTitle}>Email Address</Text>
+                    <Text style={styles.sectionTitle}>{i18n.t('email')}</Text>
                     <Text style={styles.emailText}>{client.email}</Text>
                 </View>
 
                 <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Payment Method</Text>
+                    <Text style={styles.sectionTitle}>{i18n.t('payment_method')}</Text>
                     <View style={styles.inputBox}>
-                        <Text>💳 Visa ending in 1234</Text>
+                        <Text>💳 {i18n.t('visa_ending')} 1234</Text>
                         <Text>Expiry 06/2024</Text>
                     </View>
                 </View>
 
                 <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Language</Text>
+                    <Text style={styles.sectionTitle}>{i18n.t('language')}</Text>
                     <View>
                         <DropDownPicker
                             open={open}
@@ -219,7 +217,7 @@ const ProfilePage = () => {
                     </View>
                 </View>
                 <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Address</Text>
+                    <Text style={styles.sectionTitle}>{i18n.t('street_address')}</Text>
                     <View style={styles.inputBox}>
                         <Text>{client.street}, {client.provinceOrState}, {client.country}, {client.postalCode}</Text>
                     </View>

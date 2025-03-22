@@ -13,6 +13,9 @@ const createIssueModel = new mongoose.Schema({
     rating: { type: Number, min: 1, max: 5 },
     comment: { type: String },
     professionalEmail: { type: String },
+    firstName: { type: String },
+    lastName: { type: String },
+    timeline: { type: String },
 }, {
     collection: 'jobs'
 });

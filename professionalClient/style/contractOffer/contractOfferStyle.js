@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
     containerTitle: {
         textAlign: 'center',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 12,
     },
 
     title: {

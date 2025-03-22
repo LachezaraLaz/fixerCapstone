@@ -68,6 +68,7 @@ const submitQuote = async (req, res) => {
 
     const {
         clientEmail,
+        issueTitle,
         price,
         issueId,
         jobDescription,
@@ -75,7 +76,7 @@ const submitQuote = async (req, res) => {
         termsConditions,
     } = req.body;
 
-    if (!clientEmail || !price || !issueId) {
+    if (!clientEmail || !issueTitle || !price || !issueId || !jobDescription || !toolsMaterials ) {
         return res.status(400).json({ message: 'Missing required fields.' });
     }
 
@@ -113,6 +114,7 @@ const submitQuote = async (req, res) => {
         const newQuote = await Quotes.create({
             professionalEmail,
             clientEmail,
+            issueTitle,
             price,
             issueId,
             jobDescription,

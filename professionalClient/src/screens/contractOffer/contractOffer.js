@@ -120,6 +120,7 @@ export default function ContractOffer({ route, navigation }) {
                 return;
             }
 
+            const issueTitle = selectedIssue.title; // Get the issue title
             const clientEmail = selectedIssue.userEmail; // Use userEmail from the schema
             const issueId = selectedIssue._id || selectedIssue.id;
             console.log('Resolved Issue ID:', issueId);
@@ -127,6 +128,7 @@ export default function ContractOffer({ route, navigation }) {
             // Prepare the quote object
             const quoteData = {
                 clientEmail,
+                issueTitle,
                 issueId,
                 price: parsedPrice,
                 jobDescription,

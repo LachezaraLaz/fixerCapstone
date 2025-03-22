@@ -10,6 +10,8 @@ import { useChatContext } from '../chat/chatContext';
 import { useNavigation } from '@react-navigation/native';
 import { AppState } from 'react-native';
 import { Platform } from 'react-native';
+import IssueDetailScreen from '../issueDetailScreen/issueDetailScreen';
+
 
 /**
  * @module professionalClient
@@ -50,6 +52,9 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const scrollViewRef = React.useRef(null);
     const navigation = useNavigation();
     const [locationPermission, setLocationPermission] = React.useState(null);
+    const [selectedIssue, setSelectedIssue] = React.useState(null);
+    const [selectedMarker, setSelectedMarker] = React.useState(null);
+    const modalTranslateY = React.useRef(new Animated.Value(500)).current; // Start off screen (500 px under screen)
 
     /**
      * Fetches all issues from the server and updates the state with the fetched data.
@@ -66,6 +71,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const fetchAllIssues = async () => {
         try {
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
+            console.log('Response data:', response.data);
             const fixedIssues = response.data.jobs
                 .map(issue => ({
                     ...issue,
@@ -315,6 +321,40 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
+    /**
+     * Handles marker click: Opens bottom sheet with issue details.
+     */
+    const handleMarkerPress = (issue) => {
+        setSelectedMarker(issue);
+
+        modalTranslateY.setValue(500);
+        Animated.spring(modalTranslateY, {
+            toValue: 0,
+            friction: 8,
+            tension: 50,
+            useNativeDriver: true,
+        }).start();
+
+        if (mapRef.current) {
+            mapRef.current.animateToRegion({
+                latitude: issue.latitude,
+                longitude: issue.longitude,
+                latitudeDelta: 0.0122,
+                longitudeDelta: 0.0121,
+            }, 500);
+        }
+    };
+
+    const handleCloseIssueDetail = () => {
+        Animated.timing(modalTranslateY, {
+            toValue: 500,  // go down (Out of screen)
+            duration: 250, // short time of closing (faster)
+            useNativeDriver: true,
+        }).start(() => {
+            setSelectedMarker(null); // close modal when animation is finished
+        });
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             {/* Notice for banking information */}
@@ -333,13 +373,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     </TouchableOpacity>
                 </View>
             )}
-
-
-            <View style={styles.notificationButton}>
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
-                    <Ionicons name="notifications-outline" size={28} color="#333" />
-                </TouchableOpacity>
-            </View>
 
             <Animated.ScrollView ref={scrollViewRef} contentContainerStyle={{ paddingBottom: 100 }} scrollEventThrottle={16}>
                 {/* Map Section */}
@@ -367,8 +400,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             <Marker
                                 key={issue._id}
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
-                                title={issue.title}
-                                description={issue.description}
+                                onPress={() => handleMarkerPress(issue)}
                             />
                         ))}
                     </MapView>
@@ -420,9 +452,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                                     <Text style={styles.issueReviews}>| {issue.comments} reviews</Text>
                                 </View>
                             </View>
-                            <View style={styles.issuePriceContainer}>
-                                <Text style={styles.issuePrice}>${issue.price}</Text>
-                            </View>
                         </TouchableOpacity>
                     ))}
                 </View>
@@ -434,6 +463,23 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     </TouchableOpacity>
                 </View>
             </Animated.ScrollView>
+            {selectedMarker && (
+                <Animated.View
+                    pointerEvents="box-none"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        transform: [{ translateY: modalTranslateY }],
+                    }}>
+                    <IssueDetailScreen
+                        issue={selectedMarker}
+                        onClose={handleCloseIssueDetail}
+                    />
+                </Animated.View>
+            )}
         </SafeAreaView>
     );
 }

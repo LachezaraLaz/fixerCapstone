@@ -374,13 +374,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 </View>
             )}
 
-
-            <View style={styles.notificationButton}>
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
-                    <Ionicons name="notifications-outline" size={28} color="#333" />
-                </TouchableOpacity>
-            </View>
-
             <Animated.ScrollView ref={scrollViewRef} contentContainerStyle={{ paddingBottom: 100 }} scrollEventThrottle={16}>
                 {/* Map Section */}
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }]}>

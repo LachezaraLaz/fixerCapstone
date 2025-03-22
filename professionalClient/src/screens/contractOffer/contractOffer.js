@@ -31,16 +31,12 @@ export default function ContractOffer({ route, navigation }) {
      */
     const fetchUserProfile = async (email) => {
         try {
-            console.log('Fetching profile for email:', email);
 
             const token = await AsyncStorage.getItem('token');
 
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/users/user/${email}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-
-            // Log the response data for debugging
-            console.log('Response data:', response.data);
 
             // Handle a successful response
             if (response.status === 200) {
@@ -110,9 +106,7 @@ export default function ContractOffer({ route, navigation }) {
                 Alert.alert('Error', 'User token not found.');
                 return;
             }
-            console.log('Selected Issue:', selectedIssue);  // Log the whole issue object
-            console.log('Issue ID:', selectedIssue?.id);    // Log the issue ID specifically
-            console.log('Issue ID Type:', typeof selectedIssue?.id);
+
 
             if (!selectedIssue || !selectedIssue.userEmail) {
                 console.log('clientEmail is null or undefined');
@@ -123,7 +117,6 @@ export default function ContractOffer({ route, navigation }) {
             const issueTitle = selectedIssue.title; // Get the issue title
             const clientEmail = selectedIssue.userEmail; // Use userEmail from the schema
             const issueId = selectedIssue._id || selectedIssue.id;
-            console.log('Resolved Issue ID:', issueId);
 
             // Prepare the quote object
             const quoteData = {
@@ -135,8 +128,6 @@ export default function ContractOffer({ route, navigation }) {
                 toolsMaterials,
                 termsConditions,
             };
-
-            console.log('Submitting Quote:', quoteData);  // Debugging info
 
 
             const response = await axios.post(

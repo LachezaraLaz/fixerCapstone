@@ -301,8 +301,22 @@ const updateQuoteStatus = async (req, res) => {
 const getQuotesByClientEmail = async (req, res) => {
     try {
         const { clientEmail } = req.params;
-        const quotes = await Quotes.find({ clientEmail });
-        return res.status(200).json(quotes);
+        const quotes = await Quotes.find({ clientEmail }).lean();
+
+        const populated = await Promise.all(quotes.map(async (quote) => {
+            const pro = await fixerClient.findOne({ email: quote.professionalEmail }).lean();
+            if (!pro) return quote;
+
+            return {
+                ...quote,
+                professionalFirstName: pro.firstName,
+                professionalLastName: pro.lastName,
+                professionalReviewCount: pro.reviewCount ?? 0,
+                professionalTotalRating: pro.totalRating ?? 0,
+            };
+        }));
+
+        return res.status(200).json(populated);
     } catch (error) {
         console.error('Error fetching quotes by clientEmail:', error);
         return res.status(500).json({ error: 'Failed to fetch quotes' });

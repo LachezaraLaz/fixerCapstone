@@ -182,11 +182,18 @@ export default function OffersPage() {
                                 {/* Top Row: Name + Star Rating */}
                                 <View style={styles.requestTopRow}>
                                     <Text style={styles.requestUserName}>
-                                        {offer.professionalFullName || offer.professionalEmail}
+                                        {(offer.professionalFirstName || offer.professionalLastName)
+                                            ? `${offer.professionalFirstName} ${offer.professionalLastName}`
+                                            : offer.professionalEmail}
                                     </Text>
+
                                     <View style={styles.requestRating}>
-                                        <Ionicons name="star" size={16} color="#FFA500" />
-                                        <Text style={styles.ratingText}>4.8</Text>
+                                        <Ionicons name="star" size={16} color={(offer.professionalReviewCount ?? 0) > 0 ? "#FFA500" : "grey"} />
+                                        <Text style={[styles.ratingText, { color: (offer.professionalReviewCount ?? 0) > 0 ? "#FFA500" : "grey" }]}>
+                                            {(offer.professionalReviewCount ?? 0) > 0
+                                                ? (offer.professionalTotalRating ?? 0).toFixed(1)
+                                                : "0"}
+                                        </Text>
                                     </View>
                                 </View>
 
@@ -198,7 +205,11 @@ export default function OffersPage() {
                                 {/* Date */}
                                 <View style={styles.dateRow}>
                                     <Ionicons name="calendar-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
-                                    <Text style={styles.date}>{new Date(offer.createdAt).toLocaleDateString()}</Text>
+                                    <Text style={styles.date}>
+                                        {offer.createdAt && !isNaN(new Date(offer.createdAt))
+                                            ? new Date(offer.createdAt).toLocaleDateString()
+                                            : 'Invalid Date'}
+                                    </Text>
                                 </View>
 
                                 {/* Job Title (status) */}

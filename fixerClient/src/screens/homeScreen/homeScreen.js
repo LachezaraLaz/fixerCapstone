@@ -68,6 +68,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 const resp = await axios.get(`http://192.168.0.19:3000/quotes/client/${email}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+                //console.log('API Response:', resp.data);
 
                 setMiniOffers(Array.isArray(resp.data) ? resp.data : []);
             } catch (e) {
@@ -206,54 +207,79 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                     <ActivityIndicator style={{ marginTop: 20 }} />
                 ) : (
                     <View style={{ height: 330 }}>
-                    <ScrollView style={styles.requestsContainer}>
-                        {miniOffers.length ? miniOffers.map((offer) => (
-                            <View key={offer._id} style={styles.requestCard}>
-                                <Image
-                                    source={{ uri: 'https://via.placeholder.com/60' }}
-                                    style={styles.requestUserImage}
-                                />
-                                <View style={styles.requestContent}>
-                                    <View style={styles.requestTopRow}>
-                                        <Text style={styles.requestUserName}>
-                                            {offer.professionalFullName || offer.professionalEmail}
-                                        </Text>
-                                        <View style={styles.requestRating}>
-                                            <Ionicons name="star" size={16} color="#FFA500" />
-                                            <Text style={styles.ratingText}>4.8</Text>
+                        <ScrollView style={styles.requestsContainer}>
+                            {miniOffers.length ? miniOffers.map((offer) => {
+                                // If the pro has no reviews, we'll show grey star & "0" rating
+                                const hasReviews = offer.professionalReviewCount > 0;
+                                const starColor = hasReviews ? "#FFA500" : "grey";
+                                const starRatingText = hasReviews
+                                    ? `${parseFloat(offer.professionalTotalRating).toFixed(1)}`
+                                    : "0";
+
+
+                                return (
+                                    <View key={offer._id} style={styles.requestCard}>
+                                        <Image
+                                            source={{ uri: 'https://via.placeholder.com/60' }}
+                                            style={styles.requestUserImage}
+                                        />
+
+                                        <View style={styles.requestContent}>
+                                            {/* Name + Star Rating */}
+                                            <View style={styles.requestTopRow}>
+                                                <Text style={styles.requestUserName}>
+                                                    {
+                                                        // If professionalFirstName/LastName not found, fallback to email
+                                                        (offer.professionalFirstName || offer.professionalLastName)
+                                                            ? `${offer.professionalFirstName} ${offer.professionalLastName}`
+                                                            : offer.professionalEmail
+                                                    }
+                                                </Text>
+                                                <View style={styles.requestRating}>
+                                                    <Ionicons name="star" size={16} color={starColor} />
+                                                    <Text style={[styles.ratingText, { color: starColor }]}>
+                                                        {starRatingText}
+                                                    </Text>
+                                                </View>
+                                            </View>
+
+                                            {/* Price row */}
+                                            <View style={styles.requestAddressRow}>
+                                                <Ionicons name="cash-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
+                                                <Text style={styles.requestAddress}>Price: ${offer.price}</Text>
+                                            </View>
+
+                                            {/* Date row */}
+                                            <View style={styles.dateRow}>
+                                                <Ionicons name="calendar-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
+                                                <Text style={styles.date}>
+                                                    {new Date(offer.createdAt).toLocaleDateString()}
+                                                </Text>
+                                            </View>
+
+                                            {/* Status */}
+                                            <Text style={styles.requestJob}>
+                                                Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
+                                            </Text>
+
+                                            {/* Accept/Reject if pending */}
+                                            {offer.status === 'pending' && (
+                                                <View style={styles.requestButtonsRow}>
+                                                    <TouchableOpacity style={styles.rejectButton}>
+                                                        <Text style={styles.rejectText}>Reject</Text>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity style={styles.acceptButton}>
+                                                        <Text style={styles.acceptText}>Accept</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            )}
                                         </View>
                                     </View>
-
-                                    <View style={styles.requestAddressRow}>
-                                        <Ionicons name="cash-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
-                                        <Text style={styles.requestAddress}>Price: ${offer.price}</Text>
-                                    </View>
-
-                                    <View style={styles.dateRow}>
-                                        <Ionicons name="calendar-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
-                                        <Text style={styles.date}>{new Date(offer.createdAt).toLocaleDateString()}</Text>
-                                    </View>
-
-                                    <Text style={styles.requestJob}>
-                                        Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
-                                    </Text>
-
-                                    {offer.status === 'pending' && (
-                                        <View style={styles.requestButtonsRow}>
-                                            <TouchableOpacity style={styles.rejectButton} onPress={() => handleRejectOffer(offer._id)}>
-                                                <Text style={styles.rejectText}>Reject</Text>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity style={styles.acceptButton} onPress={() => handleAcceptOffer(offer._id)}>
-                                                <Text style={styles.acceptText}>Accept</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    )}
-                                </View>
-                            </View>
-                        )) : (
-                            <Text style={styles.emptyText}>No requests available.</Text>
-                        )}
-                    </ScrollView>
+                                );
+                            }) : (
+                                <Text style={styles.emptyText}>No requests available.</Text>
+                            )}
+                        </ScrollView>
                     </View>
                 )}
             {/* Logout Button at Bottom */}

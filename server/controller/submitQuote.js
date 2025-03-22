@@ -79,10 +79,13 @@ const submitQuote = async (req, res) => {
             return res.status(400).json({ message: 'Professional email not found.' });
         }
 
+        console.log("Received issue ID from request:", issueId);
         const convertedIssueId = new mongoose.Types.ObjectId(issueId);
+        console.log("Converted issue ID to ObjectId:", convertedIssueId);
 
         // Check if a quote already exists
-        const existingQuote = await Quotes.findOne({ convertedIssueId, professionalEmail });
+        const existingQuote = await Quotes.findOne({ issueId: convertedIssueId, professionalEmail });
+
         if (existingQuote) {
             return res.status(400).json({ message: 'You have already submitted a quote for this issue.' });
         }

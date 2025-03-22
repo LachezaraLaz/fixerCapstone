@@ -60,8 +60,8 @@ export default function CreateIssue({ navigation }) {
     const [selectedTimeLine, setSelectedTimeLine] = useState(null);
     const [itemsTimeLine, setItemsTimeLine] = useState([
         { label: `${i18n.t('select_timeline')}`, value: '' },
-        { label: `${i18n.t('low_priority')}`, value: 'Low-Priority' },
-        { label: `${i18n.t('high_priority')}`, value: 'High-Priority' },
+        { label: `${i18n.t('low_priority')}`, value: 'low-priority' },
+        { label: `${i18n.t('high_priority')}`, value: 'high-priority' },
     ]);
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [location, setLocation] = useState("");
@@ -198,6 +198,7 @@ export default function CreateIssue({ navigation }) {
             formData.append('professionalNeeded', selectedService);
             formData.append('email', userEmail);
             formData.append('status', "Open");
+            formData.append('timeline', selectedTimeLine);
 
             if (selectedImage) {
                 formData.append('image', {

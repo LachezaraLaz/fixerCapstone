@@ -26,7 +26,7 @@ const { logger } = require('../utils/logger');
  * @throws {Error} - Throws an error if the issue creation fails.
  */
 const createIssue = async (req, res) => {
-    const { title, description, professionalNeeded, email, status = 'open' } = req.body;
+    const { title, description, professionalNeeded, email, status = 'open',timeline } = req.body;
     let imageUrl = null;
 
     if (!title || !description || !professionalNeeded) {
@@ -54,7 +54,10 @@ const createIssue = async (req, res) => {
             userEmail: email,
             status,
             latitude,
-            longitude
+            longitude,
+            firstName: clientInfo.firstName,
+            lastName: clientInfo.lastName,
+            timeline,
         });
 
         // Create a notification for the issue creator

@@ -1,9 +1,10 @@
 //Import list
 import * as React from 'react';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { ScrollView } from 'react-native-virtualized-view'
 import styles from '../../../style/createIssueStyle'
 import 'react-native-get-random-values';
 import {
-    ScrollView,
     View,
     Text,
     TextInput,
@@ -16,7 +17,7 @@ import {
     ActivityIndicator,
     StyleSheet
 } from 'react-native';
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
@@ -65,12 +66,11 @@ export default function CreateIssue({ navigation }) {
     ]);
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [location, setLocation] = useState("");
-
-    const [professionalNeeded, setProfessionalNeeded] = useState('');
-    const [image, setImage] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [other, setOther] = useState(false);
-
+    const [suggestions, setSuggestions] = useState([]);
+    // const [professionalNeeded, setProfessionalNeeded] = useState('');
+    // const [image, setImage] = useState(null);
+    // const [loading, setLoading] = useState(false);
+    // const [other, setOther] = useState(false);
 
     /**
      * Asynchronously picks an image from the user's media library.
@@ -110,7 +110,7 @@ export default function CreateIssue({ navigation }) {
             setLoadingAi(true);
             // Call AI endpoint
             const response = await axios.post(
-                'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
+                'https://fixercapstone-production.up.railway.app /issue/aiEnhancement',
                 //'http://192.168.0.19:3000/issue/aiEnhancement',
                 { description }
             );
@@ -197,8 +197,9 @@ export default function CreateIssue({ navigation }) {
             formData.append('description', description);
             formData.append('professionalNeeded', selectedService);
             formData.append('email', userEmail);
-            formData.append('status', "Open");
+            formData.append('status', "open");
             formData.append('timeline', selectedTimeLine);
+            formData.append('imageUrl', selectedImage);
 
             if (selectedImage) {
                 formData.append('image', {
@@ -216,7 +217,7 @@ export default function CreateIssue({ navigation }) {
                 image: selectedImage ? "✅ Image Attached" : "❌ No Image",
             });
 
-            const response = await axios.post(`https://fixercapstone-production.up.railway.app/issue/create`, formData, {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app /issue/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -294,6 +295,7 @@ export default function CreateIssue({ navigation }) {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
                         contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+                        keyboardShouldPersistTaps="handled"
             >
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('job_description')}</Text>
                 {/* title field */}

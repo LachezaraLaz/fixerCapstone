@@ -57,7 +57,7 @@ const createIssue = async (req, res) => {
             longitude,
             firstName: clientInfo.firstName,
             lastName: clientInfo.lastName,
-            timeline
+            timeline,
         });
 
         // Create a notification for the issue creator

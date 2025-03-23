@@ -26,19 +26,21 @@ export const styles = StyleSheet.create({
     filterGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        gap: 28,
     },
 
     filterButton: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
+        width: '25%',  // Adjusting for spacing and margins
+        aspectRatio: 1,  // Make it a perfect circle
+        borderRadius: 60,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#FDF3E6',
         marginBottom: 12,
-        backgroundColor: '#fff',
+        backgroundColor: '#FDF3E6',
     },
     filterButtonSelected: {
         backgroundColor: '#f28500',
@@ -85,4 +87,24 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+
+    urgencyContainer: {
+        marginVertical: 8,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        padding: 6,
+        backgroundColor: '#fff',
+    },
+    picker: {
+        height: 55,
+        width: '100%',
+    },
+
+    starContainer: {
+        flexDirection: 'row',
+        justifyContent: 'left',
+        marginBottom: 16,
+    },
+
 });

@@ -1,10 +1,9 @@
 //Import list
 import * as React from 'react';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { ScrollView } from 'react-native-virtualized-view'
 import styles from '../../../style/createIssueStyle'
 import 'react-native-get-random-values';
 import {
+    ScrollView,
     View,
     Text,
     TextInput,

@@ -118,7 +118,6 @@ export default function MyJobsProfessional() {
 
             <View style={styles.tabsContainer}>
                 {[
-                    { key: "all", label: "All" },
                     { key: "active", label: "In Progress" },
                     { key: "done", label: "Completed" },
                     { key: "pending", label: "Quote Sent" },

@@ -53,9 +53,10 @@ const authenticateJWT = (req, res, next) => {
  * @param {Object} req.user - The user object containing the user ID.
  * @param {string} req.user.id - The ID of the user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves to void.
  */
-const profile = async (req, res) => {
+const profile = async (req, res, next) => {
     try {
         console.log("JWT Payload (req.user):", req.user); // Log the JWT payload
 

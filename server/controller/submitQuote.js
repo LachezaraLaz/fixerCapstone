@@ -131,9 +131,10 @@ const submitQuote = async (req, res) => {
  * @param {Object} req.params - The request parameters.
  * @param {string} req.params.jobId - The ID of the job to fetch quotes for.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the quotes are fetched and the response is sent.
  */
-const getQuotesByJob = async (req, res) => {
+const getQuotesByJob = async (req, res, next) => {
     try {
         const { jobId } = req.params;
 
@@ -174,12 +175,13 @@ const getQuotesByJob = async (req, res) => {
  * @param {string} req.body.status - The new status of the quote ('accepted' or 'rejected').
  * @param {Object} req.user - The authenticated user making the request.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  *
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  *
  * @throws {Error} - Throws an error if there is an issue updating the quote status.
  */
-const updateQuoteStatus = async (req, res) => {
+const updateQuoteStatus = async (req, res, next) => {
     try {
         const { quoteId } = req.params;
         const { status } = req.body;

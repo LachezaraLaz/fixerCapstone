@@ -15,7 +15,7 @@ const NotFoundError = require("../utils/errors/NotFoundError");
  * @param {Object} req.user - The authenticated user object.
  * @param {string} req.user.id - The ID of the authenticated user.
  * @param {Object} res - The response object.
- * @param next -
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the notifications are fetched and sent in the response.
  */
 const getNotifications = async (req, res, next) => {
@@ -38,7 +38,7 @@ const getNotifications = async (req, res, next) => {
  * @param {Object} req.user - The authenticated user object.
  * @param {string} req.user.id - The ID of the authenticated user.
  * @param {Object} res - The response object.
- * @param next - The error handling middleware redirection.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the response is sent.
  */
 const getNotificationHistory = async (req, res, next) => {
@@ -66,7 +66,7 @@ const getNotificationHistory = async (req, res, next) => {
  * @param {Object} req.params - The request parameters.
  * @param {string} req.params.id - The ID of the notification to mark as read.
  * @param {Object} res - The response object.
- * @param next - The error handling middleware redirection.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const markAsRead = async (req, res, next) => {
@@ -92,7 +92,7 @@ const markAsRead = async (req, res, next) => {
  * @param {string} req.body.userId - The ID of the user to notify.
  * @param {string} req.body.message - The notification message.
  * @param {Object} res - The response object.
- * @param next - The error handling middleware redirection.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the notification is created.
  */
 const createNotification = async (req, res, next) => {
@@ -114,7 +114,7 @@ const createNotification = async (req, res, next) => {
  * @param {Object} req.user - The authenticated user object.
  * @param {string} req.user.id - The ID of the authenticated user.
  * @param {Object} res - The response object.
- * @param next - The error handling middleware redirection.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the count is fetched and the response is sent.
  */
 const getUnreadNotificationCount = async (req, res, next) => {

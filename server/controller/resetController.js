@@ -48,12 +48,12 @@ function generatePin() {
  * @param {Object} req.body - The body of the request.
  * @param {string} req.body.email - The email address of the user requesting a password reset.
  * @param {Object} res - The response object.
- * 
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the function completes.
  * 
  * @throws {Error} - Throws an error if the user is not found, or if there is a failure in updating the user or sending the email.
  */
-async function forgotPassword(req, res) {
+async function forgotPassword(req, res, next) {
     try {
         const user = await fixerClientObject.fixerClient.findOne({ email: req.body.email });
 
@@ -140,9 +140,10 @@ async function updatePassword(req, res) {
  * @param {string} req.body.email - The email of the user.
  * @param {string} req.body.pin - The password reset PIN.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the validation is complete.
  */
-async function validatePin(req, res) {
+async function validatePin(req, res, next) {
     logger.info('Received validatePin request:', req.body); // Log the incoming request
 
     const { email, pin } = req.body; // Change passwordResetPin to pin
@@ -175,9 +176,10 @@ async function validatePin(req, res) {
  * @param {string} req.body.email - The email of the user requesting the password reset.
  * @param {string} req.body.newPassword - The new password to set for the user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the password reset process is complete.
  */
-async function resetPassword(req, res) {
+async function resetPassword(req, res, next) {
     const { email, newPassword } = req.body;
 
     try {

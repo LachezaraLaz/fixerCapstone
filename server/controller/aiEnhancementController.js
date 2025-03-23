@@ -2,7 +2,7 @@ const { enhanceIssueDescription } = require('../services/aiEnhancementService');
 const BadRequestError = require("../utils/errors/BadRequestError");
 const {logger} = require("../utils/logger");
 
-const aiEnhancementController = async (req, res) => {
+const aiEnhancementController = async (req, res, next) => {
     try {
         const { description } = req.body;
 

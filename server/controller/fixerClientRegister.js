@@ -44,11 +44,12 @@ async function sendVerificationEmail(user, token) {
  * @param {Object} req - The request object.
  * @param {Object} req.body - The body of the request containing user details.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the user is registered.
  *
  * @throws {Error} - If user creation fails.
  */
-const registerUser = async (req, res) => {
+const registerUser = async (req, res, next) => {
     const userDto = new RegisterUserDto(req.body);
     const existedUser = await UserRepository.findByEmail(userDto.email);
 

@@ -19,9 +19,10 @@ const NotFoundError = require("../utils/errors/NotFoundError");
  * @param {Object} req.user - The user object.
  * @param {string} req.user.id - The ID of the user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves to void.
  */
-const professionalUploadID = async (req, res) => {
+const professionalUploadID = async (req, res, next) => {
     logger.info('Received request for ID upload:', req.body);
 
     // Check if the file was uploaded successfully to Cloudinary

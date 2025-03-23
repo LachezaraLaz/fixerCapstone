@@ -15,11 +15,13 @@ const InternalServerError = require("../utils/errors/InternalServerError");
  * @param {Object} req.params - The parameters of the request.
  * @param {string} req.params.email - The email of the user to retrieve.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
+ *
  * @returns {Promise<void>} - A promise that resolves when the user profile is retrieved.
  *
  * @throws {Error} - If there is an error fetching the user profile.
  */
-const getUserProfile = async (req, res) => {
+const getUserProfile = async (req, res, next) => {
     try {
         const email = req.params.email;
 

@@ -15,9 +15,10 @@ const ForbiddenError = require("../utils/errors/ForbiddenError");
  * @param {string} req.body.email - The email of the professional user.
  * @param {string} req.body.password - The password of the professional user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - Sends a response with the JWT token, stream token, user ID, and user name if successful.
  */
-const signinUser = async (req, res) => {
+const signinUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const professionalData = new ProfessionalDTO({ email, password });

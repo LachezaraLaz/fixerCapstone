@@ -7,7 +7,7 @@ const InternalServerError = require("../utils/errors/InternalServerError");
 const BadRequestError = require("../utils/errors/BadRequestError");
 
 // GET /issue/user/:email route to fetch jobs for a specific user
-const getJobsByUser = async (req, res) => {
+const getJobsByUser = async (req, res, next) => {
     const userEmail = req.params.email;
     logger.info(`Fetching jobs for userEmail: ${userEmail}`);
 
@@ -29,7 +29,7 @@ const getJobsByUser = async (req, res) => {
 };
 
 // GET /issue/:jobId route to fetch a single job by its ID
-const getJobById = async (req, res) => {
+const getJobById = async (req, res, next) => {
     const jobId = req.params?.jobId ?? req;
 
     if (!jobId) {
@@ -50,7 +50,7 @@ const getJobById = async (req, res) => {
 };
 
 // DELETE /issue/:id route to update job status (Reopen job)
-const deleteReopenIssue = async (req, res) => {
+const deleteReopenIssue = async (req, res, next) => {
     const jobId = req.params.id;
     const status = req.query.status;
     logger.info(`Updating job status with ID: ${jobId} to ${status}`);
@@ -70,7 +70,7 @@ const deleteReopenIssue = async (req, res) => {
 };
 
 // PUT /issue/:jobId route to update a single job by its ID
-const updateJob = async (req, res) => {
+const updateJob = async (req, res, next) => {
     const { jobId } = req.params;
     const { title, description, professionalNeeded, status, email } = req.body;
     let imageUrl = req.file ? req.file.path : req.body.imageUrl; // Use the uploaded image or existing URL

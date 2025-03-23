@@ -17,7 +17,7 @@ const {logger} = require("../utils/logger");
  * @param {string} req.headers.authorization - Authorization header containing the JWT token.
  * @param {Object} res - Express response object.
  * @param {Function} next - Express next middleware function.
- * 
+ *
  * @returns {Object} - Returns a 401 status with a message 'Unauthorized' if no token is provided or if the token is invalid.
  *                     Returns a 403 status with a message 'Forbidden' if the token verification fails.
  *                     Proceeds to the next middleware or route handler if the token is valid.
@@ -51,11 +51,12 @@ const authenticateJWT = (req, res, next) => {
  * @param {Object} req.user - The user object containing the user ID.
  * @param {string} req.user.id - The ID of the user.
  * @param {Object} res - The response object.
- * @returns {Promise<void>} - A promise that resolves to void.
+ * @param {Function} next - Express next middleware function.
+ * * @returns {Promise<void>} - A promise that resolves to void.
  *
  * @throws {Error} - If there is an error fetching the client data.
  */
-const profile = async (req, res) => {
+const profile = async (req, res, next) => {
     try {
         // Find the professional by their user ID from the JWT token
         const client = await fixerClientObject.fixerClient.findById(req.user.id);
@@ -73,7 +74,7 @@ const profile = async (req, res) => {
 };
 
 
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
     try {
         // Get token from request header
         const token = req.headers.authorization?.split(' ')[1];

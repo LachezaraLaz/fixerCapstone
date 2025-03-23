@@ -20,9 +20,10 @@ const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY;
  * @param {string} req.body.street - The street address to verify.
  * @param {string} req.body.postalCode - The postal code of the address to verify.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the address verification is complete.
  */
-const verifyAddress = async (req, res) => {
+const verifyAddress = async (req, res, next) => {
     try {
         const { street, postalCode } = req.body;
 

@@ -19,9 +19,10 @@ const ForbiddenError = require("../utils/errors/ForbiddenError");
  * @param {string} req.body.email - The email of the user.
  * @param {string} req.body.password - The password of the user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - Sends a response with the authentication token and user details.
  */
-const signinUser = async (req, res) => {
+const signinUser = async (req, res, next) => {
     try {
         logger.info(AuthResponseDto);  // Should NOT be undefined
         logger.info(AuthResponseDto);  // Should NOT be undefined

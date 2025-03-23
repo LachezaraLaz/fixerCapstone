@@ -54,6 +54,7 @@ const authenticateJWT = (req, res, next) => {
  * @param {Object} req.user - The user object from the JWT.
  * @param {string} req.user.email - The email of the professional.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves to void.
  *
  * @description This function fetches all quotes associated with the professional's email,
@@ -62,7 +63,7 @@ const authenticateJWT = (req, res, next) => {
  *
  * @throws {Error} - If an error occurs while fetching the jobs, a 500 status code and an error message are sent.
  */
-const getMyProfessionalJobs = async (req, res) => {
+const getMyProfessionalJobs = async (req, res, next) => {
     const professionalEmail = req.user.email; // Retrieve professional's email from JWT
 
     try {

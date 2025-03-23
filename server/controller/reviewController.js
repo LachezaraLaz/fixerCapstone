@@ -9,7 +9,7 @@ const BadRequestError = require("../utils/errors/BadRequestError");
  * @module server/controller
  */
 
-exports.getReviewsByProfessionalEmail = async (req, res) => {
+exports.getReviewsByProfessionalEmail = async (req, res, next) => {
     try {
         const { email } = req.params;
 
@@ -31,7 +31,7 @@ exports.getReviewsByProfessionalEmail = async (req, res) => {
     }
 };
 
-exports.addReview = async (req, res) => {
+exports.addReview = async (req, res, next) => {
     try {
         const { jobId, rating, comment } = req.body;
 

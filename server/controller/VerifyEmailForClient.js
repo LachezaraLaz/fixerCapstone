@@ -18,9 +18,10 @@ dotenv.config();
  * @param {Object} req.query - The query parameters of the request.
  * @param {string} req.query.token - The verification token.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the email verification process is complete.
  */
-async function verifyEmail(req, res) {
+async function verifyEmail(req, res, next) {
     try {
         const { token } = req.query;  // Extract token from the query params
 

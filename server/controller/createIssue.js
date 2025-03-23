@@ -22,12 +22,13 @@ const BadRequestError = require("../utils/errors/BadRequestError");
  * @param {string} [req.body.status='open'] - The status of the issue (default is 'open').
  * @param {Object} req.file - The file object containing the uploaded image (optional).
  * @param {Object} res - The response object.
- * 
+ * @param {Function} next - The next middleware function.
+ *
  * @returns {Promise<void>} - Returns a promise that resolves to void.
  * 
  * @throws {Error} - Throws an error if the issue creation fails.
  */
-const createIssue = async (req, res) => {
+const createIssue = async (req, res, next) => {
     const { title, description, professionalNeeded, email, status = 'open' } = req.body;
     let imageUrl = null;
 

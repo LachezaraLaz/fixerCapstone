@@ -14,10 +14,11 @@ const InternalServerError = require("../utils/errors/InternalServerError");
  * 
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the response is sent.
  * @throws {Error} - If there is an error fetching the jobs, a 500 status code is sent with an error message.
  */
-const getAllIssues = async (req, res) => {
+const getAllIssues = async (req, res, next) => {
     try {
         const jobs = await getAllJobs();
         const formattedJobs = jobs.map(job => issueDTO(job));

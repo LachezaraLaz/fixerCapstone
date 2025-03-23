@@ -21,8 +21,8 @@ const NotFoundError = require("../utils/errors/NotFoundError");
  * @param {Object} req.headers - The headers of the request.
  * @param {string} req.headers.authorization - The authorization header containing the JWT token.
  * @param {Object} res - The response object.
- * @param {Function} next - The next middleware function.
- * 
+ * @param {Function} next - Express next middleware function.
+ *
  * @returns {Object} - Returns a response with status 401 if the authorization header or token is missing,
  *                     status 403 if the token verification fails,
  *                     status 404 if the user is not found,

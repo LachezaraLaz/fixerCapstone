@@ -28,6 +28,7 @@ import ReviewsPage from "./src/screens/reviewsPage/reviewsPage";
 import SettingsPage from "./src/screens/settingsPage/settingsPage";
 import BankingInfoPage from "./src/screens/bankingInfoPage/bankingInfoPage";
 import { StripeProvider } from '@stripe/stripe-react-native';
+import issueDetails from "./src/screens/issueDetails/issueDetails";
 import { Text } from "react-native";
 
 const Stack = createStackNavigator();
@@ -116,6 +117,7 @@ export default function App() {
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
                                         <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
                                         <Stack.Screen name="SettingsPage" component={SettingsPage} />
+                                        <Stack.Screen name="IssueDetails" component={issueDetails} />
                                         {/* Add BankingInfoPage here */}
                                         <Stack.Screen
                                             name="BankingInfoPage"

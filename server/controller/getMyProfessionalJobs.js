@@ -76,6 +76,7 @@ const getMyProfessionalJobs = async (req, res) => {
 
         quotes.forEach((quote) => {
             const jobDetails = {
+                id: quote.issueId?._id,
                 title: quote.issueId?.title || 'No title',
                 description: quote.issueId?.description || 'No description',
                 professionalNeeded: quote.issueId?.professionalNeeded || "No Professional",

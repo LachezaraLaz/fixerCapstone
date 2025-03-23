@@ -27,8 +27,8 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        gap: 28,
+        alignItems: 'center',
+        gap: 35,
     },
 
     filterButton: {
@@ -37,7 +37,6 @@ export const styles = StyleSheet.create({
         borderRadius: 60,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1,
         borderColor: '#FDF3E6',
         marginBottom: 12,
         backgroundColor: '#FDF3E6',
@@ -47,9 +46,10 @@ export const styles = StyleSheet.create({
         borderColor: '#f28500',
     },
     filterButtonText: {
-        fontSize: 12,
+        marginTop: 4,              // Space between icon and text
+        fontSize: 10,              // Adjusted font size
         color: '#333',
-        textAlign: 'center',
+        textAlign: 'center',       // Center the text
     },
     sectionTitle: {
         fontSize: 16,

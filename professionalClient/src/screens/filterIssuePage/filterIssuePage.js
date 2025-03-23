@@ -51,7 +51,6 @@ const FilterIssuePage = ({ navigation, route }) => {
         if (distanceRange[1] !== 50) count++;
         if (rating > 0) count++;
         if (urgency) count++;
-
         return count;
     };
 
@@ -66,7 +65,6 @@ const FilterIssuePage = ({ navigation, route }) => {
             </View>
 
             <ScrollView contentContainerStyle={styles.filterList}>
-
                 <View style={styles.filterGrid}>
                     {typesOfWork.map((type, index) => (
                         <TouchableOpacity
@@ -74,11 +72,12 @@ const FilterIssuePage = ({ navigation, route }) => {
                             onPress={() => handleFilterSelect(type)}
                             style={[styles.filterButton, filters.includes(type) && styles.filterButtonSelected]}
                         >
-                            <Ionicons name="construct" size={24} color={filters.includes(type) ? '#fff' : '#f28500'} />
+                            <Ionicons name="construct" size={40} color={filters.includes(type) ? '#fff' : '#f28500'} />
                             <Text style={[styles.filterButtonText, filters.includes(type) && { color: '#fff' }]}>{type}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>
+
 
                 <Text style={styles.sectionTitle}>Distance Range (km)</Text>
                 <View style={styles.distanceRangeContainer}>

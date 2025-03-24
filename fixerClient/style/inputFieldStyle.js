@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     },
     // Multiline styles
     multilineInput: {
+        minHeight: 100,
         maxHeight: 175, // You can tweak this
         textAlignVertical: 'top', // Makes text start from top in multiline fields
     },

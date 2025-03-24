@@ -147,7 +147,7 @@ const NotificationPage = () => {
             ) : (
                 <FlatList
                     data={notifications}
-                    keyExtractor={(item) => item._id}
+                    keyExtractor={(item) => item.id}
                     renderItem={renderNotification}
                     ListFooterComponent={
                         hasMore ? (

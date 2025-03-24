@@ -3,11 +3,8 @@ import colors from './colors';
 
 const styles = StyleSheet.create({
     dropdownContainer: {
-        // marginVertical: 8,
         marginHorizontal: 8,
-        // zIndex: 1000,
         borderRadius: 8,
-        // borderWidth: 0,
         borderColor: '#ccc',
         width: '100%',
         alignSelf: 'center',

@@ -31,6 +31,8 @@ import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
 import { Ionicons } from '@expo/vector-icons';
 import InputField from '../../../components/inputField';
+import DropdownField from '../../../components/dropdownField';
+import ProfessionalSelector from '../../../components/searchAndSelectTagField';
 
 
 /**
@@ -71,6 +73,8 @@ export default function CreateIssue({ navigation }) {
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [other, setOther] = useState(false);
+
+    const [selectedProfessionals, setSelectedProfessionals] = useState([]);
 
     /**
      * Asynchronously picks an image from the user's media library.
@@ -164,7 +168,7 @@ export default function CreateIssue({ navigation }) {
             return;
         }
 
-        if (!selectedService) {
+        if (!selectedProfessionals) {
             Alert.alert("Invalid Service", "Please select a valid service type.");
             return;
         }
@@ -174,10 +178,10 @@ export default function CreateIssue({ navigation }) {
             return;
         }
 
-        if (!location || location.trim().length < 5) {
-            Alert.alert("Invalid Location", "Please provide a valid location with at least 5 characters.");
-            return;
-        }
+        // if (!location || location.trim().length < 5) {
+        //     Alert.alert("Invalid Location", "Please provide a valid location with at least 5 characters.");
+        //     return;
+        // }
 
         // Optional Image
         if (selectedImage) {
@@ -199,7 +203,8 @@ export default function CreateIssue({ navigation }) {
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
-            formData.append('professionalNeeded', selectedService);
+            // formData.append('professionalNeeded', selectedService);
+            formData.append('professionalNeeded', selectedProfessionals.join(', '));
             formData.append('email', userEmail);
             formData.append('status', "open");
             formData.append('timeline', selectedTimeLine);
@@ -334,12 +339,12 @@ export default function CreateIssue({ navigation }) {
                 {/* description field */}
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('job_description')}</Text>
                 <View style={{ position: 'relative' }}>
-                    
+
                     <InputField 
-                    placeholder={`${i18n.t('describe_your_service')}`}
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline/>
+                        placeholder={`${i18n.t('describe_your_service')}`}
+                        value={description}
+                        onChangeText={setDescription}
+                        multiline/>
 
                     {/* AI Enhancement Button */}
                     <TouchableOpacity
@@ -375,7 +380,7 @@ export default function CreateIssue({ navigation }) {
                                     borderRadius: 8,
                                     marginRight: 10
                                 }}
-                                                  onPress={handleAcceptAiSuggestion}
+                                    onPress={handleAcceptAiSuggestion}
                                 >
                                     <Text style={{ color: '#fff' }}>Accept</Text>
                                 </TouchableOpacity>
@@ -385,7 +390,7 @@ export default function CreateIssue({ navigation }) {
                                     padding: 10,
                                     borderRadius: 8
                                 }}
-                                                  onPress={handleRejectAiSuggestion}
+                                    onPress={handleRejectAiSuggestion}
                                 >
                                     <Text style={{ color: '#fff' }}>Reject</Text>
                                 </TouchableOpacity>
@@ -399,10 +404,13 @@ export default function CreateIssue({ navigation }) {
                         {description.length} chars
                     </Text>
                 </View>
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_type')}</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_service_type')}</Text>
                 <View style={styles.pickerContainer}>
-                    <DropDownPicker
-                        style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
+                    {/* <DropDownPicker
+                        style={{
+                            // backgroundColor: '#E7E7E7',
+                            borderColor: '#ddd'
+                        }}
                         translation={{ PLACEHOLDER: `${i18n.t('select_service')}` }}
                         open={open}
                         value={selectedService}
@@ -414,6 +422,20 @@ export default function CreateIssue({ navigation }) {
                         dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
                         listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
                         nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView
+                    /> */}
+                    {/* <DropdownField
+                        items={items}
+                        value={selectedService}
+                        setValue={setSelectedService}
+                        placeholder={i18n.t('select_service')}
+                        open={open}
+                        setOpen={setOpen}
+                        setItems={setItems}
+                    /> */}
+
+                    <ProfessionalSelector
+                        selectedProfessionals={selectedProfessionals}
+                        setSelectedProfessionals={setSelectedProfessionals}
                     />
                 </View>
                 {/*Image upload*/}
@@ -435,7 +457,7 @@ export default function CreateIssue({ navigation }) {
                         )}
                     </TouchableOpacity>
                 </View>
-                {/*map*/}
+                {/* map
                 <View style={styles.mapContainer}>
                     <MapView
                         style={styles.map}
@@ -452,11 +474,11 @@ export default function CreateIssue({ navigation }) {
                             description="This is a marker in SF!"
                         />
                     </MapView>
-                </View>
+                </View> */}
                 {/*location label*/}
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15, marginTop: 20 }}>{i18n.t('location')}</Text>
+                {/* <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15, marginTop: 20 }}>{i18n.t('location')}</Text> */}
                 {/* location field */}
-                <View style={{ flex: 1 }}>
+                {/* <View style={{ flex: 1 }}>
                     <TextInput
                         placeholder={i18n.t('enter_location')}
                         value={location}
@@ -470,7 +492,7 @@ export default function CreateIssue({ navigation }) {
                             padding: 9,
                         }}
                     />
-                </View>
+                </View> */}
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>{i18n.t('select_timeline')}</Text>
                 <View style={styles.pickerContainer}>
                     <DropDownPicker

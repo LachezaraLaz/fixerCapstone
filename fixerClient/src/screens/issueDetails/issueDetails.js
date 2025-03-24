@@ -103,7 +103,7 @@ const IssueDetails = () => {
     const currentStatus = job.status?.toLowerCase() || "pending";
     const statusStyle = statusColors[currentStatus] || statusColors["pending"];
 
-    const deleteReopenIssue = async (job, currentStatus) => {
+    const updateIssueStatus = async (job, currentStatus) => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
@@ -127,7 +127,7 @@ const IssueDetails = () => {
                         text: `Yes`,
                         onPress: async () => {
                             try {
-                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/delete/${job.id}?status=${newStatus}`,
+                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/updateStatus/${job.id}?status=${newStatus}`,
                                     {headers: {Authorization: `Bearer ${token}`}}
                                 );
 
@@ -262,7 +262,7 @@ const IssueDetails = () => {
                         />
                         <OrangeButton
                             title="Reopen Issue"
-                            onPress={() => deleteReopenIssue(job, job.status)}
+                            onPress={() => updateIssueStatus(job, job.status)}
                         />
                     </>
                 ) : job.status.toLowerCase() === "open" || job.status.toLowerCase() === "pending" ? (
@@ -273,7 +273,7 @@ const IssueDetails = () => {
                         />
                         <OrangeButton
                             title={i18n.t('delete_issue')}
-                            onPress={() => deleteReopenIssue(job, job.status)}
+                            onPress={() => updateIssueStatus(job, job.status)}
                         />
                     </>
                 ) : null}

@@ -119,7 +119,7 @@ const IssueDetails = () => {
                         text: `Yes`,
                         onPress: async () => {
                             try {
-                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/delete/${job.id}?status=${newStatus}`,
+                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/updateStatus/${job.id}?status=${newStatus}`,
                                     {headers: {Authorization: `Bearer ${token}`}}
                                 );
 

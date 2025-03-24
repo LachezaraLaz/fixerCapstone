@@ -30,6 +30,7 @@ import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
 import { Ionicons } from '@expo/vector-icons';
+import InputField from '../../../components/inputField';
 
 
 /**
@@ -333,20 +334,12 @@ export default function CreateIssue({ navigation }) {
                 {/* description field */}
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('job_description')}</Text>
                 <View style={{ position: 'relative' }}>
-                    <TextInput
-                        placeholder= {`${i18n.t('describe_your_service')}`}
-                        value={description}
-                        onChangeText={setDescription}
-                        style={{
-                            borderWidth: 1,
-                            // backgroundColor: '#E7E7E7',
-                            borderColor: '#ddd',
-                            borderRadius: 8,
-                            padding: 10,
-                            marginVertical: 8,
-                            height: 120,
-                            textAlignVertical: 'top', // Ensures text starts from the top
-                        }} multiline/>
+                    
+                    <InputField 
+                    placeholder={`${i18n.t('describe_your_service')}`}
+                    value={description}
+                    onChangeText={setDescription}
+                    multiline/>
 
                     {/* AI Enhancement Button */}
                     <TouchableOpacity

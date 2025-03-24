@@ -121,14 +121,13 @@ const styles = StyleSheet.create({
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingTop: 10,
         paddingBottom: 20,
         backgroundColor: '#fff',
     },
     backButton: {
         position: 'absolute',
         left: 4,
-        top:10,
+        top:0,
     },
     headerTitle: {
         fontSize: 20,

@@ -92,8 +92,60 @@ const IssueDetails = () => {
         },
     };
 
-    const currentStatus = job.status?.toLowerCase() || "pending";
+    const currentStatus = job.status?.toLowerCase() || "in progress";
     const statusStyle = statusColors[currentStatus] || statusColors["pending"];
+
+    const markJobComplete = async (job, currentStatus) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('You are not logged in');
+                return;
+            }
+
+            const newStatus = 'Completed';
+
+            // Show a confirmation popup before proceeding
+            Alert.alert(
+                'Mark job as Complete',
+                'You are about to mark this job as complete which is irreversible.\n\nContinue only if you have ' +
+                'received a payment from the client.\n\nWe will deduct 10% of the fee shortly after accepting.',
+                [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel'
+                    },
+                    {
+                        text: `Yes`,
+                        onPress: async () => {
+                            try {
+                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/delete/${job.id}?status=${newStatus}`,
+                                    {headers: {Authorization: `Bearer ${token}`}}
+                                );
+
+                                if (response.status === 200) {
+                                    Alert.alert('Job marked as Complete successfully');
+                                    navigation.navigate("MyJobs");
+                                } else {
+                                    Alert.alert('Failed to mark the job as complete');
+                                }
+                            } catch (error) {
+                                console.error(`Error updating job status to ${newStatus}:`, error);
+                                Alert.alert('An error occurred while trying to mark the job as complete');
+                            }
+                        }
+                    }
+                ]
+            );
+
+        } catch (error) {
+            console.error('Error handling job status:', error);
+            Alert.alert('An unexpected error occurred.');
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -191,23 +243,12 @@ const IssueDetails = () => {
 
                     </View>
                 )}
-                {job.status.toLowerCase() === "completed" || job.status.toLowerCase() === "closed" ? (
+                {job.status.toLowerCase() === "in progress" ? (
                     <>
                         <OrangeButton
-                            title="Add Review"
+                            title="Mark Complete"
                             variant="normal"
-                        />
-                        <OrangeButton
-                            title="Reopen Issue"
-                        />
-                    </>
-                ) : job.status.toLowerCase() === "open" || job.status.toLowerCase() === "pending" ? (
-                    <>
-                        <OrangeButton
-                            title="Modify Issue"
-                        />
-                        <OrangeButton
-                            title="Delete Issue"
+                            onPress={() => markJobComplete(job, currentStatus)}
                         />
                     </>
                 ) : null}

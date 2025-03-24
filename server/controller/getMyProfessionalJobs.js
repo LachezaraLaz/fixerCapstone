@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
+const { Quotes } = require('../model/quoteModel');
 
 /**
  * @module server/controller
@@ -41,7 +41,6 @@ const authenticateJWT = (req, res, next) => {
         next();
     });
 };
-
 
 /**
  * Retrieves the professional's jobs based on their email from the JWT.

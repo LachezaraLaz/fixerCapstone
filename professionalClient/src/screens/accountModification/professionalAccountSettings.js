@@ -5,7 +5,9 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const AccountSettingsPage = () => {
+import { IPAddress } from '../../../ipAddress';
+
+const ProfessionalAccountSettingsPage = () => {
     const navigation = useNavigation();
 
     // State for form data
@@ -13,10 +15,6 @@ const AccountSettingsPage = () => {
         firstName: '',
         lastName: '',
         email: '',
-        street: '',
-        postalCode: '',
-        provinceOrState: '',
-        country: '',
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -24,7 +22,6 @@ const AccountSettingsPage = () => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [isCurrentPasswordValid, setIsCurrentPasswordValid] = useState(false);
-    const [addressValidated, setAddressValidated] = useState(false);
     const [loading, setLoading] = useState(true);
 
     // Fetch user profile data
@@ -38,7 +35,7 @@ const AccountSettingsPage = () => {
                 }
 
                 const response = await axios.get(
-                    `https://fixercapstone-production.up.railway.app/client/profile`,
+                    `https://fixercapstone-production.up.railway.app/professional/profile`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -47,10 +44,6 @@ const AccountSettingsPage = () => {
                     firstName: response.data.firstName,
                     lastName: response.data.lastName,
                     email: response.data.email,
-                    street: response.data.street || '',
-                    postalCode: response.data.postalCode || '',
-                    provinceOrState: response.data.provinceOrState || '',
-                    country: response.data.country || '',
                 }));
             } catch (error) {
                 console.error("Error fetching profile data:", error);
@@ -66,57 +59,6 @@ const AccountSettingsPage = () => {
     // Handle input changes
     const handleInputChange = (field, value) => {
         setFormData((prevState) => ({ ...prevState, [field]: value }));
-
-        // Reset address validation when any address field changes
-        if (['street', 'postalCode', 'provinceOrState', 'country'].includes(field)) {
-            setAddressValidated(false);
-        }
-    };
-
-    // Verify Address Before Saving
-    const handleVerifyAddress = async () => {
-        try {
-            const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/client/verifyAddress`,
-                {
-                    street: formData.street,
-                    postalCode: formData.postalCode,
-                    provinceOrState: formData.provinceOrState,
-                    country: formData.country,
-                }
-            );
-
-            if (response.data.isAddressValid) {
-                // Fill in missing fields if available
-                if (response.data.completeAddress) {
-                    const complete = response.data.completeAddress;
-
-                    // Create a new form data object with filled in fields
-                    const newFormData = {
-                        ...formData,
-                        // Only update empty fields
-                        postalCode: formData.postalCode || complete.postalCode || '',
-                        provinceOrState: formData.provinceOrState || complete.provinceOrState || '',
-                        country: formData.country || complete.country || ''
-                    };
-
-                    // Update the form state
-                    setFormData(newFormData);
-                }
-
-                setAddressValidated(true);
-                Alert.alert("Success", "Address verified successfully.");
-                return true;
-            } else {
-                setAddressValidated(false);
-                Alert.alert("Error", "Invalid address. Please enter a valid address.");
-                return false;
-            }
-        } catch (error) {
-            setAddressValidated(false);
-            Alert.alert("Error", error.response?.data?.message || "An unexpected error occurred.");
-            return false;
-        }
     };
 
     const validateCurrentPassword = async () => {
@@ -128,7 +70,7 @@ const AccountSettingsPage = () => {
             }
 
             const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/reset/validateCurrentPassword`,
+                `https://fixercapstone-production.up.railway.app/professional/reset/validateCurrentPassword`,
                 { email: formData.email, currentPassword: formData.currentPassword },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -163,26 +105,14 @@ const AccountSettingsPage = () => {
                 return;
             }
 
-            // Always verify address if any address fields are filled
-            if (formData.street || formData.postalCode) {
-                const isAddressVerified = await handleVerifyAddress();
-                if (!isAddressVerified) {
-                    return; // Stop if address is invalid
-                }
-            }
-
             // Send full profile update request
             const updatedData = {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-                street: formData.street,
-                postalCode: formData.postalCode,
-                provinceOrState: formData.provinceOrState,
-                country: formData.country,
             };
 
             await axios.put(
-                `https://fixercapstone-production.up.railway.app/client/updateProfile`,
+                `https://fixercapstone-production.up.railway.app/professional/updateProfessionalProfile`,
                 updatedData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -196,7 +126,7 @@ const AccountSettingsPage = () => {
                 };
 
                 await axios.post(
-                    `https://fixercapstone-production.up.railway.app/reset/updatePasswordWithOld`,
+                    `https://fixercapstone-production.up.railway.app/professional/reset/updatePasswordWithOld`,
                     passwordData,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -211,20 +141,6 @@ const AccountSettingsPage = () => {
             console.error("Update error:", error);
             Alert.alert("Error", error.response?.data?.error || "Failed to update profile.");
         }
-    };
-
-    // Verification button for the address
-    const AddressVerificationButton = () => {
-        if (!isEditing) return null;
-
-        return (
-            <TouchableOpacity
-                style={[styles.validateButton, {marginTop: 5}]}
-                onPress={handleVerifyAddress}
-            >
-                <Text style={styles.validateButtonText}>Verify Address</Text>
-            </TouchableOpacity>
-        );
     };
 
     return (
@@ -265,86 +181,6 @@ const AccountSettingsPage = () => {
                                 editable={isEditing}
                             />
                         </View>
-
-                        {/* Address Fields with Visual Indicators */}
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>Street</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={[
-                                        styles.inputWithIcon,
-                                        !isEditing && styles.disabledInput,
-                                        addressValidated && styles.validInput
-                                    ]}
-                                    value={formData.street}
-                                    onChangeText={(text) => handleInputChange('street', text)}
-                                    editable={isEditing}
-                                />
-                                {addressValidated && (
-                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
-                                )}
-                            </View>
-                        </View>
-
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>Postal Code</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={[
-                                        styles.inputWithIcon,
-                                        !isEditing && styles.disabledInput,
-                                        addressValidated && styles.validInput
-                                    ]}
-                                    value={formData.postalCode}
-                                    onChangeText={(text) => handleInputChange('postalCode', text)}
-                                    editable={isEditing}
-                                />
-                                {addressValidated && (
-                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
-                                )}
-                            </View>
-                        </View>
-
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>Province/State</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={[
-                                        styles.inputWithIcon,
-                                        !isEditing && styles.disabledInput,
-                                        addressValidated && styles.validInput
-                                    ]}
-                                    value={formData.provinceOrState}
-                                    onChangeText={(text) => handleInputChange('provinceOrState', text)}
-                                    editable={isEditing}
-                                />
-                                {addressValidated && (
-                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
-                                )}
-                            </View>
-                        </View>
-
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>Country</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={[
-                                        styles.inputWithIcon,
-                                        !isEditing && styles.disabledInput,
-                                        addressValidated && styles.validInput
-                                    ]}
-                                    value={formData.country}
-                                    onChangeText={(text) => handleInputChange('country', text)}
-                                    editable={isEditing}
-                                />
-                                {addressValidated && (
-                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
-                                )}
-                            </View>
-                        </View>
-
-                        {/* Address Verification Button */}
-                        {isEditing && <AddressVerificationButton />}
 
                         <View style={styles.formGroup}>
                             <Text style={styles.label}>Current Password</Text>
@@ -500,4 +336,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AccountSettingsPage;
+export default ProfessionalAccountSettingsPage;

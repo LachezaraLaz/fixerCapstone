@@ -1,11 +1,10 @@
 const bcrypt = require("bcryptjs");
 const adminModel = require("../model/fixerAdminModel");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-require("dotenv").config();
 
-// Send Verification Email
-const sendVerificationEmail = async (admin, token) => {
+// Send Verification Email w/t one time code
+const sendVerificationEmail = async (admin, verificationCode) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -14,14 +13,16 @@ const sendVerificationEmail = async (admin, token) => {
         },
     });
 
-    const verificationUrl = `http://localhost:5173/admin/verify-email?token=${token}`;
+    // Link to the verification page with the email as a query parameter
+    // const verificationUrl = `http://localhost:5173/verify-email?email=${encodeURIComponent(admin.email)}`;
 
     const mailOptions = {
         from: 'fixit9337@gmail.com',
         to: admin.email,
-        subject: "Admin Email Verification",
+        subject: "Your Verification Code",
         html: `<p>Welcome, ${admin.firstName}!</p>
-               <p>Click <a href="${verificationUrl}">here</a> to verify your email.</p>`,
+           <p>Your verification code is: <strong>${verificationCode}</strong></p>
+           <p>This code is valid for 5 minutes.</p>`,
     };
 
     try {
@@ -51,8 +52,9 @@ const registerAdmin = async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        // Generate a verification token
-        const verificationToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        // Generate a 6-digit verification code and expiration timestamp (5 minutes from now)
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const codeExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
         // Create a new admin
         const newAdmin = await adminModel.create({
@@ -61,12 +63,13 @@ const registerAdmin = async (req, res) => {
             lastName,
             password: hashedPassword,
             role: "admin", // Set the role
-            verificationToken, // Store the token
+            verificationCode, // Store the one-time code
+            codeExpiresAt, // Store the expiration time
             verified: false, // Initially set to false
         });
 
         try {
-            await sendVerificationEmail(newAdmin, verificationToken);
+            await sendVerificationEmail(newAdmin, verificationCode);
         } catch (emailError) {
             console.error("Failed to send verification email:", emailError);
             // Instead of deleting the admin, send a warning response

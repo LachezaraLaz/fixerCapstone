@@ -70,9 +70,9 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      */
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
+            const response = await axios.get(`http://192.168.2.16:3000/issues`);
             const fixedIssues = response.data.jobs
-                .filter(issue => issue.status.toLowerCase() === 'open') // I filter the issues with status = open
+                .filter(issue => issue.status === 'open') // I filter the issues with status = open
                 .map(issue => ({
                     ...issue,
                     latitude: issue.latitude ? parseFloat(issue.latitude) : null,
@@ -257,9 +257,12 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 );
                 matchesDistance = distance >= minDistance && distance <= maxDistance;
             }
-            return matchesProfessional && matchesDistance;
+            const matchesRating = route.params?.rating ? issue.rating === route.params.rating : true; // filter value of star
+            const matchesUrgency = route.params?.timeline ? issue.timeline === route.params.timeline : true; // filter value of timeline
+
+            return matchesProfessional && matchesDistance && matchesRating && matchesUrgency;
         });
-    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange]);
+    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange, route.params?.rating, route.params?.timeline]);
 
     if (loading) {
         return (
@@ -454,7 +457,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                                 <View style={styles.issueRatingContainer}>
                                     <Ionicons name="star" size={16} color="#f1c40f" />
                                     <Text style={styles.issueRating}>{issue.rating}</Text>
-                                    <Text style={styles.issueReviews}>| {issue.comments} reviews</Text>
+                                    <Text style={styles.issueReviews}>| {issue.timeline}</Text>
                                 </View>
                             </View>
                         </TouchableOpacity>

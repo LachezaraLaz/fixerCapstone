@@ -4,7 +4,8 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../../style/filterIssuePage/filterIssueStyle';
-import { Picker } from '@react-native-picker/picker';
+// import { Picker } from '@react-native-picker/picker';
+import RNPickerSelect from 'react-native-picker-select';
 
 /**
  * @module professionalClient
@@ -15,8 +16,8 @@ const FilterIssuePage = ({ navigation, route }) => {
     const [filters, setFilters] = React.useState(selectedFilters);
     const [distanceRange, setDistanceRange] = React.useState(initialDistanceRange || [0, 50]);
     const [rating, setRating] = useState(0);
-    const [urgency, setUrgency] = useState('');
-    const urgencyOptions = ['High-Priority', 'Medium-Priority', 'Low-Priority'];
+    const [timeline, setTimeline] = useState('');
+    const urgencyOptions = ['high-Priority', 'low-Priority'];
 
     /**
      * Handles the selection of a filter type. If the filter type is already selected, it removes it from the filters.
@@ -39,7 +40,12 @@ const FilterIssuePage = ({ navigation, route }) => {
      * @returns {void}
      */
     const handleApplyFilters = () => {
-        navigation.navigate('Home', { selectedFilters: filters, distanceRange });
+        navigation.replace('Home', {
+            selectedFilters: filters,
+            distanceRange,
+            rating,
+            timeline,
+        });
     };
 
     const handleRatingSelect = (value) => {
@@ -50,7 +56,7 @@ const FilterIssuePage = ({ navigation, route }) => {
         let count = filters.length;
         if (distanceRange[1] !== 50) count++;
         if (rating > 0) count++;
-        if (urgency) count++;
+        if (timeline) count++;
         return count;
     };
 
@@ -99,16 +105,28 @@ const FilterIssuePage = ({ navigation, route }) => {
 
                 <Text style={styles.sectionTitle}>Urgency Timeline</Text>
                 <View style={styles.urgencyContainer}>
-                    <Picker
-                        selectedValue={urgency}
-                        style={styles.picker}
-                        onValueChange={(itemValue) => setUrgency(itemValue)}
-                    >
-                        <Picker.Item label="Select" value="" />
-                        {urgencyOptions.map((option, index) => (
-                            <Picker.Item key={index} label={option} value={option} />
-                        ))}
-                    </Picker>
+                    <RNPickerSelect
+                        onValueChange={(value) => setTimeline(value)}
+                        items={urgencyOptions.map((option) => ({
+                            label: option,
+                            value: option,
+                        }))}
+                        placeholder={{ label: 'Select', value: null }}
+                        style={{
+                            inputIOS: {
+                                height: 40,
+                                padding: 10,
+                                borderRadius: 8,
+                                color: '#333',
+                            },
+                            inputAndroid: {
+                                height: 55,
+                                padding: 10,
+                                borderRadius: 8,
+                                color: '#333',
+                            },
+                        }}
+                    />
                 </View>
 
 
@@ -124,8 +142,6 @@ const FilterIssuePage = ({ navigation, route }) => {
                         </TouchableOpacity>
                     ))}
                 </View>
-
-
             </ScrollView>
             <View style={styles.applyButtonContainer}>
                 <TouchableOpacity style={styles.applyButton} onPress={handleApplyFilters}>

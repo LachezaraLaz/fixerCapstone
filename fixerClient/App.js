@@ -75,8 +75,8 @@ export default function App() {
                     {isLoggedIn ? (
                         <ChatProvider>
                             <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
-                                <Stack.Screen name="MainTabs">
-                                    {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                <Stack.Screen name="MainTabs" options={{ headerShown: false }}>
+                                    {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn}/>}
                                 </Stack.Screen>
 
                                 {/* Screens when user is NOT logged in */}
@@ -93,6 +93,7 @@ export default function App() {
                                 {/* Screens when user IS logged in */}
                                 {isLoggedIn && (
                                     <>
+                                        {/* <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }}/> */}
                                         <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
                                         <Stack.Screen name="ProfilePage" component={ProfilePage} options={{ headerShown: false }} />
                                         <Stack.Screen name="CreateIssue" component={CreateIssue} options={{ headerShown: false }}/>

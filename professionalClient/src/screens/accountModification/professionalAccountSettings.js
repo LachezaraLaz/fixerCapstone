@@ -5,6 +5,8 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
+import { IPAddress } from '../../../ipAddress';
+
 const ProfessionalAccountSettingsPage = () => {
     const navigation = useNavigation();
 

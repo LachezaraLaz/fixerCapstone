@@ -8,6 +8,8 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import SettingsButton from "../../../components/settingsButton";
 import { Platform } from 'react-native';
 
+import { IPAddress } from '../../../ipAddress';
+
 /**
  * @module professionalClient
  */

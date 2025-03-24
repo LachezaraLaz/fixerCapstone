@@ -29,6 +29,8 @@ import MapView, { Marker } from "react-native-maps";
 import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
+import { Ionicons } from '@expo/vector-icons';
+
 
 /**
  * @module fixerClient
@@ -298,6 +300,19 @@ export default function CreateIssue({ navigation }) {
                         contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
                         keyboardShouldPersistTaps="handled"
             >
+                <View style={styles.headerContainer}>
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        testID="back-button"
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                    </TouchableOpacity>
+
+                    <Text style={styles.headerTitle}>{i18n.t('create_issue')}</Text>
+                </View>
+
+                {/* <br/> */}
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('title')}</Text>
                 {/* title field */}
                 <TextInput
@@ -324,7 +339,7 @@ export default function CreateIssue({ navigation }) {
                         onChangeText={setDescription}
                         style={{
                             borderWidth: 1,
-                            backgroundColor: '#E7E7E7',
+                            // backgroundColor: '#E7E7E7',
                             borderColor: '#ddd',
                             borderRadius: 8,
                             padding: 10,
@@ -488,3 +503,24 @@ export default function CreateIssue({ navigation }) {
         </TouchableWithoutFeedback>
     );
 }
+// const style = StyleSheet.create({
+//     headerContainer: {
+//         position: 'relative',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         paddingTop: 10,
+//         paddingBottom: 20,
+//         backgroundColor: '#fff',
+//     },
+//     backButton: {
+//         position: 'absolute',
+//         left: 4,
+//         top:10,
+//     },
+//     headerTitle: {
+//         fontSize: 20,
+//         fontWeight: 'bold',
+//         color: 'black',
+//     },
+
+// })

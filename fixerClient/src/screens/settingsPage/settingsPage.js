@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'r
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import AccountSettingsPage from "../accountSettings/accountSettings";
 
 /**
  * @module fixerClient

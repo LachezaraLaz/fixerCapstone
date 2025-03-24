@@ -119,7 +119,7 @@ const NotificationPage = () => {
      *
      * @param {Object} param - The parameter object.
      * @param {Object} param.item - The notification item.
-     * @param {string} param.item._id - The unique identifier of the notification.
+     * @param {string} param.item.id - The unique identifier of the notification.
      * @param {boolean} param.item.isRead - The read status of the notification.
      * @param {string} param.item.message - The message content of the notification.
      * @param {string} param.item.createdAt - The creation date of the notification.
@@ -128,7 +128,7 @@ const NotificationPage = () => {
     const renderNotification = ({ item }) => (
         <TouchableOpacity
             onPress={() => {
-                toggleReadStatus(item._id, item.isRead);
+                toggleReadStatus(item.id, item.isRead);
                 navigation.navigate('NotificationDetail', { notification: item });
             }}
         >

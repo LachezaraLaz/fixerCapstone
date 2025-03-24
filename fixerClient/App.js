@@ -11,6 +11,9 @@ import EditIssue from './src/screens/editIssue/editIssue';
 import SettingsPage from './src/screens/settingsPage/settingsPage';
 import WelcomePage from "./src/screens/welcome/welcomePage";
 import SignInPage from "./src/screens/signin/signinPage";
+import ForgotPasswordPage from "./src/screens/signin/ForgotPasswordPage";
+import EnterPin from "./src/screens/signin/EnterPinPage";
+import ResetPasswordPage from "./src/screens/signin/ResetPasswordPage";
 import SignUpPage from "./src/screens/signup/signupPage";
 import NotificationPage from "./src/screens/notificationPage/notificationPage";
 import NotificationDetail from "./src/screens/notificationDetail/notificationDetail";
@@ -21,8 +24,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChatProvider } from "./src/screens/chat/chatContext";
 import addReview from "./src/screens/addReview/addReview";
-
+import AccountSettingsPage from "./src/screens/accountSettings/accountSettings"
+import issueDetails from "./src/screens/issueDetails/issueDetails";
+import { LanguageProvider } from "./context/LanguageContext";
 import { Text } from "react-native";
+import { LogBox } from 'react-native';
+
+// Suppress the specific warning
+LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
 
 const Stack = createNativeStackNavigator();
 
@@ -61,58 +70,64 @@ export default function App() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1 }}>
+                <LanguageProvider>
                 <NavigationContainer>
-                        {isLoggedIn ? (
-                            <ChatProvider>
-                                <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
-                                <>
-                                    {/* MainTabs with NavBar as the default screen */}
-                                    <Stack.Screen
-                                        name="MainTabs"
-                                        options={{ headerShown: false }}
-                                    >
-                                        {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                    </Stack.Screen>
+                    {isLoggedIn ? (
+                        <ChatProvider>
+                            <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
+                                <Stack.Screen name="MainTabs">
+                                    {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                </Stack.Screen>
 
+                                {/* Screens when user is NOT logged in */}
+                                {!isLoggedIn && (
+                                    <>
+                                        <Stack.Screen name="welcomePage" component={WelcomePage}/>
+                                        <Stack.Screen name="SignInPage">
+                                            {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn}  />}
+                                        </Stack.Screen>
+                                        <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                    </>
+                                )}
 
-                                    {/* Additional screens accessible from MainTabs */}
-                                    <Stack.Screen
-                                        name="HomeScreen"
-                                        options={{ headerShown: false }} // Remove header for HomeScreen
-                                    >
-                                        {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
-                                    </Stack.Screen>
-                                    <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
-                                    <Stack.Screen
-                                        name="ProfilePage"
-                                        component={ProfilePage}
-                                        options={{ headerShown: false }}  // This hides the default navigation header
-                                    />
-                                    <Stack.Screen name="CreateIssue" component={CreateIssue} />
-                                    <Stack.Screen name="SettingsPage" component={SettingsPage} />
-                                    <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
-                                    <Stack.Screen name="EditIssue" component={EditIssue} />
-                                    <Stack.Screen name="NotificationPage" component={NotificationPage} />
-                                    <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
-                                    <Stack.Screen name="OffersPage" component={OffersPage} />
-                                    <Stack.Screen name="addReview" component={addReview} />
-                                </>
-                                    </Stack.Navigator>
-                            </ChatProvider>
-                        ) : (
-                            <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
+                                {/* Screens when user IS logged in */}
+                                {isLoggedIn && (
+                                    <>
+                                        <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
+                                        <Stack.Screen name="ProfilePage" component={ProfilePage} options={{ headerShown: false }} />
+                                        <Stack.Screen name="CreateIssue" component={CreateIssue} />
+                                        <Stack.Screen name="SettingsPage" component={SettingsPage} />
+                                        <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
+                                        <Stack.Screen name="EditIssue" component={EditIssue} />
+                                        <Stack.Screen name="NotificationPage" component={NotificationPage} />
+                                        <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
+                                        <Stack.Screen name="OffersPage" component={OffersPage} />
+                                        <Stack.Screen name="addReview" component={addReview} />
+                                        <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage}/>
+                                        <Stack.Screen name="IssueDetails" component={issueDetails} />
+
+                                    </>
+                                )}
+                            </Stack.Navigator>
+                        </ChatProvider>
+                    ) : (
+                        <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                             <>
                                 {/* Screens accessible when the user is not logged in */}
-                                <Stack.Screen name="welcomePage" component={WelcomePage} />
-                                <Stack.Screen name="SignInPage">
+                                <Stack.Screen name="welcomePage" component={WelcomePage} options={{ headerShown: false }}/>
+                                <Stack.Screen name="SignInPage" options={{ headerShown: false }}>
                                     {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                 </Stack.Screen>
                                 <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                <Stack.Screen name="EnterPin" component={EnterPin} />
+                                <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
                             </>
 
-                                </Stack.Navigator>
-                        )}
+                        </Stack.Navigator>
+                    )}
                 </NavigationContainer>
+                </LanguageProvider>
             </SafeAreaView>
         </GestureHandlerRootView>
     );

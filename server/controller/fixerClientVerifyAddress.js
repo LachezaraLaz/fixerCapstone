@@ -1,12 +1,26 @@
 const express = require("express");
 const axios = require('axios');
 
+/**
+ * @module server/controller
+ */
+
 const app = express();
 app.use(express.json());
 
 const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY;
 let coordinates;
 
+/**
+ * Verifies an address using the Google Address Validation API.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.street - The street address to verify.
+ * @param {string} req.body.postalCode - The postal code of the address to verify.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the address verification is complete.
+ */
 const verifyAddress = async (req, res) => {
     const { street, postalCode } = req.body;
 
@@ -20,16 +34,54 @@ const verifyAddress = async (req, res) => {
                 },
             }
         );
-        console.log(response.data)
 
         if (response.data.result.verdict.addressComplete === true) {
-            //Get coordinates for the verified address
-            const fullAddress = `${street}, ${postalCode}`;
+            // Extract complete address information
+            const completeAddress = {};
+
+            // First try to get postal address components
+            if (response.data.result.address.postalAddress) {
+                const postalAddress = response.data.result.address.postalAddress;
+                if (postalAddress.postalCode) {
+                    completeAddress.postalCode = postalAddress.postalCode;
+                }
+                if (postalAddress.administrativeArea) {
+                    completeAddress.provinceOrState = postalAddress.administrativeArea;
+                }
+                if (postalAddress.regionCode) {
+                    completeAddress.country = postalAddress.regionCode === 'CA' ? 'Canada' :
+                        postalAddress.regionCode === 'US' ? 'United States' :
+                            postalAddress.regionCode;
+                }
+            }
+
+            // Try to extract postal code from formatted address as fallback
+            if (!completeAddress.postalCode && response.data.result.address.formattedAddress) {
+                const formattedAddress = response.data.result.address.formattedAddress;
+                // Canadian postal code regex
+                const canadianPostalRegex = /[A-Z]\d[A-Z]\s?\d[A-Z]\d/;
+                // US ZIP code regex
+                const usZipRegex = /\b\d{5}(?:-\d{4})?\b/;
+
+                let match = formattedAddress.match(canadianPostalRegex);
+                if (!match) match = formattedAddress.match(usZipRegex);
+
+                if (match) {
+                    completeAddress.postalCode = match[0];
+                }
+            }
+
+            // Get coordinates for the verified address
+            const fullAddress = `${street}, ${postalCode || completeAddress.postalCode || ''}`;
             await getCoordinates(fullAddress);
 
-            res.send({ status: 'success', data: 'Address verified successfully from server',
+            res.send({
+                status: 'success',
+                data: 'Address verified successfully from server',
                 isAddressValid: true,
-                coordinates: coordinates});
+                coordinates: coordinates,
+                completeAddress: completeAddress // Send the complete address back
+            });
         } else {
             res.send({ status: 'error', data: 'address verification failed from server 1' });
         }
@@ -39,6 +91,13 @@ const verifyAddress = async (req, res) => {
     }
 };
 
+/**
+ * Fetches the geographical coordinates (latitude and longitude) for a given address using the Google Geocoding API.
+ *
+ * @param {string} fullAddress - The full address to geocode.
+ * @returns {Promise<void>} A promise that resolves when the coordinates have been fetched and stored.
+ * @throws Will log an error message if the Geocoding API request fails.
+ */
 const getCoordinates = async (fullAddress) => {
     try {
         const geoResponse = await axios.get(

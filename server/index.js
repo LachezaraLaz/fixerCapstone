@@ -15,8 +15,15 @@ const userRouter = require('./routes/userRoute');
 const getMyProfessionalJobsRouter = require('./routes/getMyProfessionalJobsRoute'); // Import the new route
 const { serverClient } = require('./services/streamClient');
 const reviewRouter = require('./routes/reviewRoute');
+const paymentRoutes = require('./routes/paymentRoute');
+const geocodeRoute = require('./routes/geoCodeRoute');
+const clientRoute = require('./routes/getClientByEmailRoute');
 
 const app = express();
+const cors = require('cors');
+app.use(cors({
+    origin: ['https://fixercapstone-production.up.railway.app'],
+}));
 
 app.use(bodyParser.json());
 
@@ -47,5 +54,12 @@ app.use('/notification', notificationRouter);
 app.use('/reviews', reviewRouter.reviewRouter);
 
 app.use('/users', userRouter.userRouter);
+
+app.use('/payment', paymentRoutes.paymentRouter);
+
+app.use(cors()); // duplicate ?
+app.use('/api/geocode', geocodeRoute);
+app.use('/api/client', clientRoute);
+
 
 module.exports = app;

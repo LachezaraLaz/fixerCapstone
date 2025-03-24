@@ -10,9 +10,25 @@ const quoteSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    issueTitle:{
+        type: String,
+        required: true,
+    },
     price: {
         type: Number,
         required: true,
+    },
+    jobDescription: {
+        type: String,
+        required: false,
+    },
+    toolsMaterials: {
+        type: String,
+        required: false,
+    },
+    termsConditions: {
+        type: String,
+        required: false,
     },
     status: {
         type: String,

@@ -5,10 +5,27 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';  // To retrieve JWT
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module professionalClient
+ */
+
 const CredentialFormPage = () => {
     const [tradeLicense, setTradeLicense] = useState(''); // State for the trade license input
     const navigation = useNavigation();
 
+    /**
+     * Handles the form submission for verifying the trade license.
+     * 
+     * This function retrieves the JWT token from AsyncStorage and submits the trade license
+     * to the backend for verification. If the token is found, it sends a POST request with
+     * the trade license in the request body and the token in the Authorization header.
+     * Upon successful submission, it navigates to the 'UploadID' screen.
+     * 
+     * @async
+     * @function handleSubmit
+     * @returns {Promise<void>} A promise that resolves when the form submission is complete.
+     * @throws Will throw an error if the form submission fails.
+     */
     const handleSubmit = async () => {
         try {
             // Get the JWT token from AsyncStorage

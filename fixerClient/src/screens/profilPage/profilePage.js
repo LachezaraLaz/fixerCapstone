@@ -1,24 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect,useContext } from 'react';
+import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { styles } from '../../../style/profilePage/profilePageStyle';
+import { IPAddress } from '../../../ipAddress';
+import SettingsButton from "../../../components/settingsButton";
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import { LanguageContext } from "../../../context/LanguageContext";
+import DropDownPicker from 'react-native-dropdown-picker';
+
+/**
+ * @module fixerClient
+ */
 
 const ProfilePage = () => {
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const { changeLanguage } = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
+    //const [reviews, setReviews] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(locale); // default based on current locale
+    const [items, setItems] = useState([
+        { label: 'English', value: 'en' },
+        { label: 'Français', value: 'fr' }
+    ]);
+
 
     useEffect(() => {
+        /**
+         * Fetches the profile data of the client.
+         * 
+         * This function retrieves the authentication token from AsyncStorage and uses it to make a GET request
+         * to the profile endpoint. If the token is found, it sets the client data with the response. If no token
+         * is found, it logs an error message. Any errors during the fetch process are caught and logged.
+         * 
+         * @async
+         * @function fetchProfileData
+         * @returns {Promise<void>} A promise that resolves when the profile data has been fetched and the client state has been set.
+         */
         const fetchProfileData = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
+
                 if (token) {
-                    const response = await axios.get(
-                        `https://fixercapstone-production.up.railway.app/client/profile`,
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    );
+                    const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
                     setClient(response.data);
                 } else {
                     console.error('No token found');
@@ -33,96 +67,164 @@ const ProfilePage = () => {
         fetchProfileData();
     }, []);
 
-    if (loading) {
-        return <Text>Loading...</Text>;
-    }
+    useEffect(() => {
+        if (value !== locale) {
+            changeLanguage(value); // ✅ persist + update
+        }
+    }, [value]);
 
-    if (!client) {
-        return <Text>Error loading profile.</Text>;
-    }
 
-    // Function to show alert when pencil icon is tapped
-    const handleEditPress = () => {
-        Alert.alert(
-            "Feature Unavailable",
-            "The editing feature is not available yet, but please keep an eye out for future updates!",
-            [{ text: "OK", onPress: () => console.log("Alert closed") }]
-        );
-    };
+
+    // const fetchReviews = async () => {
+    //     try {
+    //         const response = await axios.get(`http://${IPAddress}:3000/professional/${professional.email}/reviews`);
+    //         setReviews(response.data);
+    //         console.log(response.data);
+    //         console.log(reviews.length)
+    //     } catch (error) {
+    //         console.log('Error fetching reviews:', error.response || error.message);
+    //         //Alert.alert('Error', 'Failed to load reviews.');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+    // useEffect(() => {
+    //     fetchReviews();
+    // }, []);
+
+
+    if (loading) return <Text>Loading...</Text>;
+    if (!client) return <Text>Error loading profile.</Text>;
+
+    // const renderStars = (rating) => {
+    //     const roundedRating = Math.round(rating);
+    //     return Array(roundedRating).fill('⭐').map((star, index) => (
+    //         <Text key={index} style={styles.ratingText}>{star}</Text>
+    //     ));
+    // };
 
     return (
-        <View style={styles.container}>
-            {/* Custom Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} accessibilityLabel="back button">
-                    <Ionicons name="arrow-back" size={28} color="#333" />
-                </TouchableOpacity>
+        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 150 }} showsVerticalScrollIndicator={false}>
+            <View style={styles.globalFont}>
+                <View style={styles.customHeader}>
+                    <Text style={styles.headerLogo}>Fixr</Text>
+                    <Text style={styles.headerTitle}>Profile</Text>
+                    <SettingsButton onPress={() => navigation.navigate('SettingsPage')} />
+                </View>
 
-                <Text style={styles.headerTitle}>ProfilePage</Text>
+                <View style={styles.profileContainer}>
+                    <Image source={{ uri: client.idImageUrl || 'https://via.placeholder.com/50' }} style={styles.profileImage} />
+                    <Text style={styles.nameText}>{client.firstName} {client.lastName}</Text>
 
-                {/* Pencil Icon (Shows Alert When Tapped) */}
-                <TouchableOpacity onPress={handleEditPress}  accessibilityLabel="edit button">
-                    <MaterialIcons name="edit" size={24} color="black" />
-                </TouchableOpacity>
+                    {/*<View style={styles.ratingContainer}>*/}
+                    {/*    {renderStars(professional.totalRating || 0)}*/}
+                    {/*    <Text style={styles.reviewCountText}> ({professional.totalRating} )</Text>*/}
+                    {/*</View>*/}
+                </View>
+
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.sectionTitle}>Description</Text>
+                    <Text style={styles.descriptionText}>
+                        {client.description || i18n.t('no_description_provided')}
+                    </Text>
+                </View>
+
+                {/*<View style={styles.reviewsContainer}>*/}
+                {/*    <View style={{ flexDirection: 'row', alignItems: 'center' }}>*/}
+                {/*        <Text style={styles.sectionTitle}>Rating & Reviews</Text>*/}
+                {/*        <TouchableOpacity onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})}>*/}
+                {/*            <Text style={styles.reviewCountLink}> ({reviews.length})</Text>*/}
+                {/*        </TouchableOpacity>*/}
+                {/*    </View>*/}
+
+                {/*    {loading ? (*/}
+                {/*        <ActivityIndicator size="large" color="#f28500" style={{ marginVertical: 10 }} />*/}
+                {/*    ) : (*/}
+                {/*        <ScrollView*/}
+                {/*            horizontal={true}*/}
+                {/*            showsHorizontalScrollIndicator={false}*/}
+                {/*            contentContainerStyle={styles.reviewScrollContainer}*/}
+                {/*        >*/}
+                {/*            {reviews.length > 0 ? (*/}
+                {/*                reviews.slice(0, 5).map((review, index) => (*/}
+                {/*                    <View key={index} style={styles.reviewCard}>*/}
+                {/*                        <View style={styles.reviewerHeader}>*/}
+                {/*                            <Image source={{ uri: review.reviewerImage || 'https://via.placeholder.com/50' }} style={styles.reviewerImage} />*/}
+                {/*                            <View>*/}
+                {/*                                <Text style={styles.reviewerName}>{review.professionalNeeded}</Text>*/}
+                {/*                                <Text style={styles.reviewerLocation}>{review.location || 'Unknown Location'}</Text>*/}
+                {/*                            </View>*/}
+                {/*                        </View>*/}
+
+                {/*                        <Text style={styles.reviewText}>{review.comment || 'No comment provided.'}</Text>*/}
+
+                {/*                        <View style={styles.reviewRatingContainer}>*/}
+                {/*                            <View style={styles.starContainer}>*/}
+                {/*                                {Array(Math.floor(review.rating)).fill('⭐').map((star, i) => (*/}
+                {/*                                    <Text key={i} style={styles.ratingText}>{star}</Text>*/}
+                {/*                                ))}*/}
+                {/*                            </View>*/}
+                {/*                            <Text style={styles.ratingNumber}>{review.rating.toFixed(1)}</Text>*/}
+                {/*                            <Text style={styles.reviewDate}>{review.date}</Text>*/}
+                {/*                        </View>*/}
+                {/*                    </View>*/}
+                {/*                ))*/}
+                {/*            ) : (*/}
+                {/*                <Text style={styles.noReviewsText}>No reviews available.</Text>*/}
+                {/*            )}*/}
+                {/*        </ScrollView>*/}
+                {/*    )}*/}
+                {/*</View>*/}
+
+
+                <View style={styles.emailContainer}>
+                    <Text style={styles.sectionTitle}>{i18n.t('email')}</Text>
+                    <Text style={styles.emailText}>{client.email}</Text>
+                </View>
+
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>{i18n.t('payment_method')}</Text>
+                    <View style={styles.inputBox}>
+                        <Text>💳 {i18n.t('visa_ending')} 1234</Text>
+                        <Text>Expiry 06/2024</Text>
+                    </View>
+                </View>
+
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>{i18n.t('language')}</Text>
+                    <View>
+                        <DropDownPicker
+                            open={open}
+                            value={value}
+                            items={items}
+                            setOpen={setOpen}
+                            setValue={setValue}
+                            setItems={setItems}
+                            placeholder={locale === 'en' ? 'English' : 'Français'}
+                            style={{
+                                backgroundColor: '#E7E7E7',
+                                borderColor: '#ddd',
+                            }}
+                            textStyle={{ fontSize: 13, fontWeight: 'bold' }}
+                            dropDownContainerStyle={{
+                                backgroundColor: '#E7E7E7',
+                                borderColor: '#ddd',
+                                zIndex: 1000
+                            }}
+                            listMode="SCROLLVIEW"
+                            nestedScrollEnabled={true}
+                        />
+                    </View>
+                </View>
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>{i18n.t('street_address')}</Text>
+                    <View style={styles.inputBox}>
+                        <Text>{client.street}, {client.provinceOrState}, {client.country}, {client.postalCode}</Text>
+                    </View>
+                </View>
             </View>
-
-            {/* Profile Details */}
-            <View style={styles.profileContainer}>
-                <Image source={client.profilePicture} style={styles.profileImage} />
-                <Text style={styles.emailText}>{client.email}</Text>
-            </View>
-
-            {/* Help Button */}
-            <View style={styles.section}>
-                <Text style={styles.sectionText}>Help</Text>
-            </View>
-        </View>
+        </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-        padding: 16,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        backgroundColor: '#fff',
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    profileContainer: {
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    profileImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginBottom: 16,
-    },
-    emailText: {
-        fontSize: 16,
-        color: '#666666',
-    },
-    section: {
-        backgroundColor: '#f0f0f0',
-        padding: 12,
-        marginVertical: 8,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    sectionText: {
-        fontSize: 18,
-        color: '#333333',
-    },
-});
 
 export default ProfilePage;

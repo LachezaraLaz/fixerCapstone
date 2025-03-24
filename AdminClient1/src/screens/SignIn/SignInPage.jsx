@@ -20,7 +20,6 @@ export default function SignInPage() {
         return newErrors;
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validateForm();

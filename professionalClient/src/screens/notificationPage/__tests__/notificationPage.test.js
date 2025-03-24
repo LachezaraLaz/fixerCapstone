@@ -49,8 +49,8 @@ describe('NotificationPage Component', () => {
         await waitFor(() => {
         expect(getByText('Notification 1')).toBeTruthy();
         expect(getByText('Notification 2')).toBeTruthy();
-        expect(getByText('1/25/2025, 5:00:00 AM')).toBeTruthy();
-        expect(getByText('1/24/2025, 5:00:00 AM')).toBeTruthy();
+        expect(getByText('1/25/2025, 10:00:00 AM')).toBeTruthy();
+        expect(getByText('1/24/2025, 10:00:00 AM')).toBeTruthy();
         });
     });
 

@@ -1,13 +1,44 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, {useContext, useState} from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-//import { IPAddress } from '../../../ipAddress';
+import { CommonActions } from '@react-navigation/native';
+import OrangeButton from "../../../components/orangeButton";
+import InputField  from '../../../components/inputField';
+import PasswordField from '../../../components/passwordField';
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
+
+import { IPAddress } from '../../../ipAddress';
+
+/**
+ * @module fixerClient
+ */
+
 
 export default function SignInPage({ navigation, setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
+    /**
+     * Handles the sign-in process for a client user.
+     *
+     * This function validates the email and password fields, sends a sign-in request to the server,
+     * and handles the response by storing tokens and navigating to the main tabs screen upon successful sign-in.
+     *
+     * @async
+     * @function handleSignIn
+     * @returns {Promise<void>}
+     * @throws Will alert an error message if the email or password fields are empty, or if the sign-in request fails.
+     */
     const handleSignIn = async () => {
         if (!email || !password) {
             Alert.alert('Error', 'Both fields are required');
@@ -29,48 +60,75 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 await AsyncStorage.setItem('userId', userId);
                 await AsyncStorage.setItem('userName', userName);
 
-                Alert.alert("Signed in successfully");
+                Alert.alert(`${i18n.t('signed_in_successfully')}`);
                 setIsLoggedIn(true);
-                navigation.navigate('MainTabs');
+
+                setTimeout(() => {
+                    navigation.dispatch(
+                        CommonActions.reset({
+                            index: 0,
+                            routes: [{ name: "MainTabs" }],
+                        })
+                    );
+                }, 100);
+
             }
         } catch (error) {
+            console.log('Error:', error); // Add this line
             if (error.response && error.response.status === 400) {
-                Alert.alert("Error", error.response.data.statusText || 'Wrong email or password');
+                Alert.alert(`${i18n.t('error')}`, error.response.data.statusText || 'Wrong email or password');
             } else if (error.response && error.response.status === 403) {
-                Alert.alert('Please verify your email before logging in.');
+                Alert.alert(`${i18n.t('please_verify_your_email_before_logging_in')}`);
             } else {
-                Alert.alert("Error", 'An unexpected error occurred');
+                Alert.alert(`${i18n.t('error')}`, `${i18n.t('an_unexpected_error_occurred')}`);
             }
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Sign In</Text>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
+                <Text style={languageStyle.languageButtonText}>🌍 {i18n.t('change_language')}</Text>
+            </TouchableOpacity>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
+            <LanguageModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                setLocale={setLocale}
+            />
+
+            <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                <Text style={styles.backText}>{i18n.t('back')}</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.title} testID='signInTitle'>{i18n.t('sign_in')}</Text>
+
+            {/* Email Field */}
+            <InputField
+                placeholder={i18n.t('email')}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
 
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
+            {/* Password Field */}
+            <PasswordField
+                placeholder={i18n.t('password')}
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={true} // Always hide password by default
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleSignIn} testID={'sign-in-button'}>
-                <Text style={styles.buttonText}>Sign In</Text>
-            </TouchableOpacity>
+            <OrangeButton title={i18n.t('sign_in')} onPress={handleSignIn} testID="sign-in-button" variant="normal" />
 
             <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
-                <Text style={styles.signUpText}>Don't have an account? Sign up</Text>
+                <Text style={styles.signUpText}>{i18n.t('do_not_have_an_account')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordPage')}>
+                <Text style={styles.forgotPasswordText}>{i18n.t('forgot_password')}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -83,29 +141,24 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#fff',
     },
+    backButton: {
+        position: 'absolute',
+        top: 40,
+        left: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        zIndex: 1,
+    },
+    backText: {
+        marginLeft: 8,
+        fontSize: 18,
+        color: '#1E90FF',
+    },
     title: {
         fontSize: 32,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
-    },
-    input: {
-        height: 50,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-    },
-    button: {
-        backgroundColor: '#1E90FF',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
     },
     signUpText: {
         color: '#1E90FF',
@@ -113,4 +166,10 @@ const styles = StyleSheet.create({
         marginTop: 15,
         fontSize: 16,
     },
+    forgotPasswordText: {
+        color: '#1E90FF',
+        textAlign: 'center',
+        marginTop: 15,
+        fontSize: 16,
+    }
 });

@@ -2,386 +2,222 @@ import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import HomeScreen from '../homeScreen';
 import axios from 'axios';
-//import * as Location from 'expo-location';
-import { Alert } from 'react-native';  // Import the Alert module
-//import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert, Linking } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import * as Location from 'expo-location';
+import { AppState } from 'react-native';
 
-// code to run only this file through the terminal:
-// npm run test ./src/screens/homeScreen/__tests__/homeScreen.test.js
-// or
-// npm run test-coverage ./src/screens/homeScreen/__tests__/homeScreen.test.js
 
-// Mock expo-modules-core to avoid the NativeModule error
-jest.mock('expo-modules-core', () => ({
-    NativeModule: {},
-}));
+// Mock AppState event handling
+jest.spyOn(AppState, 'addEventListener');
 
-// Mock expo-location to simulate its methods
+jest.spyOn(Linking, 'openSettings').mockImplementation(jest.fn());
+
 jest.mock('expo-location', () => ({
     requestForegroundPermissionsAsync: jest.fn(),
     getCurrentPositionAsync: jest.fn(),
-    watchPositionAsync: jest.fn(),
 }));
 
-// Mock expo-constants to avoid errors in test environment
-jest.mock('expo-constants', () => ({
-    manifest: {},
-    platform: {
-        ios: true,
-        android: false,
-    },
-    deviceYearClass: 2020,
-    isDevice: true,
+jest.mock('react-native/Libraries/Animated/NativeAnimatedModule', () => ({
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
 }));
+
+jest.mock('../../chat/chatContext', () => ({
+    useChatContext: () => ({
+        chatClient: { disconnectUser: jest.fn().mockResolvedValue() }
+    }),
+}));
+
+
+jest.mock('react-native-reanimated', () => {
+    const Reanimated = require('react-native-reanimated/mock');
+    return {
+        ...Reanimated,
+        useAnimatedProps: jest.fn(),
+        useSharedValue: jest.fn(() => ({ value: 0 })),
+        useAnimatedStyle: jest.fn(() => ({})),
+    };
+});
+
 
 jest.mock('axios');
 jest.mock('react-native/Libraries/Alert/Alert', () => ({
     alert: jest.fn(),
 }));
+
 jest.mock('@react-native-async-storage/async-storage', () => ({
-    getItem: jest.fn(),
-    setItem: jest.fn(),
-    removeItem: jest.fn(),
+    multiRemove: jest.fn(),
 }));
 
-jest.mock('react-native-maps', () => {
-    const React = require('react');
-    const MockMapView = ({ children }) => <div data-testid="map-view">{children}</div>;
-    const MockMarker = ({ testID, ...props }) => (
-        <div data-testid={testID} {...props}>
-            Marker Mock
-        </div>
-    );
+jest.mock('@react-navigation/native', () => ({
+    useNavigation: jest.fn(),
+}));
+jest.mock('react-native-vector-icons/Ionicons', () => 'Icon');
 
-    return {
-        __esModule: true,
-        default: MockMapView,
-        Marker: MockMarker,
-    };
-});
 
 describe('HomeScreen', () => {
-    const navigation = { navigate: jest.fn(), replace: jest.fn() };
-    const setIsLoggedIn = jest.fn();
+    const mockNavigate = jest.fn();
+    const mockSetIsLoggedIn = jest.fn();
+    const mockRoute = { params: { selectedFilters: ['plumber'], distanceRange: [0, 10] } };
 
     beforeEach(() => {
         jest.clearAllMocks();
+
+        jest.doMock('../../chat/chatContext', () => ({
+            useChatContext: () => ({
+                chatClient: { disconnectUser: jest.fn().mockResolvedValue() } // Default: success
+            }),
+        }));
+
+        Location.requestForegroundPermissionsAsync.mockResolvedValue({ status: 'granted' });
+        Location.getCurrentPositionAsync.mockResolvedValue({ coords: { latitude: 37.78825, longitude: -122.4324 } });
+        axios.get.mockResolvedValue({
+            data: { jobs: [{ _id: '1', title: 'Fix sink', professionalNeeded: 'plumber', latitude: '37.789', longitude: '-122.431', status: 'open' }] },
+        });
+        useNavigation.mockReturnValue({ navigate: mockNavigate, addListener: jest.fn(() => () => {}) });
     });
 
-    it('should render the loading indicator initially', async () => {
-        // Mocking permission request
-        require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
-            status: 'granted',  // Simulate permission granted
+    beforeEach(() => jest.clearAllMocks());
+
+    it('handles logout correctly', async () => {
+        const { getByText } = render(<HomeScreen route={{ params: {} }} setIsLoggedIn={mockSetIsLoggedIn} />);
+
+        await waitFor(() => expect(getByText('Logout')).toBeTruthy());
+
+        // Simulate clicking logout
+        await act(async () => {
+            fireEvent.press(getByText('Logout'));
         });
-        // Mocking geolocation to return specific coordinates
-        require('expo-location').getCurrentPositionAsync.mockResolvedValueOnce({
-            coords: { latitude: 37.78825, longitude: -122.4324 },
-        });
-        // Mock axios call for issues (even if not necessary, to avoid errors in the component)
-        axios.get.mockResolvedValueOnce({
-            data: { jobs: [] }  // Mock empty issues
-        })
-        // Render the component
-        const { queryByTestId } = render(
-            <HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />
-        );
-        // Use waitFor to ensure that async operations complete before checking for loading indicator
-        await waitFor(() => {
-            expect(queryByTestId('loading-indicator')).toBeNull();
-        });
+
+        // Check that `setIsLoggedIn(false)` is called on successful logout
+        expect(mockSetIsLoggedIn).toHaveBeenCalledWith(false);
     });
 
-    // it('should fetch issues and display them on a list', async () => {
-    //     // Mocking permission request
-    //     require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
-    //         status: 'granted',  // Simulate permission granted
-    //     });
-    //
-    //     // Mocking geolocation to return specific coordinates
-    //     require('expo-location').getCurrentPositionAsync.mockResolvedValueOnce({
-    //         coords: { latitude: 37.78825, longitude: -122.4324 },
-    //     });
-    //
-    //     const mockIssues = {
-    //         data: {
-    //             jobs: [
-    //                 { _id: 1, title: 'Leaky Faucet', description: 'Fix this faucet', latitude: 37.78825, longitude: -122.4324, professionalNeeded: 'plumber' },
-    //                 { _id: 2, title: 'Light Bulb Replacement', description: 'Replace the bulb', latitude: 37.78925, longitude: -122.4324, professionalNeeded: 'electrician' }
-    //             ]
-    //         }
-    //     };
-    //
-    //     axios.get.mockResolvedValueOnce(mockIssues);
-    //
-    //     const { getByText, queryByTestId } = render(<HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />);
-    //
-    //     // Ensure loading indicator is removed after fetching
-    //     await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
-    //
-    //     // Verify issue titles are rendered
-    //     expect(getByText('Leaky Faucet')).toBeTruthy();
-    //     expect(getByText('Light Bulb Replacement')).toBeTruthy();
-    // });
+    it('fetches issues and renders them', async () => {
+        const { getByText } = render(<HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />);
+        await waitFor(() => expect(getByText('Fix sink')).toBeTruthy());
+    });
 
+    it('filters issues based on selected filters', async () => {
+        mockRoute.params.selectedFilters = ['electrician'];
+        axios.get.mockResolvedValue({
+            data: { jobs: [{ _id: '1', title: 'Fix sink', professionalNeeded: 'plumber', latitude: '37.789', longitude: '-122.4324' }] },
+        });
+        const { queryByText } = render(<HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />);
 
-    // it('should fetch issues and display markers on the map', async () => {
-    //     // Mocking permission request
-    //     require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
-    //         status: 'granted',  // Simulate permission granted
-    //     });
-    //
-    //     // Mocking geolocation to return specific coordinates
-    //     require('expo-location').getCurrentPositionAsync.mockResolvedValueOnce({
-    //         coords: { latitude: 37.78825, longitude: -122.4324 },
-    //     });
-    //
-    //     const mockIssues = {
-    //         data: {
-    //             jobs: [
-    //                 { _id: 1, title: 'Leaky Faucet', description: 'Fix this faucet', latitude: 37.78825, longitude: -122.4324, professionalNeeded: 'plumber' },
-    //                 { _id: 2, title: 'Light Bulb Replacement', description: 'Replace the bulb', latitude: 37.78925, longitude: -122.4324, professionalNeeded: 'electrician' }
-    //             ]
-    //         }
-    //     };
-    //     axios.get.mockResolvedValueOnce(mockIssues);
-    //
-    //     const { queryByTestId } = render(<HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />);
-    //
-    //     // Ensure loading indicator is removed after fetching
-    //     await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
-    //
-    //
-    //     // Verify issue titles are rendered
-    //     expect(queryByTestId('marker-1')).toBeTruthy();
-    //     expect(queryByTestId('marker-2')).toBeTruthy();
-    // });
+        await waitFor(() => expect(queryByText('Fix sink')).toBeNull());
+    });
 
+    it('shows error alert if fetching fails', async () => {
+        axios.get.mockRejectedValue(new Error('Network Error'));
 
-
-    it('should display an alert if fetching issues fails', async () => {
-        axios.get.mockRejectedValueOnce(new Error('Network Error'));
         const alertSpy = jest.spyOn(Alert, 'alert');
-        const { queryByTestId } = render(<HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />);
-        // Ensure loading indicator is removed
-        await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
-        // Verify error alert
-        expect(alertSpy).toHaveBeenCalledWith('Error', 'An error occurred while fetching issues.');
-    });
 
-    it('should log out the user when the logout button is pressed', async () => {
-        // Mocking console.log to suppress logs during the test
-        const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+        // Mock the console.error temporarily to silence Jest logs
+        jest.spyOn(console, 'error').mockImplementation(() => {});
 
-        // Mocking permission request
-        require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
-            status: 'granted',  // Simulate permission granted
-        });
+        render(<HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />);
 
-        // Mocking geolocation to return specific coordinates
-        require('expo-location').getCurrentPositionAsync.mockResolvedValueOnce({
-            coords: { latitude: 37.78825, longitude: -122.4324 },
-        });
-
-        // Mock axios call for issues (even if not necessary, to avoid errors in the component)
-        axios.get.mockResolvedValueOnce({
-            data: { jobs: [] }  // Mock empty issues
-        });
-
-        const setIsLoggedIn = jest.fn();  // Mocking the logout function
-
-        const { getByText, queryByText } = render(<HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />);
-
-        // Wait for the ActivityIndicator to disappear and the logout button to appear
-        await waitFor(() => expect(queryByText('Logout')).not.toBeNull());
-
-        // Now that the "Logout" button is rendered, simulate the logout button press
-        const logoutButton = getByText('Logout');
-
-        // Wrapping the button press event in act() to avoid state update warnings
-        await act(async () => {
-            fireEvent.press(logoutButton);
-        });
-
-        // Verify if logout function was called and the user is logged out
-        await waitFor(() => expect(setIsLoggedIn).toHaveBeenCalledWith(false));
-
-        // Restore the original console.log after the test
-        logSpy.mockRestore();
-    });
-
-
-    it('should filter the list of jobs based on selected professionalNeeded', async () => {
-        // Mocking permission request
-        require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
-            status: 'granted', // Simulate permission granted
-        });
-
-        // Mocking geolocation to return specific coordinates
-        require('expo-location').getCurrentPositionAsync.mockResolvedValueOnce({
-            coords: { latitude: 37.78825, longitude: -122.4324 },
-        });
-
-        const mockIssues = {
-            data: {
-                jobs: [
-                    { _id: 1, title: 'Leaky Faucet', description: 'Fix this faucet', latitude: 37.78825, longitude: -122.4324, professionalNeeded: 'plumber' },
-                    { _id: 2, title: 'Light Bulb Replacement', description: 'Replace the bulb', latitude: 37.78925, longitude: -122.4324, professionalNeeded: 'electrician' },
-                    { _id: 3, title: 'Fix Broken Door', description: 'Repair the door', latitude: 37.78725, longitude: -122.4325, professionalNeeded: 'carpenter' }
-                ]
-            }
-        };
-
-        axios.get.mockResolvedValueOnce(mockIssues);
-
-        const { getByText, queryByText, queryByTestId, getByTestId } = render(
-            <HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />
+        await waitFor(() =>
+            expect(alertSpy).toHaveBeenCalledWith('Error', 'An error occurred while fetching issues.')
         );
 
-        // Ensure loading indicator is removed after fetching
+        // Check if console.error was called
+        expect(console.error).toHaveBeenCalledWith('Error fetching issues:', expect.any(Error));
+
+        // Restore console.error after the test finishes
+        console.error.mockRestore();
+    });
+
+
+    it('handles logout correctly', async () => {
+        const { getByText } = render(<HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />);
+        await waitFor(() => fireEvent.press(getByText('Logout')));
+
+        expect(mockSetIsLoggedIn).toHaveBeenCalledWith(false);
+    });
+
+    it('recenters map if location permission granted', async () => {
+        const { getByTestId, queryByTestId } = render(
+            <HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />
+        );
+
+        // Wait for loading indicator to disappear
         await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
 
-        // Verify all jobs are initially displayed in the list
-        expect(queryByText('Leaky Faucet')).toBeTruthy();
-        expect(queryByText('Light Bulb Replacement')).toBeTruthy();
-        expect(queryByText('Fix Broken Door')).toBeTruthy();
+        // Wait for the recenter button to appear
+        await waitFor(() => expect(getByTestId('recenterButton')).toBeTruthy());
 
-        // Simulate clicking on the "plumber" filter button
-        const plumberFilterButton = getByText('plumber'); // Replace with your actual filter button label
+        // Now click on the button recenterButton
+        await act(async () => {
+            fireEvent.press(getByTestId('recenterButton'));
+        });
+
+        expect(Location.getCurrentPositionAsync).toHaveBeenCalled();
+    });
+
+    it('calls getCurrentLocation when app returns to foreground', async () => {
+        const mockGetCurrentPositionAsync = jest.spyOn(Location, 'getCurrentPositionAsync').mockResolvedValue({
+            coords: { latitude: 37.78825, longitude: -122.4324 },
+        });
+
+        let appStateChangeCallback;
+
+        AppState.addEventListener.mockImplementation((_, callback) => {
+            appStateChangeCallback = callback;
+            return { remove: jest.fn() };
+        });
+
+        render(<HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />);
+
+        // Initially called during component mount
+        await waitFor(() => expect(mockGetCurrentPositionAsync).toHaveBeenCalledTimes(1));
+
+        // Simulate app state change to 'active'
         act(() => {
-            fireEvent.press(plumberFilterButton);
+            appStateChangeCallback('active');
         });
 
-        // Wait for the list to update and check if only "plumber" jobs are displayed
-        await waitFor(() => {
-            expect(queryByText('Leaky Faucet')).toBeTruthy();
-            expect(queryByText('Light Bulb Replacement')).toBeNull();
-            expect(queryByText('Fix Broken Door')).toBeNull();
+        // Check if getCurrentLocation called again upon app activation
+        await waitFor(() => expect(mockGetCurrentPositionAsync).toHaveBeenCalledTimes(2));
+    });
+
+    it('shows alert if location permission is not granted on recenter button press', async () => {
+        Location.requestForegroundPermissionsAsync.mockResolvedValue({ status: 'denied' });
+
+        const alertSpy = jest.spyOn(Alert, 'alert');
+
+        const { getByTestId, queryByTestId } = render(
+            <HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />
+        );
+
+        // Ensure loading finishes first
+        await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
+
+        // Press on recenter button
+        await act(async () => {
+            fireEvent.press(getByTestId('recenterButton'));
         });
 
-        // Simulate clicking on the "electrician" filter button
-        const electricianFilterButton = getByText('electrician'); // Replace with your actual filter button label
+        // Check alert is shown correctly
+        expect(alertSpy).toHaveBeenCalledWith(
+            "Location Permission Denied",
+            "To use this feature, enable location services in settings.",
+            [
+                { text: "Back", style: "cancel" },
+                { text: "Go to Settings", onPress: expect.any(Function) }
+            ]
+        );
+
+        // Simulate pressing by clicking on 'Go to Settings' button on the alert
+        const alertButtons = alertSpy.mock.calls[0][2];
         act(() => {
-            fireEvent.press(electricianFilterButton);
+            alertButtons[1].onPress();
         });
 
-        // Wait for the list to update and check if only "electrician" jobs are displayed
-        await waitFor(() => {
-
-            expect(queryByText('Light Bulb Replacement')).toBeTruthy();
-            expect(queryByText('Leaky Faucet')).toBeTruthy();
-            expect(queryByText('Fix Broken Door')).toBeNull();
-        });
-    });
-
-
-    it('should open a quote', async () => {
-        // Mocking permission request
-        require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
-            status: 'granted',  // Simulate permission granted
-        });
-
-        // Mocking geolocation to return specific coordinates
-        require('expo-location').getCurrentPositionAsync.mockResolvedValueOnce({
-            coords: { latitude: 37.78825, longitude: -122.4324 },
-        });
-
-        const mockIssues = {
-            data: {
-                jobs: [
-                    { _id: 1, title: 'Leaky Faucet', description: 'Fix this faucet', latitude: 37.78825, longitude: -122.4324, professionalNeeded: 'plumber' },
-                    { _id: 2, title: 'Light Bulb Replacement', description: 'Replace the bulb', latitude: 37.78925, longitude: -122.4324, professionalNeeded: 'electrician' },
-                    { _id: 3, title: 'Fix Broken Door', description: 'Repair the door', latitude: 37.78725, longitude: -122.4325, professionalNeeded: 'carpenter' }
-                ]
-            }
-        };
-
-        axios.get.mockResolvedValueOnce(mockIssues);
-
-        // Mocking the API POST request for quote submission
-        axios.post.mockResolvedValueOnce({ status: 200, data: { success: true } });
-
-        const { getByText, getByPlaceholderText, queryByTestId } = render(
-            <HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />
-        );
-
-        // Wait for the issues to load
-        await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
-
-
-        await act(async () => {
-            // Simulate clicking on the first issue "Leaky Faucet"
-            fireEvent.press(getByText('Leaky Faucet'));
-        });
-
-
-        // Check if modal appears (you can check for modal visibility here)
-        const modal = queryByTestId('quotemodal');
-        expect(modal).toBeTruthy();
-
-    });
-
-
-
-    it('should allow submitting a quote successfully', async () => {
-        // Mocking permission request
-        require('expo-location').requestForegroundPermissionsAsync.mockResolvedValueOnce({
-            status: 'granted',  // Simulate permission granted
-        });
-
-        // Mocking geolocation to return specific coordinates
-        require('expo-location').getCurrentPositionAsync.mockResolvedValueOnce({
-            coords: { latitude: 37.78825, longitude: -122.4324 },
-        });
-
-        const mockIssues = {
-            data: {
-                jobs: [
-                    { _id: 1, title: 'Leaky Faucet', description: 'Fix this faucet', latitude: 37.78825, longitude: -122.4324, professionalNeeded: 'plumber' },
-                    { _id: 2, title: 'Light Bulb Replacement', description: 'Replace the bulb', latitude: 37.78925, longitude: -122.4324, professionalNeeded: 'electrician' },
-                    { _id: 3, title: 'Fix Broken Door', description: 'Repair the door', latitude: 37.78725, longitude: -122.4325, professionalNeeded: 'carpenter' }
-                ]
-            }
-        };
-
-        axios.get.mockResolvedValueOnce(mockIssues);
-
-        // Mocking the API POST request for quote submission
-        axios.post.mockResolvedValueOnce({ status: 200, data: { success: true } });
-
-        const { getByText, getByPlaceholderText, queryByTestId } = render(
-            <HomeScreen navigation={navigation} setIsLoggedIn={setIsLoggedIn} />
-        );
-
-        // Wait for the issues to load
-        await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
-
-
-        await act(async () => {
-            // Simulate clicking on the first issue "Leaky Faucet"
-            fireEvent.press(getByText('Leaky Faucet'));
-        });
-
-
-        // Check if modal appears (you can check for modal visibility here)
-        const modal = queryByTestId('quotemodal');
-        expect(modal).toBeTruthy();
-
-        // Simulate entering a price in the modal
-        const priceInput = getByPlaceholderText('Enter price for this issue');
-        fireEvent.changeText(priceInput, '150');
-
-        // Simulate pressing the submit button
-        fireEvent.press(getByText('Submit'));
-
-        // Verify that the POST request is made with the correct data
-        // await waitFor(() => {
-        //     expect(axios.post).toHaveBeenCalledWith(
-        //         `http://192.168.2.16:3000/quotes/create`,
-        //         { clientEmail: 'client@example.com', price: '150', issueId: '1' },
-        //         { headers: { Authorization: `Bearer mockToken` } }
-        //     );
-        //     expect(Alert.alert).toHaveBeenCalledWith('Success', 'Quote submitted successfully!');
-        // });
+        // Check if Linking.openSettings() is called
+        expect(Linking.openSettings).toHaveBeenCalled();
     });
 
 });

@@ -88,36 +88,41 @@ export const styles = StyleSheet.create({
         fontSize: 11,
     },
 
-    // Recenter button in map
-    recenterButtonContainer: {
+    recenterButtonWrapper: {
         position: 'absolute',
         bottom: 20,
         right: 20,
+        zIndex: 1,
+    },
+
+    recenterButton: {
         backgroundColor: 'white',
         borderRadius: 25,
         padding: 10,
         elevation: 3,
-        zIndex: 1,
-    },
-    recenterButton: {
+        overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
     },
+
+    recenterButtonDenied: {
+        backgroundColor: '#eee', // subtle grey to indicate disabled state
+    },
+
+    deniedSlash: {
+        position: 'absolute',
+        width: '120%',
+        height: 2,
+        backgroundColor: 'red',
+        transform: [{ rotate: '-45deg' }],
+    },
+
 
     // notification button
     notificationButton: {
         position: 'absolute',
         top: 10,
         right: 10,
-        padding: 10,
-        zIndex: 1,
-    },
-
-    // profile button
-    profileButton: {
-        position: 'absolute',
-        top: 10,
-        left: 10,
         padding: 10,
         zIndex: 1,
     },
@@ -140,4 +145,111 @@ export const styles = StyleSheet.create({
         top: 25
     },
 
+    //list issues
+    issueCard: {
+        // height: 100,
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        padding: 14,
+        marginVertical: 8,
+        // marginHorizontal: 2,
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 4,
+        alignItems: 'center',
+    },
+    issueImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 10,
+        marginRight: 12,
+    },
+    issueDetails: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    issueTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    issueDescription: {
+        fontSize: 13,
+        color: '#999',
+        marginVertical: 4,
+    },
+    issueRatingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    issueRating: {
+        fontSize: 13,
+        color: '#f1c40f',
+        marginLeft: 4,
+    },
+    issueReviews: {
+        fontSize: 12,
+        color: '#999',
+        marginLeft: 6,
+    },
+    issuePriceContainer: {
+        backgroundColor: '#FEE8D6',
+        borderRadius: 8,
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    issuePrice: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#f39c12',
+    },
+
+    noticeContainer: {
+        backgroundColor: '#FFF3E0', // Light orange background
+        padding: 12, // Reduced padding
+        borderRadius: 10,
+        marginVertical: 12, // Reduced margin
+        marginHorizontal: 16, // Reduced margin
+        flexDirection: 'row', // Arrange icon, text, and button horizontally
+        alignItems: 'center', // Center items vertically
+        justifyContent: 'space-between', // Distribute space evenly
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3, // Android shadow
+    },
+
+    noticeIcon: {
+        marginRight: 8, // Reduced space between icon and text
+    },
+
+    noticeText: {
+        fontSize: 14, // Slightly smaller font size
+        fontWeight: '500',
+        color: '#d84315', // Warning-like color
+        flex: 1, // Allow text to take remaining space
+        flexShrink: 1, // Ensure text wraps properly
+        marginRight: 8, // Space between text and button
+    },
+
+    addBankingButton: {
+        backgroundColor: '#FF9800', // Vibrant orange
+        paddingVertical: 8, // Reduced padding
+        paddingHorizontal: 12, // Reduced padding
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center', // Center button text
+        minWidth: 120, // Ensure button has a minimum width
+    },
+
+    addBankingButtonText: {
+        color: '#fff',
+        fontSize: 14, // Slightly smaller font size
+        fontWeight: 'bold',
+    },
 });

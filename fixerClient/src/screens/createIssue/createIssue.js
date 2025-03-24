@@ -1,5 +1,7 @@
 //Import list
 import * as React from 'react';
+import styles from '../../../style/createIssueStyle'
+import 'react-native-get-random-values';
 import {
     ScrollView,
     View,
@@ -14,51 +16,174 @@ import {
     ActivityIndicator,
     StyleSheet
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {jwtDecode} from 'jwt-decode';
-import { CommonActions } from '@react-navigation/native';
+import { jwtDecode } from 'jwt-decode';
+import DropDownPicker from 'react-native-dropdown-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 import { IPAddress } from '../../../ipAddress';
+import OrangeButton from "../../../components/orangeButton";
+import MapView, { Marker } from "react-native-maps";
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import { LanguageContext } from "../../../context/LanguageContext";
+
+/**
+ * @module fixerClient
+ */
 
 export default function CreateIssue({ navigation }) {
+    //translation
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
+    //AI
+    const [loadingAi, setLoadingAi] = useState(false);
+    const [aiSuggestion, setAiSuggestion] = useState('');
+    const [showAiPreview, setShowAiPreview] = useState(false);
     // List of fields in the page
-    const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [selectedService, setSelectedService] = useState(null);
+    const [items, setItems] = useState([
+        { label: `${i18n.t('select_service')}`, value: '' },
+        { label: `${i18n.t('plumbing')}`, value: 'plumbing' },
+        { label: `${i18n.t('electrical')}`, value: 'electrical' },
+    ]);
+    const [selectedImage, setSelectedImage] = useState(null);
+    {/*TimeLine Dropdown*/}
+    const [open, setOpen] = useState(false);
+    const [selectedTimeLine, setSelectedTimeLine] = useState(null);
+    const [itemsTimeLine, setItemsTimeLine] = useState([
+        { label: `${i18n.t('select_timeline')}`, value: '' },
+        { label: `${i18n.t('low_priority')}`, value: 'low-priority' },
+        { label: `${i18n.t('high_priority')}`, value: 'high-priority' },
+    ]);
+    const [openTimeLine, setOpenTimeLine] = useState(false);
+    const [location, setLocation] = useState("");
+    const [title, setTitle] = useState("");
     const [professionalNeeded, setProfessionalNeeded] = useState('');
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [other, setOther] = useState(false);
 
-
-    //backend 
-    //backend to be able to pick an image 
+    /**
+     * Asynchronously picks an image from the user's media library.
+     * Requests permission to access the media library if not already granted.
+     * If permission is granted, opens the media library for the user to select an image.
+     * If an image is selected and the operation is not canceled, sets the selected image URI.
+     *
+     * @async
+     * @function pickImage
+     * @returns {Promise<void>} A promise that resolves when the image picking process is complete.
+     */
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (permissionResult.granted === false) {
-            Alert.alert('Permission to access images is required!');
+        if (!permissionResult.granted) {
+            Alert.alert("Permission required", "Please allow access to your gallery.");
             return;
         }
 
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaType,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
         });
 
-        if (!result.canceled && result.assets && result.assets.length > 0) {
-            setImage(result.assets[0].uri);
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    };
+    const handleAiEnhancement = async () => {
+        if (!description.trim()) {
+            Alert.alert('No text', 'Please enter some description first.');
+            return;
+        }
+
+        try {
+            setLoadingAi(true);
+            // Call AI endpoint
+            const response = await axios.post(
+                'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
+                //'http://192.168.0.19:3000/issue/aiEnhancement',
+                { description }
+            );
+
+            const { improvedDescription } = response.data;
+            setAiSuggestion(improvedDescription);
+            setShowAiPreview(true);
+        } catch (error) {
+            // Handle 400 Bad Request (Invalid Category)
+            if (error.response && error.response.status === 400) {
+                Alert.alert('Invalid Job Category', error.response.data.error ||
+                    'Please provide a home service or blue-collar job description.');
+            } else {
+                console.error('Error enhancing description:', error);
+                Alert.alert('Error', 'Could not enhance your description. Please try again.');
+            }
+        } finally {
+            setLoadingAi(false);
         }
     };
 
-    // posting the issue by the user
+    const handleAcceptAiSuggestion = () => {
+        setDescription(aiSuggestion);
+        setShowAiPreview(false);
+    };
+
+    const handleRejectAiSuggestion = () => {
+        setAiSuggestion('');
+        setShowAiPreview(false);
+    };
+
+    /**
+     * Asynchronously posts an issue to the server.
+     *
+     * This function validates the input fields, constructs a FormData object with the issue details,
+     * and sends a POST request to the server to create a new issue. It handles loading state, error
+     * handling, and resets the form fields upon successful submission.
+     *
+     * @async
+     * @function postIssue
+     * @returns {Promise<void>} A promise that resolves when the issue is posted.
+     * @throws Will throw an error if the request fails or if required fields are empty.
+     */
     const postIssue = async () => {
-        if (!title || !professionalNeeded || !description) {
-            Alert.alert("Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
+        if (!title) {
+            Alert.alert("Invalid Description", "Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
             return;
+        }
+        if (!description) {
+            Alert.alert("Invalid Description", "Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
+            return;
+        }
+
+        if (!selectedService) {
+            Alert.alert("Invalid Service", "Please select a valid service type.");
+            return;
+        }
+
+        if (!selectedTimeLine) {
+            Alert.alert("Invalid Timeline", "Please select an urgency timeline.");
+            return;
+        }
+
+        if (!location || location.trim().length < 5) {
+            Alert.alert("Invalid Location", "Please provide a valid location with at least 5 characters.");
+            return;
+        }
+
+        // Optional Image
+        if (selectedImage) {
+            const validImageTypes = ['image/jpeg', 'image/png'];
+            const imageType = selectedImage.split('.').pop().toLowerCase();
+            if (!validImageTypes.includes(`image/${imageType}`)) {
+                Alert.alert("Invalid Image", "Only JPEG and PNG images are supported.");
+                return;
+            }
         }
 
         setLoading(true); // Start loading
@@ -71,17 +196,27 @@ export default function CreateIssue({ navigation }) {
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
-            formData.append('professionalNeeded', professionalNeeded);
+            formData.append('professionalNeeded', selectedService);
             formData.append('email', userEmail);
-            formData.append('status', "Open");
+            formData.append('status', "open");
+            formData.append('timeline', selectedTimeLine);
+            formData.append('imageUrl', selectedImage);
 
-            if (image) {
+            if (selectedImage) {
                 formData.append('image', {
-                    uri: image,
-                    type: 'image/jpeg',
+                    uri: selectedImage,
+                    type: `image/${selectedImage.split('.').pop().toLowerCase()}`,
                     name: 'issue_image.jpg',
                 });
             }
+            console.log("🚀 Sending Data:", {
+                title: title,
+                description: description,
+                professionalNeeded: selectedService,
+                email: userEmail,
+                status: "Open",
+                image: selectedImage ? "✅ Image Attached" : "❌ No Image",
+            });
 
             const response = await axios.post(`https://fixercapstone-production.up.railway.app/issue/create`, formData, {
                 headers: {
@@ -89,6 +224,7 @@ export default function CreateIssue({ navigation }) {
                     'Authorization': `Bearer ${token}`
                 },
             });
+            console.log("✅ Response:", response.data);
 
             if (response.status === 201) {
                 // Reset all fields to default values
@@ -99,295 +235,256 @@ export default function CreateIssue({ navigation }) {
                 setOther(false);
 
                 navigation.goBack();
-                Alert.alert('Job posted successfully');
+                Alert.alert(`${i18n.t('job_posted_successfully')}`);
             } else {
                 Alert.alert('Failed to post the job');
             }
         } catch (error) {
+            console.log("❌ Error:", error.response?.data || error.message);
             Alert.alert('An error occurred. Please try again.');
         } finally {
             setLoading(false); // Stop loading after completion
         }
     };
 
-    //frontend
+    /**
+     * Handles the selection of an image from either the camera or the media library.
+     * Requests the necessary permissions and launches the appropriate image picker.
+     * If the user grants permission and selects an image, the image URI is set.
+     *
+     * @param {string} source - The source of the image, either 'camera' or 'mediaLibrary'.
+     * @returns {Promise<void>} - A promise that resolves when the image selection is complete.
+     */
+    const handleImageSelection = async (source) => {
+        const permissionResult = source === 'camera'
+            ? await ImagePicker.requestCameraPermissionsAsync()
+            : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            Alert.alert("Permission required", `Please allow access to your ${source}.`);
+            return;
+        }
+
+        const result = source === 'camera'
+            ? await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 1 })
+            : await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    };
+
+    /**
+     * Counts the number of words in a given text.
+     *
+     * @param {string} text - The text to count words in.
+     * @returns {number} - The number of words in the text.
+     */
+    const countWords = (text) => {
+        return text.trim().length === 0 ? 0 : text.trim().split(/\s+/).length;
+    };
+
+    /**
+     * Removes the currently selected image by setting the selected image state to null.
+     */
+    const removeImage = () => {
+        setSelectedImage(null);
+    };
+
     return (
         //possibility to dismiss the keyboard just by touching the screen
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <ScrollView style={{ flexGrow: 1, padding: 20}}>
-                <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Create New Issue</Text>
-
+            <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
+                        contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+                        keyboardShouldPersistTaps="handled"
+            >
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('title')}</Text>
                 {/* title field */}
                 <TextInput
-                    placeholder="Title"
+                    placeholder= {`${i18n.t('title')}`}
                     value={title}
                     onChangeText={setTitle}
                     style={{
                         borderWidth: 1,
-                        borderColor: '#ccc',
+                        backgroundColor: '#E7E7E7',
+                        borderColor: '#ddd',
+                        borderRadius: 8,
                         padding: 10,
-                        borderRadius: 5,
-                        marginBottom: 15
-                    }}
-                />
+                        marginBottom: 20,
+                        marginVertical: 8,
+                        height: 40,
+                        textAlignVertical: 'top', // Ensures text starts from the top
+                    }}/>
+                {/* description field */}
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('job_description')}</Text>
+                <View style={{ position: 'relative' }}>
+                    <TextInput
+                        placeholder= {`${i18n.t('describe_your_service')}`}
+                        value={description}
+                        onChangeText={setDescription}
+                        style={{
+                            borderWidth: 1,
+                            backgroundColor: '#E7E7E7',
+                            borderColor: '#ddd',
+                            borderRadius: 8,
+                            padding: 10,
+                            marginVertical: 8,
+                            height: 120,
+                            textAlignVertical: 'top', // Ensures text starts from the top
+                        }} multiline/>
 
-                {/* Work Blocks Section */}
-                <View style={styles.workBlocksContainer}>
-                    <Text style={styles.sectionTitle}>Professional Needed</Text>
-                    <View style={styles.workBlocks}>
-                        <TouchableOpacity
-                            style={[
-                                styles.workBlock,
-                                professionalNeeded === 'plumber' && styles.selectedButton, // Highlight when selected
-                            ]}
-                            onPress={() => setProfessionalNeeded('plumber')}
-                        >
-                            <Text style={styles.workText}>Plumber</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[
-                                styles.workBlock,
-                                professionalNeeded === 'electrician' && styles.selectedButton, // Highlight when selected
-                            ]}
-                            onPress={() => setProfessionalNeeded('electrician')}
-                        >
-                            <Text style={styles.workText}>Electrician</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {/* AI Enhancement Button */}
+                    <TouchableOpacity
+                        style={[styles.aiEnhanceButton, { marginTop: 10 }]}
+                        onPress={handleAiEnhancement}
+                        disabled={loadingAi}
+                    >
+                        {loadingAi ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
+                        )}
+                    </TouchableOpacity>
+                    {/* Show AI preview */}
+                    {showAiPreview && (
+                        <View style={{
+                            borderWidth: 1,
+                            borderColor: '#ccc',
+                            borderRadius: 8,
+                            padding: 10,
+                            marginTop: 20,
+                            backgroundColor: '#f9f9f9'
+                        }}>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 8 }}>
+                                AI's Suggestion:
+                            </Text>
+                            <Text style={{ color: '#333', marginBottom: 16 }}>{aiSuggestion}</Text>
 
-                    <Text style={styles.sectionTitle}>Issue Description</Text>
-                    {professionalNeeded === 'plumber' && (
-                        <View style={styles.workBlocks}>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Dripping Faucets' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Dripping Faucets'); 
-                                    setOther(false); // Ensure "Other" is not selected
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <TouchableOpacity style={{
+                                    backgroundColor: 'green',
+                                    padding: 10,
+                                    borderRadius: 8,
+                                    marginRight: 10
                                 }}
-                            >
-                                <Text style={styles.workText}>Dripping Faucets</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Clogged Drains' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Clogged Drains');
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Clogged Drains</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Leaky Pipes' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Leaky Pipes');
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Leaky Pipes</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    other && styles.selectedButton, // Highlight "Other" when selected
-                                ]}
-                                onPress={() => {
-                                    setOther(true);
-                                    setDescription(''); // Clear previous selection
-                                }}
-                            >
-                                <Text style={styles.workText}>Other</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
+                                                  onPress={handleAcceptAiSuggestion}
+                                >
+                                    <Text style={{ color: '#fff' }}>Accept</Text>
+                                </TouchableOpacity>
 
-                    {professionalNeeded === 'electrician' && (
-                        <View style={styles.workBlocks}>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Flickering Lights' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Flickering Lights');
-                                    setOther(false); // Ensure "Other" is not selected
+                                <TouchableOpacity style={{
+                                    backgroundColor: 'red',
+                                    padding: 10,
+                                    borderRadius: 8
                                 }}
-                            >
-                                <Text style={styles.workText}>Flickering Lights</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Dead Outlets' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Dead Outlets');
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Dead Outlets</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    description === 'Faulty Switch' && styles.selectedButton, // Highlight when selected
-                                ]}
-                                onPress={() => {
-                                    setDescription('Faulty Switch');
-                                    setOther(false); // Ensure "Other" is not selected
-                                }}
-                            >
-                                <Text style={styles.workText}>Faulty Switch</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[
-                                    styles.workBlock,
-                                    other && styles.selectedButton, // Highlight "Other" when selected
-                                ]}
-                                onPress={() => {
-                                    setOther(true);
-                                    setDescription(''); // Clear previous selection
-                                }}
-                            >
-                                <Text style={styles.workText}>Other</Text>
-                            </TouchableOpacity>
+                                                  onPress={handleRejectAiSuggestion}
+                                >
+                                    <Text style={{ color: '#fff' }}>Reject</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     )}
                 </View>
-
-
-                {other === true && (
-                    <TextInput
-                        placeholder="Describe the issue..."
-                        value={description}
-                        onChangeText={setDescription}
-                        multiline
-                        style={{
-                            borderWidth: 1,
-                            borderColor: '#ccc',
-                            padding: 10,
-                            height: 100,
-                            textAlignVertical: 'top',
-                            borderRadius: 5,
-                            marginBottom: 15
-                        }}
+                {/* Word & Character Counter - Positioned Below the Input */}
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 5 }}>
+                    <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
+                        {description.length} chars
+                    </Text>
+                </View>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_type')}</Text>
+                <View style={styles.pickerContainer}>
+                    <DropDownPicker
+                        style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
+                        translation={{ PLACEHOLDER: `${i18n.t('select_service')}` }}
+                        open={open}
+                        value={selectedService}
+                        items={items}
+                        setOpen={setOpen}
+                        setValue={setSelectedService}
+                        setItems={setItems}
+                        textStyle={{ fontSize: 13, fontWeight: 'bold' }}
+                        dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
+                        listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
+                        nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView
                     />
-                )}
-
-                {/* uploading of image button */}
-                <TouchableOpacity onPress={pickImage} style={{ marginBottom: 15 }}>
-                    <View
-                        style={{
-                            backgroundColor: '#eee',
-                            padding: 10,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            borderRadius: 5,
+                </View>
+                {/*Image upload*/}
+                <View style={styles.imageContainer}>
+                    <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
+                        {selectedImage ? (
+                            <View style={styles.imageWrapper}>
+                                <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+                                <TouchableOpacity style={{...styles.removeButton}} onPress={removeImage}>
+                                    <Text style={{...styles.removeText}}>✖</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ) : (
+                            <View style={styles.placeholder}>
+                                <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
+                                <Text style={{ ...styles.text }}>{i18n.t('take_from_your_gallery')}</Text>
+                                <Text style={{...styles.supportedFormats}}>JPEG, PNG, MP4</Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                </View>
+                {/*map*/}
+                <View style={styles.mapContainer}>
+                    <MapView
+                        style={styles.map}
+                        initialRegion={{
+                            latitude: 37.7749, // Example: San Francisco
+                            longitude: -122.4194,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
                         }}
                     >
-                        <Text>Upload Image</Text>
-                    </View>
-                </TouchableOpacity>
-
-                {image && (
-                    <View style={{ alignItems: 'center', marginBottom: 15 }}>
-                        <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
-                    </View>
-                )}
-
-                {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
-                ) : (
-                    <Button testID={'post-job-button'} title="Post Job" onPress={postIssue} disabled={loading} />
-                )}
-                <View style={{ height: 30 }} />
+                        <Marker
+                            coordinate={{ latitude: 37.7749, longitude: -122.4194 }}
+                            title="San Francisco"
+                            description="This is a marker in SF!"
+                        />
+                    </MapView>
+                </View>
+                {/*location label*/}
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15, marginTop: 20 }}>{i18n.t('location')}</Text>
+                {/* location field */}
+                <View style={{ flex: 1 }}>
+                    <TextInput
+                        placeholder={i18n.t('enter_location')}
+                        value={location}
+                        onChangeText={setLocation}
+                        style={{
+                            height: 52,
+                            borderWidth: 1,
+                            borderColor: "#ddd",
+                            backgroundColor: "#E7E7E7",
+                            borderRadius: 8,
+                            padding: 9,
+                        }}
+                    />
+                </View>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>{i18n.t('select_timeline')}</Text>
+                <View style={styles.pickerContainer}>
+                    <DropDownPicker
+                        style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
+                        translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
+                        open={openTimeLine}
+                        value={selectedTimeLine}
+                        items={itemsTimeLine}
+                        setOpen={setOpenTimeLine}
+                        setValue={setSelectedTimeLine}
+                        setItems={setItemsTimeLine}
+                        textStyle={{ fontSize: 13, fontWeight: 'bold' }}
+                        dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
+                        listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
+                        nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView
+                    />
+                </View>
+                {/* Create Issue Button */ }
+                <View>
+                    <OrangeButton testID={'post-job-button'} title={i18n.t('create_issue')} variant="normal" onPress={postIssue}/>
+                </View>
             </ScrollView>
         </TouchableWithoutFeedback>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    workBlocksContainer: {
-        paddingHorizontal: 16,
-        marginVertical: 16,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
-    },
-    workBlocks: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    workBlock: {
-        backgroundColor: '#f0f0f0',
-        width: '48%',
-        padding: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    selectedButton: {
-        backgroundColor: '#1A8DEC', // Highlight color for selected button
-    },
-    workText: {
-        fontSize: 16,
-        color: '#333',
-        textAlign: 'center',
-    },
-    helpSection: {
-        paddingHorizontal: 16,
-        marginVertical: 16,
-    },
-    helpButton: {
-        backgroundColor: '#e0e0e0',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    helpButtonText: {
-        fontSize: 16,
-        color: '#333',
-    },
-    logoutContainer: {
-        paddingHorizontal: 16,
-        marginVertical: 16,
-    },
-    logoutButton: {
-        backgroundColor: '#ffdddd',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    logoutText: {
-        fontSize: 16,
-        color: '#d9534f',
-        fontWeight: 'bold',
-    },
-    footer: {
-        padding: 16,
-        alignItems: 'center',
-        borderTopWidth: 1,
-        borderColor: '#e0e0e0',
-        marginTop: 16,
-    },
-    footerText: {
-        fontSize: 12,
-        color: '#666',
-    },
-});

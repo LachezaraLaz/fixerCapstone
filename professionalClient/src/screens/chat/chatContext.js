@@ -4,6 +4,10 @@ import { StreamChat } from "stream-chat";
 import { OverlayProvider } from 'stream-chat-expo';
 import { STREAM_API_KEY } from "./chatConfig";
 
+/**
+ * @module professionalClient
+ */
+
 export const ChatContext = React.createContext({
     chatClient: null,
     setChatClient: () => {},
@@ -28,6 +32,14 @@ export const ChatProvider = ({ children }) => {
     }, [chatClient]);
 
     useEffect(() => {
+        /**
+         * Initializes the chat client by retrieving stored user credentials and connecting to the StreamChat service.
+         * 
+         * @async
+         * @function initChat
+         * @returns {Promise<void>} A promise that resolves when the chat client is initialized.
+         * @throws Will log an error message if there is an issue initializing the chat client.
+         */
         const initChat = async () => {
             try {
                 const storedUserId = await AsyncStorage.getItem('userId');

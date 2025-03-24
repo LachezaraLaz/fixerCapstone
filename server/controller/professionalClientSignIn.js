@@ -1,46 +1,51 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { serverClient } = require('../services/streamClient');
-const fixerClientObject = require('../model/professionalClientModel');
+const ProfessionalDTO = require('../DTO/professionalDTO');
+const professionalRepository = require('../repository/professionalRepository');
 
+/**
+ * @module server/controller
+ */
+
+/**
+ * Handles the sign-in process for professional users.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The body of the request.
+ * @param {string} req.body.email - The email of the professional user.
+ * @param {string} req.body.password - The password of the professional user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - Sends a response with the JWT token, stream token, user ID, and user name if successful.
+ */
 const signinUser = async (req, res) => {
     const { email, password } = req.body;
+    const professionalData = new ProfessionalDTO({ email, password });
 
     // Check if user exists and is a professional
-    const user = await fixerClientObject.fixerClient.findOne({ email });
+    const user = await professionalRepository.findProfessionalByEmail(professionalData.email);
     if (!user || user.accountType !== 'professional') {
         return res.status(400).send({ statusText: 'User not found' });
     }
 
-    if(!user.verified){
+    if (!user.verified) {
         return res.status(403).send({ statusText: 'Account not verified yet' });
     }
 
     // Compare password
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await professionalRepository.comparePassword(professionalData.password, user.password);
     if (!validPassword) {
         return res.status(400).send({ statusText: 'Invalid password' });
     }
 
     // Create JWT token
-    const token = jwt.sign(
-        {
-            id: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: '7d' } // Token validation time
-    );
-
-    await serverClient.upsertUser({
-        id: user._id.toString(),
-        role: 'user',
-        name: `${user.firstName} ${user.lastName}`,
+    const token = professionalRepository.generateToken({
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
     });
 
-    const streamToken = serverClient.createToken(user._id.toString());
+    await professionalRepository.upsertStreamUser(user);
+
+    const streamToken = professionalRepository.createStreamToken(user._id);
     res.send({
         token,
         streamToken,

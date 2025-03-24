@@ -1,59 +1,122 @@
-import React from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Keyboard, Platform } from 'react-native';
 import HomeScreen from '../homeScreen/homeScreen';
-import CreateIssue from '../createIssue/createIssue';
 import MyIssuesPosted from "../myIssuesPosted/myIssuesPosted";
-import ChatScreens from '../chat/chatScreens'
+import ChatScreens from '../chat/chatScreens';
 import { Ionicons } from '@expo/vector-icons';
-import SettingsPage from '../settingsPage/settingsPage';
+import ProfilePage from '../profilPage/profilePage';
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import LanguageModal from "../../../components/LanguageModal";
+import languageStyle from '../../../style/languageStyle';
+import { LanguageContext } from "../../../context/LanguageContext";
 
 const Tab = createBottomTabNavigator();
 
-export default function NavBar({ setIsLoggedIn }) {  // Receive setIsLoggedIn as a prop
+export default function NavBar({ setIsLoggedIn }) {
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+    let [modalVisible, setModalVisible] = useState(false);
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+            setKeyboardVisible(true);
+        });
+
+        const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+            setKeyboardVisible(false);
+        });
+
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
+
+    const labels = {
+        Home: `${i18n.t('home_screen')}`,
+        JobsPosted: `${i18n.t('mission')}`,
+        Chat: 'Chat',
+        Profile: 'Profile',
+    };
+
     return (
-        <Tab.Navigator screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-                let iconName;
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                    let iconName;
 
-                if (route.name === 'Home') {
-                    iconName = focused ? 'home' : 'home-outline';
-                } else if (route.name === 'JobsPosted') {
-                    iconName = focused ? 'hammer' : 'hammer-outline';
-                }
-                else if (route.name === 'CreateIssue') {
-                    iconName = focused ? 'add' : 'add-outline';
-                }
-                else if (route.name === 'Chat') {
-                    iconName = focused ? 'chatbubble' : 'chatbubble-outline';
-                }
-                else if (route.name === 'Settings') {
-                    iconName = focused ? 'settings' : 'settings-outline';
-                }
+                    if (route.name === 'Home') {
+                        iconName = 'home';
+                    } else if (route.name === 'JobsPosted') {
+                        iconName = 'briefcase';
+                    } else if (route.name === 'Chat') {
+                        iconName = 'chatbubble';
+                    } else if (route.name === 'Profile') {
+                        iconName = 'person';
+                    }
 
-                return <Ionicons name={iconName} size={size} color={color} />;
-            },
-            tabBarActiveTintColor: 'blue',
-            tabBarInactiveTintColor: 'gray',
-        })}
+                    return (
+                        <View style={[styles.iconContainer, focused && styles.activeTab]}>
+                            <Ionicons
+                                name={focused ? iconName : `${iconName}-outline`}
+                                size={size}
+                                color={focused ? 'orange' : 'gray'}
+                            />
+                            {focused && <Text style={styles.tabLabel}>{labels[route.name]}</Text>}
+                        </View>
+                    );
+                },
+                tabBarShowLabel: false,
+                tabBarStyle: isKeyboardVisible ? { display: "none" } : styles.tabBarStyle, // Hides navbar when keyboard is open
+                headerShown: false,
+            })}
         >
-            {/* Pass setIsLoggedIn to HomeScreen */}
             <Tab.Screen name="Home">
                 {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
             </Tab.Screen>
             <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
-            <Tab.Screen name="CreateIssue" component={CreateIssue} />
-
-            <Tab.Screen
-                name="Chat"
-                component={ChatScreens}
-            />
-
-            {/* Settings Tab - Intercepts press to show alert */}
-            <Tab.Screen name="Settings"
-                        component={SettingsPage}
-                        options={{ headerShown: false }}
-            />
+            <Tab.Screen name="Chat" component={ChatScreens} />
+            <Tab.Screen name="Profile" component={ProfilePage} />
         </Tab.Navigator>
     );
 }
+
+const styles = StyleSheet.create({
+    tabBarStyle: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        position: 'absolute',
+        height: 70,  // Ensures tab bar remains the same size
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6.27,
+        elevation: 10,
+        paddingBottom: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+    },
+    iconContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+    },
+    activeTab: {
+        backgroundColor: '#ffe5cc',
+        paddingHorizontal: 15,
+    },
+    tabLabel: {
+        marginLeft: 8,
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: 'orange',
+    },
+});

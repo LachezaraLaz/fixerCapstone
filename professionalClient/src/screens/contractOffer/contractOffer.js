@@ -1,30 +1,47 @@
 import React, { useState } from 'react';
-import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Modal, Image, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Platform, KeyboardAvoidingView} from 'react-native';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
-import { IPAddress } from '../../../ipAddress';
+// import { IPAddress } from '../../../ipAddress';
+
+/**
+ * @module professionalClient
+ */
 
 export default function ContractOffer({ route, navigation }) {
     const { issue } = route.params;
     const [price, setPrice] = React.useState('');
     const [selectedIssue, setSelectedIssue] = React.useState(null);
-    const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
     const [userAddress, setUserAddress] = useState(null);
+    const [jobDescription, setJobDescription] = useState('');
+    const [toolsMaterials, setToolsMaterials] = useState('');
+    const [termsConditions, setTermsConditions] = useState('');
+    // const [startTime, setStartTime] = useState(new Date());
+    // const [completionTime, setCompletionTime] = useState(new Date());
+    // const [showStartPicker, setShowStartPicker] = useState(false);
+    // const [showCompletionPicker, setShowCompletionPicker] = useState(false);
 
+    /**
+     * Fetches the user profile based on the provided email.
+     *
+     * @param {string} email - The email of the user whose profile is to be fetched.
+     * @returns {Promise<void>} - A promise that resolves when the user profile is fetched and the user address is set.
+     * @throws {Error} - Throws an error if the user profile cannot be fetched.
+     */
     const fetchUserProfile = async (email) => {
         try {
             console.log('Fetching profile for email:', email);
-    
+
             const token = await AsyncStorage.getItem('token');
 
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/users/user/${email}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-    
+
             // Log the response data for debugging
             console.log('Response data:', response.data);
-    
+
             // Handle a successful response
             if (response.status === 200) {
                 setUserAddress({
@@ -40,7 +57,7 @@ export default function ContractOffer({ route, navigation }) {
                 'Error fetching user profile:',
                 error.response?.data || error.message
             );
-    
+
             // Show an error alert to the user
             Alert.alert(
                 'Error',
@@ -48,7 +65,6 @@ export default function ContractOffer({ route, navigation }) {
             );
         }
     };
-    
 
     React.useEffect(() => {
         if (issue) {
@@ -57,9 +73,34 @@ export default function ContractOffer({ route, navigation }) {
         }
     }, [issue]);
 
+    /**
+     * Submits a quote for the selected issue.
+     *
+     * This function checks if a price is entered and retrieves the user token from AsyncStorage.
+     * It then validates the selected issue and client email before sending a POST request to create a quote.
+     * If the quote is successfully submitted, an alert is shown and the user is navigated back.
+     * If an error occurs, appropriate error messages are displayed.
+     *
+     * @async
+     * @function submitQuote
+     * @returns {Promise<void>}
+     */
     const submitQuote = async () => {
-        if (!price) {
-            Alert.alert('Error', 'Please enter a price before submitting the quote.');
+        const parsedPrice = parseFloat(price);
+
+        if (!price || isNaN(parsedPrice) || parsedPrice <= 0) {
+            Alert.alert('Invalid Price', 'Please enter a valid positive number for the price.');
+            return;
+        }
+
+        if (parsedPrice > 100000) {
+            Alert.alert('Invalid Price', 'Price should not exceed $100,000.');
+            return;
+        }
+
+        // Ensures that selectedIssue has necessary details
+        if (!selectedIssue || !selectedIssue.userEmail || !selectedIssue.id) {
+            Alert.alert('Error', 'Unable to retrieve complete issue details. Please try again.');
             return;
         }
 
@@ -69,7 +110,9 @@ export default function ContractOffer({ route, navigation }) {
                 Alert.alert('Error', 'User token not found.');
                 return;
             }
-            console.log('selectedIssue:', selectedIssue);
+            console.log('Selected Issue:', selectedIssue);  // Log the whole issue object
+            console.log('Issue ID:', selectedIssue?.id);    // Log the issue ID specifically
+            console.log('Issue ID Type:', typeof selectedIssue?.id);
 
             if (!selectedIssue || !selectedIssue.userEmail) {
                 console.log('clientEmail is null or undefined');
@@ -77,12 +120,28 @@ export default function ContractOffer({ route, navigation }) {
                 return;
             }
 
+            const issueTitle = selectedIssue.title; // Get the issue title
             const clientEmail = selectedIssue.userEmail; // Use userEmail from the schema
-            const issueId = selectedIssue._id;
+            const issueId = selectedIssue._id || selectedIssue.id;
+            console.log('Resolved Issue ID:', issueId);
+
+            // Prepare the quote object
+            const quoteData = {
+                clientEmail,
+                issueTitle,
+                issueId,
+                price: parsedPrice,
+                jobDescription,
+                toolsMaterials,
+                termsConditions,
+            };
+
+            console.log('Submitting Quote:', quoteData);  // Debugging info
+
 
             const response = await axios.post(
                 `https://fixercapstone-production.up.railway.app/quotes/create`,
-                { clientEmail, price, issueId },
+                quoteData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -97,132 +156,68 @@ export default function ContractOffer({ route, navigation }) {
             if (error.response?.status === 400) {
                 Alert.alert('Error', 'You have already submitted a quote for this issue.', [
                     { text: 'OK', onPress: () => navigation.goBack() }
-            ]);
+                ]);
             } else {
                 console.error('Error submitting quote:', error);
                 Alert.alert('Error', 'An error occurred while submitting the quote.');
             }
         }
     };
+
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>{issue.title}</Text>
-            <Text style={styles.subtitle}>Detailed Information</Text>
-
-            <View style={styles.infoContainer}>
-                <Text style={styles.label}>Description:</Text>
-                <Text style={styles.value}>{issue.description}</Text>
-
-                <Text style={styles.label}>Status:</Text>
-                <Text style={styles.value}>{issue.status}</Text>
-
-                <Text style={styles.label}>Professional Needed:</Text>
-                <Text style={styles.value}>{issue.professionalNeeded}</Text>
-
-                <Text style={styles.label}>Coordinates:</Text>
-                {userAddress && (
-                    <View >
-                        <Text style={styles.value}>Street: {userAddress.street || 'N/A'}</Text>
-                        <Text style={styles.value}>Postal Code: {userAddress.postalCode || 'N/A'}</Text>
-                        <Text style={styles.value}>Province/State: {userAddress.provinceOrState || 'N/A'}</Text>
-                        <Text style={styles.value}>Country: {userAddress.country || 'N/A'}</Text>
-                        <Text style={styles.value}>Latitude: {issue.latitude}</Text>
-                        <Text style={styles.value}>Longitude: {issue.longitude}</Text>
-                    </View>
-                )}
-            </View>
-
-            {/* Additional Section */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Job Requirements</Text>
-                <Text style={styles.sectionContent}>
-                    {issue.requirements || 'No specific requirements provided for this job.'}
-                </Text>
-            </View>
-
-            {/* Placeholder for Images/Documents */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Related Images/Documents</Text>
-                {issue.imageUrl ? (
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Text style={[styles.sectionContent, { color: 'blue', textDecorationLine: 'underline' }]}>
-                            Image 1
-                        </Text>
-                    </TouchableOpacity>
-                ) : (
-                    <Text style={styles.sectionContent}>No attachments provided for this issue.</Text>
-                )}
-            </View>
-
-            {/* Modal for Image */}
-            <Modal
-                visible={modalVisible}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setModalVisible(false)}
-                testID="modal" // testID here
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <ScrollView
+                contentContainerStyle={styles.container}
+                keyboardShouldPersistTaps="handled"
             >
-                <View style={modalStyles.modalContainer}>
-                    <Image
-                        source={{ uri: issue.imageUrl }}
-                        style={modalStyles.image}
-                        resizeMode="contain"
-                    />
-                    <TouchableOpacity
-                        onPress={() => setModalVisible(false)}
-                        style={modalStyles.closeButton}
-                    >
-                        <Text style={modalStyles.closeButtonText}>Close</Text>
-                    </TouchableOpacity>
+                <View style={styles.containerTitle}>
+                    <Text style={styles.title}>{issue.title}</Text>
                 </View>
-            </Modal>
 
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Fee</Text>
+                <Text style={styles.label}>Job Description</Text>
                 <TextInput
-                    placeholder="Enter price for this issue"
+                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    placeholder="Describe your service"
+                    value={jobDescription}
+                    onChangeText={setJobDescription}
+                    multiline
+                />
+
+                <Text style={styles.label}>Tools-Materials</Text>
+                <TextInput
+                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    placeholder="Enter Here"
+                    value={toolsMaterials}
+                    onChangeText={setToolsMaterials}
+                    multiline
+                />
+
+                <Text style={styles.label}>Terms and Conditions</Text>
+                <TextInput
+                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    placeholder="Enter Here"
+                    value={termsConditions}
+                    onChangeText={setTermsConditions}
+                    multiline
+                />
+
+                <Text style={styles.labelPrice}>Pricing $ (Hourly Rate)</Text>
+                <TextInput
+                    placeholder="50"
                     value={price}
                     keyboardType="numeric"
                     onChangeText={setPrice}
-                    style={styles.input}
+                    style={[styles.input, { height: 40 }]}
                 />
-            </View>
 
-            {/* Go Back Button */}
-            <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
-                    <Text style={styles.buttonText}>Go Back</Text>
-                </TouchableOpacity>
                 <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
-                    <Text style={styles.buttonText}>Submit</Text>
+                    <Text style={styles.submitButtonText}>Submit Quote</Text>
                 </TouchableOpacity>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
-
-
-const modalStyles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    image: {
-        width: '90%',
-        height: '70%',
-    },
-    closeButton: {
-        marginTop: 20,
-        padding: 10,
-        backgroundColor: '#fff',
-        borderRadius: 5,
-    },
-    closeButtonText: {
-        color: 'black',
-        fontWeight: 'bold',
-    },
-});
-
 

@@ -1,79 +1,150 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import SignUpPage from '../signupPage'; // Adjust the path as needed
 import { Alert } from 'react-native';
 import axios from 'axios';
-import { IPAddress } from '../../../../ipAddress'; // Adjust the path as needed
+import SignUpPage from '../signupPage'; // Adjust the path accordingly
+import { getByTestId } from '@testing-library/dom';
+// import { getByTestId } from '@testing-library/dom';
 
-// Mock Alert and axios
-jest.spyOn(Alert, 'alert');
+
+// code to run only this file through the terminal:
+// npm run test ./src/screens/signup/__tests__/signup.test.js
+// or
+// npm run test-coverage ./src/screens/signup/__tests__/signup.test.js
+
+
 jest.mock('axios');
+jest.mock('@expo/vector-icons', () => ({
+    Ionicons: 'Ionicons',
+}));
 
-// Set up before each test
-beforeEach(() => {
-    jest.clearAllMocks(); // Clear mocks to avoid cross-test interference
-});
+// Mock navigation object
+const mockNavigation = {
+    navigate: jest.fn(),
+    goBack: jest.fn(),
+};
 
-// Test suite
-describe('SignUpPage Tests', () => {
-    test('displays an alert when fields are empty', async () => {
-        const { getByTestId } = render(<SignUpPage />);
+jest.spyOn(Alert, 'alert');
 
-        const signUpButton = getByTestId('sign-up-button');
-        fireEvent.press(signUpButton);
+describe('SignUpPage', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
+    test('renders correctly', () => {
+        const { getByText, getByPlaceholderText } = render(<SignUpPage navigation={mockNavigation} />);
+
+        // Check if the title and input fields are rendered
+        expect(getByText('Sign Up')).toBeTruthy();
+        expect(getByPlaceholderText('Email')).toBeTruthy();
+        expect(getByPlaceholderText('Password')).toBeTruthy();
+        expect(getByPlaceholderText('Confirm Password')).toBeTruthy();
+    })
+
+    test('displays an error for invalid email', async () => {
+        const { getByPlaceholderText, getByText } = render(<SignUpPage navigation={mockNavigation} />);
+        
+        fireEvent.changeText(getByPlaceholderText('Email'), 'invalidemail');
+        fireEvent.press(getByText('Next'));
+        
         await waitFor(() => {
-            expect('All fields are required');
+            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Please enter a valid email and matching passwords');
         });
     });
 
-    test('displays an alert when passwords do not match', async () => {
-        const { getByPlaceholderText, getByTestId } = render(<SignUpPage />);
+    test('validates password input', () => {
+        const { getByPlaceholderText, getByText } = render(<SignUpPage navigation={mockNavigation} />);
 
-        // Fill the form with mismatched passwords
-        fireEvent.changeText(getByPlaceholderText('Password'), '123456');
-        fireEvent.changeText(getByPlaceholderText('Confirm Password'), '654321');
+        const passwordInput = getByPlaceholderText('Password');
 
-        const signUpButton = getByTestId('sign-up-button');
-        fireEvent.press(signUpButton);
+        // Test invalid password
+        fireEvent.changeText(passwordInput, 'weak');
+        expect(getByText('• At least 8 characters')).toBeTruthy();
+        expect(getByText('• At least one number')).toBeTruthy();
+        expect(getByText('• At least one uppercase letter')).toBeTruthy();
+        expect(getByText('✓ At least one lowercase letter')).toBeTruthy();
+        expect(getByText('• At least one special character')).toBeTruthy();
 
+        // Test valid password
+        fireEvent.changeText(passwordInput, 'StrongPass1!');
+        expect(getByText('✓ At least 8 characters')).toBeTruthy();
+        expect(getByText('✓ At least one number')).toBeTruthy();
+        expect(getByText('✓ At least one uppercase letter')).toBeTruthy();
+        expect(getByText('✓ At least one lowercase letter')).toBeTruthy();
+        expect(getByText('✓ At least one special character')).toBeTruthy();
+    });
+
+    test('displays an error for mismatched passwords', async () => {
+        const { getByPlaceholderText, getByText } = render(<SignUpPage navigation={mockNavigation} />);
+        
+        fireEvent.changeText(getByPlaceholderText('Email'), 'valid@example.com');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'Password1!');
+        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'Password2!');
+        fireEvent.press(getByText('Next'));
+        
         await waitFor(() => {
-            expect('Passwords do not match');
+            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Please enter a valid email and matching passwords');
         });
     });
 
-    test('displays an alert when email is already in use', async () => {
-        const mockNavigation = { navigate: jest.fn() };
+    test('displays error for invalid address', async () => {
         axios.post.mockRejectedValueOnce({
-            response: { status: 400, data: { message: 'User already exists' } },
+            response: { data: { message: 'Invalid address' } }
         });
-
-        const { getByPlaceholderText, getByTestId } = render(
-            <SignUpPage navigation={mockNavigation} />
-        );
-
-        // Fill the form with an already existing email
-        fireEvent.changeText(getByPlaceholderText('Email'), 'existing@example.com');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
-
-        const signUpButton = getByTestId('sign-up-button');
-        fireEvent.press(signUpButton);
-
+        
+        const { getByPlaceholderText, getByText } = render(<SignUpPage navigation={mockNavigation} />);
+        
+        fireEvent.changeText(getByPlaceholderText('Email'), 'valid@example.com');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'Password1!');
+        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'Password1!');
+        fireEvent.press(getByText('Next'));
+        fireEvent.changeText(getByPlaceholderText('House Number and Street'), '123 Fake Street');
+        fireEvent.changeText(getByPlaceholderText('Postal Code'), 'A1B 2C3');
+        fireEvent.press(getByText('Verify Address'));
+        
         await waitFor(() => {
-            console.log('Alert.alert calls:', Alert.alert.mock.calls);
-            expect('User already exists');
+            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Invalid address');
         });
     });
 
-    test('navigates to SignInPage when "Sign in" link is pressed', () => {
-        const mockNavigation = { navigate: jest.fn() };
+    it('handles address verification', async () => {
+        axios.post.mockResolvedValueOnce({
+            data: {
+                isAddressValid: true,
+                coordinates: { latitude: 43.6532, longitude: -79.3832 },
+            },
+        });
 
-        const { getByText } = render(<SignUpPage navigation={mockNavigation} />);
+        const { getByPlaceholderText, getByText, getByTestId } = render(<SignUpPage navigation={mockNavigation} />);
 
-        const signInLink = getByText('Already have an account? Sign in');
-        fireEvent.press(signInLink);
+        // Enter valid email and password
+        fireEvent.changeText(getByPlaceholderText('Email'), 'valid@example.com');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'StrongPass1!');
+        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'StrongPass1!');
+        fireEvent.press(getByText('Next'));
 
-        expect(mockNavigation.navigate).toHaveBeenCalledWith('SignInPage');
+        // Enter address details
+        fireEvent.changeText(getByPlaceholderText('House Number and Street'), '123 Main St');
+        fireEvent.changeText(getByPlaceholderText('Postal Code'), 'A1B 2C3');
+        fireEvent.press(getByText('Verify Address'));
+
+        // Wait for address verification to complete
+        await waitFor(() => {
+            expect(getByText('Valid Address entered')).toBeTruthy();
+        });
+
+        // Click Sign Up button
+        fireEvent.press(getByTestId('sign-up-button'));
+
+        // Wait for sign up to complete
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith(
+                'https://fixercapstone-production.up.railway.app/client/verifyAddress',
+                {
+                    postalCode: 'A1B 2C3',
+                    street: '123 Main St',
+                }
+            );
+        });
     });
 });

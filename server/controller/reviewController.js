@@ -2,6 +2,10 @@ const { Jobs } = require('../model/createIssueModel');
 const { fixerClient } = require('../model/professionalClientModel');
 const {logger} = require('../utils/logger');
 
+/**
+ * @module server/controller
+ */
+
 exports.getReviewsByProfessionalEmail = async (req, res) => {
     try {
         const { email } = req.params;

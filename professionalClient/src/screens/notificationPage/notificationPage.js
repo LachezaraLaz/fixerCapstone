@@ -5,6 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import { IPAddress } from '../../../ipAddress';
 
+/**
+ * @module professionalClient
+ */
+
 const NotificationPage = () => {
     const [notifications, setNotifications] = useState([]);
     const navigation = useNavigation(); // Use the navigation hook
@@ -13,6 +17,18 @@ const NotificationPage = () => {
         fetchNotifications();
     }, []);
 
+    /**
+     * Fetches notifications from the server.
+     * 
+     * This function retrieves the user's token from AsyncStorage and uses it to
+     * make an authenticated GET request to the notifications endpoint. If the
+     * request is successful, the notifications are stored in the state. If there
+     * is an error during the request, it is logged to the console.
+     * 
+     * @async
+     * @function fetchNotifications
+     * @returns {Promise<void>} A promise that resolves when the notifications have been fetched and set in the state.
+     */
     const fetchNotifications = async () => {
         const token = await AsyncStorage.getItem('token');
         try {
@@ -25,6 +41,14 @@ const NotificationPage = () => {
         }
     };
 
+    /**
+     * Toggles the read status of a notification.
+     *
+     * @param {string} id - The ID of the notification to update.
+     * @param {boolean} isRead - The current read status of the notification.
+     * @returns {Promise<void>} - A promise that resolves when the update is complete.
+     * @throws {Error} - Throws an error if the update fails.
+     */
     const toggleReadStatus = async (id, isRead) => {
         const token = await AsyncStorage.getItem('token');
         try {
@@ -37,6 +61,17 @@ const NotificationPage = () => {
         }
     };
 
+    /**
+     * Renders a notification item as a touchable component.
+     *
+     * @param {Object} param - The parameter object.
+     * @param {Object} param.item - The notification item to render.
+     * @param {string} param.item._id - The unique identifier of the notification.
+     * @param {boolean} param.item.isRead - The read status of the notification.
+     * @param {string} param.item.message - The message content of the notification.
+     * @param {string} param.item.createdAt - The creation date of the notification.
+     * @returns {JSX.Element} The rendered notification item component.
+     */
     const renderItem = ({ item }) => (
         <TouchableOpacity
             onPress={() => {

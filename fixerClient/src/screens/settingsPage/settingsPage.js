@@ -3,15 +3,27 @@ import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'r
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AccountSettingsPage from "../accountSettings/accountSettings";
+
+/**
+ * @module fixerClient
+ */
 
 export default function SettingsPage() {
     const navigation = useNavigation();
 
-    // Function to show "Feature Not Available" alert
     const showFeatureUnavailableAlert = (featureName) => {
         Alert.alert("Feature Unavailable", `${featureName} is not available yet.`);
     };
 
+    /**
+     * Logs the user out by removing authentication tokens and user information from AsyncStorage.
+     * Displays an alert indicating the success or failure of the logout process.
+     * 
+     * @async
+     * @function handleLogout
+     * @returns {Promise<void>} A promise that resolves when the logout process is complete.
+     */
     const handleLogout = async () => {
         try {
             await AsyncStorage.removeItem('token');
@@ -30,14 +42,14 @@ export default function SettingsPage() {
         <SafeAreaView style={styles.safeArea}>
             {/* Custom Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={28} color="#333" />
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Settings</Text>
             </View>
 
             <ScrollView contentContainerStyle={styles.container}>
-                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Account Settings")}>
+                <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('AccountSettingsPage')}>
                     <Text style={styles.optionText}>Account Settings</Text>
                 </TouchableOpacity>
 
@@ -89,17 +101,23 @@ const styles = {
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingVertical: 12,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
     },
+    backButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     headerTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
-        marginLeft: 16,
+        color: '#333',
+        textAlign: 'center',
+        flex: 1,
     },
     container: {
         padding: 16,
@@ -137,4 +155,3 @@ const styles = {
         color: '#777',
     },
 };
-

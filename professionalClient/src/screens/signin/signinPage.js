@@ -3,14 +3,29 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios from "axios";
 import { IPAddress } from '../../../ipAddress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CommonActions } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
+/**
+ * @module professionalClient
+ */
 
 export default function SignInPage({ setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
 
+    /**
+     * Handles the sign-in process for a professional user.
+     * 
+     * This function validates the email and password fields, sends a sign-in request to the server,
+     * and handles the response by storing tokens and navigating to the main tabs screen upon successful sign-in.
+     * 
+     * @async
+     * @function handleSignIn
+     * @returns {Promise<void>}
+     * @throws Will alert an error message if the email or password fields are empty, or if the sign-in request fails.
+     */
     const handleSignIn = async () => {
         if (!email || !password) {
             Alert.alert('Error', 'Both fields are required');
@@ -34,7 +49,14 @@ export default function SignInPage({ setIsLoggedIn }) {
 
                 Alert.alert("Signed in successfully");
                 setIsLoggedIn(true);
-                navigation.navigate('MainTabs');
+                 setTimeout(() => {
+                     navigation.dispatch(
+                         CommonActions.reset({
+                             index: 0,
+                             routes: [{ name: "MainTabs" }],
+                         })
+                     );
+                 }, 100);
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {
@@ -105,7 +127,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     button: {
-        backgroundColor: '#1E90FF',
+        backgroundColor: '#f28500',
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
@@ -115,13 +137,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     signUpText: {
-        color: '#1E90FF',
+        color: 'grey',
         textAlign: 'center',
         marginTop: 15,
         fontSize: 16,
     },
     forgotPasswordText: {
-        color: '#1E90FF',
+        color: 'grey',
         textAlign: 'center',
         marginTop: 15,
         fontSize: 16,

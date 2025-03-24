@@ -63,7 +63,7 @@ export default function CreateIssue({ navigation }) {
     const [selectedTimeLine, setSelectedTimeLine] = useState(null);
     const [itemsTimeLine, setItemsTimeLine] = useState([
         { label: `${i18n.t('select_timeline')}`, value: '' },
-        { label: `${i18n.t('low_priority')}`, value: 'low-priority' },
+        { label: `${i18n.t('low_priority')}`, value: 'low-priority'},
         { label: `${i18n.t('high_priority')}`, value: 'high-priority' },
     ]);
     const [openTimeLine, setOpenTimeLine] = useState(false);

@@ -11,9 +11,10 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         width: '100%',
         alignSelf: 'center',
-        margin: 8,
+        // margin: 8,
         backgroundColor: '#fff',
         position: 'relative', // Needed for floating label positioning
+        marginBottom: 20,
     },
     input: {
         fontSize: 16,

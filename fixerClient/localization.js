@@ -31,7 +31,7 @@ const en = {
     create_issue: "Create new Issue",
     logout: "Logout",
     describe_your_service: "Describe your service",
-    select_service_type: "Select Service Type",
+    select_service_type: "Select Service Type(s)",
     select_service: "Select Service",
     select_timeline:"Select Timeline",
     plumbing: "Plumbing",
@@ -82,7 +82,9 @@ const en = {
     payment_method: "Payment Method",
     visa_ending: "Visa ending in",
     language: "Language",
-    title:"title",
+    title: "Title",
+    image: "Image",
+    badges_remaining: "You can select {{count}} more",
 }
 
 const fr = {
@@ -169,6 +171,9 @@ const fr = {
     payment_method: "Méthode de paiement",
     visa_ending: "Visa se terminant par",
     language: "Langue",
+    title: "Titre",
+    image: "Image",
+    badges_remaining: "Vous pouvez en sélectionner encore {{count}}",
 }
 
 export {en, fr}

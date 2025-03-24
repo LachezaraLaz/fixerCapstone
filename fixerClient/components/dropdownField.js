@@ -37,7 +37,7 @@ const DropdownField = ({
 
 const styles = StyleSheet.create({
     dropdownContainer: {
-        marginVertical: 8,
+        // marginVertical: 8,
         marginHorizontal: 8,
         zIndex: 1000,
     },

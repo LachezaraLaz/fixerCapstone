@@ -318,26 +318,16 @@ export default function CreateIssue({ navigation }) {
                     <Text style={styles.headerTitle}>{i18n.t('create_issue')}</Text>
                 </View>
 
-                {/* <br/> */}
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('title')}</Text>
                 {/* title field */}
-                <TextInput
-                    placeholder= {`${i18n.t('title')}`}
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('title')}</Text>
+                <InputField 
+                    placeholder={`${i18n.t('title')}`}
                     value={title}
                     onChangeText={setTitle}
-                    style={{
-                        borderWidth: 1,
-                        backgroundColor: '#E7E7E7',
-                        borderColor: '#ddd',
-                        borderRadius: 8,
-                        padding: 10,
-                        marginBottom: 20,
-                        marginVertical: 8,
-                        height: 40,
-                        textAlignVertical: 'top', // Ensures text starts from the top
-                    }}/>
+                />
+
                 {/* description field */}
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('job_description')}</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('job_description')}</Text>
                 <View style={{ position: 'relative' }}>
 
                     <InputField 
@@ -399,45 +389,27 @@ export default function CreateIssue({ navigation }) {
                     )}
                 </View>
                 {/* Word & Character Counter - Positioned Below the Input */}
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 5 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                     <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
                         {description.length} chars
                     </Text>
                 </View>
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_service_type')}</Text>
+                
+                {/* Service type selector field */}
                 <View style={styles.pickerContainer}>
-                    {/* <DropDownPicker
-                        style={{
-                            // backgroundColor: '#E7E7E7',
-                            borderColor: '#ddd'
-                        }}
-                        translation={{ PLACEHOLDER: `${i18n.t('select_service')}` }}
-                        open={open}
-                        value={selectedService}
-                        items={items}
-                        setOpen={setOpen}
-                        setValue={setSelectedService}
-                        setItems={setItems}
-                        textStyle={{ fontSize: 13, fontWeight: 'bold' }}
-                        dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
-                        listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
-                        nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView
-                    /> */}
-                    {/* <DropdownField
-                        items={items}
-                        value={selectedService}
-                        setValue={setSelectedService}
-                        placeholder={i18n.t('select_service')}
-                        open={open}
-                        setOpen={setOpen}
-                        setItems={setItems}
-                    /> */}
 
+                    <Text style={ styles.badgeInfo }>
+                        {i18n.t('badges_remaining', { count: 2 - selectedProfessionals.length })}
+                    </Text>
                     <ProfessionalSelector
                         selectedProfessionals={selectedProfessionals}
                         setSelectedProfessionals={setSelectedProfessionals}
                     />
                 </View>
+
+                {/* Image upload label */}
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('image')}</Text>
                 {/*Image upload*/}
                 <View style={styles.imageContainer}>
                     <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
@@ -495,19 +467,14 @@ export default function CreateIssue({ navigation }) {
                 </View> */}
                 <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>{i18n.t('select_timeline')}</Text>
                 <View style={styles.pickerContainer}>
-                    <DropDownPicker
-                        style={{backgroundColor: '#E7E7E7',borderColor: '#ddd'}}
+                    <DropdownField
                         translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
                         open={openTimeLine}
-                        value={selectedTimeLine}
                         items={itemsTimeLine}
+                        value={selectedTimeLine}
                         setOpen={setOpenTimeLine}
-                        setValue={setSelectedTimeLine}
                         setItems={setItemsTimeLine}
-                        textStyle={{ fontSize: 13, fontWeight: 'bold' }}
-                        dropDownContainerStyle={{ zIndex: 1000 }} // Ensures dropdown renders above other components
-                        listMode="SCROLLVIEW" // Uses ScrollView instead of FlatList (fixes VirtualizedLists issue)
-                        nestedScrollEnabled={true} // Enables smooth scrolling within ScrollView
+                        setValue={setSelectedTimeLine}
                     />
                 </View>
                 {/* Create Issue Button */ }
@@ -518,24 +485,3 @@ export default function CreateIssue({ navigation }) {
         </TouchableWithoutFeedback>
     );
 }
-// const style = StyleSheet.create({
-//     headerContainer: {
-//         position: 'relative',
-//         alignItems: 'center',
-//         justifyContent: 'center',
-//         paddingTop: 10,
-//         paddingBottom: 20,
-//         backgroundColor: '#fff',
-//     },
-//     backButton: {
-//         position: 'absolute',
-//         left: 4,
-//         top:10,
-//     },
-//     headerTitle: {
-//         fontSize: 20,
-//         fontWeight: 'bold',
-//         color: 'black',
-//     },
-
-// })

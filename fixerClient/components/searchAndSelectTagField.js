@@ -3,6 +3,7 @@ import {
     View, TextInput, Text, TouchableOpacity, FlatList, StyleSheet
 } from 'react-native';
 import colors from '../style/colors';
+import { ScrollView } from 'react-native';
 
 const predefinedSuggestions = [
     'Plumber',
@@ -67,21 +68,29 @@ const ProfessionalSelector = ({ selectedProfessionals, setSelectedProfessionals 
                 placeholder="Type a professional (e.g. Plumber)"
                 value={input}
                 onChangeText={handleInputChange}
-                style={styles.input}
-            />
+                style={[
+                    styles.input,
+                    selectedProfessionals.length >= 2 && styles.inputDisabled,
+                ]}
+                editable={selectedProfessionals.length < 2}
+                />
+
 
             {/* Suggestions */}
-            {filteredSuggestions.length > 0 && (
-                <FlatList
-                    data={filteredSuggestions}
-                    keyExtractor={(item) => item}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => handleSelectSuggestion(item)} style={styles.suggestion}>
-                            <Text style={styles.suggestionText}>{item}</Text>
-                        </TouchableOpacity>
-                    )}
-                />
+            {filteredSuggestions.length > 0 && selectedProfessionals.length < 2 && (
+                <ScrollView style={styles.suggestionList} nestedScrollEnabled={true}>
+                    {filteredSuggestions.map((item) => (
+                    <TouchableOpacity
+                        key={item}
+                        onPress={() => handleSelectSuggestion(item)}
+                        style={styles.suggestion}
+                    >
+                        <Text style={styles.suggestionText}>{item}</Text>
+                    </TouchableOpacity>
+                    ))}
+                </ScrollView>
             )}
+
 
             {/* Badges */}
             <View style={styles.badgeContainer}>
@@ -124,6 +133,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: 10,
+        marginBottom: 10,
     },
     badge: {
         flexDirection: 'row',
@@ -144,6 +154,10 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 14,
+    },
+    inputDisabled: {
+        backgroundColor: '#f0f0f0',
+        color: '#999',
     },
 });
 

@@ -30,31 +30,36 @@ const styles = StyleSheet.create({
     //     width: 361,
     //     height: 222,
     // },
-    // imageWrapper: {
-    //     width: '100%',
-    //     height: '100%',
-    //     position: 'relative',
-    // },
-    // removeButton: {
-    //     position: 'absolute',
-    //     top: 5,
-    //     right: 5,
-    //     backgroundColor: 'orange',
-    //     borderRadius: 15,
-    //     width: 30,
-    //     height: 30,
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    // },
-    // removeText: {
-    //     fontSize: 12,
-    //     color: 'orange',
-    // },
+    imageWrapper: {
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+    },
+    removeButton: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        backgroundColor: 'orange',
+        borderRadius: 15,
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    removeText: {
+        fontSize: 12,
+        color: 'orange',
+    },
+    imagePreview: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+    },
     imageContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 14,
+        // marginTop: 14,
     },
     uploadBox: {
         width: 300,
@@ -85,18 +90,13 @@ const styles = StyleSheet.create({
         color: '#667085',
         marginTop: 5,
     },
-    // imagePreview: {
-    //     width: '100%',
-    //     height: '100%',
-    //     borderRadius: 10,
-    // },
     pickerContainer: {
         borderRadius: 8,
         marginTop: 20,
     },
     aiEnhanceButton: {
         position: 'absolute',
-        bottom: 15,
+        bottom: 30,
         right: 15,
         backgroundColor: '#ff8c00',
         borderRadius: 50,
@@ -133,6 +133,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: 'black',
+    },
+    badgeInfo: {
+        fontSize: 12,
+        color: '#666',
+        marginBottom: 4,
+        marginLeft: 8,
+        marginTop: -10,
     },
 });
 

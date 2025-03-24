@@ -62,7 +62,7 @@ export default function SignUpPage() {
             );
 
             alert("Admin account created successfully! Please check your email to verify your account.");
-            navigate("/signin");
+            navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
         } catch (error) {
             if (error.response && error.response.data) {
                 alert(error.response.data.message || "Error during sign-up.");

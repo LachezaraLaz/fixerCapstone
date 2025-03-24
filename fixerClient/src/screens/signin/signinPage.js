@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
@@ -122,7 +122,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
             />
 
             <OrangeButton title={i18n.t('sign_in')} onPress={handleSignIn} testID="sign-in-button" variant="normal" />
-           
+
             <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
                 <Text style={styles.signUpText}>{i18n.t('do_not_have_an_account')}</Text>
             </TouchableOpacity>
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 40,
         left: 20,
-        flexDirection: 'row', 
+        flexDirection: 'row',
         alignItems: 'center',
         zIndex: 1,
     },

@@ -16,7 +16,7 @@ import {
     ActivityIndicator,
     StyleSheet
 } from 'react-native';
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
@@ -28,8 +28,6 @@ import OrangeButton from "../../../components/orangeButton";
 import MapView, { Marker } from "react-native-maps";
 import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
-import LanguageModal from "../../../components/LanguageModal";
-import languageStyle from '../../../style/languageStyle';
 import { LanguageContext } from "../../../context/LanguageContext";
 
 /**
@@ -60,17 +58,16 @@ export default function CreateIssue({ navigation }) {
     const [selectedTimeLine, setSelectedTimeLine] = useState(null);
     const [itemsTimeLine, setItemsTimeLine] = useState([
         { label: `${i18n.t('select_timeline')}`, value: '' },
-        { label: `${i18n.t('low_priority')}`, value: 'Low-Priority' },
-        { label: `${i18n.t('high_priority')}`, value: 'High-Priority' },
+        { label: `${i18n.t('low_priority')}`, value: 'low-priority' },
+        { label: `${i18n.t('high_priority')}`, value: 'high-priority' },
     ]);
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [location, setLocation] = useState("");
-
+    const [title, setTitle] = useState("");
     const [professionalNeeded, setProfessionalNeeded] = useState('');
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [other, setOther] = useState(false);
-
 
     /**
      * Asynchronously picks an image from the user's media library.
@@ -144,17 +141,21 @@ export default function CreateIssue({ navigation }) {
 
     /**
      * Asynchronously posts an issue to the server.
-     * 
+     *
      * This function validates the input fields, constructs a FormData object with the issue details,
      * and sends a POST request to the server to create a new issue. It handles loading state, error
      * handling, and resets the form fields upon successful submission.
-     * 
+     *
      * @async
      * @function postIssue
      * @returns {Promise<void>} A promise that resolves when the issue is posted.
      * @throws Will throw an error if the request fails or if required fields are empty.
      */
     const postIssue = async () => {
+        if (!title) {
+            Alert.alert("Invalid Description", "Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
+            return;
+        }
         if (!description) {
             Alert.alert("Invalid Description", "Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
             return;
@@ -193,11 +194,13 @@ export default function CreateIssue({ navigation }) {
             const userEmail = decodedToken.email;
 
             const formData = new FormData();
-            formData.append('title', description);
+            formData.append('title', title);
             formData.append('description', description);
             formData.append('professionalNeeded', selectedService);
             formData.append('email', userEmail);
-            formData.append('status', "Open");
+            formData.append('status', "open");
+            formData.append('timeline', selectedTimeLine);
+            formData.append('imageUrl', selectedImage);
 
             if (selectedImage) {
                 formData.append('image', {
@@ -207,8 +210,8 @@ export default function CreateIssue({ navigation }) {
                 });
             }
             console.log("🚀 Sending Data:", {
-                title: description,
-                description,
+                title: title,
+                description: description,
                 professionalNeeded: selectedService,
                 email: userEmail,
                 status: "Open",
@@ -225,7 +228,7 @@ export default function CreateIssue({ navigation }) {
 
             if (response.status === 201) {
                 // Reset all fields to default values
-                setDescription('');
+                setTitle('');
                 setDescription('');
                 setProfessionalNeeded('');
                 setImage(null);
@@ -293,9 +296,27 @@ export default function CreateIssue({ navigation }) {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
                         contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+                        keyboardShouldPersistTaps="handled"
             >
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('job_description')}</Text>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('title')}</Text>
                 {/* title field */}
+                <TextInput
+                    placeholder= {`${i18n.t('title')}`}
+                    value={title}
+                    onChangeText={setTitle}
+                    style={{
+                        borderWidth: 1,
+                        backgroundColor: '#E7E7E7',
+                        borderColor: '#ddd',
+                        borderRadius: 8,
+                        padding: 10,
+                        marginBottom: 20,
+                        marginVertical: 8,
+                        height: 40,
+                        textAlignVertical: 'top', // Ensures text starts from the top
+                    }}/>
+                {/* description field */}
+                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>{i18n.t('job_description')}</Text>
                 <View style={{ position: 'relative' }}>
                     <TextInput
                         placeholder= {`${i18n.t('describe_your_service')}`}

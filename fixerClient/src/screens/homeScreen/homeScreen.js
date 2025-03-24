@@ -76,7 +76,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
                 // fetch all offers for client
                 const resp = await axios.get(
-                    `https://fixercapstone-production.up.railway.app/client/${email}`,
+                    `https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
                     //`http://192.168.0.19:3000/quotes/client/${email}`,
                     {
                         headers: { Authorization: `Bearer ${token}` }

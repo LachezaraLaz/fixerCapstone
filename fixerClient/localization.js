@@ -82,6 +82,7 @@ const en = {
     payment_method: "Payment Method",
     visa_ending: "Visa ending in",
     language: "Language",
+    title:"title",
 }
 
 const fr = {

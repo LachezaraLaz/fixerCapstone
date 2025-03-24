@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const ProfessionalAccountSettingsPage = () => {
     const navigation = useNavigation();
 
-    // State for form data with placeholder values
+    // State for form data
     const [formData, setFormData] = useState({
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
+        firstName: '',
+        lastName: '',
+        email: '',
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -20,14 +22,36 @@ const ProfessionalAccountSettingsPage = () => {
     const [isCurrentPasswordValid, setIsCurrentPasswordValid] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    // Simulate loading profile data
+    // Fetch user profile data
     useEffect(() => {
-        // Simulate API call delay
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 1000);
+        const fetchProfileData = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    Alert.alert("Error", "Authentication failed.");
+                    return;
+                }
 
-        return () => clearTimeout(timer);
+                const response = await axios.get(
+                    `https://fixercapstone-production.up.railway.app/professional/profile`,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                setFormData((prevState) => ({
+                    ...prevState,
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    email: response.data.email,
+                }));
+            } catch (error) {
+                console.error("Error fetching profile data:", error);
+                Alert.alert("Error", "Failed to load profile data.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfileData();
     }, []);
 
     // Handle input changes
@@ -35,35 +59,86 @@ const ProfessionalAccountSettingsPage = () => {
         setFormData((prevState) => ({ ...prevState, [field]: value }));
     };
 
-    // Simulate password validation
     const validateCurrentPassword = async () => {
-        // For placeholder purposes, any password entered is considered valid
-        if (formData.currentPassword) {
-            setIsCurrentPasswordValid(true);
-            Alert.alert("Success", "Current password validated. You can now set a new password.");
-        } else {
-            Alert.alert("Error", "Please enter your current password.");
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert("Error", "Authentication failed.");
+                return;
+            }
+
+            const response = await axios.post(
+                `https://fixercapstone-production.up.railway.app/professional/reset/validateCurrentPassword`,
+                { email: formData.email, currentPassword: formData.currentPassword },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 200) {
+                setIsCurrentPasswordValid(true);
+                Alert.alert("Success", "Current password validated. You can now set a new password.");
+            }
+        } catch (error) {
+            setIsCurrentPasswordValid(false);
+            if (error.response) {
+                Alert.alert("Error", error.response.data?.error || "Incorrect password.");
+            } else if (error.request) {
+                Alert.alert("Error", "Network error. Please check your connection and try again.");
+            } else {
+                Alert.alert("Error", "Unexpected error occurred.");
+            }
         }
     };
 
-    // Simulate saving changes
+    // Save Changes API Call
     const handleSaveChanges = async () => {
         if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
             Alert.alert('Error', 'New passwords do not match.');
             return;
         }
 
-        // Validate fields
-        if (!formData.firstName || !formData.lastName) {
-            Alert.alert('Error', 'First name and last name are required.');
-            return;
-        }
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert("Error", "Authentication failed.");
+                return;
+            }
 
-        // Simulate save delay
-        setTimeout(() => {
+            // Send full profile update request
+            const updatedData = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+            };
+
+            await axios.put(
+                `https://fixercapstone-production.up.railway.app/professional/updateProfessionalProfile`,
+                updatedData,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Only update password if it's changed
+            if (isCurrentPasswordValid && formData.newPassword) {
+                const passwordData = {
+                    email: formData.email,
+                    currentPassword: formData.currentPassword,
+                    newPassword: formData.newPassword,
+                };
+
+                await axios.post(
+                    `https://fixercapstone-production.up.railway.app/professional/reset/updatePasswordWithOld`,
+                    passwordData,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+            } else if (!isCurrentPasswordValid && formData.newPassword) {
+                Alert.alert("Error", "Please validate your current password before updating.");
+                return;
+            }
+
             Alert.alert("Success", "Your changes have been saved.");
             setIsEditing(false);
-        }, 1000);
+        } catch (error) {
+            console.error("Update error:", error);
+            Alert.alert("Error", error.response?.data?.error || "Failed to update profile.");
+        }
     };
 
     return (
@@ -113,7 +188,6 @@ const ProfessionalAccountSettingsPage = () => {
                                 value={formData.currentPassword}
                                 onChangeText={(text) => handleInputChange('currentPassword', text)}
                                 editable={isEditing}
-                                placeholder="Enter current password to validate"
                             />
                             {isEditing && (
                                 <TouchableOpacity onPress={validateCurrentPassword} style={styles.validateButton}>
@@ -131,7 +205,6 @@ const ProfessionalAccountSettingsPage = () => {
                                         secureTextEntry
                                         value={formData.newPassword}
                                         onChangeText={(text) => handleInputChange('newPassword', text)}
-                                        placeholder="Enter new password"
                                     />
                                 </View>
                                 <View style={styles.formGroup}>
@@ -141,7 +214,6 @@ const ProfessionalAccountSettingsPage = () => {
                                         secureTextEntry
                                         value={formData.confirmPassword}
                                         onChangeText={(text) => handleInputChange('confirmPassword', text)}
-                                        placeholder="Confirm new password"
                                     />
                                     {formData.newPassword && formData.confirmPassword && (
                                         <Text style={{

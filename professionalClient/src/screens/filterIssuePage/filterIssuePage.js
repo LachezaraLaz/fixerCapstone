@@ -40,11 +40,14 @@ const FilterIssuePage = ({ navigation, route }) => {
      * @returns {void}
      */
     const handleApplyFilters = () => {
-        navigation.replace('Home', {
-            selectedFilters: filters,
-            distanceRange,
-            rating,
-            timeline,
+        navigation.navigate('MainTabs', {
+            screen: 'Home',
+            params: {
+                selectedFilters: filters,
+                distanceRange,
+                rating,
+                timeline,
+            },
         });
     };
 

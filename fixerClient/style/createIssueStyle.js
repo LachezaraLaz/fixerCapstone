@@ -141,6 +141,24 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         marginTop: -10,
     },
+    loadingOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 999,
+    },
+      
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#555',
+    },
+      
 });
 
 export default styles;

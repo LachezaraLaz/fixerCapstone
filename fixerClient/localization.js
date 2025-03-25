@@ -23,6 +23,7 @@ const en = {
     enter_pin: "Enter PIN",
     Check_email_for_PIN:"Check your email for a PIN to reset your password",
     home_screen: "Home Screen",
+    home: "Home",
     in_progress: "In Progress",
     completed: "Completed",
     jobs_available: "No jobs available",
@@ -88,6 +89,7 @@ const en = {
     your_job_has_been_posted: "Congrats! Your job has been posted!",
     use_default_address: "Use Default Address",
     enter_new_address: "Enter New Location",
+    posting_your_job: "Posting your job...",
 }
 
 const fr = {
@@ -115,6 +117,7 @@ const fr = {
     enter_pin:"Entrer un code PIN",
     Check_email_for_PIN:"Consultez votre courrier électronique pour obtenir un code PIN",
     home_screen: "Accueil",
+    home: "Accueil",
     in_progress: "en cours",
     completed: "Terminé",
     jobs_available: "pas des travail libres",
@@ -180,6 +183,7 @@ const fr = {
     your_job_has_been_posted: "Bravo! Votre tâche a été soumis!",
     use_default_address: "Utiliser l'adresse du profil",
     enter_new_address: "Rentrez une nouvelle adresse",
+    posting_your_job: "Publication de votre tâche en cours..."
 }
 
 export {en, fr}

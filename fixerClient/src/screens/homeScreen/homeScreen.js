@@ -124,7 +124,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 {/* Header */}
                 <View style={styles.customHeader}>
                     <Text style={styles.headerLogo}>Fixr</Text>
-                    <Text style={styles.headerTitle}>{i18n.t('home_screen')}</Text>
+                    <Text style={styles.headerTitle}>{i18n.t('home')}</Text>
                     <NotificationButton
                         testID="notification-button"
                         onPress={() => navigation.navigate('NotificationPage')}

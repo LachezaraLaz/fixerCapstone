@@ -91,9 +91,9 @@ export default function CreateIssue({ navigation }) {
 
     useEffect(() => {
         fetchUserProfile();
-      }, []);
+    }, []);
       
-      const fetchUserProfile = async () => {
+    const fetchUserProfile = async () => {
         try {
           const token = await AsyncStorage.getItem('token');
       
@@ -112,7 +112,7 @@ export default function CreateIssue({ navigation }) {
         } catch (error) {
           console.error('❌ Failed to fetch profile:', error);
         }
-      };
+    };
       
     
     /**
@@ -139,14 +139,29 @@ export default function CreateIssue({ navigation }) {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaType,
             allowsEditing: true,
-            aspect: [4, 3],
+            aspect: [4, 4],
             quality: 1,
         });
 
         if (!result.canceled) {
             setSelectedImage(result.assets[0].uri);
         }
+
+        // const result = await ImagePicker.launchImageLibraryAsync({
+        //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        //     allowsEditing: true,
+        //     aspect: [4, 3],
+        //     quality: 1,
+        //     base64: false,
+        // });
+        
+        // if (!result.canceled) {
+        //     const selectedAsset = result.assets[0];
+        //     setSelectedImage(selectedAsset.uri);
+        // }
     };
+
+
     const handleAiEnhancement = async () => {
         if (!description.trim()) {
             Alert.alert('No text', 'Please enter some description first.');
@@ -250,19 +265,29 @@ export default function CreateIssue({ navigation }) {
         // }
 
         // Optional Image
-        if (selectedImage) {
-            const validImageTypes = ['image/jpeg', 'image/png'];
-            const imageType = selectedImage.split('.').pop().toLowerCase();
-            if (!validImageTypes.includes(`image/${imageType}`)) {
-                setCustomAlertContent({
-                    title: "Invalid Image",
-                    message: "Only JPEG and PNG images are supported.",
-                });
-                setCustomAlertVisible(true);
-                return;
-            }
-        }
+        // if (selectedImage) {
+        //     const validImageTypes = ['image/jpeg', 'image/png', 'image/heic'];
+        //     const imageType = selectedImage.split('.').pop().toLowerCase();
+        //     if (!validImageTypes.includes(`image/${imageType}`)) {
+        //         setCustomAlertContent({
+        //             title: "Invalid Image",
+        //             message: "Only JPEG and PNG images are supported.",
+        //         });
+        //         setCustomAlertVisible(true);
+        //         return;
+        //     }
+        // }
 
+
+        if (selectedImage && !selectedImage.startsWith('file://')) {
+            setCustomAlertContent({
+              title: "Invalid Image",
+              message: "Please select a valid image file from your gallery.",
+            });
+            setCustomAlertVisible(true);
+            return;
+        }
+          
         setLoading(true); // Start loading
 
         try {
@@ -282,7 +307,7 @@ export default function CreateIssue({ navigation }) {
             if (selectedImage) {
                 formData.append('image', {
                     uri: selectedImage,
-                    type: `image/${selectedImage.split('.').pop().toLowerCase()}`,
+                    type: 'image/*',
                     name: 'issue_image.jpg',
                 });
             }
@@ -317,13 +342,21 @@ export default function CreateIssue({ navigation }) {
                 });
                 setSuccessAlertVisible(true);
             } else {
-                Alert.alert('Failed to post the job');
+                setCustomAlertContent({
+                    title: "Error",
+                    message: "Failed to post the job.",
+                });
+                setCustomAlertVisible(true);
             }
         } catch (error) {
             console.log("❌ Error:", error.response?.data || error.message);
-            Alert.alert('An error occurred. Please try again.');
+            setCustomAlertContent({
+                title: "Error",
+                message: "An error occurred. Please try again.",
+            });
+            setCustomAlertVisible(true);
         } finally {
-            setLoading(false); // Stop loading after completion
+            setLoading(false);
         }
     };
 
@@ -551,9 +584,7 @@ export default function CreateIssue({ navigation }) {
                             setValue={setSelectedTimeLine}
                         />
                     </View>
-                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 20, marginTop:30 }}>
-                        {i18n.t('location')}*
-                    </Text>
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 20, marginTop:30 }}>{i18n.t('location')}*</Text>
 
                     <View style={{ marginBottom: 16 }}>
                         {/* Use default location */}
@@ -609,7 +640,15 @@ export default function CreateIssue({ navigation }) {
 
                     {/* Create Issue Button */ }
                     <View>
-                        <OrangeButton testID={'post-job-button'} title={i18n.t('create_job')} variant="normal" onPress={postIssue}/>
+                        <OrangeButton
+                            testID={'post-job-button'}
+                            title={i18n.t('create_job')}
+                            variant="normal"
+                            onPress={postIssue}
+                            disabled={loading}
+                        />
+
+                        {/* <OrangeButton testID={'post-job-button'} title={i18n.t('create_job')} variant="normal" onPress={postIssue}/> */}
                     </View>
                 </ScrollView>
                 
@@ -628,7 +667,12 @@ export default function CreateIssue({ navigation }) {
                         navigation.goBack(); // If you want to redirect after success
                     }}
                 />
-
+                {loading && (
+                    <View style={styles.loadingOverlay}>
+                        <ActivityIndicator size="large" color="#FF8C00" />
+                        <Text style={styles.loadingText}>{i18n.t('posting_your_job')}</Text>
+                    </View>
+                )}
             </View>
         </TouchableWithoutFeedback>
     );

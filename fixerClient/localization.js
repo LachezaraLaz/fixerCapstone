@@ -166,7 +166,7 @@ const fr = {
         "closed by client": "Fermé par le client",
         completed: "Terminé",
         pending: "En attente",
-        reopened: "Rouvrir",
+        reopened: "rouvert",
     },
     attached_images: "Images jointes",
     no_image_attached: "Aucune image jointe pour le moment",

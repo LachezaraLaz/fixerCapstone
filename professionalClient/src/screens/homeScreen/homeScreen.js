@@ -45,6 +45,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const [currentLocation, setCurrentLocation] = React.useState(null);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [typesOfWork, setTypesOfWork] = React.useState([]);
+    const [rating, setRating] = React.useState(route.params?.rating || 0);
+    const [timeline, setTimeline] = React.useState(route.params?.timeline || '');
     const [bankingInfoAdded, setBankingInfoAdded] = React.useState(false); // New state for banking info status
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
@@ -70,7 +72,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      */
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
+            const response = await axios.get(`http://192.168.2.16:3000/issues`);
             const fixedIssues = response.data.jobs
                 .map(issue => ({
                     ...issue,
@@ -177,12 +179,13 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     React.useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            if (route.params?.selectedFilters || route.params?.distanceRange) {
-                setSelectedFilters(route.params.selectedFilters || []);
-            }
+            setSelectedFilters(route.params?.selectedFilters || []);
+            setRating(route.params?.rating || 0);
+            setTimeline(route.params?.timeline || '');
         });
         return unsubscribe;
-    }, [navigation, route.params?.selectedFilters, route.params?.distanceRange]);
+    }, [navigation, route.params]);
+
 
     /**
      * Handles the user logout process.
@@ -429,6 +432,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             typesOfWork,
                             selectedFilters,
                             distanceRange: route.params?.distanceRange || [0, 50], // Pass current distance range or default
+                            rating: route.params?.rating || rating || 0,
+                            timeline: route.params?.timeline || timeline || '',
                         })}
                     >
                         <Ionicons name="filter" size={24} color="#333" />

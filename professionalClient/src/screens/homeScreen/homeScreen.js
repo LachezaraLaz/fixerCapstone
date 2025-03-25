@@ -79,12 +79,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 }))
                 .filter(issue => issue.latitude !== null && issue.longitude !== null); // Remove invalid locations
             setIssues(fixedIssues);
-
-            // Log the status of each fetched issue
-            fixedIssues.forEach(issue => {
-                console.log(`Fetched issue: ${issue.title}, Status: ${issue.status}`);
-            });
-
             const uniqueTypes = [...new Set(fixedIssues.map(issue => issue.professionalNeeded))];
             setTypesOfWork(uniqueTypes);
         } catch (error) {

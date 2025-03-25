@@ -71,6 +71,7 @@ const en = {
         "closed by client": "Closed By Client",
         completed: "Completed",
         pending: "Pending",
+        reopened: "Reopened",
         "in progress": "In Progress",
     },
     attached_images: "Attached Images",
@@ -84,6 +85,12 @@ const en = {
     visa_ending: "Visa ending in",
     language: "Language",
     title:"title",
+    reopen: "reopen",
+    delete: "delete",
+    are_you_sure: "Are you sure you want to",
+    this_issue: "this issue?",
+    modify_issue_text: "This will clone this issue and create a new one. You can find it under your open issues.",
+    yes: "Yes",
     jobInProgressComment: "This issue is currently in progress. For any changes or updates, please reach out to the professional assigned using the chat feature." ,
 }
 
@@ -160,6 +167,7 @@ const fr = {
         "closed by client": "Fermé par le client",
         completed: "Terminé",
         pending: "En attente",
+        reopened: "rouvert",
         "in progress": "En cours",
     },
     attached_images: "Images jointes",
@@ -172,6 +180,12 @@ const fr = {
     payment_method: "Méthode de paiement",
     visa_ending: "Visa se terminant par",
     language: "Langue",
+    reopen: "rouvrir",
+    delete: "supprimer",
+    are_you_sure: "Êtes-vous certain de procéder à",
+    this_issue: "ce problème?",
+    modify_issue_text: "Cela va cloner ce problème et créer un nouveau. Vous pouvez le trouver dans vos problèmes ouverts.",
+    yes: "Oui",
     jobInProgressComment: "Ce problème est actuellement en cours. Pour toute modification ou mise à jour, veuillez contacter le professionnel assigné via la fonction de chat." ,
 }
 

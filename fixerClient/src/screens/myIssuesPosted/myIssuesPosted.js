@@ -72,7 +72,7 @@ export default function MyIssuesPosted() {
                     job.status === inProgressLabel || job.status === 'Open' || job.status === 'In progress'
                 ),
                 completed: response.data.jobs.filter(job =>
-                    job.status === 'Completed' || job.status === 'Closed'
+                    job.status === 'Completed' || job.status === 'Closed' || job.status === 'Reopened'
                 ),
             });
 

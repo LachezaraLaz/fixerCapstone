@@ -52,7 +52,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const scrollViewRef = React.useRef(null);
     const navigation = useNavigation();
     const [locationPermission, setLocationPermission] = React.useState(null);
-    const [selectedIssue, setSelectedIssue] = React.useState(null);
+    // const [selectedIssue, setSelectedIssue] = React.useState(null);
     const [selectedMarker, setSelectedMarker] = React.useState(null);
     const modalTranslateY = React.useRef(new Animated.Value(500)).current; // Start off screen (500 px under screen)
 
@@ -72,7 +72,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         try {
             const response = await axios.get(`http://192.168.2.16:3000/issues`);
             const fixedIssues = response.data.jobs
-                .filter(issue => issue.status === 'open') // I filter the issues with status = open
                 .map(issue => ({
                     ...issue,
                     latitude: issue.latitude ? parseFloat(issue.latitude) : null,

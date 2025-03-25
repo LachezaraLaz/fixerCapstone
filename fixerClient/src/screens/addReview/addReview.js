@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import {IPAddress} from "../../../ipAddress";
+import { styles } from '../../../style/addReview/addReviewStyle';
+import OrangeButton from "../../../components/orangeButton";
+import {Ionicons} from "@expo/vector-icons";
+import NotificationButton from "../../../components/notificationButton";
+
 /**
  * @module fixerClient
  */
@@ -59,9 +64,17 @@ const AddReview = ({ navigation, route }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Add a Review</Text>
+        <View>
+            <View style={styles.customHeader}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange"/>
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Add a Review</Text>
+                <NotificationButton onPress={() => navigation.navigate("NotificationPage")}/>
+            </View>
+            <View style={styles.container}>
 
+            </View>
             <TextInput
                 style={styles.input}
                 placeholder="Enter a rating (1-5)"
@@ -78,54 +91,12 @@ const AddReview = ({ navigation, route }) => {
                 multiline
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Submit Review</Text>
-            </TouchableOpacity>
+            <OrangeButton
+                title={'Submit Review'}
+                onPress={handleSubmit}
+            />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        padding: 10,
-        marginBottom: 20,
-        fontSize: 16,
-    },
-    textArea: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        padding: 10,
-        height: 100,
-        textAlignVertical: 'top',
-        fontSize: 16,
-        marginBottom: 20,
-    },
-    button: {
-        backgroundColor: '#1E90FF',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-});
 
 export default AddReview;

@@ -15,7 +15,7 @@ const getJobsByUser = async (req, res) => {
             return res.status(404).json({ message: 'No jobs found for the user' });
         }
 
-        // Use DTO to format the jobs before returning them
+        // Use DTO to format the jobs before returning the
         const formattedJobs = jobs.map(job => jobDTO(job));
 
         res.status(200).json({ jobs: formattedJobs });
@@ -55,19 +55,57 @@ const updateIssueStatus = async (req, res) => {
     logger.info(`Updating job status with ID: ${jobId} to ${status}`);
 
     try {
-        const updatedJob = await updateJobStatus(jobId, status);
+        // Fetch the existing job to clone
+        const existingJob = await Jobs.findById(jobId);
 
-        if (!updatedJob) {
+
+        if (!existingJob) {
+            logger.error('Job not found', error);
             return res.status(404).json({ message: 'Job not found' });
         }
 
-        res.status(200).json({ message: `Job status updated to ${status}`, job: jobDTO(updatedJob) });
+        // If the status is "reopen" or similar, create a new job as a clone
+        if (status.toLowerCase() === 'open') {
+            const clonedJobData = {
+                title: existingJob.title,
+                description: existingJob.description,
+                professionalNeeded: existingJob.professionalNeeded,
+                userEmail: existingJob.userEmail,
+                status: 'Open',  // New job should be open
+                imageUrl: existingJob.imageUrl,
+                latitude: existingJob.latitude,
+                longitude: existingJob.longitude,
+                firstName: existingJob.firstName,
+                lastName: existingJob.lastName,
+                timeline: existingJob.timeline,
+                createdAt: new Date(),  // Set new creation timestamp
+            };
+
+            // Create the new cloned job
+            const clonedJob = await Jobs.create(clonedJobData);
+            console.log("cloned job ", clonedJob);
+            logger.info(`Cloned job created with ID: ${clonedJob._id}`);
+            await updateJobStatus(jobId, "Reopened");
+
+            res.status(201).json({ message: 'Job cloned and reopened successfully', job: jobDTO(clonedJob) });
+        } else {
+            // For other status updates, just update the existing job
+            const updatedJob = await updateJobStatus(jobId, status);
+
+            if (!updatedJob) {
+                logger.error('updateIssueStatus: Job noy found', error);
+                return res.status(404).json({ message: 'Job not found' });
+            }
+            logger.error(`Job status updated to ${status}`);
+            res.status(200).json({ message: `Job status updated to ${status}`, job: jobDTO(updatedJob) });
+        }
     } catch (error) {
         console.error('Error updating job status:', error);
         logger.error('Error updating job status:', error);
         res.status(500).json({ message: 'Failed to update job status', error: error.message });
     }
 };
+
 
 // PUT /issue/:jobId route to update a single job by its ID
 const updateJob = async (req, res) => {

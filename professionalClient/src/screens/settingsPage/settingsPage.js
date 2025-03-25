@@ -50,7 +50,7 @@ export default function SettingsPage() {
             </View>
 
             <ScrollView contentContainerStyle={styles.container}>
-                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Account Settings")}>
+                <TouchableOpacity style={styles.option} onPress={() => navigation.navigate("ProfessionalAccountSettingsPage")}>
                     <Text style={styles.optionText}>Account Settings</Text>
                 </TouchableOpacity>
 

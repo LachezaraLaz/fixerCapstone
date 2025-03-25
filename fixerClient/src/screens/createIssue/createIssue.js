@@ -1,20 +1,16 @@
-//Import list
+//import dependencies
 import * as React from 'react';
-import styles from '../../../style/createIssueStyle'
 import 'react-native-get-random-values';
 import {
     ScrollView,
     View,
     Text,
-    // TextInput,
-    // Button,
     Image,
     TouchableOpacity,
     Keyboard,
     TouchableWithoutFeedback,
     Alert,
     ActivityIndicator,
-    // StyleSheet,
     KeyboardAvoidingView, 
     Platform ,
 } from 'react-native';
@@ -22,24 +18,25 @@ import {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
-// import DropDownPicker from 'react-native-dropdown-picker';
 import * as ImagePicker from 'expo-image-picker';
-
-import { IPAddress } from '../../../ipAddress';
 import MapView, { Marker } from "react-native-maps";
+import { Ionicons } from '@expo/vector-icons';
+
+//import for language translation
 import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
-import { Ionicons } from '@expo/vector-icons';
 
-
+//import components and styles
 import OrangeButton from "../../../components/orangeButton";
 import InputField from '../../../components/inputField';
 import DropdownField from '../../../components/dropdownField';
 import ProfessionalSelector from '../../../components/searchAndSelectTagField';
 import CustomAlertError from '../../../components/customAlertError';
 import CustomAlertSuccess from '../../../components/customAlertSuccess';
+import styles from '../../../style/createIssueStyle'
 
+import { IPAddress } from '../../../ipAddress';
 
 
 /**
@@ -48,7 +45,6 @@ import CustomAlertSuccess from '../../../components/customAlertSuccess';
 
 export default function CreateIssue({ navigation }) {
     //translation
-    let [modalVisible, setModalVisible] = useState(false);
     const {locale, setLocale}  = useContext(LanguageContext);
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
@@ -59,156 +55,42 @@ export default function CreateIssue({ navigation }) {
     const [showAiPreview, setShowAiPreview] = useState(false);
 
     // List of fields in the page
+    const [title, setTitle] = useState("");
     const [description, setDescription] = useState('');
-    const [selectedService, setSelectedService] = useState(null);
-    const [items, setItems] = useState([
-        { label: `${i18n.t('select_service')}`, value: '' },
-        { label: `${i18n.t('plumbing')}`, value: 'plumbing' },
-        { label: `${i18n.t('electrical')}`, value: 'electrical' },
-    ]);
+    const [selectedProfessionals, setSelectedProfessionals] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
-    {/*TimeLine Dropdown*/}
-    const [open, setOpen] = useState(false);
     const [selectedTimeLine, setSelectedTimeLine] = useState(null);
     const [itemsTimeLine, setItemsTimeLine] = useState([
-        { label: `${i18n.t('select_timeline')}`, value: '' },
         { label: `${i18n.t('low_priority')}`, value: 'low-priority'},
         { label: `${i18n.t('high_priority')}`, value: 'high-priority' },
     ]);
     const [openTimeLine, setOpenTimeLine] = useState(false);
-    const [location, setLocation] = useState("");
-    const [title, setTitle] = useState("");
-    const [professionalNeeded, setProfessionalNeeded] = useState('');
-    const [image, setImage] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [other, setOther] = useState(false);
-
-    const [selectedProfessionals, setSelectedProfessionals] = useState([]);
-    const [customAlertVisible, setCustomAlertVisible] = useState(false);
-    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
-    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
-    const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
-
     const [useDefaultLocation, setUseDefaultLocation] = useState(true);
     const [defaultLocation, setDefaultLocation] = useState('');
     const [newStreet, setNewStreet] = useState('');
     const [newPostalCode, setNewPostalCode] = useState('');
     const [coordinates, setCoordinates] = useState(null);
     const [isAddressValid, setIsAddressValid] = useState(false);
+    const [loading, setLoading] = useState(false);
 
+    //const for custom alerts
+    const [customAlertVisible, setCustomAlertVisible] = useState(false);
+    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
+    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
+      
 
-    useEffect(() => {
-        fetchUserProfile();
-    }, []);
-      
-    const fetchUserProfile = async () => {
-        try {
-          const token = await AsyncStorage.getItem('token');
-      
-          const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile/`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          
-          const { street, postalCode } = response.data;
-      
-          if (street && postalCode) {
-            setDefaultLocation(`${street}, ${postalCode}`);
-          } else {
-            console.warn('⚠️ Missing street or postal code in profile response');
-          }
-      
-        } catch (error) {
-          console.error('❌ Failed to fetch profile:', error);
-        }
-    };
-
-    const formatPostalCode = (text) => {
-        // Remove all non-alphanumeric characters
-        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-    
-        // Limit to 6 characters (A1B2C3) before formatting
-        formattedText = formattedText.slice(0, 6);
-    
-        // Insert space after the first 3 characters if enough characters exist
-        if (formattedText.length > 3) {
-            formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
-        }
-    
-        // Limit final result to 7 characters (A1B 2C3)
-        formattedText = formattedText.slice(0, 7);
-    
-        setNewPostalCode(formattedText);
-    };
-    
-
-    const verifyAddress = async () => {
-        try {
-            const response = await axios.post('https://fixercapstone-production.up.railway.app/client/verifyAddress', {
-                street: useDefaultLocation ? defaultLocation : newStreet,
-                postalCode: useDefaultLocation ? defaultLocation.split(',')[1]?.trim() : newPostalCode,
-            });
-    
-            const { coordinates, isAddressValid } = response.data;
-            setCoordinates(coordinates);
-            setIsAddressValid(isAddressValid);
-        } catch (error) {
-            console.log("❌ Address verification error:", error);
-            setCustomAlertContent({
-                title: "Address Error",
-                message: "Could not verify the address. Please double-check your info.",
-            });
-            setCustomAlertVisible(true);
-        }
-    };    
-      
-    
     /**
-     * Asynchronously picks an image from the user's media library.
-     * Requests permission to access the media library if not already granted.
-     * If permission is granted, opens the media library for the user to select an image.
-     * If an image is selected and the operation is not canceled, sets the selected image URI.
+     * Asynchronously handles the enhancement of a job description using an AI service.
+     * If the description is empty, an alert prompts the user to enter a description first.
+     * Once the description is provided, it sends the description to the AI endpoint for enhancement.
+     * If the AI enhancement is successful, the improved description is displayed for preview.
+     * If an error occurs, it handles specific errors (e.g., invalid category or general errors) and shows appropriate alerts.
      *
      * @async
-     * @function pickImage
-     * @returns {Promise<void>} A promise that resolves when the image picking process is complete.
+     * @function handleAiEnhancement
+     * @returns {Promise<void>} A promise that resolves when the AI enhancement process is complete.
      */
-    const pickImage = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permissionResult.granted) {
-            setCustomAlertContent({
-                title: "Permission Required",
-                message: "Please allow access to your gallery through your phone settings App",
-            });
-            setCustomAlertVisible(true);
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaType,
-            allowsEditing: true,
-            aspect: [4, 4],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setSelectedImage(result.assets[0].uri);
-        }
-
-        // const result = await ImagePicker.launchImageLibraryAsync({
-        //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        //     allowsEditing: true,
-        //     aspect: [4, 3],
-        //     quality: 1,
-        //     base64: false,
-        // });
-        
-        // if (!result.canceled) {
-        //     const selectedAsset = result.assets[0];
-        //     setSelectedImage(selectedAsset.uri);
-        // }
-    };
-
-
     const handleAiEnhancement = async () => {
         if (!description.trim()) {
             Alert.alert('No text', 'Please enter some description first.');
@@ -247,16 +129,186 @@ export default function CreateIssue({ navigation }) {
         }
     };
 
+    /**
+     * Accepts the AI-generated description suggestion and updates the description field.
+     * The AI suggestion is set as the new description, and the AI preview is hidden.
+     *
+     * @function handleAcceptAiSuggestion
+     * @returns {void} This function does not return a value.
+     */
     const handleAcceptAiSuggestion = () => {
         setDescription(aiSuggestion);
         setShowAiPreview(false);
     };
 
+    /**
+     * Rejects the AI-generated description suggestion and clears the suggestion.
+     * The AI suggestion is reset to an empty string, and the AI preview is hidden.
+     *
+     * @function handleRejectAiSuggestion
+     * @returns {void} This function does not return a value.
+     */
     const handleRejectAiSuggestion = () => {
         setAiSuggestion('');
         setShowAiPreview(false);
     };
 
+
+    /**
+     * Asynchronously requests permission to access the user's media library and allows them to select an image.
+     * If permission is granted, the media library is opened for the user to pick an image.
+     * If the image selection is not canceled, the URI of the selected image is set.
+     * If permission is not granted, the user is alerted to grant permission through phone settings.
+     *
+     * @async
+     * @function pickImage
+     * @returns {Promise<void>} A promise that resolves when the image picking process is complete.
+     */
+    const pickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permissionResult.granted) {
+            setCustomAlertContent({
+                title: "Permission Required",
+                message: "Please allow access to your gallery through your phone settings App",
+            });
+            setCustomAlertVisible(true);
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaType,
+            allowsEditing: true,
+            aspect: [4, 4],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    };
+
+    /**
+     * Removes the selected image by setting the selected image to null.
+     * This effectively clears the image from the user's selection.
+     *
+     * @function removeImage
+     * @returns {void} This function does not return a value.
+     */
+    const removeImage = () => {
+        setSelectedImage(null);
+    };
+
+
+    /**
+     * Asynchronously fetches the user's profile information from the server.
+     * It retrieves the user's token from AsyncStorage and uses it to make an authenticated GET request to fetch the profile data.
+     * If the profile contains a street and postal code, they are set as the default location.
+     * If the profile response is missing either the street or postal code, a warning is logged.
+     * Any errors during the fetch operation are caught and logged to the console.
+     *
+     * @async
+     * @function fetchUserProfile
+     * @returns {Promise<void>} A promise that resolves when the profile fetch process is complete.
+     */
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
+      
+    const fetchUserProfile = async () => {
+        try {
+          const token = await AsyncStorage.getItem('token');
+      
+          const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile/`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          const { street, postalCode } = response.data;
+      
+          if (street && postalCode) {
+            setDefaultLocation(`${street}, ${postalCode}`);
+          } else {
+            console.warn('⚠️ Missing street or postal code in profile response');
+          }
+      
+        } catch (error) {
+          console.error('❌ Failed to fetch profile:', error);
+        }
+    };
+
+
+    /**
+     * Formats a postal code input by removing all non-alphanumeric characters and ensuring it follows a specific pattern.
+     * The postal code is first converted to uppercase and restricted to a maximum of 6 characters before formatting.
+     * A space is inserted after the first three characters if enough characters exist.
+     * The final result is limited to 7 characters (e.g., A1B 2C3).
+     * The formatted postal code is then set to the `newPostalCode` state.
+     *
+     * @function formatPostalCode
+     * @param {string} text - The raw postal code input to be formatted.
+     * @returns {void} This function does not return a value.
+     */
+    const formatPostalCode = (text) => {
+        // Remove all non-alphanumeric characters
+        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    
+        // Limit to 6 characters (A1B2C3) before formatting
+        formattedText = formattedText.slice(0, 6);
+    
+        // Insert space after the first 3 characters if enough characters exist
+        if (formattedText.length > 3) {
+            formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
+        }
+    
+        // Limit final result to 7 characters (A1B 2C3)
+        formattedText = formattedText.slice(0, 7);
+    
+        setNewPostalCode(formattedText);
+    };
+
+
+    /**
+     * Asynchronously verifies the user's address by sending a request to a server with the street and postal code.
+     * If the default location is used, the stored default address is sent; otherwise, the newly entered street and postal code are sent.
+     * The server response provides coordinates and a flag indicating if the address is valid.
+     * The coordinates and validity status are then stored in the respective state variables.
+     * If an error occurs during the verification process, an alert is shown to inform the user.
+     *
+     * @async
+     * @function verifyAddress
+     * @returns {Promise<void>} A promise that resolves when the address verification process is complete.
+     */
+    const verifyAddress = async () => {
+        try {
+            const response = await axios.post('https://fixercapstone-production.up.railway.app/client/verifyAddress', {
+                street: useDefaultLocation ? defaultLocation : newStreet,
+                postalCode: useDefaultLocation ? defaultLocation.split(',')[1]?.trim() : newPostalCode,
+            });
+    
+            const { coordinates, isAddressValid } = response.data;
+            setCoordinates(coordinates);
+            setIsAddressValid(isAddressValid);
+        } catch (error) {
+            console.log("❌ Address verification error:", error);
+            setCustomAlertContent({
+                title: "Address Error",
+                message: "Could not verify the address. Please double-check your info.",
+            });
+            setCustomAlertVisible(true);
+        }
+    };  
+
+
+    /**
+     * Validates the form by checking if all required fields are filled and meet the necessary conditions.
+     * The form is considered valid if:
+     * - The title and description are not empty.
+     * - At least one professional is selected.
+     * - A timeline is selected.
+     * - Either the default location is used, or the address is verified as valid.
+     *
+     * @function isFormValid
+     * @returns {boolean} Returns true if all form conditions are met, otherwise false.
+     */
     const isFormValid = () => {
         return (
           title &&
@@ -268,11 +320,11 @@ export default function CreateIssue({ navigation }) {
     };
 
     /**
-     * Asynchronously posts an issue to the server.
-     *
-     * This function validates the input fields, constructs a FormData object with the issue details,
-     * and sends a POST request to the server to create a new issue. It handles loading state, error
-     * handling, and resets the form fields upon successful submission.
+     * Asynchronously posts a new job/issue to the server if the form is valid.
+     * The function first checks if all required fields are completed. If any fields are missing or invalid, an alert is shown.
+     * If the form is valid, it sends a POST request to the server with the job details, including the title, description, selected professionals, email, status, timeline, address, and optionally an image.
+     * If the request is successful (status 201), the form is reset, and a success alert is shown.
+     * If any error occurs during the posting process, an error alert is displayed with a message.
      *
      * @async
      * @function postIssue
@@ -280,6 +332,7 @@ export default function CreateIssue({ navigation }) {
      * @throws Will throw an error if the request fails or if required fields are empty.
      */
     const postIssue = async () => {
+
         if (!isFormValid()){
             setCustomAlertContent({
                 title: "Missing Fields",
@@ -288,85 +341,6 @@ export default function CreateIssue({ navigation }) {
             setCustomAlertVisible(true);
             return;
         }
-
-        // if (!title) {
-        //     setCustomAlertContent({
-        //         title: "Invalid Title",
-        //         message: "Some fields are empty. Please complete everything for the professional to give you the most informed quote!",
-        //     });
-        //     setCustomAlertVisible(true);
-        //     return;
-        // }
-
-        // if (!description) {
-        //     setCustomAlertContent({
-        //         title: "Invalid Description",
-        //         message: "Some fields are empty. Please complete everything for the professional to give you the most informed quote!",
-        //     });
-        //     setCustomAlertVisible(true);
-        //     return;
-        // }
-
-        // if (!selectedProfessionals) {
-        //     setCustomAlertContent({
-        //         title: "Invalid Service Type",
-        //         message: "Please select service type(s).",
-        //     });
-        //     setCustomAlertVisible(true);
-        //     return;
-        // }
-
-        // if (!selectedTimeLine) {
-        //     setCustomAlertContent({
-        //         title: "Invalid Timeline",
-        //         message: "Please select an urgency timeline.",
-        //     });
-        //     setCustomAlertVisible(true);
-        //     return;
-        // }
-
-        // // if (!location || location.trim().length < 5) {
-        // //     setCustomAlertContent({
-        // //         title: "Invalid Location",
-        // //         message: "Please provide a valid location.",
-        // //     });
-        // //     setCustomAlertVisible(true);
-        // //     return;
-        // // }
-
-        // if (!isAddressValid || !coordinates) {
-        //     setCustomAlertContent({
-        //         title: "Invalid Address",
-        //         message: "Please verify your address first.",
-        //     });
-        //     setCustomAlertVisible(true);
-        //     return;
-        // }
-        
-
-        // // Optional Image
-        // // if (selectedImage) {
-        // //     const validImageTypes = ['image/jpeg', 'image/png', 'image/heic'];
-        // //     const imageType = selectedImage.split('.').pop().toLowerCase();
-        // //     if (!validImageTypes.includes(`image/${imageType}`)) {
-        // //         setCustomAlertContent({
-        // //             title: "Invalid Image",
-        // //             message: "Only JPEG and PNG images are supported.",
-        // //         });
-        // //         setCustomAlertVisible(true);
-        // //         return;
-        // //     }
-        // // }
-
-
-        // if (selectedImage && !selectedImage.startsWith('file://')) {
-        //     setCustomAlertContent({
-        //       title: "Invalid Image",
-        //       message: "Please select a valid image file from your gallery.",
-        //     });
-        //     setCustomAlertVisible(true);
-        //     return;
-        // }
           
         setLoading(true); // Start loading
 
@@ -400,7 +374,7 @@ export default function CreateIssue({ navigation }) {
             console.log("🚀 Sending Data:", {
                 title: title,
                 description: description,
-                professionalNeeded: selectedService,
+                professionalNeeded: selectedProfessionals,
                 email: userEmail,
                 status: "Open",
                 image: selectedImage ? "✅ Image Attached" : "❌ No Image",
@@ -419,9 +393,9 @@ export default function CreateIssue({ navigation }) {
                 // Reset all fields to default values
                 setTitle('');
                 setDescription('');
-                setProfessionalNeeded('');
-                setImage(null);
-                setOther(false);
+                setSelectedProfessionals([]);
+                setSelectedImage(null);
+                setSelectedTimeLine(null);
 
                 setSuccessAlertContent({
                     title: i18n.t('job_posted_successfully'),
@@ -445,50 +419,6 @@ export default function CreateIssue({ navigation }) {
         } finally {
             setLoading(false);
         }
-    };
-
-    /**
-     * Handles the selection of an image from either the camera or the media library.
-     * Requests the necessary permissions and launches the appropriate image picker.
-     * If the user grants permission and selects an image, the image URI is set.
-     *
-     * @param {string} source - The source of the image, either 'camera' or 'mediaLibrary'.
-     * @returns {Promise<void>} - A promise that resolves when the image selection is complete.
-     */
-    // const handleImageSelection = async (source) => {
-    //     const permissionResult = source === 'camera'
-    //         ? await ImagePicker.requestCameraPermissionsAsync()
-    //         : await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    //     if (!permissionResult.granted) {
-    //         Alert.alert("Permission required", `Please allow access to your ${source}.`);
-    //         return;
-    //     }
-
-    //     const result = source === 'camera'
-    //         ? await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 1 })
-    //         : await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
-
-    //     if (!result.canceled) {
-    //         setSelectedImage(result.assets[0].uri);
-    //     }
-    // };
-
-    /**
-     * Counts the number of words in a given text.
-     *
-     * @param {string} text - The text to count words in.
-     * @returns {number} - The number of words in the text.
-     */
-    // const countWords = (text) => {
-    //     return text.trim().length === 0 ? 0 : text.trim().split(/\s+/).length;
-    // };
-
-    /**
-     * Removes the currently selected image by setting the selected image state to null.
-     */
-    const removeImage = () => {
-        setSelectedImage(null);
     };
 
     return (
@@ -628,46 +558,11 @@ export default function CreateIssue({ navigation }) {
                             )}
                         </TouchableOpacity>
                     </View>
-                {/* map
-                <View style={styles.mapContainer}>
-                    <MapView
-                        style={styles.map}
-                        initialRegion={{
-                            latitude: 37.7749, // Example: San Francisco
-                            longitude: -122.4194,
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0421,
-                        }}
-                    >
-                        <Marker
-                            coordinate={{ latitude: 37.7749, longitude: -122.4194 }}
-                            title="San Francisco"
-                            description="This is a marker in SF!"
-                        />
-                    </MapView>
-                </View> */}
-                {/*location label*/}
-                {/* <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15, marginTop: 20 }}>{i18n.t('location')}</Text> */}
-                {/* location field */}
-                {/* <View style={{ flex: 1 }}>
-                    <TextInput
-                        placeholder={i18n.t('enter_location')}
-                        value={location}
-                        onChangeText={setLocation}
-                        style={{
-                            height: 52,
-                            borderWidth: 1,
-                            borderColor: "#ddd",
-                            backgroundColor: "#E7E7E7",
-                            borderRadius: 8,
-                            padding: 9,
-                        }}
-                    />
-                </View> */}
                     <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 30 }}>{i18n.t('select_timeline')}*</Text>
                     <View style={styles.pickerContainer}>
                         <DropdownField
                             translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
+                            placeholder={i18n.t('select_timeline')}
                             open={openTimeLine}
                             items={itemsTimeLine}
                             value={selectedTimeLine}
@@ -728,29 +623,29 @@ export default function CreateIssue({ navigation }) {
                             onChangeText={formatPostalCode}
                             />
                             <OrangeButton
-    title={i18n.t('verify_address')}
-    onPress={verifyAddress}
-    variant="normal"
-/>
+                                title={i18n.t('verify_address')}
+                                onPress={verifyAddress}
+                                variant="normal"
+                            />
 
-{isAddressValid && coordinates && (
-    <>
-        <Text style={{ marginTop: 10, color: 'green' }}>
-            ✅ {i18n.t('valid_address_entered')}
-        </Text>
-        <MapView
-            style={{ width: '100%', height: 200, marginTop: 10, borderRadius: 10 }}
-            initialRegion={{
-                latitude: coordinates.latitude,
-                longitude: coordinates.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005,
-            }}
-        >
-            <Marker coordinate={coordinates} />
-        </MapView>
-    </>
-)}
+                            {isAddressValid && coordinates && (
+                                <>
+                                    <Text style={{ marginTop: 10, color: 'green' }}>
+                                        ✅ {i18n.t('valid_address_entered')}
+                                    </Text>
+                                    <MapView
+                                        style={{ width: '100%', height: 200, marginTop: 10, borderRadius: 10 }}
+                                        initialRegion={{
+                                            latitude: coordinates.latitude,
+                                            longitude: coordinates.longitude,
+                                            latitudeDelta: 0.005,
+                                            longitudeDelta: 0.005,
+                                        }}
+                                    >
+                                        <Marker coordinate={coordinates} />
+                                    </MapView>
+                                </>
+                            )}
                         </View>
                         
                     )}
@@ -766,8 +661,7 @@ export default function CreateIssue({ navigation }) {
                             disabled={!isFormValid() || loading}
                         />
 
-                        {/* <OrangeButton testID={'post-job-button'} title={i18n.t('create_job')} variant="normal" onPress={postIssue}/> */}
-                    </View>
+                   </View>
                 </ScrollView>
                 
                 <CustomAlertError

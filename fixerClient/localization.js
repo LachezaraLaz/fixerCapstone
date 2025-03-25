@@ -85,7 +85,9 @@ const en = {
     title: "Title",
     image: "Image",
     badges_remaining: "You can select {{count}} more",
-    your_job_has_been_posted: "Congrats! Your job has been posted!"
+    your_job_has_been_posted: "Congrats! Your job has been posted!",
+    use_default_address: "Use Default Address",
+    enter_new_address: "Enter New Location",
 }
 
 const fr = {
@@ -128,7 +130,7 @@ const fr = {
     electrical: "Électrique",
     low_priority: "faible priorité",
     high_priority: "haute priorité",
-    location:"Site",
+    location: "Localisation",
     enter_location:"Entrez un emplacement",
     signed_in_successfully: "Vous êtes présentement connecté(e)",
     error:"Erreur",
@@ -175,7 +177,9 @@ const fr = {
     title: "Titre",
     image: "Image",
     badges_remaining: "Vous pouvez en sélectionner encore {{count}}",
-    your_job_has_been_posted: "Bravo! Votre tâche a été soumis!"
+    your_job_has_been_posted: "Bravo! Votre tâche a été soumis!",
+    use_default_address: "Utiliser l'adresse du profil",
+    enter_new_address: "Rentrez une nouvelle adresse",
 }
 
 export {en, fr}

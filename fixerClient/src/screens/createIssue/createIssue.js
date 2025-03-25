@@ -84,8 +84,37 @@ export default function CreateIssue({ navigation }) {
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
 
+    const [useDefaultLocation, setUseDefaultLocation] = useState(true);
+    const [defaultLocation, setDefaultLocation] = useState('');
+    const [customStreet, setCustomStreet] = useState('');
+    const [customPostalCode, setCustomPostalCode] = useState('');
 
-
+    useEffect(() => {
+        fetchUserProfile();
+      }, []);
+      
+      const fetchUserProfile = async () => {
+        try {
+          const token = await AsyncStorage.getItem('token');
+      
+          const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile/`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          const { street, postalCode } = response.data;
+      
+          if (street && postalCode) {
+            setDefaultLocation(`${street}, ${postalCode}`);
+          } else {
+            console.warn('⚠️ Missing street or postal code in profile response');
+          }
+      
+        } catch (error) {
+          console.error('❌ Failed to fetch profile:', error);
+        }
+      };
+      
+    
     /**
      * Asynchronously picks an image from the user's media library.
      * Requests permission to access the media library if not already granted.
@@ -522,6 +551,62 @@ export default function CreateIssue({ navigation }) {
                             setValue={setSelectedTimeLine}
                         />
                     </View>
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 20, marginTop:30 }}>
+                        {i18n.t('location')}*
+                    </Text>
+
+                    <View style={{ marginBottom: 16 }}>
+                        {/* Use default location */}
+                        <TouchableOpacity
+                            style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}
+                            onPress={() => setUseDefaultLocation(true)}
+                        >
+                            <Ionicons
+                            name={useDefaultLocation ? 'radio-button-on' : 'radio-button-off'}
+                            size={20}
+                            color="#1E90FF"
+                            />
+                            <Text style={{ marginLeft: 10, fontSize: 15 }}>
+                            {i18n.t('use_default_address')}
+                            </Text>
+                        </TouchableOpacity>
+
+                        {defaultLocation && (
+                            <Text style={{ marginLeft: 30, color: '#888', fontSize: 13, marginBottom: 10 }}>
+                            {defaultLocation}
+                            </Text>
+                        )}
+
+                        {/* Enter other location */}
+                        <TouchableOpacity
+                            style={{ flexDirection: 'row', alignItems: 'center' }}
+                            onPress={() => setUseDefaultLocation(false)}
+                        >
+                            <Ionicons
+                            name={!useDefaultLocation ? 'radio-button-on' : 'radio-button-off'}
+                            size={20}
+                            color="#1E90FF"
+                            />
+                            <Text style={{ marginLeft: 10, fontSize: 15 }}>{i18n.t('enter_new_address')}</Text>
+                        </TouchableOpacity>
+                    </View>
+
+
+                    {!useDefaultLocation && (
+                        <View style={{ marginBottom: 20 }}>
+                            <InputField
+                            placeholder={i18n.t('street_address')}
+                            value={customStreet}
+                            onChangeText={setCustomStreet}
+                            />
+                            <InputField
+                            placeholder={i18n.t('postal_code')}
+                            value={customPostalCode}
+                            onChangeText={setCustomPostalCode}
+                            />
+                        </View>
+                        )}
+
                     {/* Create Issue Button */ }
                     <View>
                         <OrangeButton testID={'post-job-button'} title={i18n.t('create_job')} variant="normal" onPress={postIssue}/>

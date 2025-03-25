@@ -4,6 +4,9 @@ const { verifyAdminEmailPost } = require("../controller/adminVerification");
 const { loginAdmin } = require("../controller/adminLogin");
 const { changePassword } = require("../controller/changePassword");
 const { authMiddleware } = require("../middleware/authMiddleware");
+const { getClients } = require("../controller/clientController");
+const { getJobs } = require("../controller/jobController");
+const { getQuotes } = require("../controller/quoteController");
 
 
 const adminRouter = express.Router();
@@ -19,6 +22,16 @@ adminRouter.post("/signin", loginAdmin);
 
 // Password change route (protected)
 adminRouter.post("/change-password", authMiddleware, changePassword);
+
+// Fetching clients route
+adminRouter.get("/clients", authMiddleware, getClients);
+
+// Fetching jobs route
+adminRouter.get("/jobs", authMiddleware, getJobs);
+
+// Fetching quotes route
+adminRouter.get("/quotes", authMiddleware, getQuotes);
+
 
 
 module.exports = { adminRouter };

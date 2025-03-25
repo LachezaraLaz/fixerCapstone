@@ -6,31 +6,34 @@ import {
     ScrollView,
     View,
     Text,
-    TextInput,
-    Button,
+    // TextInput,
+    // Button,
     Image,
     TouchableOpacity,
     Keyboard,
     TouchableWithoutFeedback,
     Alert,
     ActivityIndicator,
-    StyleSheet
+    // StyleSheet,
+    KeyboardAvoidingView, 
+    Platform ,
 } from 'react-native';
 import {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
-import DropDownPicker from 'react-native-dropdown-picker';
+// import DropDownPicker from 'react-native-dropdown-picker';
 import * as ImagePicker from 'expo-image-picker';
 
 import { IPAddress } from '../../../ipAddress';
-import OrangeButton from "../../../components/orangeButton";
 import MapView, { Marker } from "react-native-maps";
 import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
 import { Ionicons } from '@expo/vector-icons';
 
+
+import OrangeButton from "../../../components/orangeButton";
 import InputField from '../../../components/inputField';
 import DropdownField from '../../../components/dropdownField';
 import ProfessionalSelector from '../../../components/searchAndSelectTagField';
@@ -86,8 +89,8 @@ export default function CreateIssue({ navigation }) {
 
     const [useDefaultLocation, setUseDefaultLocation] = useState(true);
     const [defaultLocation, setDefaultLocation] = useState('');
-    const [customStreet, setCustomStreet] = useState('');
-    const [customPostalCode, setCustomPostalCode] = useState('');
+    const [newStreet, setNewStreet] = useState('');
+    const [newPostalCode, setNewPostalCode] = useState('');
 
     useEffect(() => {
         fetchUserProfile();
@@ -260,7 +263,11 @@ export default function CreateIssue({ navigation }) {
         }
 
         // if (!location || location.trim().length < 5) {
-        //     Alert.alert("Invalid Location", "Please provide a valid location with at least 5 characters.");
+        //     setCustomAlertContent({
+        //         title: "Invalid Location",
+        //         message: "Please provide a valid location.",
+        //     });
+        //     setCustomAlertVisible(true);
         //     return;
         // }
 
@@ -295,6 +302,11 @@ export default function CreateIssue({ navigation }) {
             const decodedToken = jwtDecode(token);
             const userEmail = decodedToken.email;
 
+            // Create a full address for geocoding
+            const fullAddress = useDefaultLocation
+            ? defaultLocation
+            : `${newStreet}, ${newPostalCode}`;
+
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
@@ -303,6 +315,7 @@ export default function CreateIssue({ navigation }) {
             formData.append('status', "open");
             formData.append('timeline', selectedTimeLine);
             formData.append('imageUrl', selectedImage);
+            formData.append('address', fullAddress); 
 
             if (selectedImage) {
                 formData.append('image', {
@@ -318,6 +331,7 @@ export default function CreateIssue({ navigation }) {
                 email: userEmail,
                 status: "Open",
                 image: selectedImage ? "✅ Image Attached" : "❌ No Image",
+                address: fullAddress,
             });
 
             const response = await axios.post(`https://fixercapstone-production.up.railway.app/issue/create`, formData, {
@@ -407,6 +421,11 @@ export default function CreateIssue({ navigation }) {
     return (
         //possibility to dismiss the keyboard just by touching the screen
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // adjust as needed
+            >
             <View style={{ flex: 1 }}>
                 <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
                             contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
@@ -531,7 +550,7 @@ export default function CreateIssue({ navigation }) {
                                 <View style={styles.placeholder}>
                                     <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
                                     <Text style={{ ...styles.text }}>{i18n.t('take_from_your_gallery')}</Text>
-                                    <Text style={{...styles.supportedFormats}}>JPEG, PNG, MP4</Text>
+                                    <Text style={{...styles.supportedFormats}}>JPEG, PNG, HEIC, MP4</Text>
                                 </View>
                             )}
                         </TouchableOpacity>
@@ -627,13 +646,13 @@ export default function CreateIssue({ navigation }) {
                         <View style={{ marginBottom: 20 }}>
                             <InputField
                             placeholder={i18n.t('street_address')}
-                            value={customStreet}
-                            onChangeText={setCustomStreet}
+                            value={newStreet}
+                            onChangeText={setNewStreet}
                             />
                             <InputField
                             placeholder={i18n.t('postal_code')}
-                            value={customPostalCode}
-                            onChangeText={setCustomPostalCode}
+                            value={newPostalCode}
+                            onChangeText={setNewPostalCode}
                             />
                         </View>
                         )}
@@ -674,6 +693,7 @@ export default function CreateIssue({ navigation }) {
                     </View>
                 )}
             </View>
+            </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
     );
 }

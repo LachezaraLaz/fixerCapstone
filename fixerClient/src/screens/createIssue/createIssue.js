@@ -52,10 +52,12 @@ export default function CreateIssue({ navigation }) {
     const {locale, setLocale}  = useContext(LanguageContext);
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
+
     //AI
     const [loadingAi, setLoadingAi] = useState(false);
     const [aiSuggestion, setAiSuggestion] = useState('');
     const [showAiPreview, setShowAiPreview] = useState(false);
+
     // List of fields in the page
     const [description, setDescription] = useState('');
     const [selectedService, setSelectedService] = useState(null);
@@ -91,6 +93,9 @@ export default function CreateIssue({ navigation }) {
     const [defaultLocation, setDefaultLocation] = useState('');
     const [newStreet, setNewStreet] = useState('');
     const [newPostalCode, setNewPostalCode] = useState('');
+    const [coordinates, setCoordinates] = useState(null);
+    const [isAddressValid, setIsAddressValid] = useState(false);
+
 
     useEffect(() => {
         fetchUserProfile();
@@ -116,6 +121,45 @@ export default function CreateIssue({ navigation }) {
           console.error('❌ Failed to fetch profile:', error);
         }
     };
+
+    const formatPostalCode = (text) => {
+        // Remove all non-alphanumeric characters
+        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    
+        // Limit to 6 characters (A1B2C3) before formatting
+        formattedText = formattedText.slice(0, 6);
+    
+        // Insert space after the first 3 characters if enough characters exist
+        if (formattedText.length > 3) {
+            formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
+        }
+    
+        // Limit final result to 7 characters (A1B 2C3)
+        formattedText = formattedText.slice(0, 7);
+    
+        setNewPostalCode(formattedText);
+    };
+    
+
+    const verifyAddress = async () => {
+        try {
+            const response = await axios.post('https://fixercapstone-production.up.railway.app/client/verifyAddress', {
+                street: useDefaultLocation ? defaultLocation : newStreet,
+                postalCode: useDefaultLocation ? defaultLocation.split(',')[1]?.trim() : newPostalCode,
+            });
+    
+            const { coordinates, isAddressValid } = response.data;
+            setCoordinates(coordinates);
+            setIsAddressValid(isAddressValid);
+        } catch (error) {
+            console.log("❌ Address verification error:", error);
+            setCustomAlertContent({
+                title: "Address Error",
+                message: "Could not verify the address. Please double-check your info.",
+            });
+            setCustomAlertVisible(true);
+        }
+    };    
       
     
     /**
@@ -213,6 +257,16 @@ export default function CreateIssue({ navigation }) {
         setShowAiPreview(false);
     };
 
+    const isFormValid = () => {
+        return (
+          title &&
+          description &&
+          selectedProfessionals.length > 0 &&
+          selectedTimeLine &&
+          (useDefaultLocation || isAddressValid)
+        );
+    };
+
     /**
      * Asynchronously posts an issue to the server.
      *
@@ -226,74 +280,93 @@ export default function CreateIssue({ navigation }) {
      * @throws Will throw an error if the request fails or if required fields are empty.
      */
     const postIssue = async () => {
-        if (!title) {
+        if (!isFormValid()){
             setCustomAlertContent({
-                title: "Invalid Title",
-                message: "Some fields are empty. Please complete everything for the professional to give you the most informed quote!",
+                title: "Missing Fields",
+                message: "Some fields are empty. Please complete everything for the professional to provide the most informed quote!",
             });
             setCustomAlertVisible(true);
             return;
         }
 
-        if (!description) {
-            setCustomAlertContent({
-                title: "Invalid Description",
-                message: "Some fields are empty. Please complete everything for the professional to give you the most informed quote!",
-            });
-            setCustomAlertVisible(true);
-            return;
-        }
-
-        if (!selectedProfessionals) {
-            setCustomAlertContent({
-                title: "Invalid Service Type",
-                message: "Please select service type(s).",
-            });
-            setCustomAlertVisible(true);
-            return;
-        }
-
-        if (!selectedTimeLine) {
-            setCustomAlertContent({
-                title: "Invalid Timeline",
-                message: "Please select an urgency timeline.",
-            });
-            setCustomAlertVisible(true);
-            return;
-        }
-
-        // if (!location || location.trim().length < 5) {
+        // if (!title) {
         //     setCustomAlertContent({
-        //         title: "Invalid Location",
-        //         message: "Please provide a valid location.",
+        //         title: "Invalid Title",
+        //         message: "Some fields are empty. Please complete everything for the professional to give you the most informed quote!",
         //     });
         //     setCustomAlertVisible(true);
         //     return;
         // }
 
-        // Optional Image
-        // if (selectedImage) {
-        //     const validImageTypes = ['image/jpeg', 'image/png', 'image/heic'];
-        //     const imageType = selectedImage.split('.').pop().toLowerCase();
-        //     if (!validImageTypes.includes(`image/${imageType}`)) {
-        //         setCustomAlertContent({
-        //             title: "Invalid Image",
-        //             message: "Only JPEG and PNG images are supported.",
-        //         });
-        //         setCustomAlertVisible(true);
-        //         return;
-        //     }
+        // if (!description) {
+        //     setCustomAlertContent({
+        //         title: "Invalid Description",
+        //         message: "Some fields are empty. Please complete everything for the professional to give you the most informed quote!",
+        //     });
+        //     setCustomAlertVisible(true);
+        //     return;
         // }
 
+        // if (!selectedProfessionals) {
+        //     setCustomAlertContent({
+        //         title: "Invalid Service Type",
+        //         message: "Please select service type(s).",
+        //     });
+        //     setCustomAlertVisible(true);
+        //     return;
+        // }
 
-        if (selectedImage && !selectedImage.startsWith('file://')) {
-            setCustomAlertContent({
-              title: "Invalid Image",
-              message: "Please select a valid image file from your gallery.",
-            });
-            setCustomAlertVisible(true);
-            return;
-        }
+        // if (!selectedTimeLine) {
+        //     setCustomAlertContent({
+        //         title: "Invalid Timeline",
+        //         message: "Please select an urgency timeline.",
+        //     });
+        //     setCustomAlertVisible(true);
+        //     return;
+        // }
+
+        // // if (!location || location.trim().length < 5) {
+        // //     setCustomAlertContent({
+        // //         title: "Invalid Location",
+        // //         message: "Please provide a valid location.",
+        // //     });
+        // //     setCustomAlertVisible(true);
+        // //     return;
+        // // }
+
+        // if (!isAddressValid || !coordinates) {
+        //     setCustomAlertContent({
+        //         title: "Invalid Address",
+        //         message: "Please verify your address first.",
+        //     });
+        //     setCustomAlertVisible(true);
+        //     return;
+        // }
+        
+
+        // // Optional Image
+        // // if (selectedImage) {
+        // //     const validImageTypes = ['image/jpeg', 'image/png', 'image/heic'];
+        // //     const imageType = selectedImage.split('.').pop().toLowerCase();
+        // //     if (!validImageTypes.includes(`image/${imageType}`)) {
+        // //         setCustomAlertContent({
+        // //             title: "Invalid Image",
+        // //             message: "Only JPEG and PNG images are supported.",
+        // //         });
+        // //         setCustomAlertVisible(true);
+        // //         return;
+        // //     }
+        // // }
+
+
+        // if (selectedImage && !selectedImage.startsWith('file://')) {
+        //     setCustomAlertContent({
+        //       title: "Invalid Image",
+        //       message: "Please select a valid image file from your gallery.",
+        //     });
+        //     setCustomAlertVisible(true);
+        //     return;
+        // }
           
         setLoading(true); // Start loading
 
@@ -652,10 +725,36 @@ export default function CreateIssue({ navigation }) {
                             <InputField
                             placeholder={i18n.t('postal_code')}
                             value={newPostalCode}
-                            onChangeText={setNewPostalCode}
+                            onChangeText={formatPostalCode}
                             />
+                            <OrangeButton
+    title={i18n.t('verify_address')}
+    onPress={verifyAddress}
+    variant="normal"
+/>
+
+{isAddressValid && coordinates && (
+    <>
+        <Text style={{ marginTop: 10, color: 'green' }}>
+            ✅ {i18n.t('valid_address_entered')}
+        </Text>
+        <MapView
+            style={{ width: '100%', height: 200, marginTop: 10, borderRadius: 10 }}
+            initialRegion={{
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+            }}
+        >
+            <Marker coordinate={coordinates} />
+        </MapView>
+    </>
+)}
                         </View>
-                        )}
+                        
+                    )}
+
 
                     {/* Create Issue Button */ }
                     <View>
@@ -664,7 +763,7 @@ export default function CreateIssue({ navigation }) {
                             title={i18n.t('create_job')}
                             variant="normal"
                             onPress={postIssue}
-                            disabled={loading}
+                            disabled={!isFormValid() || loading}
                         />
 
                         {/* <OrangeButton testID={'post-job-button'} title={i18n.t('create_job')} variant="normal" onPress={postIssue}/> */}

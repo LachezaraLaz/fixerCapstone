@@ -52,7 +52,7 @@ const IssueDetails = () => {
     const fetchJobDetails = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/${jobId}`);
+            const response = await axios.get(`http://${IPAddress}:3000/issue/${jobId}`);
             setJob(response.data);
         } catch (error) {
             Alert.alert("Error", "Failed to fetch issue details");
@@ -116,23 +116,25 @@ const IssueDetails = () => {
 
             // Show a confirmation popup before proceeding
             Alert.alert(
-                `Confirm ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`, // Capitalize first letter
-                `Are you sure you want to ${actionText} this issue?`,
+                i18n.t(`${actionText.toLowerCase()}`), // Use dynamic translation for the title
+                `${i18n.t('are_you_sure')} ${i18n.t(`${actionText.toLowerCase()}`)} ${i18n.t('this_issue')}${
+                    newStatus === 'Open' ? ' ' + i18n.t('modify_issue_text') : ''
+                }`,
                 [
                     {
                         text: `${i18n.t('cancel')}`,
                         style: "cancel"
                     },
                     {
-                        text: `Yes`,
+                        text: `${i18n.t('yes')}`,
                         onPress: async () => {
                             try {
-                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/updateStatus/${job.id}?status=${newStatus}`,
+                                const response = await axios.delete(`http://${IPAddress}:3000/issue/updateStatus/${job.id}?status=${newStatus}`,
                                     {headers: {Authorization: `Bearer ${token}`}}
                                 );
 
-                                if (response.status === 200) {
-                                    Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Closed' : 'Reopened'} successfully`);
+                                if (response.status === 200 || response.status === 201) {
+                                    Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Deleted' : 'Reopened'} successfully`);
                                     navigation.navigate("MyIssuesPosted");
                                 } else {
                                     Alert.alert(`Failed to ${actionText} the job`);

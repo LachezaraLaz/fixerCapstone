@@ -26,28 +26,30 @@ export const styles = StyleSheet.create({
     filterGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        gap: 35,
     },
 
     filterButton: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
+        width: '25%',  // Adjusting for spacing and margins
+        aspectRatio: 1,  // Make it a perfect circle
+        borderRadius: 60,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#FDF3E6',
         marginBottom: 12,
-        backgroundColor: '#fff',
+        backgroundColor: '#FDF3E6',
     },
     filterButtonSelected: {
         backgroundColor: '#f28500',
         borderColor: '#f28500',
     },
     filterButtonText: {
-        fontSize: 12,
+        marginTop: 4,              // Space between icon and text
+        fontSize: 10,              // Adjusted font size
         color: '#333',
-        textAlign: 'center',
+        textAlign: 'center',       // Center the text
     },
     sectionTitle: {
         fontSize: 16,
@@ -85,4 +87,22 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+
+    urgencyContainer: {
+        marginBottom: 20,
+        zIndex: 1000,
+        backgroundColor: 'white',
+    },
+
+    urgency: {
+        backgroundColor: 'white',
+        borderColor: '#ddd',
+    },
+
+    starContainer: {
+        flexDirection: 'row',
+        justifyContent: 'left',
+        marginBottom: 16,
+    },
+
 });

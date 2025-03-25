@@ -33,7 +33,6 @@ export default function IssueDetailScreen({ issue, onClose }) {
 
     useEffect(() => {
         const fetchClient = async () => {
-            console.log("Fetching client with email:", issue.userEmail);
             const fetchedClient = await getClientByEmail(issue.userEmail);
             if (fetchedClient) {
                 setClient(fetchedClient);

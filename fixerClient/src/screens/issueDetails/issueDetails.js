@@ -276,6 +276,10 @@ const IssueDetails = () => {
                             onPress={() => updateIssueStatus(job, job.status)}
                         />
                     </>
+                ) : job.status.toLowerCase() === "in progress" ? (
+                        <>
+                            <Text style={styles.detailSubLabel}>{i18n.t('jobInProgressComment')} </Text>
+                        </>
                 ) : null}
 
             </ScrollView>

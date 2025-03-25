@@ -72,6 +72,7 @@ const en = {
         "closed by client": "Closed By Client",
         completed: "Completed",
         pending: "Pending",
+        "in progress": "In Progress",
     },
     attached_images: "Attached Images",
     no_image_attached: "No image attached yet",

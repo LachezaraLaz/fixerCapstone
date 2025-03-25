@@ -93,19 +93,18 @@ export default function App() {
                                 {/* Screens when user IS logged in */}
                                 {isLoggedIn && (
                                     <>
-                                        {/* <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }}/> */}
-                                        <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
+                                        <Stack.Screen name="DetailsScreen" component={DetailsScreen}  />
                                         <Stack.Screen name="ProfilePage" component={ProfilePage} options={{ headerShown: false }} />
                                         <Stack.Screen name="CreateIssue" component={CreateIssue} options={{ headerShown: false }}/>
-                                        <Stack.Screen name="SettingsPage" component={SettingsPage} />
+                                        <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
                                         <Stack.Screen name="EditIssue" component={EditIssue} />
                                         <Stack.Screen name="NotificationPage" component={NotificationPage} />
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
                                         <Stack.Screen name="OffersPage" component={OffersPage} />
                                         <Stack.Screen name="addReview" component={addReview} />
-                                        <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage}/>
-                                        <Stack.Screen name="IssueDetails" component={issueDetails} />
+                                        <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>
 
                                     </>
                                 )}

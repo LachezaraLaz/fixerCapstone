@@ -72,6 +72,7 @@ const en = {
         completed: "Completed",
         pending: "Pending",
         reopened: "Reopened",
+        "in progress": "In Progress",
     },
     attached_images: "Attached Images",
     no_image_attached: "No image attached yet",
@@ -90,7 +91,7 @@ const en = {
     this_issue: "this issue?",
     modify_issue_text: "This will clone this issue and create a new one. You can find it under your open issues.",
     yes: "Yes",
-
+    jobInProgressComment: "This issue is currently in progress. For any changes or updates, please reach out to the professional assigned using the chat feature." ,
 }
 
 const fr = {
@@ -118,7 +119,7 @@ const fr = {
     enter_pin:"Entrer un code PIN",
     Check_email_for_PIN:"Consultez votre courrier électronique pour obtenir un code PIN",
     home_screen: "Accueil",
-    in_progress: "en cours",
+    in_progress: "En cours",
     completed: "Terminé",
     jobs_available: "pas des travail libres",
     my_issues: "Mes Tâches",
@@ -167,6 +168,7 @@ const fr = {
         completed: "Terminé",
         pending: "En attente",
         reopened: "rouvert",
+        "in progress": "En cours",
     },
     attached_images: "Images jointes",
     no_image_attached: "Aucune image jointe pour le moment",
@@ -184,6 +186,7 @@ const fr = {
     this_issue: "ce problème?",
     modify_issue_text: "Cela va cloner ce problème et créer un nouveau. Vous pouvez le trouver dans vos problèmes ouverts.",
     yes: "Oui",
+    jobInProgressComment: "Ce problème est actuellement en cours. Pour toute modification ou mise à jour, veuillez contacter le professionnel assigné via la fonction de chat." ,
 }
 
 export {en, fr}

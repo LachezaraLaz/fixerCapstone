@@ -69,7 +69,7 @@ export default function MyIssuesPosted() {
             setJobs({
                 all: response.data.jobs,
                 inProgress: response.data.jobs.filter(job =>
-                    job.status === inProgressLabel || job.status === 'Open'
+                    job.status === inProgressLabel || job.status === 'Open' || job.status === 'In progress'
                 ),
                 completed: response.data.jobs.filter(job =>
                     job.status === 'Completed' || job.status === 'Closed' || job.status === 'Reopened'

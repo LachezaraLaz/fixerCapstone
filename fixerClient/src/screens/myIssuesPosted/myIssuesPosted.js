@@ -69,7 +69,7 @@ export default function MyIssuesPosted() {
             setJobs({
                 all: response.data.jobs,
                 inProgress: response.data.jobs.filter(job =>
-                    job.status === inProgressLabel || job.status === 'Open'
+                    job.status?.toLowerCase() === inProgressLabel.toLowerCase() || job.status?.toLowerCase() === 'open'
                 ),
                 completed: response.data.jobs.filter(job =>
                     job.status === 'Completed' || job.status === 'Closed'
@@ -101,7 +101,7 @@ export default function MyIssuesPosted() {
                 <Text style={styles.headerLogo}>Fixr</Text>
 
                 {/* ✅ Updated Title to "My Issues" */}
-                <Text style={styles.headerTitle}>{i18n.t('my_issues')}</Text>
+                <Text style={styles.headerTitle}>{i18n.t('my_jobs')}</Text>
 
                 {/* Notification Button */}
                 <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />

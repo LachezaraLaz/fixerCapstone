@@ -26,9 +26,9 @@ const en = {
     in_progress: "In Progress",
     completed: "Completed",
     jobs_available: "No jobs available",
-    my_issues: "My Issues",
+    my_jobs: "My Jobs",
     mission: 'Jobs',
-    create_issue: "Create new Issue",
+    create_job: "Create New Job",
     logout: "Logout",
     describe_your_service: "Describe your service",
     select_service_type: "Select Service Type(s)",
@@ -85,6 +85,7 @@ const en = {
     title: "Title",
     image: "Image",
     badges_remaining: "You can select {{count}} more",
+    your_job_has_been_posted: "Congrats! Your job has been posted!"
 }
 
 const fr = {
@@ -115,9 +116,9 @@ const fr = {
     in_progress: "en cours",
     completed: "Terminé",
     jobs_available: "pas des travail libres",
-    my_issues: "Mes Tâches",
+    my_jobs: "Mes Tâches",
     mission:'mission',
-    create_issue: "Créer une tache",
+    create_job: "Créer une táche",
     logout:"Déconnexion",
     describe_your_service: "Décrivez votre service",
     select_service_type:"Sélectionnez un(des) service(s)",
@@ -134,8 +135,8 @@ const fr = {
     an_unexpected_error_occurred:"Une erreur inattendue s'est produite.",
     please_verify_your_email_before_logging_in: "Veuillez vérifier votre adresse email",
     take_from_your_gallery:"Prenez de votre galerie",
-    job_description:"description de tache",
-    job_posted_successfully: "Tache être enregistré avec succès",
+    job_description:"Description de tâche",
+    job_posted_successfully: "Votre tâche a été enregistré avec succès",
     modify_issue:"modifier tache",
     delete_issue: "effacer tache",
     logged_out:"Déconnecté",
@@ -174,6 +175,7 @@ const fr = {
     title: "Titre",
     image: "Image",
     badges_remaining: "Vous pouvez en sélectionner encore {{count}}",
+    your_job_has_been_posted: "Bravo! Votre tâche a été soumis!"
 }
 
 export {en, fr}

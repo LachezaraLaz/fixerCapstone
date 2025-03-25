@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
-import colors from './colors';
 
 const styles = StyleSheet.create({
     dropdownContainer: {
         marginHorizontal: 8,
+        marginTop: -10,
         borderRadius: 8,
         borderColor: '#ccc',
         width: '100%',

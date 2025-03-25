@@ -161,7 +161,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                             onPress={() => navigation.navigate('CreateIssue')}
                             style={styles.createJobButtonInner}
                         >
-                            <Text style={styles.createJobButtonText}>{i18n.t('create_issue')}</Text>
+                            <Text style={styles.createJobButtonText}>{i18n.t('create_job')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

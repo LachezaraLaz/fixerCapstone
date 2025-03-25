@@ -30,9 +30,13 @@ import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
 import { Ionicons } from '@expo/vector-icons';
+
 import InputField from '../../../components/inputField';
 import DropdownField from '../../../components/dropdownField';
 import ProfessionalSelector from '../../../components/searchAndSelectTagField';
+import CustomAlertError from '../../../components/customAlertError';
+import CustomAlertSuccess from '../../../components/customAlertSuccess';
+
 
 
 /**
@@ -75,6 +79,12 @@ export default function CreateIssue({ navigation }) {
     const [other, setOther] = useState(false);
 
     const [selectedProfessionals, setSelectedProfessionals] = useState([]);
+    const [customAlertVisible, setCustomAlertVisible] = useState(false);
+    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
+    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
+
+
 
     /**
      * Asynchronously picks an image from the user's media library.
@@ -89,7 +99,11 @@ export default function CreateIssue({ navigation }) {
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
-            Alert.alert("Permission required", "Please allow access to your gallery.");
+            setCustomAlertContent({
+                title: "Permission Required",
+                message: "Please allow access to your gallery through your phone settings App",
+            });
+            setCustomAlertVisible(true);
             return;
         }
 
@@ -115,7 +129,6 @@ export default function CreateIssue({ navigation }) {
             // Call AI endpoint
             const response = await axios.post(
                 'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
-                //'http://192.168.0.19:3000/issue/aiEnhancement',
                 { description }
             );
 
@@ -125,11 +138,18 @@ export default function CreateIssue({ navigation }) {
         } catch (error) {
             // Handle 400 Bad Request (Invalid Category)
             if (error.response && error.response.status === 400) {
-                Alert.alert('Invalid Job Category', error.response.data.error ||
-                    'Please provide a home service or blue-collar job description.');
+                setCustomAlertContent({
+                    title: 'Invalid Job Category',
+                    message: error.response?.data?.error || 'Please provide a home service or blue-collar job description.',
+                });
+                setCustomAlertVisible(true);                  
             } else {
                 console.error('Error enhancing description:', error);
-                Alert.alert('Error', 'Could not enhance your description. Please try again.');
+                setCustomAlertContent({
+                    title: 'Error',
+                    message: 'Could not enhance your description. Please try again.',
+                });
+                setCustomAlertVisible(true);
             }
         } finally {
             setLoadingAi(false);
@@ -160,21 +180,38 @@ export default function CreateIssue({ navigation }) {
      */
     const postIssue = async () => {
         if (!title) {
-            Alert.alert("Invalid Description", "Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
+            setCustomAlertContent({
+                title: "Invalid Title",
+                message: "Some fields are empty. Please complete everything for the professional to give you the most informed quote!",
+            });
+            setCustomAlertVisible(true);
             return;
         }
+
         if (!description) {
-            Alert.alert("Invalid Description", "Some fields are empty. Please complete everything for the professional to give you the most informed quote!");
+            setCustomAlertContent({
+                title: "Invalid Description",
+                message: "Some fields are empty. Please complete everything for the professional to give you the most informed quote!",
+            });
+            setCustomAlertVisible(true);
             return;
         }
 
         if (!selectedProfessionals) {
-            Alert.alert("Invalid Service", "Please select a valid service type.");
+            setCustomAlertContent({
+                title: "Invalid Service Type",
+                message: "Please select service type(s).",
+            });
+            setCustomAlertVisible(true);
             return;
         }
 
         if (!selectedTimeLine) {
-            Alert.alert("Invalid Timeline", "Please select an urgency timeline.");
+            setCustomAlertContent({
+                title: "Invalid Timeline",
+                message: "Please select an urgency timeline.",
+            });
+            setCustomAlertVisible(true);
             return;
         }
 
@@ -188,7 +225,11 @@ export default function CreateIssue({ navigation }) {
             const validImageTypes = ['image/jpeg', 'image/png'];
             const imageType = selectedImage.split('.').pop().toLowerCase();
             if (!validImageTypes.includes(`image/${imageType}`)) {
-                Alert.alert("Invalid Image", "Only JPEG and PNG images are supported.");
+                setCustomAlertContent({
+                    title: "Invalid Image",
+                    message: "Only JPEG and PNG images are supported.",
+                });
+                setCustomAlertVisible(true);
                 return;
             }
         }
@@ -203,7 +244,6 @@ export default function CreateIssue({ navigation }) {
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
-            // formData.append('professionalNeeded', selectedService);
             formData.append('professionalNeeded', selectedProfessionals.join(', '));
             formData.append('email', userEmail);
             formData.append('status', "open");
@@ -242,8 +282,11 @@ export default function CreateIssue({ navigation }) {
                 setImage(null);
                 setOther(false);
 
-                navigation.goBack();
-                Alert.alert(`${i18n.t('job_posted_successfully')}`);
+                setSuccessAlertContent({
+                    title: i18n.t('job_posted_successfully'),
+                    message: i18n.t('your_job_has_been_posted'),
+                });
+                setSuccessAlertVisible(true);
             } else {
                 Alert.alert('Failed to post the job');
             }
@@ -263,24 +306,24 @@ export default function CreateIssue({ navigation }) {
      * @param {string} source - The source of the image, either 'camera' or 'mediaLibrary'.
      * @returns {Promise<void>} - A promise that resolves when the image selection is complete.
      */
-    const handleImageSelection = async (source) => {
-        const permissionResult = source === 'camera'
-            ? await ImagePicker.requestCameraPermissionsAsync()
-            : await ImagePicker.requestMediaLibraryPermissionsAsync();
+    // const handleImageSelection = async (source) => {
+    //     const permissionResult = source === 'camera'
+    //         ? await ImagePicker.requestCameraPermissionsAsync()
+    //         : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-        if (!permissionResult.granted) {
-            Alert.alert("Permission required", `Please allow access to your ${source}.`);
-            return;
-        }
+    //     if (!permissionResult.granted) {
+    //         Alert.alert("Permission required", `Please allow access to your ${source}.`);
+    //         return;
+    //     }
 
-        const result = source === 'camera'
-            ? await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 1 })
-            : await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
+    //     const result = source === 'camera'
+    //         ? await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 1 })
+    //         : await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
 
-        if (!result.canceled) {
-            setSelectedImage(result.assets[0].uri);
-        }
-    };
+    //     if (!result.canceled) {
+    //         setSelectedImage(result.assets[0].uri);
+    //     }
+    // };
 
     /**
      * Counts the number of words in a given text.
@@ -288,9 +331,9 @@ export default function CreateIssue({ navigation }) {
      * @param {string} text - The text to count words in.
      * @returns {number} - The number of words in the text.
      */
-    const countWords = (text) => {
-        return text.trim().length === 0 ? 0 : text.trim().split(/\s+/).length;
-    };
+    // const countWords = (text) => {
+    //     return text.trim().length === 0 ? 0 : text.trim().split(/\s+/).length;
+    // };
 
     /**
      * Removes the currently selected image by setting the selected image state to null.
@@ -302,133 +345,135 @@ export default function CreateIssue({ navigation }) {
     return (
         //possibility to dismiss the keyboard just by touching the screen
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
-                        contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
-                        keyboardShouldPersistTaps="handled"
-            >
-                <View style={styles.headerContainer}>
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        testID="back-button"
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Ionicons name="arrow-back" size={28} color="#1E90FF" />
-                    </TouchableOpacity>
+            <View style={{ flex: 1 }}>
+                <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
+                            contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+                            keyboardShouldPersistTaps="handled"
+                >
+                    <View style={styles.headerContainer}>
+                        <TouchableOpacity
+                            style={styles.backButton}
+                            testID="back-button"
+                            onPress={() => navigation.goBack()}
+                        >
+                            <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                        </TouchableOpacity>
 
-                    <Text style={styles.headerTitle}>{i18n.t('create_issue')}</Text>
-                </View>
+                        <Text style={styles.headerTitle}>{i18n.t('create_job')}</Text>
+                    </View>
 
-                {/* title field */}
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('title')}</Text>
-                <InputField 
-                    placeholder={`${i18n.t('title')}`}
-                    value={title}
-                    onChangeText={setTitle}
-                />
-
-                {/* description field */}
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('job_description')}</Text>
-                <View style={{ position: 'relative' }}>
-
+                    {/* title field */}
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('title')}*</Text>
                     <InputField 
-                        placeholder={`${i18n.t('describe_your_service')}`}
-                        value={description}
-                        onChangeText={setDescription}
-                        multiline/>
-
-                    {/* AI Enhancement Button */}
-                    <TouchableOpacity
-                        style={[styles.aiEnhanceButton, { marginTop: 10 }]}
-                        onPress={handleAiEnhancement}
-                        disabled={loadingAi}
-                    >
-                        {loadingAi ? (
-                            <ActivityIndicator color="#fff" />
-                        ) : (
-                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
-                        )}
-                    </TouchableOpacity>
-                    {/* Show AI preview */}
-                    {showAiPreview && (
-                        <View style={{
-                            borderWidth: 1,
-                            borderColor: '#ccc',
-                            borderRadius: 8,
-                            padding: 10,
-                            marginTop: 20,
-                            backgroundColor: '#f9f9f9'
-                        }}>
-                            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 8 }}>
-                                AI's Suggestion:
-                            </Text>
-                            <Text style={{ color: '#333', marginBottom: 16 }}>{aiSuggestion}</Text>
-
-                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <TouchableOpacity style={{
-                                    backgroundColor: 'green',
-                                    padding: 10,
-                                    borderRadius: 8,
-                                    marginRight: 10
-                                }}
-                                    onPress={handleAcceptAiSuggestion}
-                                >
-                                    <Text style={{ color: '#fff' }}>Accept</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={{
-                                    backgroundColor: 'red',
-                                    padding: 10,
-                                    borderRadius: 8
-                                }}
-                                    onPress={handleRejectAiSuggestion}
-                                >
-                                    <Text style={{ color: '#fff' }}>Reject</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
-                </View>
-                {/* Word & Character Counter - Positioned Below the Input */}
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                    <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
-                        {description.length} chars
-                    </Text>
-                </View>
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_service_type')}</Text>
-                
-                {/* Service type selector field */}
-                <View style={styles.pickerContainer}>
-
-                    <Text style={ styles.badgeInfo }>
-                        {i18n.t('badges_remaining', { count: 2 - selectedProfessionals.length })}
-                    </Text>
-                    <ProfessionalSelector
-                        selectedProfessionals={selectedProfessionals}
-                        setSelectedProfessionals={setSelectedProfessionals}
+                        placeholder={`${i18n.t('title')}`}
+                        value={title}
+                        onChangeText={setTitle}
                     />
-                </View>
 
-                {/* Image upload label */}
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('image')}</Text>
-                {/*Image upload*/}
-                <View style={styles.imageContainer}>
-                    <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
-                        {selectedImage ? (
-                            <View style={styles.imageWrapper}>
-                                <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
-                                <TouchableOpacity style={{...styles.removeButton}} onPress={removeImage}>
-                                    <Text style={{...styles.removeText}}>✖</Text>
-                                </TouchableOpacity>
-                            </View>
-                        ) : (
-                            <View style={styles.placeholder}>
-                                <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
-                                <Text style={{ ...styles.text }}>{i18n.t('take_from_your_gallery')}</Text>
-                                <Text style={{...styles.supportedFormats}}>JPEG, PNG, MP4</Text>
+                    {/* description field */}
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('job_description')}*</Text>
+                    <View style={{ position: 'relative' }}>
+
+                        <InputField 
+                            placeholder={`${i18n.t('describe_your_service')}`}
+                            value={description}
+                            onChangeText={setDescription}
+                            multiline/>
+
+                        {/* AI Enhancement Button */}
+                        <TouchableOpacity
+                            style={[styles.aiEnhanceButton, { marginTop: 10 }]}
+                            onPress={handleAiEnhancement}
+                            disabled={loadingAi}
+                        >
+                            {loadingAi ? (
+                                <ActivityIndicator color="#fff" />
+                            ) : (
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
+                            )}
+                        </TouchableOpacity>
+                        {/* Show AI preview */}
+                        {showAiPreview && (
+                            <View style={{
+                                borderWidth: 1,
+                                borderColor: '#ccc',
+                                borderRadius: 8,
+                                padding: 10,
+                                marginTop: 20,
+                                backgroundColor: '#f9f9f9'
+                            }}>
+                                <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 8 }}>
+                                    AI's Suggestion:
+                                </Text>
+                                <Text style={{ color: '#333', marginBottom: 16 }}>{aiSuggestion}</Text>
+
+                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                    <TouchableOpacity style={{
+                                        backgroundColor: 'green',
+                                        padding: 10,
+                                        borderRadius: 8,
+                                        marginRight: 10
+                                    }}
+                                        onPress={handleAcceptAiSuggestion}
+                                    >
+                                        <Text style={{ color: '#fff' }}>Accept</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={{
+                                        backgroundColor: 'red',
+                                        padding: 10,
+                                        borderRadius: 8
+                                    }}
+                                        onPress={handleRejectAiSuggestion}
+                                    >
+                                        <Text style={{ color: '#fff' }}>Reject</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         )}
-                    </TouchableOpacity>
-                </View>
+                    </View>
+
+                    {/* Word & Character Counter - Positioned Below the Input */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                        <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
+                            {description.length} chars
+                        </Text>
+                    </View>
+
+                    {/* Service type selector field */}
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_service_type')}*</Text>
+                    <View style={styles.pickerContainer}>
+
+                        <Text style={ styles.badgeInfo }>
+                            {i18n.t('badges_remaining', { count: 2 - selectedProfessionals.length })}
+                        </Text>
+                        <ProfessionalSelector
+                            selectedProfessionals={selectedProfessionals}
+                            setSelectedProfessionals={setSelectedProfessionals}
+                        />
+                    </View>
+
+                    {/* Image upload label */}
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('image')}</Text>
+                    {/*Image upload*/}
+                    <View style={styles.imageContainer}>
+                        <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
+                            {selectedImage ? (
+                                <View style={styles.imageWrapper}>
+                                    <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+                                    <TouchableOpacity style={{...styles.removeButton}} onPress={removeImage}>
+                                        <Text style={{...styles.removeText}}>✖</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ) : (
+                                <View style={styles.placeholder}>
+                                    <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
+                                    <Text style={{ ...styles.text }}>{i18n.t('take_from_your_gallery')}</Text>
+                                    <Text style={{...styles.supportedFormats}}>JPEG, PNG, MP4</Text>
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                    </View>
                 {/* map
                 <View style={styles.mapContainer}>
                     <MapView
@@ -465,23 +510,41 @@ export default function CreateIssue({ navigation }) {
                         }}
                     />
                 </View> */}
-                <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 20 }}>{i18n.t('select_timeline')}</Text>
-                <View style={styles.pickerContainer}>
-                    <DropdownField
-                        translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
-                        open={openTimeLine}
-                        items={itemsTimeLine}
-                        value={selectedTimeLine}
-                        setOpen={setOpenTimeLine}
-                        setItems={setItemsTimeLine}
-                        setValue={setSelectedTimeLine}
-                    />
-                </View>
-                {/* Create Issue Button */ }
-                <View>
-                    <OrangeButton testID={'post-job-button'} title={i18n.t('create_issue')} variant="normal" onPress={postIssue}/>
-                </View>
-            </ScrollView>
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 30 }}>{i18n.t('select_timeline')}*</Text>
+                    <View style={styles.pickerContainer}>
+                        <DropdownField
+                            translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
+                            open={openTimeLine}
+                            items={itemsTimeLine}
+                            value={selectedTimeLine}
+                            setOpen={setOpenTimeLine}
+                            setItems={setItemsTimeLine}
+                            setValue={setSelectedTimeLine}
+                        />
+                    </View>
+                    {/* Create Issue Button */ }
+                    <View>
+                        <OrangeButton testID={'post-job-button'} title={i18n.t('create_job')} variant="normal" onPress={postIssue}/>
+                    </View>
+                </ScrollView>
+                
+                <CustomAlertError
+                    visible={customAlertVisible}
+                    title={customAlertContent.title}
+                    message={customAlertContent.message}
+                    onClose={() => setCustomAlertVisible(false)}
+                />
+                <CustomAlertSuccess
+                    visible={successAlertVisible}
+                    title={successAlertContent.title}
+                    message={successAlertContent.message}
+                    onClose={() => {
+                        setSuccessAlertVisible(false);
+                        navigation.goBack(); // If you want to redirect after success
+                    }}
+                />
+
+            </View>
         </TouchableWithoutFeedback>
     );
 }

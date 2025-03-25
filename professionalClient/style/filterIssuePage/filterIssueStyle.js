@@ -89,16 +89,14 @@ export const styles = StyleSheet.create({
     },
 
     urgencyContainer: {
-        marginVertical: 8,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        padding: 6,
-        backgroundColor: '#fff',
+        marginBottom: 20,
+        zIndex: 1000,
+        backgroundColor: 'white',
     },
-    picker: {
-        height: 55,
-        width: '100%',
+
+    urgency: {
+        backgroundColor: 'white',
+        borderColor: '#ddd',
     },
 
     starContainer: {

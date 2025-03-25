@@ -4,8 +4,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../../style/filterIssuePage/filterIssueStyle';
-// import { Picker } from '@react-native-picker/picker';
-import RNPickerSelect from 'react-native-picker-select';
+import DropDownPicker from "react-native-dropdown-picker";
 
 /**
  * @module professionalClient
@@ -17,7 +16,12 @@ const FilterIssuePage = ({ navigation, route }) => {
     const [distanceRange, setDistanceRange] = React.useState(initialDistanceRange || [0, 50]);
     const [rating, setRating] = useState(0);
     const [timeline, setTimeline] = useState('');
-    const urgencyOptions = ['high-Priority', 'low-Priority'];
+    const [openTimeLine, setOpenTimeLine] = useState(false);
+    const [urgencyOptions, setUrgencyOptions] = useState([
+        { label: 'select timeline', value: '' },
+        { label: 'low-priority', value: 'low-priority' },
+        { label: 'high-priority', value: 'high-priority' },
+    ]);
 
     /**
      * Handles the selection of a filter type. If the filter type is already selected, it removes it from the filters.
@@ -108,27 +112,19 @@ const FilterIssuePage = ({ navigation, route }) => {
 
                 <Text style={styles.sectionTitle}>Urgency Timeline</Text>
                 <View style={styles.urgencyContainer}>
-                    <RNPickerSelect
-                        onValueChange={(value) => setTimeline(value)}
-                        items={urgencyOptions.map((option) => ({
-                            label: option,
-                            value: option,
-                        }))}
-                        placeholder={{ label: 'Select', value: null }}
-                        style={{
-                            inputIOS: {
-                                height: 40,
-                                padding: 10,
-                                borderRadius: 8,
-                                color: '#333',
-                            },
-                            inputAndroid: {
-                                height: 55,
-                                padding: 10,
-                                borderRadius: 8,
-                                color: '#333',
-                            },
-                        }}
+                    <DropDownPicker
+                        style={styles.urgency}
+                        translation={{ PLACEHOLDER: 'Select Urgency' }}
+                        open={openTimeLine}
+                        value={timeline}
+                        items={urgencyOptions}
+                        setOpen={setOpenTimeLine}
+                        setValue={setTimeline}
+                        setItems={setUrgencyOptions}
+                        textStyle={{ fontSize: 13, fontWeight: 'bold' }}
+                        dropDownContainerStyle={{ zIndex: 1000, borderColor: '#ddd' }}
+                        listMode="SCROLLVIEW"
+                        nestedScrollEnabled={true}
                     />
                 </View>
 

@@ -432,8 +432,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             typesOfWork,
                             selectedFilters,
                             distanceRange: route.params?.distanceRange || [0, 50], // Pass current distance range or default
-                            rating: route.params?.rating || rating || 0,
-                            timeline: route.params?.timeline || timeline || '',
+                            rating,
+                            timeline,
                         })}
                     >
                         <Ionicons name="filter" size={24} color="#333" />
@@ -453,8 +453,14 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                                 <Text style={styles.issueTitle}>{issue.title}</Text>
                                 <Text style={styles.issueDescription}>{issue.description}</Text>
                                 <View style={styles.issueRatingContainer}>
-                                    <Ionicons name="star" size={16} color="#f1c40f" />
-                                    <Text style={styles.issueRating}>{issue.rating}</Text>
+                                    <Ionicons
+                                        name="star"
+                                        size={16}
+                                        color={issue.rating ? "#f1c40f" : "#ccc"} // Grey if rating is null/0
+                                    />
+                                    <Text style={[styles.issueRating, { color: issue.rating ? '#f1c40f' : '#ccc' }]}>
+                                        {issue.rating || 'No rating'}
+                                    </Text>
                                     <Text style={styles.issueReviews}>| {issue.timeline}</Text>
                                 </View>
                             </View>

@@ -70,7 +70,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      */
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`http://192.168.2.16:3000/issues`);
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
             const fixedIssues = response.data.jobs
                 .map(issue => ({
                     ...issue,

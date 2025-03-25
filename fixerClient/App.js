@@ -97,7 +97,7 @@ export default function App() {
                                         <Stack.Screen name="ProfilePage" component={ProfilePage} options={{ headerShown: false }} />
                                         <Stack.Screen name="CreateIssue" component={CreateIssue} />
                                         <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false }}/>
-                                        <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
+                                        <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} options={{ headerShown: false }}/>
                                         <Stack.Screen name="EditIssue" component={EditIssue} />
                                         <Stack.Screen name="NotificationPage" component={NotificationPage} />
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail} />

@@ -40,7 +40,7 @@ export default function ContractOffer({ route, navigation }) {
             });
 
             // Log the response data for debugging
-            console.log('Response data:', response.data);
+            // console.log('Response data:', response.data);
 
             // Handle a successful response
             if (response.status === 200) {

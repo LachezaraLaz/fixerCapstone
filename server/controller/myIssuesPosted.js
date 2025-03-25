@@ -48,7 +48,7 @@ const getJobById = async (req, res) => {
 };
 
 // DELETE /issue/:id route to update job status (Reopen job)
-const deleteReopenIssue = async (req, res) => {
+const updateIssueStatus = async (req, res) => {
     const jobId = req.params.id;
     const status = req.query.status;
     console.log(`Updating job status with ID: ${jobId} to ${status}`);
@@ -115,4 +115,4 @@ const updateJob = async (req, res) => {
     }
 };
 
-module.exports = { getJobsByUser, getJobById, deleteReopenIssue, updateJob };
+module.exports = { getJobsByUser, getJobById, updateIssueStatus, updateJob };

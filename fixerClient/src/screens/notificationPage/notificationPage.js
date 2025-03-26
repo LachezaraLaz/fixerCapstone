@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useLayoutEffect} from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,6 +15,12 @@ const NotificationPage = () => {
     const [hasMore, setHasMore] = useState(true);           // Track if more notifications are available
     const [page, setPage] = useState(1);                    // Current page for "Load More"
     const navigation = useNavigation();                     // Navigation hook
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: false, // Hides the header
+        });
+    }, [navigation]);
 
     useEffect(() => {
         fetchNotifications();

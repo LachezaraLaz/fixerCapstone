@@ -40,7 +40,8 @@ const NotificationPage = () => {
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setNotifications(response.data);
+            const sorted = sortNotifications(response.data);
+            setNotifications(sorted);
         } catch (error) {
             console.error('Error fetching notifications:', error.message);
         } finally {
@@ -75,7 +76,9 @@ const NotificationPage = () => {
                 const newNotifications = response.data.filter(
                     (newNotification) => !notifications.some((notif) => notif._id === newNotification._id)
                 );
-                setNotifications((prevNotifications) => [...prevNotifications, ...newNotifications]);
+                const merged = [...notifications, ...newNotifications];
+                const sorted = sortNotifications(merged);
+                setNotifications(sorted);
                 setPage((prevPage) => prevPage + 1);
             } else {
                 setHasMore(false); // No more notifications
@@ -104,11 +107,15 @@ const NotificationPage = () => {
                 { isRead: !isRead },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            setNotifications((prevNotifications) =>
-                prevNotifications.map((notification) =>
-                    notification._id === id ? { ...notification, isRead: !isRead } : notification
-                )
-            );
+
+            setNotifications((prev) => {
+                const updated = prev.map((notification) =>
+                    notification._id === id
+                        ? { ...notification, isRead: !isRead }
+                        : notification
+                );
+                return sortNotifications(updated);
+            });
         } catch (error) {
             console.error('Error updating notification status:', error.message);
         }
@@ -133,6 +140,19 @@ const NotificationPage = () => {
             return styles.rejected;
         }
         return styles.unread; // Default unread color for neutral notifications
+    };
+
+    /**
+     * Sorts the notification list, starting with the unread ones
+     * @param array - notifications
+     * @returns {*}
+     */
+    const sortNotifications = (array) => {
+        return array.slice().sort((a, b) => {
+            if (a.isRead && !b.isRead) return 1;  // b should come before a
+            if (!a.isRead && b.isRead) return -1; // a should come before b
+            return 0; // If both unread or both read, leave as-is
+        });
     };
 
     /**

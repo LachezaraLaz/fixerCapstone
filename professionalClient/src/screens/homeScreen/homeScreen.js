@@ -461,7 +461,13 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                                     <Text style={[styles.issueRating, { color: issue.rating ? '#f1c40f' : '#ccc' }]}>
                                         {issue.rating || 'No rating'}
                                     </Text>
-                                    <Text style={styles.issueReviews}>| {issue.timeline}</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Text style={styles.issueReviews}>|</Text>
+                                        <Text style={[styles.issueReviews, { color: issue.timeline === 'high-priority' ? 'red' : 'orange' }]}>
+                                            {issue.timeline}
+                                        </Text>
+                                    </View>
+
                                 </View>
                             </View>
                         </TouchableOpacity>

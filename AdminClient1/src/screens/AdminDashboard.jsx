@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -10,6 +10,33 @@ export default function AdminDashboard() {
     // State to track active tab
     const [activeTab, setActiveTab] = useState("home");
 
+    // Client data state
+    const [clients, setClients] = useState([]);
+    const [isLoadingClients, setIsLoadingClients] = useState(false);
+    const [clientError, setClientError] = useState(null);
+    const [clientSearchTerm, setClientSearchTerm] = useState("");
+    const [clientFilterStatus, setClientFilterStatus] = useState("all");
+
+    // Professional data state
+    const [professionals, setProfessionals] = useState([]);
+    const [isLoadingProfessionals, setIsLoadingProfessionals] = useState(false);
+    const [professionalError, setProfessionalError] = useState(null);
+    const [professionalSearchTerm, setProfessionalSearchTerm] = useState("");
+    const [professionalFilterStatus, setProfessionalFilterStatus] = useState("all");
+    // Jobs data state
+    const [jobs, setJobs] = useState([]);
+    const [isLoadingJobs, setIsLoadingJobs] = useState(false);
+    const [jobError, setJobError] = useState(null);
+    const [jobSearchTerm, setJobSearchTerm] = useState("");
+    const [jobFilterStatus, setJobFilterStatus] = useState("all");
+
+    // Quotes data state
+    const [quotes, setQuotes] = useState([]);
+    const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
+    const [quoteError, setQuoteError] = useState(null);
+    const [quoteSearchTerm, setQuoteSearchTerm] = useState("");
+    const [quoteFilterStatus, setQuoteFilterStatus] = useState("all");
+
     // Password change state
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [passwordData, setPasswordData] = useState({
@@ -19,6 +46,126 @@ export default function AdminDashboard() {
     });
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [passwordChangeStatus, setPasswordChangeStatus] = useState(null);
+
+
+
+
+// Function to fetch clients data
+    // Update fetchClients function to fetch users both proffesional and clients
+    const fetchClients = async () => {
+        setIsLoadingClients(true);
+        setIsLoadingProfessionals(true); // We'll load both at once
+        setClientError(null);
+        setProfessionalError(null);
+
+        try {
+            // Get token from localStorage
+            const token = localStorage.getItem("authToken");
+
+            // Make API request to get all users
+            const response = await axios.get(
+                "/api/admin/clients",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Split users into clients and professionals
+            const allUsers = response.data.users || [];
+            const clientUsers = allUsers.filter(user => user.accountType !== "professional");
+            const professionalUsers = allUsers.filter(user => user.accountType === "professional");
+
+            setClients(clientUsers);
+            setProfessionals(professionalUsers);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            const errorMsg = error.response?.data?.message || "Failed to load users. Please try again.";
+            setClientError(errorMsg);
+            setProfessionalError(errorMsg);
+        } finally {
+            setIsLoadingClients(false);
+            setIsLoadingProfessionals(false);
+        }
+    };
+
+    // Function to fetch jobs data
+    const fetchJobs = async () => {
+        setIsLoadingJobs(true);
+        setJobError(null);
+
+        try {
+            // Get token from localStorage
+            const token = localStorage.getItem("authToken");
+
+            // Make API request to get jobs
+            const response = await axios.get(
+                "/api/admin/jobs",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setJobs(response.data.jobs || []);
+        } catch (error) {
+            console.error("Error fetching jobs:", error);
+            const errorMsg = error.response?.data?.message || "Failed to load jobs. Please try again.";
+            setJobError(errorMsg);
+        } finally {
+            setIsLoadingJobs(false);
+        }
+    };
+
+// Function to fetch quotes data
+    const fetchQuotes = async () => {
+        setIsLoadingQuotes(true);
+        setQuoteError(null);
+
+        try {
+            // Get token from localStorage
+            const token = localStorage.getItem("authToken");
+
+            // Make API request to get quotes
+            const response = await axios.get(
+                "/api/admin/quotes",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setQuotes(response.data.quotes || []);
+        } catch (error) {
+            console.error("Error fetching quotes:", error);
+            const errorMsg = error.response?.data?.message || "Failed to load quotes. Please try again.";
+            setQuoteError(errorMsg);
+        } finally {
+            setIsLoadingQuotes(false);
+        }
+    };
+
+    // Update useEffect hook to fetch when either tab is selected
+    // Fetch all data when the dashboard loads for the first time
+    useEffect(() => {
+        fetchClients();
+        fetchJobs();
+        fetchQuotes();
+    }, []);
+
+// Update useEffect hook to fetch data based on active tab
+    useEffect(() => {
+        if (activeTab === "clients" || activeTab === "professionals") {
+            fetchClients();
+        } else if (activeTab === "jobs") {
+            fetchJobs();
+        } else if (activeTab === "quotes") {
+            fetchQuotes();
+        }
+    }, [activeTab]);
 
     const handleLogout = () => {
         // Clear authentication data
@@ -97,34 +244,137 @@ export default function AdminDashboard() {
     const renderTabContent = () => {
         switch (activeTab) {
             case "home":
+                // Updated job counting logic that's case-insensitive
+                const activeJobs = jobs.filter(job => {
+                    const status = job.status?.toLowerCase().trim();
+                    // Count jobs with status "open", "in progress", or "pending" as active
+                    return status === "open" ||
+                        status === "in-progress" ||
+                        status === "in progress" ||
+                        status === "inprogress" ||
+                        status === "pending";
+                }).length;
+
+                const completedJobs = jobs.filter(job => {
+                    const status = job.status?.toLowerCase().trim();
+                    // Count jobs with status "completed" as completed
+                    return status === "completed" || status === "closed";
+                }).length;
+
+                // Get recent activities
+                const recentActivities = [
+                    ...jobs.map(job => ({
+                        type: 'job',
+                        item: job,
+                        date: new Date(job.createdAt)
+                    })),
+                    ...quotes.map(quote => ({
+                        type: 'quote',
+                        item: quote,
+                        date: new Date(quote.createdAt)
+                    }))
+                ].sort((a, b) => b.date - a.date).slice(0, 5);
+
                 return (
                     <div style={styles.tabContent}>
                         <h2 style={styles.tabTitle}>Dashboard Overview</h2>
                         <div style={styles.statsContainer}>
                             <div style={styles.statCard}>
                                 <h3>Total Clients</h3>
-                                <p style={styles.statNumber}>0</p>
+                                <p style={styles.statNumber}>{clients.length}</p>
                             </div>
                             <div style={styles.statCard}>
                                 <h3>Total Professionals</h3>
-                                <p style={styles.statNumber}>0</p>
+                                <p style={styles.statNumber}>{professionals.length}</p>
                             </div>
                             <div style={styles.statCard}>
                                 <h3>Active Jobs</h3>
-                                <p style={styles.statNumber}>0</p>
+                                <p style={styles.statNumber}>{activeJobs}</p>
                             </div>
                             <div style={styles.statCard}>
                                 <h3>Completed Jobs</h3>
-                                <p style={styles.statNumber}>0</p>
+                                <p style={styles.statNumber}>{completedJobs}</p>
                             </div>
                         </div>
                         <div style={styles.recentActivity}>
                             <h3>Recent Activity</h3>
-                            <p style={styles.emptyState}>No recent activities to show.</p>
+                            {recentActivities.length === 0 ? (
+                                <p style={styles.emptyState}>No recent activities to show.</p>
+                            ) : (
+                                <div style={styles.activityList}>
+                                    {recentActivities.map((activity, index) => (
+                                        <div key={index} style={styles.activityItem}>
+                                            {activity.type === 'job' ? (
+                                                <div>
+                                        <span style={styles.activityTime}>
+                                            {activity.date.toLocaleDateString()} {activity.date.toLocaleTimeString()}
+                                        </span>
+                                                    <p style={styles.activityText}>
+                                                        <strong>Job:</strong> {activity.item.title} -
+                                                        <span style={{
+                                                            color: activity.item.status?.toLowerCase().trim() === 'completed'
+                                                                ? '#28a745'
+                                                                : activity.item.status?.toLowerCase().trim() === 'closed'
+                                                                    ? '#dc3545'
+                                                                    : activity.item.status?.toLowerCase().trim() === 'in-progress' ||
+                                                                    activity.item.status?.toLowerCase().trim() === 'inprogress' ||
+                                                                    activity.item.status?.toLowerCase().trim() === 'in progress'
+                                                                        ? '#ffc107'
+                                                                        : activity.item.status?.toLowerCase().trim() === 'open'
+                                                                            ? '#17a2b8'
+                                                                            : '#6c757d'
+                                                        }}>
+                                                {activity.item.status && activity.item.status.charAt(0).toUpperCase() + activity.item.status.slice(1)}
+                                            </span>
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                        <span style={styles.activityTime}>
+                                            {activity.date.toLocaleDateString()} {activity.date.toLocaleTimeString()}
+                                        </span>
+                                                    <p style={styles.activityText}>
+                                                        <strong>Quote:</strong> ${activity.item.price ? activity.item.price.toFixed(2) : '0.00'} by {activity.item.professionalEmail} -
+                                                        <span style={{
+                                                            color: activity.item.status?.toLowerCase().trim() === 'accepted'
+                                                                ? '#28a745'
+                                                                : activity.item.status?.toLowerCase().trim() === 'rejected'
+                                                                    ? '#dc3545'
+                                                                    : activity.item.status?.toLowerCase().trim() === 'expired'
+                                                                        ? '#6c757d'
+                                                                        : '#17a2b8'
+                                                        }}>
+                                                {activity.item.status && activity.item.status.charAt(0).toUpperCase() + activity.item.status.slice(1)}
+                                            </span>
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 );
             case "clients":
+                // Filter clients based on search term and filter status
+                const filteredClients = clients.filter(client => {
+                    // Search term filtering
+                    const matchesSearch =
+                        client._id?.toString().toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
+                        client.firstName?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
+                        client.lastName?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
+                        client.email?.toLowerCase().includes(clientSearchTerm.toLowerCase());
+
+                    // Status filtering
+                    const matchesStatus =
+                        clientFilterStatus === "all" ||
+                        (clientFilterStatus === "approved" && client.approved) ||
+                        (clientFilterStatus === "unapproved" && !client.approved);
+
+                    return matchesSearch && matchesStatus;
+                });
+
                 return (
                     <div style={styles.tabContent}>
                         <h2 style={styles.tabTitle}>Client Management</h2>
@@ -133,39 +383,104 @@ export default function AdminDashboard() {
                                 type="text"
                                 placeholder="Search clients..."
                                 style={styles.searchInput}
+                                value={clientSearchTerm}
+                                onChange={(e) => setClientSearchTerm(e.target.value)}
                             />
-                            <select style={styles.filterDropdown}>
+                            <select
+                                style={styles.filterDropdown}
+                                value={clientFilterStatus}
+                                onChange={(e) => setClientFilterStatus(e.target.value)}
+                            >
                                 <option value="all">All Clients</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
+                                <option value="approved">Approved</option>
+                                <option value="unapproved">Unapproved</option>
                             </select>
+                            <button
+                                style={styles.refreshButton}
+                                onClick={fetchClients}
+                                disabled={isLoadingClients}
+                            >
+                                {isLoadingClients ? 'Loading...' : 'Refresh'}
+                            </button>
                         </div>
+
+                        {clientError && (
+                            <div style={styles.errorMessage}>
+                                {clientError}
+                            </div>
+                        )}
+
                         <div style={styles.tableContainer}>
                             <table style={styles.table}>
                                 <colgroup>
-                                    <col style={{width: "33%"}} />
-                                    <col style={{width: "33%"}} />
-                                    <col style={{width: "34%"}} />
+                                    <col style={{width: "20%"}} />
+                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "35%"}} />
+                                    <col style={{width: "15%"}} />
                                 </colgroup>
                                 <thead>
                                 <tr>
                                     <th style={styles.tableHeader}>ID</th>
-                                    <th style={styles.tableHeader}>Name</th>
+                                    <th style={styles.tableHeader}>First Name</th>
+                                    <th style={styles.tableHeader}>Last Name</th>
                                     <th style={styles.tableHeader}>Email</th>
+                                    <th style={styles.tableHeader}>Approved</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td colSpan="3" style={styles.emptyTableCell}>
-                                        No clients available
-                                    </td>
-                                </tr>
+                                {isLoadingClients ? (
+                                    <tr>
+                                        <td colSpan="5" style={styles.loadingCell}>
+                                            Loading clients...
+                                        </td>
+                                    </tr>
+                                ) : filteredClients.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="5" style={styles.emptyTableCell}>
+                                            No clients found
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredClients.map((client) => (
+                                        <tr key={client._id}>
+                                            <td style={styles.tableCell}>{client._id || 'N/A'}</td>
+                                            <td style={styles.tableCell}>{client.firstName || 'N/A'}</td>
+                                            <td style={styles.tableCell}>{client.lastName || 'N/A'}</td>
+                                            <td style={styles.tableCell}>{client.email || 'N/A'}</td>
+                                            <td style={{
+                                                ...styles.tableCell,
+                                                color: client.approved ? '#28a745' : '#dc3545'
+                                            }}>
+                                                {client.approved ? 'Yes' : 'No'}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 );
             case "professionals":
+                // Filter professionals based on search term and filter status
+                const filteredProfessionals = professionals.filter(prof => {
+                    // Search term filtering
+                    const matchesSearch =
+                        prof._id?.toString().toLowerCase().includes(professionalSearchTerm.toLowerCase()) ||
+                        prof.firstName?.toLowerCase().includes(professionalSearchTerm.toLowerCase()) ||
+                        prof.lastName?.toLowerCase().includes(professionalSearchTerm.toLowerCase()) ||
+                        prof.email?.toLowerCase().includes(professionalSearchTerm.toLowerCase());
+
+                    // Status filtering
+                    const matchesStatus =
+                        professionalFilterStatus === "all" ||
+                        (professionalFilterStatus === "approved" && prof.approved) ||
+                        (professionalFilterStatus === "unapproved" && !prof.approved);
+
+                    return matchesSearch && matchesStatus;
+                });
+
                 return (
                     <div style={styles.tabContent}>
                         <h2 style={styles.tabTitle}>Professional Management</h2>
@@ -174,45 +489,110 @@ export default function AdminDashboard() {
                                 type="text"
                                 placeholder="Search professionals..."
                                 style={styles.searchInput}
+                                value={professionalSearchTerm}
+                                onChange={(e) => setProfessionalSearchTerm(e.target.value)}
                             />
-                            <select style={styles.filterDropdown}>
+                            <select
+                                style={styles.filterDropdown}
+                                value={professionalFilterStatus}
+                                onChange={(e) => setProfessionalFilterStatus(e.target.value)}
+                            >
                                 <option value="all">All Professionals</option>
-                                <option value="verified">Verified</option>
-                                <option value="pending">Pending Verification</option>
+                                <option value="approved">Approved</option>
+                                <option value="unapproved">Unapproved</option>
                             </select>
+                            <button
+                                style={styles.refreshButton}
+                                onClick={fetchClients}
+                                disabled={isLoadingProfessionals}
+                            >
+                                {isLoadingProfessionals ? 'Loading...' : 'Refresh'}
+                            </button>
                         </div>
+
+                        {professionalError && (
+                            <div style={styles.errorMessage}>
+                                {professionalError}
+                            </div>
+                        )}
+
                         <div style={styles.tableContainer}>
                             <table style={styles.table}>
                                 <colgroup>
-                                    <col style={{width: "15%"}} />
-                                    <col style={{width: "20%"}} />
                                     <col style={{width: "20%"}} />
                                     <col style={{width: "15%"}} />
                                     <col style={{width: "15%"}} />
+                                    <col style={{width: "35%"}} />
                                     <col style={{width: "15%"}} />
                                 </colgroup>
                                 <thead>
                                 <tr>
                                     <th style={styles.tableHeader}>ID</th>
-                                    <th style={styles.tableHeader}>Name</th>
-                                    <th style={styles.tableHeader}>Specialty</th>
-                                    <th style={styles.tableHeader}>Joined Date</th>
-                                    <th style={styles.tableHeader}>Status</th>
-                                    <th style={styles.tableHeader}>Actions</th>
+                                    <th style={styles.tableHeader}>First Name</th>
+                                    <th style={styles.tableHeader}>Last Name</th>
+                                    <th style={styles.tableHeader}>Email</th>
+                                    <th style={styles.tableHeader}>Approved</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td colSpan="6" style={styles.emptyTableCell}>
-                                        No professionals available
-                                    </td>
-                                </tr>
+                                {isLoadingProfessionals ? (
+                                    <tr>
+                                        <td colSpan="5" style={styles.loadingCell}>
+                                            Loading professionals...
+                                        </td>
+                                    </tr>
+                                ) : filteredProfessionals.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="5" style={styles.emptyTableCell}>
+                                            No professionals available
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredProfessionals.map((prof) => (
+                                        <tr key={prof._id}>
+                                            <td style={styles.tableCell}>{prof._id || 'N/A'}</td>
+                                            <td style={styles.tableCell}>{prof.firstName || 'N/A'}</td>
+                                            <td style={styles.tableCell}>{prof.lastName || 'N/A'}</td>
+                                            <td style={styles.tableCell}>{prof.email || 'N/A'}</td>
+                                            <td style={{
+                                                ...styles.tableCell,
+                                                color: prof.approved ? '#28a745' : '#dc3545'
+                                            }}>
+                                                {prof.approved ? 'Yes' : 'No'}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 );
             case "jobs":
+                // Filter jobs based on search term and status filter
+                const filteredJobs = jobs.filter(job => {
+                    const matchesSearch =
+                        (job._id?.toString().toLowerCase().includes(jobSearchTerm.toLowerCase()) ||
+                            job.title?.toLowerCase().includes(jobSearchTerm.toLowerCase()) ||
+                            job.description?.toLowerCase().includes(jobSearchTerm.toLowerCase()) ||
+                            job.professionalNeeded?.toLowerCase().includes(jobSearchTerm.toLowerCase()) ||
+                            job.userEmail?.toLowerCase().includes(jobSearchTerm.toLowerCase()));
+
+                    // Get normalized status (lowercase and trimmed)
+                    const normalizedStatus = job.status?.toLowerCase().trim();
+
+                    // Check if status matches the filter (case-insensitive and whitespace-insensitive)
+                    const matchesStatus =
+                        jobFilterStatus === "all" ||
+                        (jobFilterStatus === "open" && normalizedStatus === "open") ||
+                        (jobFilterStatus === "closed" && normalizedStatus === "closed") ||
+                        (jobFilterStatus === "completed" && normalizedStatus === "completed") ||
+                        (jobFilterStatus === "in-progress" &&
+                            (normalizedStatus === "in-progress" || normalizedStatus === "inprogress" || normalizedStatus === "in progress"));
+
+                    return matchesSearch && matchesStatus;
+                });
+
                 return (
                     <div style={styles.tabContent}>
                         <h2 style={styles.tabTitle}>Jobs Management</h2>
@@ -221,15 +601,35 @@ export default function AdminDashboard() {
                                 type="text"
                                 placeholder="Search jobs..."
                                 style={styles.searchInput}
+                                value={jobSearchTerm}
+                                onChange={(e) => setJobSearchTerm(e.target.value)}
                             />
-                            <select style={styles.filterDropdown}>
+                            <select
+                                style={styles.filterDropdown}
+                                value={jobFilterStatus}
+                                onChange={(e) => setJobFilterStatus(e.target.value)}
+                            >
                                 <option value="all">All Jobs</option>
-                                <option value="pending">Pending</option>
-                                <option value="in-progress">In Progress</option>
+                                <option value="open">Open</option>
+                                <option value="closed">Closed</option>
                                 <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
+                                <option value="in-progress">In Progress</option>
                             </select>
+                            <button
+                                style={styles.refreshButton}
+                                onClick={fetchJobs}
+                                disabled={isLoadingJobs}
+                            >
+                                {isLoadingJobs ? 'Loading...' : 'Refresh'}
+                            </button>
                         </div>
+
+                        {jobError && (
+                            <div style={styles.errorMessage}>
+                                {jobError}
+                            </div>
+                        )}
+
                         <div style={styles.tableContainer}>
                             <table style={styles.table}>
                                 <colgroup>
@@ -253,17 +653,74 @@ export default function AdminDashboard() {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td colSpan="7" style={styles.emptyTableCell}>
-                                        No jobs available
-                                    </td>
-                                </tr>
+                                {isLoadingJobs ? (
+                                    <tr>
+                                        <td colSpan="7" style={styles.loadingCell}>
+                                            Loading jobs...
+                                        </td>
+                                    </tr>
+                                ) : filteredJobs.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="7" style={styles.emptyTableCell}>
+                                            No jobs available
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredJobs.map((job) => (
+                                        <tr key={job._id}>
+                                            <td style={styles.tableCell}>{job._id}</td>
+                                            <td style={styles.tableCell}>{job.title}</td>
+                                            <td style={styles.tableCell}>
+                                                {job.description && job.description.length > 50
+                                                    ? `${job.description.substring(0, 50)}...`
+                                                    : job.description}
+                                            </td>
+                                            <td style={styles.tableCell}>{job.professionalNeeded}</td>
+                                            <td style={styles.tableCell}>{job.userEmail}</td>
+                                            <td style={{
+                                                ...styles.tableCell,
+                                                color: job.status?.toLowerCase().trim() === 'completed'
+                                                    ? '#28a745'
+                                                    : job.status?.toLowerCase().trim() === 'closed'
+                                                        ? '#dc3545'
+                                                        : job.status?.toLowerCase().trim() === 'in-progress' ||
+                                                        job.status?.toLowerCase().trim() === 'inprogress' ||
+                                                        job.status?.toLowerCase().trim() === 'in progress'
+                                                            ? '#ffc107'
+                                                            : job.status?.toLowerCase().trim() === 'open'
+                                                                ? '#17a2b8'
+                                                                : '#6c757d'
+                                            }}>
+                                                {job.status}
+                                            </td>
+                                            <td style={styles.tableCell}>
+                                                {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : 'N/A'}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 );
             case "quotes":
+                // Filter quotes based on search term and status filter
+                const filteredQuotes = quotes.filter(quote => {
+                    const matchesSearch =
+                        (quote.professionalEmail?.toLowerCase().includes(quoteSearchTerm.toLowerCase()) ||
+                            quote.clientEmail?.toLowerCase().includes(quoteSearchTerm.toLowerCase()) ||
+                            quote._id?.toString().includes(quoteSearchTerm) ||
+                            quote.jobId?.toString().includes(quoteSearchTerm) ||
+                            (quote.price && quote.price.toString().includes(quoteSearchTerm)));
+
+                    const matchesStatus =
+                        quoteFilterStatus === "all" ||
+                        quote.status === quoteFilterStatus;
+
+                    return matchesSearch && matchesStatus;
+                });
+
                 return (
                     <div style={styles.tabContent}>
                         <h2 style={styles.tabTitle}>Quotes Management</h2>
@@ -272,15 +729,35 @@ export default function AdminDashboard() {
                                 type="text"
                                 placeholder="Search quotes..."
                                 style={styles.searchInput}
+                                value={quoteSearchTerm}
+                                onChange={(e) => setQuoteSearchTerm(e.target.value)}
                             />
-                            <select style={styles.filterDropdown}>
+                            <select
+                                style={styles.filterDropdown}
+                                value={quoteFilterStatus}
+                                onChange={(e) => setQuoteFilterStatus(e.target.value)}
+                            >
                                 <option value="all">All Quotes</option>
                                 <option value="pending">Pending</option>
                                 <option value="accepted">Accepted</option>
                                 <option value="rejected">Rejected</option>
                                 <option value="expired">Expired</option>
                             </select>
+                            <button
+                                style={styles.refreshButton}
+                                onClick={fetchQuotes}
+                                disabled={isLoadingQuotes}
+                            >
+                                {isLoadingQuotes ? 'Loading...' : 'Refresh'}
+                            </button>
                         </div>
+
+                        {quoteError && (
+                            <div style={styles.errorMessage}>
+                                {quoteError}
+                            </div>
+                        )}
+
                         <div style={styles.tableContainer}>
                             <table style={styles.table}>
                                 <colgroup>
@@ -298,15 +775,47 @@ export default function AdminDashboard() {
                                     <th style={styles.tableHeader}>Client Email</th>
                                     <th style={styles.tableHeader}>Price</th>
                                     <th style={styles.tableHeader}>Status</th>
-                                    <th style={styles.tableHeader}>Issue ID</th>
+                                    <th style={styles.tableHeader}>Job ID</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td colSpan="6" style={styles.emptyTableCell}>
-                                        No quotes available
-                                    </td>
-                                </tr>
+                                {isLoadingQuotes ? (
+                                    <tr>
+                                        <td colSpan="6" style={styles.loadingCell}>
+                                            Loading quotes...
+                                        </td>
+                                    </tr>
+                                ) : filteredQuotes.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="6" style={styles.emptyTableCell}>
+                                            No quotes available
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredQuotes.map((quote) => (
+                                        <tr key={quote._id}>
+                                            <td style={styles.tableCell}>{quote._id}</td>
+                                            <td style={styles.tableCell}>{quote.professionalEmail}</td>
+                                            <td style={styles.tableCell}>{quote.clientEmail}</td>
+                                            <td style={styles.tableCell}>
+                                                ${quote.price ? quote.price.toFixed(2) : '0.00'}
+                                            </td>
+                                            <td style={{
+                                                ...styles.tableCell,
+                                                color: quote.status === 'accepted'
+                                                    ? '#28a745'
+                                                    : quote.status === 'rejected'
+                                                        ? '#dc3545'
+                                                        : quote.status === 'expired'
+                                                            ? '#6c757d'
+                                                            : '#17a2b8'
+                                            }}>
+                                                {quote.status && quote.status.charAt(0).toUpperCase() + quote.status.slice(1)}
+                                            </td>
+                                            <td style={styles.tableCell}>{quote.jobId}</td>
+                                        </tr>
+                                    ))
+                                )}
                                 </tbody>
                             </table>
                         </div>
@@ -834,5 +1343,51 @@ const styles = {
         borderBottom: "2px solid #ddd",
         fontWeight: "600",
         color: "#2c3e50",
+    },
+    refreshButton: {
+        padding: "10px 15px",
+        backgroundColor: "#3498db",
+        color: "#fff",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+    },
+    tableCell: {
+        padding: "10px 15px",
+        borderBottom: "1px solid #eee",
+        color: "#333",
+    },
+    loadingCell: {
+        textAlign: "center",
+        padding: "20px",
+        color: "#3498db",
+    },
+    errorMessage: {
+        padding: "10px 15px",
+        backgroundColor: "#f8d7da",
+        color: "#721c24",
+        borderRadius: "5px",
+        marginBottom: "15px",
+    },
+    activityList: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+    },
+    activityItem: {
+        padding: "10px",
+        backgroundColor: "#fff",
+        borderRadius: "5px",
+        boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
+    },
+    activityTime: {
+        fontSize: "12px",
+        color: "#6c757d",
+        display: "block",
+        marginBottom: "5px",
+    },
+    activityText: {
+        margin: "0",
+        fontSize: "14px",
     },
 };

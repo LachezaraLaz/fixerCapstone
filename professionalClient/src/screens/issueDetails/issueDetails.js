@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from "react";
+import React, {useEffect, useState} from "react";
 import {
     View,
     Text,
@@ -21,21 +21,15 @@ import NotificationButton from "../../../components/notificationButton";
 import OrangeButton from "../../../components/orangeButton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback } from "react";
-import {en, fr} from '../../../localization'
-import { I18n } from "i18n-js";
-import { LanguageContext } from "../../../context/LanguageContext";
 
 const IssueDetails = () => {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [modalVisible, setModalVisible] = useState(false);
     const route = useRoute();
     const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
     const {jobId} = route.params;
-    let [modalVisible, setModalVisible] = useState(false);
-    const {locale, setLocale}  = useContext(LanguageContext);
-    const i18n = new I18n({ en, fr });
-    i18n.locale = locale;
 
     useEffect(() => {
         fetchJobDetails();
@@ -46,8 +40,6 @@ const IssueDetails = () => {
             fetchJobDetails();
         }, [jobId])
     );
-
-
 
     const fetchJobDetails = async () => {
         try {
@@ -100,10 +92,10 @@ const IssueDetails = () => {
         },
     };
 
-    const currentStatus = job.status?.toLowerCase() || "pending";
+    const currentStatus = job.status?.toLowerCase() || "in progress";
     const statusStyle = statusColors[currentStatus] || statusColors["pending"];
 
-    const updateIssueStatus = async (job, currentStatus) => {
+    const markJobComplete = async (job, currentStatus) => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
@@ -111,37 +103,35 @@ const IssueDetails = () => {
                 return;
             }
 
-            const newStatus = currentStatus.toLowerCase() === 'open' ? 'Closed By Client' : 'Open';
-            const actionText = newStatus === 'Closed By Client' ? 'delete' : 'reopen';
+            const newStatus = 'Completed';
 
             // Show a confirmation popup before proceeding
             Alert.alert(
-                i18n.t(`${actionText.toLowerCase()}`), // Use dynamic translation for the title
-                `${i18n.t('are_you_sure')} ${i18n.t(`${actionText.toLowerCase()}`)} ${i18n.t('this_issue')}${
-                    newStatus === 'Open' ? ' ' + i18n.t('modify_issue_text') : ''
-                }`,
+                'Mark job as Complete',
+                'You are about to mark this job as complete which is irreversible.\n\nContinue only if you have ' +
+                'received a payment from the client.\n\nWe will deduct 10% of the fee shortly after accepting.',
                 [
                     {
-                        text: `${i18n.t('cancel')}`,
-                        style: "cancel"
+                        text: 'Cancel',
+                        style: 'cancel'
                     },
                     {
-                        text: `${i18n.t('yes')}`,
+                        text: `Yes`,
                         onPress: async () => {
                             try {
                                 const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/updateStatus/${job.id}?status=${newStatus}`,
                                     {headers: {Authorization: `Bearer ${token}`}}
                                 );
 
-                                if (response.status === 200 || response.status === 201) {
-                                    Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Deleted' : 'Reopened'} successfully`);
-                                    navigation.navigate("MyIssuesPosted");
+                                if (response.status === 200) {
+                                    Alert.alert('Job marked as Complete successfully');
+                                    navigation.navigate("MyJobs");
                                 } else {
-                                    Alert.alert(`Failed to ${actionText} the job`);
+                                    Alert.alert('Failed to mark the job as complete');
                                 }
                             } catch (error) {
                                 console.error(`Error updating job status to ${newStatus}:`, error);
-                                Alert.alert(`An error occurred while trying to ${actionText} the job`);
+                                Alert.alert('An error occurred while trying to mark the job as complete');
                             }
                         }
                     }
@@ -162,7 +152,6 @@ const IssueDetails = () => {
         fetchJobDetails();
     };
 
-
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.container} contentContainerStyle={{paddingBottom: 50}}
@@ -176,26 +165,26 @@ const IssueDetails = () => {
                 </View>
 
                 <Text style={styles.jobTitle}>{job.title}</Text>
-                <Text style={styles.detailLabel}>{i18n.t('professional_needed')}</Text>
+                <Text style={styles.detailLabel}>Professional Needed </Text>
                 <Text style={styles.detailValue}>{job.professionalNeeded || "Not specified"}</Text>
 
-                <Text style={styles.detailLabel}>{i18n.t('status')}</Text>
+                <Text style={styles.detailLabel}>Status </Text>
                 <View style={[styles.statusContainer, {
                     backgroundColor: statusStyle.background,
                     borderColor: statusStyle.border
                 }]}>
                     <Text style={[styles.statusText, {color: statusStyle.text}]}>
-                        {i18n.t(`status_client.${job.status.toLowerCase()}`)}
+                        {job.status}
                     </Text>
                 </View>
 
                 {job.professionalEmail && (
                     <View>
-                        <Text style={styles.detailLabel}>{i18n.t('assigned_professional')}</Text>
+                        <Text style={styles.detailLabel}>Assigned Professional</Text>
                         <Text style={styles.detailValue}> {job.professionalEmail} </Text>
                     </View>
                 )}
-                <Text style={styles.detailLabel}>{i18n.t('created_on')}</Text>
+                <Text style={styles.detailLabel}>Created On</Text>
                 <Text style={styles.detailValue}>
                     {new Date(job.createdAt).toDateString()}{" "}
                     {new Date(job.createdAt).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}
@@ -214,8 +203,8 @@ const IssueDetails = () => {
                     </View>
                 ) : (
                     <View>
-                        <Text style={styles.detailLabel}>{i18n.t('attached_images')}</Text>
-                        <Text style={styles.detailValue}>{i18n.t('no_image_attached')}</Text>
+                        <Text style={styles.detailLabel}>Attached Images</Text>
+                        <Text style={styles.detailValue}>No image attached yet</Text>
                     </View>
                 )}
                 <Modal visible={modalVisible} transparent={true} animationType="fade">
@@ -242,48 +231,27 @@ const IssueDetails = () => {
 
                 {job.rating && (
                     <View>
-                        <Text style={styles.detailLabel}>{i18n.t('review')}</Text>
+                        <Text style={styles.detailLabel}>Review</Text>
                         <Text>
-                            <Text style={styles.detailSubLabel}>{i18n.t('rating')}: </Text>
+                            <Text style={styles.detailSubLabel}>Rating: </Text>
                             <Text style={styles.detailValue}>{job.rating} Stars</Text>
                         </Text>
                         <Text>
-                            <Text style={styles.detailSubLabel}>{i18n.t('comment')}: </Text>
+                            <Text style={styles.detailSubLabel}>Comment: </Text>
                             <Text style={styles.detailValue}>{job.comment || "No comment"}</Text>
                         </Text>
 
                     </View>
                 )}
-
-                {job.status.toLowerCase() === "completed" || job.status.toLowerCase() === "closed" ? (
+                {job.status.toLowerCase() === "in progress" ? (
                     <>
                         <OrangeButton
-                            title="Add Review"
-                            onPress={() => navigation.navigate("addReview", {jobId})}
+                            title="Mark Complete"
                             variant="normal"
-                        />
-                        <OrangeButton
-                            title="Reopen Issue"
-                            onPress={() => updateIssueStatus(job, job.status)}
+                            onPress={() => markJobComplete(job, currentStatus)}
                         />
                     </>
-                ) : job.status.toLowerCase() === "open" || job.status.toLowerCase() === "pending" ? (
-                    <>
-                        <OrangeButton
-                            title={i18n.t('modify_issue')}
-                            onPress={() => navigation.navigate("EditIssue", {jobId})}
-                        />
-                        <OrangeButton
-                            title={i18n.t('delete_issue')}
-                            onPress={() => updateIssueStatus(job, job.status)}
-                        />
-                    </>
-                ) : job.status.toLowerCase() === "in progress" ? (
-                        <>
-                            <Text style={styles.detailSubLabel}>{i18n.t('jobInProgressComment')} </Text>
-                        </>
                 ) : null}
-
             </ScrollView>
         </SafeAreaView>
     );

@@ -12,10 +12,11 @@ const { Jobs } = require('../model/createIssueModel');
  */
 const getAllJobs = async () => {
     try {
-        const jobs = await Jobs.find();
+        // Fetch only jobs with status "open"
+        const jobs = await Jobs.find({ status: 'open' });
         return jobs;
     } catch (error) {
-        throw new Error('Failed to fetch jobs');
+        throw new Error('Error fetching open jobs: ' + error.message);
     }
 };
 

@@ -72,6 +72,7 @@ const en = {
         "closed by client": "Closed By Client",
         completed: "Completed",
         pending: "Pending",
+        reopened: "Reopened",
         "in progress": "In Progress",
     },
     attached_images: "Attached Images",
@@ -91,6 +92,13 @@ const en = {
     use_default_address: "Use Default Address",
     enter_new_address: "Enter New Location",
     posting_your_job: "Posting your job...",
+    reopen: "reopen",
+    delete: "delete",
+    are_you_sure: "Are you sure you want to",
+    this_issue: "this issue?",
+    modify_issue_text: "This will clone this issue and create a new one. You can find it under your open issues.",
+    yes: "Yes",
+    jobInProgressComment: "This issue is currently in progress. For any changes or updates, please reach out to the professional assigned using the chat feature." ,
 }
 
 const fr = {
@@ -119,7 +127,7 @@ const fr = {
     Check_email_for_PIN:"Consultez votre courrier électronique pour obtenir un code PIN",
     home_screen: "Accueil",
     home: "Accueil",
-    in_progress: "en cours",
+    in_progress: "En cours",
     completed: "Terminé",
     jobs_available: "pas des travail libres",
     my_jobs: "Mes Tâches",
@@ -167,6 +175,8 @@ const fr = {
         "closed by client": "Fermé par le client",
         completed: "Terminé",
         pending: "En attente",
+        reopened: "rouvert",
+        "in progress": "En cours",
     },
     attached_images: "Images jointes",
     no_image_attached: "Aucune image jointe pour le moment",
@@ -184,7 +194,14 @@ const fr = {
     your_job_has_been_posted: "Bravo! Votre tâche a été soumis!",
     use_default_address: "Utiliser l'adresse du profil",
     enter_new_address: "Rentrez une nouvelle adresse",
-    posting_your_job: "Publication de votre tâche en cours..."
+    posting_your_job: "Publication de votre tâche en cours...",
+    reopen: "rouvrir",
+    delete: "supprimer",
+    are_you_sure: "Êtes-vous certain de procéder à",
+    this_issue: "ce problème?",
+    modify_issue_text: "Cela va cloner ce problème et créer un nouveau. Vous pouvez le trouver dans vos problèmes ouverts.",
+    yes: "Oui",
+    jobInProgressComment: "Ce problème est actuellement en cours. Pour toute modification ou mise à jour, veuillez contacter le professionnel assigné via la fonction de chat." ,
 }
 
 export {en, fr}

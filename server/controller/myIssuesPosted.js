@@ -110,11 +110,11 @@ const updateIssueStatus = async (req, res) => {
 // PUT /issue/:jobId route to update a single job by its ID
 const updateJob = async (req, res) => {
     const { jobId } = req.params;
-    const { title, description, professionalNeeded, status, email } = req.body;
+    const { title, description, professionalNeeded, status, email, timeline } = req.body;
     let imageUrl = req.file ? req.file.path : req.body.imageUrl; // Use the uploaded image or existing URL
 
     console.log('Updating jobId:', jobId);
-    console.log('Update data:', { title, description, professionalNeeded, status, imageUrl });
+    console.log('Update data:', { title, description, professionalNeeded, status, imageUrl, timeline });
     logger.info('Updating jobId:', jobId);
     logger.info('Update data:', { title, description, professionalNeeded, status, imageUrl });
 
@@ -131,6 +131,7 @@ const updateJob = async (req, res) => {
             title: title || existingJob.title,
             description: description || existingJob.description,
             professionalNeeded: professionalNeeded || existingJob.professionalNeeded,
+            timeline: timeline || existingJob.timeline,
             status: status || existingJob.status,
             ...(imageUrl && { imageUrl }), // Update imageUrl only if it's provided
         };

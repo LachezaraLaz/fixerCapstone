@@ -3,22 +3,25 @@ import {
     View,
     Text,
     TextInput,
-    Button,
-    Alert,
-    ActivityIndicator,
     TouchableOpacity,
     Image,
-    StyleSheet,
     ScrollView,
+    Alert,
+    ActivityIndicator,
+    RefreshControl
 } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { styles } from '../../../style/editIssueStyle';
 import { IPAddress } from '../../../ipAddress';
-
-/**
- * @module fixerClient
- */
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import InputField from "../../../components/inputField";
+import {I18n} from "i18n-js";
+import {en, fr} from "../../../localization";
+import DropdownField from "../../../components/dropdownField";
+import OrangeButton from "../../../components/orangeButton";
+const i18n = new I18n({ en, fr });
 
 export default function EditIssue({ route, navigation }) {
     const { jobId } = route.params;
@@ -28,16 +31,23 @@ export default function EditIssue({ route, navigation }) {
     const [professionalNeeded, setProfessionalNeeded] = useState('');
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [other, setOther] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedTimeLine, setSelectedTimeLine] = useState(null);
+    const [openTimeLine, setOpenTimeLine] = useState(false);
+    const [itemsTimeLine, setItemsTimeLine] = useState([
+        { label: `${i18n.t('low_priority')}`, value: 'low-priority'},
+        { label: `${i18n.t('high_priority')}`, value: 'high-priority' },
+    ]);
 
     /**
      * Fetches the details of a job from the server and updates the state with the retrieved data.
-     * 
+     *
      * @async
      * @function fetchJobDetails
      * @returns {Promise<void>}
      * @throws Will alert the user if there is an invalid session, job ID, or if an error occurs during the fetch.
-     * 
+     *
      * @description
      * This function retrieves the job details using the provided job ID and token stored in AsyncStorage.
      * If the token or job ID is invalid, it alerts the user and navigates back.
@@ -53,18 +63,16 @@ export default function EditIssue({ route, navigation }) {
                 navigation.goBack();
                 return;
             }
-
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, {
+            const response = await axios.get(`http://${IPAddress}:3000/issue/${jobId}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-
             if (response.status === 200) {
-                const { title, description, professionalNeeded, image } = response.data;
+                const { title, description, professionalNeeded, image, timeline } = response.data;
                 setTitle(title);
                 setDescription(description);
                 setProfessionalNeeded(professionalNeeded);
                 setImage(image);
-                setOther(!["Dripping Faucets", "Clogged Drains", "Leaky Pipes", "Flickering Lights", "Dead Outlets", "Faulty Switch"].includes(description));
+                setSelectedTimeLine(timeline);
             } else {
                 Alert.alert('Failed to load job details');
             }
@@ -110,7 +118,7 @@ export default function EditIssue({ route, navigation }) {
 
     /**
      * Updates the job with the provided details.
-     * 
+     *
      * This function performs the following steps:
      * 1. Validates that all required fields (title, professionalNeeded, description) are filled.
      * 2. Retrieves the authentication token from AsyncStorage.
@@ -118,7 +126,7 @@ export default function EditIssue({ route, navigation }) {
      * 4. Sends a PUT request to update the job on the server.
      * 5. Handles the server response and displays appropriate alerts based on the outcome.
      * 6. Manages loading state during the update process.
-     * 
+     *
      * @async
      * @function updateJob
      * @returns {Promise<void>} - A promise that resolves when the job update process is complete.
@@ -148,9 +156,7 @@ export default function EditIssue({ route, navigation }) {
                 return;
             }
         }
-
         setLoading(true);
-
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
@@ -163,7 +169,7 @@ export default function EditIssue({ route, navigation }) {
             formData.append('description', description);
             formData.append('professionalNeeded', professionalNeeded);
             formData.append('status', "Open");
-
+            formData.append('timeline', selectedTimeLine);
             if (image) {
                 formData.append('image', {
                     uri: image,
@@ -171,15 +177,12 @@ export default function EditIssue({ route, navigation }) {
                     name: 'issue_image.jpg',
                 });
             }
-
-            const response = await axios.put(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, formData, {
+            const response = await axios.put(`http://${IPAddress}:3000/issue/${jobId}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
-            console.log('Response from server:', response.data); // Debugging line
 
             if (response.status === 200) {
                 Alert.alert('Job updated successfully');
@@ -203,7 +206,6 @@ export default function EditIssue({ route, navigation }) {
         }
     };
 
-
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -213,115 +215,65 @@ export default function EditIssue({ route, navigation }) {
     }
 
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20 }}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Edit Job</Text>
-            <TextInput
-                placeholder="Title"
-                value={title}
-                onChangeText={setTitle}
-                style={{ borderBottomWidth: 1, marginBottom: 10 }}
-            />
-
-            {/* Professional selection options */}
-            <View style={styles.workBlocksContainer}>
-                <Text style={styles.sectionTitle}>Professional Needed</Text>
-                <View style={styles.workBlocks}>
-                    <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('plumber')}>
-                        <Text style={styles.workText}>Plumber</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('electrician')}>
-                        <Text style={styles.workText}>Electrician</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <Text style={styles.sectionTitle}>Issue Description</Text>
-                {professionalNeeded === 'plumber' && (
-                    <View style={styles.workBlocks}>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Dripping Faucets'); setOther(false); }}>
-                            <Text style={styles.workText}>Dripping Faucets</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Clogged Drains'); setOther(false); }}>
-                            <Text style={styles.workText}>Clogged Drains</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Leaky Pipes'); setOther(false); }}>
-                            <Text style={styles.workText}>Leaky Pipes</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => setOther(true)}>
-                            <Text style={styles.workText}>Other</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {professionalNeeded === 'electrician' && (
-                    <View style={styles.workBlocks}>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Flickering Lights'); setOther(false); }}>
-                            <Text style={styles.workText}>Flickering Lights</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Dead Outlets'); setOther(false); }}>
-                            <Text style={styles.workText}>Dead Outlets</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Faulty Switch'); setOther(false); }}>
-                            <Text style={styles.workText}>Faulty Switch</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => setOther(true)}>
-                            <Text style={styles.workText}>Other</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
+        <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
+        >
+            <View style={styles.customHeader}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>{i18n.t('modify_issue')}</Text>
             </View>
 
-            {other && (
-                <TextInput
-                    placeholder="Describe the issue..."
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline
-                    style={{ borderBottomWidth: 1, height: 100, textAlignVertical: 'top', marginBottom: 10 }}
+            <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('title')}*</Text>
+            <InputField
+                placeholder={`${i18n.t('title')}`}
+                value={title}
+                onChangeText={setTitle}
+            />
+            <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('job_description')}*</Text>
+            <InputField
+                placeholder={`${i18n.t('describe_your_service')}`}
+                value={description}
+                onChangeText={setDescription}
+                multiline
+            />
+
+            <View style={styles.imageContainer}>
+                <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
+                    {selectedImage ? (
+                        <View style={styles.imageWrapper}>
+                            <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+                            <TouchableOpacity style={{...styles.removeButton}} onPress={removeImage}>
+                                <Text style={{...styles.removeText}}>✖</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <View style={styles.placeholder}>
+                            <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
+                            <Text style={{ ...styles.text }}>{i18n.t('take_from_your_gallery')}</Text>
+                            <Text style={{...styles.supportedFormats}}>JPEG, PNG, HEIC, MP4</Text>
+                        </View>
+                    )}
+                </TouchableOpacity>
+            </View>
+
+            <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 30 }}>{i18n.t('select_timeline')}*</Text>
+            <View style={styles.pickerContainer}>
+                <DropdownField
+                    translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
+                    placeholder={i18n.t('select_timeline')}
+                    open={openTimeLine}
+                    items={itemsTimeLine}
+                    value={selectedTimeLine}
+                    setOpen={setOpenTimeLine}
+                    setItems={setItemsTimeLine}
+                    setValue={setSelectedTimeLine}
                 />
-            )}
-
-            {/* Image upload */}
-            <TouchableOpacity onPress={pickImage} style={{ marginBottom: 15 }}>
-                <View style={{ backgroundColor: '#eee', padding: 10, alignItems: 'center', borderRadius: 5 }}>
-                    <Text>Upload Image</Text>
-                </View>
-            </TouchableOpacity>
-
-            {image && (
-                <View style={{ alignItems: 'center', marginBottom: 15 }}>
-                    <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
-                </View>
-            )}
-
-            <Button title="Save Changes" onPress={updateJob} />
+            </View>
+            <OrangeButton
+            title={i18n.t('modify_issue')}
+            onPress={() => updateJob()}
+        />
         </ScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    workBlocksContainer: {
-        paddingHorizontal: 16,
-        marginVertical: 16,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    workBlocks: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    workBlock: {
-        backgroundColor: '#f0f0f0',
-        width: '48%',
-        padding: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    workText: {
-        fontSize: 16,
-        textAlign: 'center',
-    },
-});

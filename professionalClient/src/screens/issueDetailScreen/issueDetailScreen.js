@@ -14,8 +14,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {styles} from '../../../style/issueDetailScreen/issueDetailScreenStyle';
 import DefaultIssueImage from '../../../assets/noImage.png';
 import {getAddressFromCoords} from '../../../utils/geoCoding_utils';
-import {getClientByEmail} from "../../../utils/getClientByEmail";
-
 
 export default function IssueDetailScreen({issue, onClose}) {
     const navigation = useNavigation();
@@ -136,7 +134,7 @@ export default function IssueDetailScreen({issue, onClose}) {
 
                     <View style={styles.userInfo}>
                         <Ionicons name="person-circle-outline" size={45} color="#888"/>
-                        <Text style={styles.userName}>{client.firstName} {client.lastName}</Text>
+                        <Text style={styles.userName}>{issue.firstName} {issue.lastName}</Text>
                     </View>
 
 

@@ -127,6 +127,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 20,
+        marginBottom: 20,
     },
 
     urgencyText: {
@@ -162,6 +163,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 30,
+        marginBottom: 100,
     },
 
     locationText: {

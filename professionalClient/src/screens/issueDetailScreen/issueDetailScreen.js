@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import {
     View,
     Text,
@@ -9,19 +9,21 @@ import {
     Modal,
     Dimensions,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { styles } from '../../../style/issueDetailScreen/issueDetailScreenStyle';
+import {styles} from '../../../style/issueDetailScreen/issueDetailScreenStyle';
 import DefaultIssueImage from '../../../assets/noImage.png';
-import { getAddressFromCoords } from '../../../utils/geoCoding_utils';
+import {getAddressFromCoords} from '../../../utils/geoCoding_utils';
 import {getClientByEmail} from "../../../utils/getClientByEmail";
 
 
-export default function IssueDetailScreen({ issue, onClose }) {
+export default function IssueDetailScreen({issue, onClose}) {
     const navigation = useNavigation();
     const [address, setAddress] = useState('Loading address...');
-    const [client, setClient] = useState({ firstName: '', lastName: '' });
+    const [client, setClient] = useState({firstName: '', lastName: ''});
     const [modalVisible, setModalVisible] = useState(false);
+    const [scrollEnabled, setScrollEnabled] = useState(false);
+
     useEffect(() => {
         const fetchAddress = async () => {
             const formattedAddress = await getAddressFromCoords(issue.latitude, issue.longitude);
@@ -37,10 +39,9 @@ export default function IssueDetailScreen({ issue, onClose }) {
             if (fetchedClient) {
                 setClient(fetchedClient);
             } else {
-                setClient({ firstName: 'Unknown', lastName: '' });
+                setClient({firstName: 'Unknown', lastName: ''});
             }
         };
-
         fetchClient();
     }, [issue.clientEmail]);
 
@@ -58,6 +59,19 @@ export default function IssueDetailScreen({ issue, onClose }) {
         outputRange: [0, 1],
         extrapolate: 'clamp',
     });
+
+    useEffect(() => {
+        const listener = modalHeight.addListener(({ value }) => {
+            if (value >= MAX_HEIGHT - 5) { // Tolérance de 5px pour garantir l'activation
+                setScrollEnabled(true);
+            } else {
+                setScrollEnabled(false);
+            }
+        });
+
+        return () => modalHeight.removeListener(listener);
+    }, [modalHeight]);
+
 
 
     // PanResponder for swipe gestures
@@ -100,94 +114,98 @@ export default function IssueDetailScreen({ issue, onClose }) {
             testID="modal-container"
             style={[
                 styles.container,
-                { height: modalHeight }
+                {height: modalHeight}
             ]}
             {...panResponder.panHandlers}
         >
 
             {/* Drag handle */}
-            <View style={styles.dragHandle} />
+            <View style={styles.dragHandle}/>
 
             {/* Close Button */}
             <TouchableOpacity testID="close-button" style={styles.closeButton} onPress={onClose}>
-                <Ionicons name="close" size={25} color="#fff" />
+                <Ionicons name="close" size={25} color="#fff"/>
             </TouchableOpacity>
 
-            {/* Issue Details */}
-            <View style={styles.content}>
-                <Text style={styles.title}>{issue?.title || "No Title"}</Text>
+
+            <Animated.ScrollView scrollEnabled={scrollEnabled} style={{flex: 1}} contentContainerStyle={{paddingBottom: 80}}>
+                {/* Issue Details */}
+                <View style={styles.content}>
+                    <Text style={styles.title}>{issue?.title || "No Title"}</Text>
 
 
-                <View style={styles.userInfo}>
-                    <Ionicons name="person-circle-outline" size={45} color="#888" />
-                    <Text style={styles.userName}>{client.firstName} {client.lastName}</Text>
-                </View>
-
-
-                <Text style={styles.subtitle}>Description</Text>
-                <Text style={styles.description}>{issue?.description || "No Description"}</Text>
-
-                {/* Issue Info */}
-                <View style={styles.infoContainer}>
-                    <View style={styles.infoBox}>
-                        <Ionicons name="calendar-outline" size={18} color="#007AFF" />
-                        <Text style={styles.infoText}>Created: {issue?.createdAt?.slice(0, 10) || "Unknown"}</Text>
+                    <View style={styles.userInfo}>
+                        <Ionicons name="person-circle-outline" size={45} color="#888"/>
+                        <Text style={styles.userName}>{client.firstName} {client.lastName}</Text>
                     </View>
-                    <View style={styles.infoBox}>
-                        <Ionicons name="hammer-outline" size={18} color="#FF5733" />
-                        <Text style={styles.infoText}>{issue?.professionalNeeded || "Unknown Professional"}</Text>
+
+
+                    <Text style={styles.subtitle}>Description</Text>
+                    <Text style={styles.description}>{issue?.description || "No Description"}</Text>
+
+                    {/* Issue Info */}
+                    <View style={styles.infoContainer}>
+                        <View style={styles.infoBox}>
+                            <Ionicons name="calendar-outline" size={18} color="#007AFF"/>
+                            <Text style={styles.infoText}>Created: {issue?.createdAt?.slice(0, 10) || "Unknown"}</Text>
+                        </View>
+                        <View style={styles.infoBox}>
+                            <Ionicons name="hammer-outline" size={18} color="#FF5733"/>
+                            <Text style={styles.infoText}>{issue?.professionalNeeded || "Unknown Professional"}</Text>
+                        </View>
                     </View>
-                </View>
 
-                {/* Urgency Container */}
-                <View style={styles.urgencyContentContainer}>
-                    <Text style={styles.subtitle}>Urgency Timeline</Text>
-                    <View style={styles.urgencyContainer}>
-                        <Text style={styles.urgencyText}>{issue.priority || "High Priority"}</Text>
+                    {/* Urgency Container */}
+                    <View style={styles.urgencyContentContainer}>
+                        <Text style={styles.subtitle}>Urgency Timeline</Text>
+                        <View style={styles.urgencyContainer}>
+                            <Text style={styles.urgencyText}>{issue.priority || "High Priority"}</Text>
+                        </View>
                     </View>
-                </View>
 
-                {/* Header Image */}
-                <TouchableOpacity
-                    onPress={() => setModalVisible(true)}
-                    style={{ width: '100%', height: 250 }}
-                >
-                    <Image
-                        source={issue.imageUrl ? { uri: issue.imageUrl } : DefaultIssueImage}
-                        style={styles.headerImage}
-                    />
-                </TouchableOpacity>
-
-                {/* Image Zoom Modal */}
-                <Modal
-                    testID="image-modal"
-                    visible={modalVisible}
-                    transparent={true}
-                    animationType="fade"
-                    onRequestClose={() => setModalVisible(false)}
-                >
-                    <View style={styles.modalBackground}>
-                        <TouchableOpacity style={styles.modalCloseIcon} onPress={() => setModalVisible(false)}>
-                            <Ionicons name="close-circle" size={35} color="#fff" />
-                        </TouchableOpacity>
-
+                    {/* Header Image */}
+                    <TouchableOpacity
+                        onPress={() => setModalVisible(true)}
+                        style={{width: '100%', height: 250}}
+                    >
                         <Image
-                            source={issue.imageUrl && issue.imageUrl.trim() !== '' ? { uri: issue.imageUrl } : DefaultIssueImage}
-                            style={styles.zoomedImage}
-                            resizeMode="contain"
+                            testID="image-touchable"
+                            source={issue.imageUrl ? {uri: issue.imageUrl} : DefaultIssueImage}
+                            style={styles.headerImage}
                         />
-                    </View>
-                </Modal>
+                    </TouchableOpacity>
 
-                {/* Address */}
-                <View style={styles.locationContainer}>
-                    <Ionicons name="location-outline" size={18} color="#f5a623" />
-                    <Text style={styles.locationText}>{address || "No Address Provided"}</Text>
+                    {/* Image Zoom Modal */}
+                    <Modal
+                        testID="image-modal"
+                        visible={modalVisible}
+                        transparent={true}
+                        animationType="fade"
+                        onRequestClose={() => setModalVisible(false)}
+                    >
+                        <View style={styles.modalBackground}>
+                            <TouchableOpacity style={styles.modalCloseIcon} onPress={() => setModalVisible(false)}>
+                                <Ionicons name="close-circle" size={35} color="#fff"/>
+                            </TouchableOpacity>
+
+                            <Image
+                                source={issue.imageUrl && issue.imageUrl.trim() !== '' ? {uri: issue.imageUrl} : DefaultIssueImage}
+                                style={styles.zoomedImage}
+                                resizeMode="contain"
+                            />
+                        </View>
+                    </Modal>
+
+                    {/* Address */}
+                    <View style={styles.locationContainer}>
+                        <Ionicons name="location-outline" size={18} color="#f5a623"/>
+                        <Text style={styles.locationText}>{address || "No Address Provided"}</Text>
+                    </View>
                 </View>
-            </View>
+            </Animated.ScrollView>
 
             {/* Send a quote Button (Hidden until fully expanded) */}
-            <Animated.View style={[styles.bottomButtonsContainer, { opacity: buttonOpacity }]}>
+            <Animated.View style={[styles.bottomButtonsContainer, {opacity: buttonOpacity}]}>
                 <TouchableOpacity style={styles.sendQuoteButton} onPress={() => {
                     Animated.timing(modalHeight, {
                         toValue: 0,
@@ -195,7 +213,7 @@ export default function IssueDetailScreen({ issue, onClose }) {
                         useNativeDriver: false,
                     }).start(() => {
                         onClose();
-                        setTimeout(() => navigation.navigate('ContractOffer', { issue }), 100);
+                        setTimeout(() => navigation.navigate('ContractOffer', {issue}), 100);
                     });
                 }}>
                     <Text style={styles.sendQuoteButtonText}>Send Quote</Text>
@@ -208,7 +226,7 @@ export default function IssueDetailScreen({ issue, onClose }) {
                         useNativeDriver: false,
                     }).start(() => {
                         onClose();
-                        setTimeout(() => navigation.navigate('ChatScreen', { issue }), 100);
+                        setTimeout(() => navigation.navigate('ChatScreen', {issue}), 100);
                     });
                 }}>
                     <Text style={styles.chatButtonText}>Chat</Text>

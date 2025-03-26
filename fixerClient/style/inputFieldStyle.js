@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
     inputContainer: {
         paddingLeft: 14,
+        paddingRight: 14,
         paddingTop: 5,
         paddingBottom: 14,
         borderRadius: 8,
@@ -10,9 +11,10 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         width: '100%',
         alignSelf: 'center',
-        margin: 8,
+        // margin: 8,
         backgroundColor: '#fff',
         position: 'relative', // Needed for floating label positioning
+        marginBottom: 20,
     },
     input: {
         fontSize: 16,
@@ -39,6 +41,12 @@ const styles = StyleSheet.create({
     },
     disabledText: {
         color: '#888', // Muted text color for disabled floating label
+    },
+    // Multiline styles
+    multilineInput: {
+        minHeight: 100,
+        maxHeight: 175, // You can tweak this
+        textAlignVertical: 'top', // Makes text start from top in multiline fields
     },
 });
 

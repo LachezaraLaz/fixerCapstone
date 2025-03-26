@@ -11,6 +11,7 @@ const InputField = ({
     isError,
     disabled = false,
     secureTextEntry = false,
+    multiline = false, 
     style,
 }) => {
     const [focused, setFocused] = useState(false);
@@ -67,7 +68,8 @@ const InputField = ({
                 <TextInput
                     style={[
                         styles.input,
-                        disabled && styles.disabledInput, // Apply disabled styles
+                        disabled && styles.disabledInput,
+                        multiline && styles.multilineInput,
                     ]}
                     placeholder={value ? '' : placeholder} // Hide placeholder if value exists
                     onFocus={handleFocus}
@@ -76,6 +78,8 @@ const InputField = ({
                     onChangeText={onChangeText}
                     editable={!disabled} // Disable editing if disabled is true
                     secureTextEntry={secureTextEntry} // For password fields
+                    multiline={multiline} 
+                    numberOfLines={multiline ? 4 : 1} 
                 />
             </View>
         </Animated.View>

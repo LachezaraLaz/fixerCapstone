@@ -37,7 +37,7 @@ export default function NavBar({ setIsLoggedIn }) {
     }, []);
 
     const labels = {
-        Home: `${i18n.t('home_screen')}`,
+        Home: `${i18n.t('home')}`,
         JobsPosted: `${i18n.t('mission')}`,
         Chat: 'Chat',
         Profile: 'Profile',

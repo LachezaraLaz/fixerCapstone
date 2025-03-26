@@ -137,7 +137,7 @@ export const styles = StyleSheet.create({
 
     headerImage: {
         width: '100%',    // or numeric value, e.g., 300
-        height: 250,      // always define height explicitly
+        height: 245,      // always define height explicitly
         resizeMode: 'contain', // or 'cover' based on your preference
     },
 
@@ -157,7 +157,6 @@ export const styles = StyleSheet.create({
         width: '100%',
         height: '80%',
     },
-
 
     locationContainer: {
         flexDirection: 'row',

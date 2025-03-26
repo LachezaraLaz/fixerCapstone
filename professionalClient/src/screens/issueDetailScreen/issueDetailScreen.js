@@ -62,7 +62,7 @@ export default function IssueDetailScreen({issue, onClose}) {
 
     useEffect(() => {
         const listener = modalHeight.addListener(({ value }) => {
-            if (value >= MAX_HEIGHT - 5) { // Tolérance de 5px pour garantir l'activation
+            if (value >= MAX_HEIGHT - 5) {
                 setScrollEnabled(true);
             } else {
                 setScrollEnabled(false);
@@ -166,7 +166,7 @@ export default function IssueDetailScreen({issue, onClose}) {
                     {/* Header Image */}
                     <TouchableOpacity
                         onPress={() => setModalVisible(true)}
-                        style={{width: '100%', height: 250}}
+                        style={{width: '100%', height: 250, borderColor: 'grey', borderWidth: 2}}
                     >
                         <Image
                             testID="image-touchable"

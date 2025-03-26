@@ -135,13 +135,11 @@ export const styles = StyleSheet.create({
     },
 
     headerImage: {
-        marginTop: 30,
-        marginLeft: 20,
-        width: '50%',
-        height: 110,
-        borderTopLeftRadius: 25,
-        borderTopRightRadius: 25,
+        width: '100%',    // or numeric value, e.g., 300
+        height: 250,      // always define height explicitly
+        resizeMode: 'contain', // or 'cover' based on your preference
     },
+
     modalBackground: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.9)',

@@ -12,7 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../../style/issueDetailScreen/issueDetailScreenStyle';
-import DefaultIssueImage from '../../../assets/tool.png';
+import DefaultIssueImage from '../../../assets/noImage.png';
 import { getAddressFromCoords } from '../../../utils/geoCoding_utils';
 import {getClientByEmail} from "../../../utils/getClientByEmail";
 
@@ -139,11 +139,6 @@ export default function IssueDetailScreen({ issue, onClose }) {
                     </View>
                 </View>
 
-                {/* Status Tag */}
-                <View style={[styles.statusTag, issue.status === "Open" ? styles.statusOpen : styles.statusClosed]}>
-                    <Text style={styles.statusText}>Status: {issue?.status || "Unknown"}</Text>
-                </View>
-
                 {/* Urgency Container */}
                 <View style={styles.urgencyContentContainer}>
                     <Text style={styles.subtitle}>Urgency Timeline</Text>
@@ -153,10 +148,12 @@ export default function IssueDetailScreen({ issue, onClose }) {
                 </View>
 
                 {/* Header Image */}
-                <TouchableOpacity testID="image-touchable" onPress={() => setModalVisible(true)}>
+                <TouchableOpacity
+                    onPress={() => setModalVisible(true)}
+                    style={{ width: '100%', height: 250 }}
+                >
                     <Image
-                        testID="image-touchable"
-                        source={issue.image && issue.image.trim() !== '' ? { uri: issue.image } : DefaultIssueImage}
+                        source={issue.imageUrl ? { uri: issue.imageUrl } : DefaultIssueImage}
                         style={styles.headerImage}
                     />
                 </TouchableOpacity>
@@ -175,7 +172,7 @@ export default function IssueDetailScreen({ issue, onClose }) {
                         </TouchableOpacity>
 
                         <Image
-                            source={issue.image && issue.image.trim() !== '' ? { uri: issue.image } : DefaultIssueImage}
+                            source={issue.imageUrl && issue.imageUrl.trim() !== '' ? { uri: issue.imageUrl } : DefaultIssueImage}
                             style={styles.zoomedImage}
                             resizeMode="contain"
                         />

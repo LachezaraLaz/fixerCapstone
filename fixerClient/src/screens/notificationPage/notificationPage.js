@@ -141,30 +141,39 @@ const NotificationPage = () => {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+            >
+                <Text style={styles.backButtonText}>Back</Text>
+            </TouchableOpacity>
+
             <Text style={styles.title}>Notifications</Text>
             {notifications.length === 0 ? (
                 <Text style={styles.noNotifications}>No notifications available</Text>
             ) : (
+                <>
                 <FlatList
                     data={notifications}
+                    style={styles.list}
                     keyExtractor={(item) => item.id}
                     renderItem={renderNotification}
-                    ListFooterComponent={
-                        hasMore ? (
-                            <TouchableOpacity
-                                style={styles.loadMoreButton}
-                                onPress={fetchMoreNotifications}
-                                disabled={loading}
-                            >
-                                <Text style={styles.loadMoreText}>
-                                    {loading ? 'Loading...' : 'Load More'}
-                                </Text>
-                            </TouchableOpacity>
-                        ) : (
-                            <Text style={styles.noMoreNotifications}>No more notifications</Text>
-                        )
-                    }
                 />
+                {hasMore ? (
+                        <TouchableOpacity
+                            style={styles.loadMoreButton}
+                            onPress={fetchMoreNotifications}
+                            disabled={loading}
+                        >
+                            <Text style={styles.loadMoreText}>
+                                {loading ? 'Loading...' : 'Load More'}
+                            </Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <Text style={styles.noMoreNotifications}>No more notifications</Text>
+                    )
+                }
+                </>
             )}
         </View>
     );
@@ -172,7 +181,25 @@ const NotificationPage = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+    list: {
+        marginTop: 10,
+        marginBottom: 40,
+    },
+    backButton: {
+        position: 'absolute',
+        top: 15,
+        left: 15,
+        paddingVertical: 8,
+        paddingHorizontal: 14,
+        backgroundColor: '#007BFF',
+        borderRadius: 4,
+        zIndex: 2,
+    },
+    backButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
     notification: { padding: 15, marginBottom: 10, borderRadius: 5 },
     message: { fontSize: 16 },
     date: { fontSize: 12, color: 'gray' },
@@ -180,19 +207,29 @@ const styles = StyleSheet.create({
     unread: { backgroundColor: '#add8e6' },
     noNotifications: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
     loadMoreButton: {
-        padding: 10,
+        position: 'absolute',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        bottom: 10,
         backgroundColor: '#007BFF',
         borderRadius: 5,
         marginTop: 20,
         alignItems: 'center',
+        alignSelf: 'center',
+
+        elevation: 2,
     },
     loadMoreText: { color: 'white', fontSize: 16 },
     noMoreNotifications: {
+        position: 'absolute',
         fontSize: 16,
+        bottom: 10,
         color: 'gray',
         textAlign: 'center',
+        alignSelf: 'center',
         marginTop: 20,
     },
+
 });
 
 export default NotificationPage;

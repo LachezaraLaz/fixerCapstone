@@ -4,6 +4,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
 // import { IPAddress } from '../../../ipAddress';
+import CustomAlertSuccess from '../../../components/customAlertSuccess';
+import CustomAlertError from '../../../components/customAlertError';
 
 /**
  * @module professionalClient
@@ -17,10 +19,11 @@ export default function ContractOffer({ route, navigation }) {
     const [jobDescription, setJobDescription] = useState('');
     const [toolsMaterials, setToolsMaterials] = useState('');
     const [termsConditions, setTermsConditions] = useState('');
-    // const [startTime, setStartTime] = useState(new Date());
-    // const [completionTime, setCompletionTime] = useState(new Date());
-    // const [showStartPicker, setShowStartPicker] = useState(false);
-    // const [showCompletionPicker, setShowCompletionPicker] = useState(false);
+    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
+    const [errorAlertVisible, setErrorAlertVisible] = useState(false);
+    const [errorAlertContent, setErrorAlertContent] = useState({ title: '', message: '' });
+
 
     /**
      * Fetches the user profile based on the provided email.
@@ -85,25 +88,41 @@ export default function ContractOffer({ route, navigation }) {
         const parsedPrice = parseFloat(price);
 
         if (!price || isNaN(parsedPrice) || parsedPrice <= 0) {
-            Alert.alert('Invalid Price', 'Please enter a valid positive number for the price.');
+            setErrorAlertContent({
+                title: 'Invalid Price',
+                message: 'Please enter a valid positive number for the price.'
+            });
+            setErrorAlertVisible(true);
             return;
         }
 
         if (parsedPrice > 100000) {
-            Alert.alert('Invalid Price', 'Price should not exceed $100,000.');
+            setErrorAlertContent({
+                title: 'Invalid Price',
+                message: 'Price should not exceed $100,000.'
+            });
+            setErrorAlertVisible(true);
             return;
         }
 
         // Ensures that selectedIssue has necessary details
         if (!selectedIssue || !selectedIssue.userEmail || !selectedIssue.id) {
-            Alert.alert('Error', 'Unable to retrieve complete issue details. Please try again.');
+            setErrorAlertContent({
+                title: 'Error',
+                message: 'Unable to retrieve complete issue details. Please try again.'
+            });
+            setErrorAlertVisible(true);
             return;
         }
 
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
-                Alert.alert('Error', 'User token not found.');
+                setErrorAlertContent({
+                    title: 'Error',
+                    message: 'User token not found.'
+                });
+                setErrorAlertVisible(true);
                 return;
             }
 
@@ -137,20 +156,32 @@ export default function ContractOffer({ route, navigation }) {
             );
 
             if (response.status === 201) {
-                Alert.alert('Success', 'Quote submitted successfully!', [
-                    { text: 'OK', onPress: () => navigation.goBack() }
-                ]);
+                setSuccessAlertContent({
+                    title: 'Success',
+                    message: 'Quote submitted successfully!'
+                });
+                setSuccessAlertVisible(true);
             } else {
-                Alert.alert('Error', 'Failed to submit the quote.');
+                setErrorAlertContent({
+                    title: 'Error',
+                    message: 'Failed to submit the quote.'
+                });
+                setErrorAlertVisible(true);
             }
         } catch (error) {
             if (error.response?.status === 400) {
-                Alert.alert('Error', 'You have already submitted a quote for this issue.', [
-                    { text: 'OK', onPress: () => navigation.goBack() }
-                ]);
+                setErrorAlertContent({
+                    title: 'Error',
+                    message: 'You have already submitted a quote for this issue.'
+                });
+                setErrorAlertVisible(true);
             } else {
                 console.error('Error submitting quote:', error);
-                Alert.alert('Error', 'An error occurred while submitting the quote.');
+                setErrorAlertContent({
+                    title: 'Error',
+                    message: 'An error occurred while submitting the quote.'
+                });
+                setErrorAlertVisible(true);
             }
         }
     };
@@ -208,6 +239,25 @@ export default function ContractOffer({ route, navigation }) {
                     <Text style={styles.submitButtonText}>Submit Quote</Text>
                 </TouchableOpacity>
             </ScrollView>
+
+            {/* Custom Success Alert */}
+            <CustomAlertSuccess
+                visible={successAlertVisible}
+                title={successAlertContent.title}
+                message={successAlertContent.message}
+                onClose={() => {
+                    setSuccessAlertVisible(false);
+                    navigation.goBack(); // Redirect after success
+                }}
+            />
+
+            {/* Custom Error Alert */}
+            <CustomAlertError
+                visible={errorAlertVisible}
+                title={errorAlertContent.title}
+                message={errorAlertContent.message}
+                onClose={() => setErrorAlertVisible(false)}
+            />
         </KeyboardAvoidingView>
     );
 }

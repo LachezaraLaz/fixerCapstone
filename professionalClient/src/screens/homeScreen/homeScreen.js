@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AppState } from 'react-native';
 import { Platform } from 'react-native';
 import IssueDetailScreen from '../issueDetailScreen/issueDetailScreen';
+import CustomAlertLocation from '../../../components/customAlertLocation';
 
 
 /**
@@ -57,6 +58,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     // const [selectedIssue, setSelectedIssue] = React.useState(null);
     const [selectedMarker, setSelectedMarker] = React.useState(null);
     const modalTranslateY = React.useRef(new Animated.Value(500)).current; // Start off screen (500 px under screen)
+    const [errorAlertVisible, setErrorAlertVisible] = React.useState(false);
+    const [errorAlertContent, setErrorAlertContent] = React.useState({ title: '', message: '' });
 
     /**
      * Fetches all issues from the server and updates the state with the fetched data.
@@ -305,14 +308,11 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      */
     const handleRecenterMap = () => {
         if (locationPermission !== 'granted') {
-            Alert.alert(
-                "Location Permission Denied",
-                "To use this feature, enable location services in settings.",
-                [
-                    { text: "Back", style: "cancel" },
-                    { text: "Go to Settings", onPress: () => Linking.openSettings() }
-                ]
-            );
+            setErrorAlertContent({
+                title: 'Location Permission Denied',
+                message: 'To use this feature, enable location services in settings.'
+            });
+            setErrorAlertVisible(true);
             return;
         }
         if (mapRef.current && currentLocation) {
@@ -498,6 +498,19 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     />
                 </Animated.View>
             )}
+            <CustomAlertLocation
+                visible={errorAlertVisible}
+                title={errorAlertContent.title}
+                message={errorAlertContent.message}
+                confirmText="Go to Settings"
+                cancelText="Back"
+                onConfirm={() => {
+                    setErrorAlertVisible(false);
+                    Linking.openSettings();
+                }}
+                onClose={() => setErrorAlertVisible(false)}
+            />
+
         </SafeAreaView>
     );
 }

@@ -115,6 +115,27 @@ const NotificationPage = () => {
     };
 
     /**
+     * Gets the type of notification (approval/refusal) and changes the color accordingly
+     *
+     * @param item - the notification
+     * @returns {{backgroundColor: string}} - the background color
+     */
+    const getNotificationStyle = (item) => {
+        if (item.isRead) {
+            return styles.read;
+        }
+        // If it's unread, check the message for keywords
+        const msg = item.message.toLowerCase();
+        if (msg.includes('accepted')) {
+            return styles.accepted;
+        }
+        if (msg.includes('rejected')) {
+            return styles.rejected;
+        }
+        return styles.unread; // Default unread color for neutral notifications
+    };
+
+    /**
      * Renders a notification item.
      *
      * @param {Object} param - The parameter object.
@@ -131,11 +152,10 @@ const NotificationPage = () => {
                 toggleReadStatus(item.id, item.isRead);
                 navigation.navigate('NotificationDetail', { notification: item });
             }}
+            style={[styles.notificationContainer, getNotificationStyle(item)]}
         >
-            <View style={[styles.notification, item.isRead ? styles.read : styles.unread]}>
-                <Text style={styles.message}>{item.message}</Text>
-                <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>
-            </View>
+            <Text style={styles.message}>{item.message}</Text>
+            <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>
         </TouchableOpacity>
     );
 
@@ -200,11 +220,29 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
     },
-    notification: { padding: 15, marginBottom: 10, borderRadius: 5 },
+    notificationContainer: {
+        borderRadius: 6,
+        padding: 15,
+        marginHorizontal: 16,
+        marginVertical: 8,
+        // Simple shadow on iOS
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        // Elevation for Android
+        elevation: 2,
+    },
     message: { fontSize: 16 },
     date: { fontSize: 12, color: 'gray' },
     read: { backgroundColor: '#d3d3d3' },
     unread: { backgroundColor: '#add8e6' },
+    accepted: {
+        backgroundColor: '#ccffcc', // Light green
+    },
+    rejected: {
+        backgroundColor: '#ffcccc', // Light red
+    },
     noNotifications: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
     loadMoreButton: {
         position: 'absolute',

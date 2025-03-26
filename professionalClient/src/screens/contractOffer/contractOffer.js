@@ -23,6 +23,10 @@ export default function ContractOffer({ route, navigation }) {
     const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
     const [errorAlertVisible, setErrorAlertVisible] = useState(false);
     const [errorAlertContent, setErrorAlertContent] = useState({ title: '', message: '' });
+    const [jobDescriptionError, setJobDescriptionError] = useState(false);
+    const [toolsMaterialsError, setToolsMaterialsError] = useState(false);
+    const [termsConditionsError, setTermsConditionsError] = useState(false);
+    const [priceError, setPriceError] = useState(false);
 
 
     /**
@@ -87,19 +91,51 @@ export default function ContractOffer({ route, navigation }) {
     const submitQuote = async () => {
         const parsedPrice = parseFloat(price);
 
-        if (!price || isNaN(parsedPrice) || parsedPrice <= 0) {
+        // Reset all errors before validating again
+        setJobDescriptionError(false);
+        setToolsMaterialsError(false);
+        setTermsConditionsError(false);
+        setPriceError(false);
+
+        // Validate Job Description
+        if (!jobDescription.trim()) {
+            setJobDescriptionError(true);
             setErrorAlertContent({
-                title: 'Invalid Price',
-                message: 'Please enter a valid positive number for the price.'
+                title: 'Missing Job Description',
+                message: 'Please enter a job description.'
             });
             setErrorAlertVisible(true);
             return;
         }
 
-        if (parsedPrice > 100000) {
+        // Validate Tools-Materials
+        if (!toolsMaterials.trim()) {
+            setToolsMaterialsError(true);
+            setErrorAlertContent({
+                title: 'Missing Tools and Materials',
+                message: 'Please specify the tools and materials required.'
+            });
+            setErrorAlertVisible(true);
+            return;
+        }
+
+        // Validate Terms and Conditions
+        if (!termsConditions.trim()) {
+            setTermsConditionsError(true);
+            setErrorAlertContent({
+                title: 'Missing Terms and Conditions',
+                message: 'Please specify terms and conditions.'
+            });
+            setErrorAlertVisible(true);
+            return;
+        }
+
+        // Validate Price
+        if (!price || isNaN(parsedPrice) || parsedPrice <= 0 || parsedPrice > 100000) {
+            setPriceError(true);
             setErrorAlertContent({
                 title: 'Invalid Price',
-                message: 'Price should not exceed $100,000.'
+                message: 'Please enter a valid positive number (less than $100,000) for the price.'
             });
             setErrorAlertVisible(true);
             return;
@@ -201,28 +237,49 @@ export default function ContractOffer({ route, navigation }) {
 
                 <Text style={styles.label}>Job Description</Text>
                 <TextInput
-                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    style={[
+                        styles.inputContainer,
+                        { height: 150, textAlignVertical: 'top' },
+                        jobDescriptionError && { borderColor: 'red', borderWidth: 1 }
+                    ]}
                     placeholder="Describe your service"
                     value={jobDescription}
-                    onChangeText={setJobDescription}
+                    onChangeText={(text) => {
+                        setJobDescription(text);
+                        setJobDescriptionError(false);
+                    }}
                     multiline
                 />
 
                 <Text style={styles.label}>Tools-Materials</Text>
                 <TextInput
-                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    style={[
+                        styles.inputContainer,
+                        { height: 150, textAlignVertical: 'top' },
+                        toolsMaterialsError && { borderColor: 'red', borderWidth: 1 }
+                    ]}
                     placeholder="Enter Here"
                     value={toolsMaterials}
-                    onChangeText={setToolsMaterials}
+                    onChangeText={(text) => {
+                        setToolsMaterials(text);
+                        setToolsMaterialsError(false);
+                    }}
                     multiline
                 />
 
                 <Text style={styles.label}>Terms and Conditions</Text>
                 <TextInput
-                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    style={[
+                        styles.inputContainer,
+                        { height: 150, textAlignVertical: 'top' },
+                        termsConditionsError && { borderColor: 'red', borderWidth: 1 }
+                    ]}
                     placeholder="Enter Here"
                     value={termsConditions}
-                    onChangeText={setTermsConditions}
+                    onChangeText={(text) => {
+                        setTermsConditions(text);
+                        setTermsConditionsError(false);
+                    }}
                     multiline
                 />
 
@@ -231,8 +288,15 @@ export default function ContractOffer({ route, navigation }) {
                     placeholder="50"
                     value={price}
                     keyboardType="numeric"
-                    onChangeText={setPrice}
-                    style={[styles.input, { height: 40 }]}
+                    onChangeText={(text) => {
+                        setPrice(text);
+                        setPriceError(false);
+                    }}
+                    style={[
+                        styles.input,
+                        { height: 40 },
+                        priceError && { borderColor: 'red', borderWidth: 1 }
+                    ]}
                 />
 
                 <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>

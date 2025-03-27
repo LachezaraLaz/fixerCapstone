@@ -126,7 +126,7 @@ const submitQuote = async (req, res) => {
         // Create a notification for the quote
         const notification = new Notification({
             userId: clientInfo._id,  // Use the client's ID
-            message: `Your issue titled "${issue.title}" has received a new quote.`,
+            message: `🎉 Your issue titled "${issue.title}" has received a new quote.`,
             isRead: false
         });
         await notification.save();
@@ -243,7 +243,7 @@ const updateQuoteStatus = async (req, res) => {
             // Notify the professional whose quote was accepted
             const notification = new Notification({
                 userId: professional._id, // Professional's ID
-                message: `Your quote for the job titled "${issue.title}" has been accepted. The job is now in progress.`,
+                message: `🎉 Your quote for the job titled "${issue.title}" has been accepted. The job is now in progress.`,
                 isRead: false,
             });
             await notification.save();
@@ -264,7 +264,7 @@ const updateQuoteStatus = async (req, res) => {
                 if (rejectedProfessional) {
                     const rejectionNotification = new Notification({
                         userId: rejectedProfessional._id,
-                        message: `Your quote for the job titled "${issue.title}" has been rejected.`,
+                        message: `🔴 Your quote for the job titled "${issue.title}" has been rejected.`,
                         isRead: false,
                     });
                     await rejectionNotification.save();
@@ -295,7 +295,7 @@ const updateQuoteStatus = async (req, res) => {
 
             const notification = new Notification({
                 userId: professional._id, // Professional's ID
-                message: `Your quote for the job titled "${issue.title}" has been rejected.`,
+                message: `🔴 Your quote for the job titled "${issue.title}" has been rejected.`,
                 isRead: false,
             });
             await notification.save();

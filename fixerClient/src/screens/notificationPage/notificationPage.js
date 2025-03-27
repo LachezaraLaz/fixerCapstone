@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useLayoutEffect} from 'react';
+import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,6 +6,9 @@ import { useNavigation } from '@react-navigation/native';
 import { IPAddress } from '../../../ipAddress';
 import OrangeButton from "../../../components/orangeButton";
 import {Ionicons} from "@expo/vector-icons";
+import {LanguageContext} from "../../../context/LanguageContext";
+import {I18n} from "i18n-js";
+import {en, fr} from "../../../localization";
 
 /**
  * @module fixerClient
@@ -17,6 +20,10 @@ const NotificationPage = () => {
     const [hasMore, setHasMore] = useState(true);           // Track if more notifications are available
     const [page, setPage] = useState(1);                    // Current page for "Load More"
     const navigation = useNavigation();                     // Navigation hook
+
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -174,19 +181,54 @@ const NotificationPage = () => {
      * @param {string} param.item.createdAt - The creation date of the notification.
      * @returns {JSX.Element} The rendered notification component.
      */
-    const renderNotification = ({ item }) => (
-        <TouchableOpacity
-            onPress={() => {
-                toggleReadStatus(item.id, item.isRead);
-                navigation.navigate('NotificationDetail', { notification: item });
-            }}
-            style={[styles.notificationContainer, getNotificationStyle(item)]}
-        >
-            <Text style={item.isRead ? styles.message : styles.unreadMessage}>{item.message}</Text>
-            <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>
-        </TouchableOpacity>
-    );
+    const renderNotification = ({ item }) => {
+        const [first, title, last] = correctNotification(item)
 
+        return (
+            <TouchableOpacity
+                onPress={() => {
+                    toggleReadStatus(item.id, item.isRead);
+                    navigation.navigate('NotificationDetail', { notification: item });
+                }}
+                style={[styles.notificationContainer, getNotificationStyle(item)]}
+            >
+                <Text style={item.isRead ? styles.message : styles.unreadMessage}>
+                    {i18n.t(`${first}`) + ` "${title}" ` + i18n.t(`${last}`)}
+                </Text>
+                <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>
+            </TouchableOpacity>
+        );
+    }
+
+
+
+    const correctNotification = (item) => {
+        const message = item.message;
+        let start = '';
+        let end = '';
+
+        const first = message.substring(0, message.indexOf('"'));
+        const title = message.substring(message.indexOf('"') + 1, message.lastIndexOf('"'));
+        const last = message.substring(message.lastIndexOf('"') + 1);
+
+        if (first.includes("Your issue titled"))
+            start = 'your_issue_titled';
+        else if (first.includes("Congrats"))
+            start = 'your_quote_for_the_job_accepted';
+        else if (first.includes("Sorry"))
+            start = 'your_quote_for_the_job_rejected';
+
+        if (last.includes("has been created successfully."))
+            end = 'has_been_created';
+        else if (last.includes("has received a new quote."))
+            end = 'has_received_a_new_quote';
+        else if (last.includes("has been accepted. The job is now in progress."))
+            end = 'has_been_accepted';
+        else if (last.includes("has been rejected."))
+            end = 'has_been_rejected';
+
+        return [start, title, end]
+    }
     return (
         <View style={styles.container}>
             <View style={styles.containerHeader}>
@@ -199,7 +241,7 @@ const NotificationPage = () => {
             {/*    </>*/}
             </View>
             {notifications.length === 0 ? (
-                <Text style={styles.noNotifications}>No notifications available</Text>
+                <Text style={styles.noNotifications}>{i18n.t('no_notifications_available')}</Text>
             ) : (
                 <>
                 <FlatList
@@ -211,14 +253,14 @@ const NotificationPage = () => {
                 {hasMore ? (
                     <OrangeButton
                         style={{marginTop: 0}}
-                        title={loading ? 'Loading...' : 'Load More'}
+                        title={loading ? `${i18n.t('loading')}` : `${i18n.t('load_more')}`}
                         onPress={fetchMoreNotifications}
                         disabled={loading}
                     />
                     ) : (
                     <OrangeButton
                         style={{marginTop: 0}}
-                        title='No more Notifications'
+                        title={i18n.t('no_more_notifications')}
                         disabled={true}
                     />
                     )

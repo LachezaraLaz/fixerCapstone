@@ -83,6 +83,17 @@ const en = {
     visa_ending: "Visa ending in",
     language: "Language",
     title:"title",
+    no_notifications_available: "No notifications available",
+    loading: "Loading...",
+    load_more: "Load More",
+    no_more_notifications: "No more notifications",
+    your_issue_titled: "🎉 Congrats! Your issue titled",
+    your_quote_for_the_job_accepted: "🎉 Congrats! Your quote for the job titled",
+    your_quote_for_the_job_rejected: "🔴 Sorry! Your quote for the job titled",
+    has_been_created: "has been created successfully.",
+    has_received_a_new_quote: "has received a new quote.",
+    has_been_accepted: "has been accepted. The job is now in progress.",
+    has_been_rejected: "has been rejected.",
 }
 
 const fr = {
@@ -169,6 +180,16 @@ const fr = {
     payment_method: "Méthode de paiement",
     visa_ending: "Visa se terminant par",
     language: "Langue",
-}
+    no_notifications_available: 'Aucune notification disponible',
+    loading: 'Chargement',
+    load_more: 'Charger plus',
+    no_more_notifications: "Aucune notification",
+    your_issue_titled: "🎉 Félécitations! Votre tâche titrée",
+    has_been_created: "a été créée avec succès.",
+    has_received_a_new_quote: "a reçue une nouvelle soumission.",
+    your_quote_for_the_job_accepted: "🎉 Félécitations! Votre soumission pour la tâche",
+    has_been_accepted: "a été acceptée. La tâche est maintenant en cours.",
+    your_quote_for_the_job_rejected: "🔴 Désolé! Votre soumission pour la tâche",
+    has_been_rejected: "à été refusée.",}
 
 export {en, fr}

@@ -15,11 +15,9 @@ import DropDownPicker from 'react-native-dropdown-picker';
  * @module fixerClient
  */
 
-const ProfilePage = () => {
+const ProfilePage = ({navigation, setIsLoggedIn}) => {
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
-    const navigation = useNavigation();
-    let [modalVisible, setModalVisible] = useState(false);
     const {locale, setLocale}  = useContext(LanguageContext);
     const { changeLanguage } = useContext(LanguageContext);
     const i18n = new I18n({ en, fr });
@@ -116,7 +114,7 @@ const ProfilePage = () => {
                 <View style={styles.customHeader}>
                     <Text style={styles.headerLogo}>Fixr</Text>
                     <Text style={styles.headerTitle}>Profile</Text>
-                    <SettingsButton onPress={() => navigation.navigate('SettingsPage')} />
+                    <SettingsButton onPress={() => navigation.navigate('SettingsPage', {setIsLoggedIn})} />
                 </View>
 
                 <View style={styles.profileContainer}>

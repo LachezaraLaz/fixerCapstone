@@ -4,6 +4,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { IPAddress } from '../../../ipAddress';
+import OrangeButton from "../../../components/orangeButton";
+import {Ionicons} from "@expo/vector-icons";
 
 /**
  * @module fixerClient
@@ -180,21 +182,22 @@ const NotificationPage = () => {
             }}
             style={[styles.notificationContainer, getNotificationStyle(item)]}
         >
-            <Text style={styles.message}>{item.message}</Text>
+            <Text style={item.isRead ? styles.message : styles.unreadMessage}>{item.message}</Text>
             <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>
         </TouchableOpacity>
     );
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => navigation.goBack()}
-            >
-                <Text style={styles.backButtonText}>Back</Text>
-            </TouchableOpacity>
+            <View style={styles.containerHeader}>
+            {/*    <>*/}
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <Ionicons name="arrow-back" size={28} color="orange" />
+                    </TouchableOpacity>
 
-            <Text style={styles.title}>Notifications</Text>
+                    <Text style={styles.title}>Notifications</Text>
+            {/*    </>*/}
+            </View>
             {notifications.length === 0 ? (
                 <Text style={styles.noNotifications}>No notifications available</Text>
             ) : (
@@ -206,17 +209,18 @@ const NotificationPage = () => {
                     renderItem={renderNotification}
                 />
                 {hasMore ? (
-                        <TouchableOpacity
-                            style={styles.loadMoreButton}
-                            onPress={fetchMoreNotifications}
-                            disabled={loading}
-                        >
-                            <Text style={styles.loadMoreText}>
-                                {loading ? 'Loading...' : 'Load More'}
-                            </Text>
-                        </TouchableOpacity>
+                    <OrangeButton
+                        style={{marginTop: 0}}
+                        title={loading ? 'Loading...' : 'Load More'}
+                        onPress={fetchMoreNotifications}
+                        disabled={loading}
+                    />
                     ) : (
-                        <Text style={styles.noMoreNotifications}>No more notifications</Text>
+                    <OrangeButton
+                        style={{marginTop: 0}}
+                        title='No more Notifications'
+                        disabled={true}
+                    />
                     )
                 }
                 </>
@@ -227,27 +231,28 @@ const NotificationPage = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+
+    containerHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        paddingVertical: 12,
+    },
+
+    title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginLeft: 80 },
+
+    backButton: {
+        alignItems: 'left',
+        justifyContent: 'center',
+    },
+
     list: {
         marginTop: 10,
         marginBottom: 40,
     },
-    backButton: {
-        position: 'absolute',
-        top: 15,
-        left: 15,
-        paddingVertical: 8,
-        paddingHorizontal: 14,
-        backgroundColor: '#007BFF',
-        borderRadius: 4,
-        zIndex: 2,
-    },
-    backButtonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
+
     notificationContainer: {
-        borderRadius: 6,
+        borderRadius: 12,
         padding: 15,
         marginHorizontal: 16,
         marginVertical: 8,
@@ -259,17 +264,31 @@ const styles = StyleSheet.create({
         // Elevation for Android
         elevation: 2,
     },
-    message: { fontSize: 16 },
+    message: { fontSize: 16, color: 'black' },
+
+    unreadMessage: { fontSize: 16, color: 'white' },
+
     date: { fontSize: 12, color: 'gray' },
-    read: { backgroundColor: '#d3d3d3' },
+
+    read: { backgroundColor: 'white', borderWidth: 1, borderColor: 'orange' },
+
     unread: { backgroundColor: '#add8e6' },
+
     accepted: {
-        backgroundColor: '#ccffcc', // Light green
+        backgroundColor: 'orange', // Light green
     },
+
     rejected: {
-        backgroundColor: '#ffcccc', // Light red
+        backgroundColor: 'orange', // Light red
     },
-    noNotifications: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
+
+    noNotifications: {
+        fontSize: 16,
+        color: 'gray',
+        textAlign: 'center',
+        marginTop: 20
+    },
+
     loadMoreButton: {
         position: 'absolute',
         paddingHorizontal: 20,
@@ -283,7 +302,9 @@ const styles = StyleSheet.create({
 
         elevation: 2,
     },
+
     loadMoreText: { color: 'white', fontSize: 16 },
+
     noMoreNotifications: {
         position: 'absolute',
         fontSize: 16,

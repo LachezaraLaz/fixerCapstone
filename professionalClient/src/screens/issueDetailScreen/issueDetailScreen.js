@@ -8,20 +8,25 @@ import {
     Image,
     Modal,
     Dimensions,
+    Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../../style/issueDetailScreen/issueDetailScreenStyle';
 import DefaultIssueImage from '../../../assets/tool.png';
 import { getAddressFromCoords } from '../../../utils/geoCoding_utils';
-import {getClientByEmail} from "../../../utils/getClientByEmail";
-
+import { getClientByEmail } from "../../../utils/getClientByEmail";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 export default function IssueDetailScreen({ issue, onClose }) {
     const navigation = useNavigation();
     const [address, setAddress] = useState('Loading address...');
     const [client, setClient] = useState({ firstName: '', lastName: '' });
     const [modalVisible, setModalVisible] = useState(false);
+    const [bankingInfoAdded, setBankingInfoAdded] = useState(false);
+    const [loadingBankingInfo, setLoadingBankingInfo] = useState(true);
+
     useEffect(() => {
         const fetchAddress = async () => {
             const formattedAddress = await getAddressFromCoords(issue.latitude, issue.longitude);
@@ -44,6 +49,33 @@ export default function IssueDetailScreen({ issue, onClose }) {
         fetchClient();
     }, [issue.clientEmail]);
 
+    useEffect(() => {
+        const fetchBankingInfoStatus = async () => {
+            try {
+                const userId = await AsyncStorage.getItem('userId');
+                const token = await AsyncStorage.getItem('token');
+
+                if (!userId || !token) {
+                    console.error("No userId or token found in AsyncStorage");
+                    return;
+                }
+
+                const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
+                    params: { userId },
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                setBankingInfoAdded(response.data.bankingInfoAdded);
+            } catch (error) {
+                console.error('Error fetching banking info status:', error.response?.data || error.message);
+            } finally {
+                setLoadingBankingInfo(false);
+            }
+        };
+
+        fetchBankingInfoStatus();
+    }, []);
+
     // Animated value to control modal height (Start at Half-Screen)
     const SCREEN_HEIGHT = Dimensions.get('window').height;
     const MAX_HEIGHT = SCREEN_HEIGHT * 0.9;  // Fully Expanded Modal Height (90%)
@@ -59,6 +91,52 @@ export default function IssueDetailScreen({ issue, onClose }) {
         extrapolate: 'clamp',
     });
 
+    const handlePaymentMethodCheck = () => {
+        if (!bankingInfoAdded) {
+            Alert.alert(
+                'Payment Method Required',
+                'Cannot use this feature until a payment method has been added.',
+                [
+                    {
+                        text: 'Add Payment Method',
+                        onPress: () => navigation.navigate('BankingInfoPage')
+                    },
+                    {
+                        text: 'Cancel',
+                        style: 'cancel'
+                    }
+                ]
+            );
+            return false;
+        }
+        return true;
+    };
+
+    const handleSendQuote = () => {
+        if (!handlePaymentMethodCheck()) return;
+
+        Animated.timing(modalHeight, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: false,
+        }).start(() => {
+            onClose();
+            setTimeout(() => navigation.navigate('ContractOffer', { issue }), 100);
+        });
+    };
+
+    const handleChat = () => {
+        if (!handlePaymentMethodCheck()) return;
+
+        Animated.timing(modalHeight, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: false,
+        }).start(() => {
+            onClose();
+            setTimeout(() => navigation.navigate('ChatScreen', { issue }), 100);
+        });
+    };
 
     // PanResponder for swipe gestures
     const panResponder = useRef(
@@ -94,7 +172,6 @@ export default function IssueDetailScreen({ issue, onClose }) {
         })
     ).current;
 
-
     return (
         <Animated.View
             testID="modal-container"
@@ -104,7 +181,6 @@ export default function IssueDetailScreen({ issue, onClose }) {
             ]}
             {...panResponder.panHandlers}
         >
-
             {/* Drag handle */}
             <View style={styles.dragHandle} />
 
@@ -117,12 +193,10 @@ export default function IssueDetailScreen({ issue, onClose }) {
             <View style={styles.content}>
                 <Text style={styles.title}>{issue?.title || "No Title"}</Text>
 
-
                 <View style={styles.userInfo}>
                     <Ionicons name="person-circle-outline" size={45} color="#888" />
                     <Text style={styles.userName}>{client.firstName} {client.lastName}</Text>
                 </View>
-
 
                 <Text style={styles.subtitle}>Description</Text>
                 <Text style={styles.description}>{issue?.description || "No Description"}</Text>
@@ -191,30 +265,31 @@ export default function IssueDetailScreen({ issue, onClose }) {
 
             {/* Send a quote Button (Hidden until fully expanded) */}
             <Animated.View style={[styles.bottomButtonsContainer, { opacity: buttonOpacity }]}>
-                <TouchableOpacity style={styles.sendQuoteButton} onPress={() => {
-                    Animated.timing(modalHeight, {
-                        toValue: 0,
-                        duration: 200,
-                        useNativeDriver: false,
-                    }).start(() => {
-                        onClose();
-                        setTimeout(() => navigation.navigate('ContractOffer', { issue }), 100);
-                    });
-                }}>
-                    <Text style={styles.sendQuoteButtonText}>Send Quote</Text>
+                <TouchableOpacity
+                    style={[
+                        styles.sendQuoteButton,
+                        !bankingInfoAdded && styles.disabledSendButton
+                    ]}
+                    onPress={handleSendQuote}
+                >
+                    <Text style={[
+                        styles.sendQuoteButtonText,
+                        !bankingInfoAdded && styles.disabledButtonText
+                    ]}>
+                        Send Quote
+                    </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.chatButton} onPress={() => {
-                    Animated.timing(modalHeight, {
-                        toValue: 0,
-                        duration: 200,
-                        useNativeDriver: false,
-                    }).start(() => {
-                        onClose();
-                        setTimeout(() => navigation.navigate('ChatScreen', { issue }), 100);
-                    });
-                }}>
-                    <Text style={styles.chatButtonText}>Chat</Text>
+                <TouchableOpacity
+                    style={[
+                        styles.chatButton,
+                        !bankingInfoAdded && styles.disabledChatButton
+                    ]}
+                    onPress={handleChat}
+                >
+                    <Text style={styles.chatButtonText}>
+                        Chat
+                    </Text>
                 </TouchableOpacity>
             </Animated.View>
         </Animated.View>

@@ -4,6 +4,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
 // import { IPAddress } from '../../../ipAddress';
+import CustomAlertSuccess from '../../../components/customAlertSuccess';
+import CustomAlertError from '../../../components/customAlertError';
 
 /**
  * @module professionalClient
@@ -17,10 +19,15 @@ export default function ContractOffer({ route, navigation }) {
     const [jobDescription, setJobDescription] = useState('');
     const [toolsMaterials, setToolsMaterials] = useState('');
     const [termsConditions, setTermsConditions] = useState('');
-    // const [startTime, setStartTime] = useState(new Date());
-    // const [completionTime, setCompletionTime] = useState(new Date());
-    // const [showStartPicker, setShowStartPicker] = useState(false);
-    // const [showCompletionPicker, setShowCompletionPicker] = useState(false);
+    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
+    const [errorAlertVisible, setErrorAlertVisible] = useState(false);
+    const [errorAlertContent, setErrorAlertContent] = useState({ title: '', message: '' });
+    const [jobDescriptionError, setJobDescriptionError] = useState(false);
+    const [toolsMaterialsError, setToolsMaterialsError] = useState(false);
+    const [termsConditionsError, setTermsConditionsError] = useState(false);
+    const [priceError, setPriceError] = useState(false);
+
 
     /**
      * Fetches the user profile based on the provided email.
@@ -84,26 +91,74 @@ export default function ContractOffer({ route, navigation }) {
     const submitQuote = async () => {
         const parsedPrice = parseFloat(price);
 
-        if (!price || isNaN(parsedPrice) || parsedPrice <= 0) {
-            Alert.alert('Invalid Price', 'Please enter a valid positive number for the price.');
+        // Reset all errors before validating again
+        setJobDescriptionError(false);
+        setToolsMaterialsError(false);
+        setTermsConditionsError(false);
+        setPriceError(false);
+
+        // Validate Job Description
+        if (!jobDescription.trim()) {
+            setJobDescriptionError(true);
+            setErrorAlertContent({
+                title: 'Missing Job Description',
+                message: 'Please enter a job description.'
+            });
+            setErrorAlertVisible(true);
             return;
         }
 
-        if (parsedPrice > 100000) {
-            Alert.alert('Invalid Price', 'Price should not exceed $100,000.');
+        // Validate Tools-Materials
+        if (!toolsMaterials.trim()) {
+            setToolsMaterialsError(true);
+            setErrorAlertContent({
+                title: 'Missing Tools and Materials',
+                message: 'Please specify the tools and materials required.'
+            });
+            setErrorAlertVisible(true);
+            return;
+        }
+
+        // Validate Terms and Conditions
+        if (!termsConditions.trim()) {
+            setTermsConditionsError(true);
+            setErrorAlertContent({
+                title: 'Missing Terms and Conditions',
+                message: 'Please specify terms and conditions.'
+            });
+            setErrorAlertVisible(true);
+            return;
+        }
+
+        // Validate Price
+        if (!price || isNaN(parsedPrice) || parsedPrice <= 0 || parsedPrice > 100000) {
+            setPriceError(true);
+            setErrorAlertContent({
+                title: 'Invalid Price',
+                message: 'Please enter a valid positive number (less than $100,000) for the price.'
+            });
+            setErrorAlertVisible(true);
             return;
         }
 
         // Ensures that selectedIssue has necessary details
         if (!selectedIssue || !selectedIssue.userEmail || !selectedIssue.id) {
-            Alert.alert('Error', 'Unable to retrieve complete issue details. Please try again.');
+            setErrorAlertContent({
+                title: 'Error',
+                message: 'Unable to retrieve complete issue details. Please try again.'
+            });
+            setErrorAlertVisible(true);
             return;
         }
 
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
-                Alert.alert('Error', 'User token not found.');
+                setErrorAlertContent({
+                    title: 'Error',
+                    message: 'User token not found.'
+                });
+                setErrorAlertVisible(true);
                 return;
             }
 
@@ -137,20 +192,32 @@ export default function ContractOffer({ route, navigation }) {
             );
 
             if (response.status === 201) {
-                Alert.alert('Success', 'Quote submitted successfully!', [
-                    { text: 'OK', onPress: () => navigation.goBack() }
-                ]);
+                setSuccessAlertContent({
+                    title: 'Success',
+                    message: 'Quote submitted successfully!'
+                });
+                setSuccessAlertVisible(true);
             } else {
-                Alert.alert('Error', 'Failed to submit the quote.');
+                setErrorAlertContent({
+                    title: 'Error',
+                    message: 'Failed to submit the quote.'
+                });
+                setErrorAlertVisible(true);
             }
         } catch (error) {
             if (error.response?.status === 400) {
-                Alert.alert('Error', 'You have already submitted a quote for this issue.', [
-                    { text: 'OK', onPress: () => navigation.goBack() }
-                ]);
+                setErrorAlertContent({
+                    title: 'Error',
+                    message: 'You have already submitted a quote for this issue.'
+                });
+                setErrorAlertVisible(true);
             } else {
                 console.error('Error submitting quote:', error);
-                Alert.alert('Error', 'An error occurred while submitting the quote.');
+                setErrorAlertContent({
+                    title: 'Error',
+                    message: 'An error occurred while submitting the quote.'
+                });
+                setErrorAlertVisible(true);
             }
         }
     };
@@ -170,28 +237,49 @@ export default function ContractOffer({ route, navigation }) {
 
                 <Text style={styles.label}>Job Description</Text>
                 <TextInput
-                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    style={[
+                        styles.inputContainer,
+                        { height: 150, textAlignVertical: 'top' },
+                        jobDescriptionError && { borderColor: 'red', borderWidth: 1 }
+                    ]}
                     placeholder="Describe your service"
                     value={jobDescription}
-                    onChangeText={setJobDescription}
+                    onChangeText={(text) => {
+                        setJobDescription(text);
+                        setJobDescriptionError(false);
+                    }}
                     multiline
                 />
 
                 <Text style={styles.label}>Tools-Materials</Text>
                 <TextInput
-                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    style={[
+                        styles.inputContainer,
+                        { height: 150, textAlignVertical: 'top' },
+                        toolsMaterialsError && { borderColor: 'red', borderWidth: 1 }
+                    ]}
                     placeholder="Enter Here"
                     value={toolsMaterials}
-                    onChangeText={setToolsMaterials}
+                    onChangeText={(text) => {
+                        setToolsMaterials(text);
+                        setToolsMaterialsError(false);
+                    }}
                     multiline
                 />
 
                 <Text style={styles.label}>Terms and Conditions</Text>
                 <TextInput
-                    style={[styles.inputContainer, { height: 150, textAlignVertical: 'top' }]}
+                    style={[
+                        styles.inputContainer,
+                        { height: 150, textAlignVertical: 'top' },
+                        termsConditionsError && { borderColor: 'red', borderWidth: 1 }
+                    ]}
                     placeholder="Enter Here"
                     value={termsConditions}
-                    onChangeText={setTermsConditions}
+                    onChangeText={(text) => {
+                        setTermsConditions(text);
+                        setTermsConditionsError(false);
+                    }}
                     multiline
                 />
 
@@ -200,14 +288,40 @@ export default function ContractOffer({ route, navigation }) {
                     placeholder="50"
                     value={price}
                     keyboardType="numeric"
-                    onChangeText={setPrice}
-                    style={[styles.input, { height: 40 }]}
+                    onChangeText={(text) => {
+                        setPrice(text);
+                        setPriceError(false);
+                    }}
+                    style={[
+                        styles.input,
+                        { height: 40 },
+                        priceError && { borderColor: 'red', borderWidth: 1 }
+                    ]}
                 />
 
                 <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
                     <Text style={styles.submitButtonText}>Submit Quote</Text>
                 </TouchableOpacity>
             </ScrollView>
+
+            {/* Custom Success Alert */}
+            <CustomAlertSuccess
+                visible={successAlertVisible}
+                title={successAlertContent.title}
+                message={successAlertContent.message}
+                onClose={() => {
+                    setSuccessAlertVisible(false);
+                    navigation.goBack(); // Redirect after success
+                }}
+            />
+
+            {/* Custom Error Alert */}
+            <CustomAlertError
+                visible={errorAlertVisible}
+                title={errorAlertContent.title}
+                message={errorAlertContent.message}
+                onClose={() => setErrorAlertVisible(false)}
+            />
         </KeyboardAvoidingView>
     );
 }

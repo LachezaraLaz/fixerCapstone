@@ -218,4 +218,15 @@ export const styles = StyleSheet.create({
         fontSize: 16,
     },
 
+    disabledSendButton: {
+        backgroundColor: '#d84315',
+        borderColor: '#d84315',
+    },
+    disabledChatButton: {
+        backgroundColor: '#d84315',
+    },
+    disabledButtonText: {
+        color: '#ffffff',
+    },
+
 });

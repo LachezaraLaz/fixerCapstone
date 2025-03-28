@@ -110,7 +110,7 @@ export default function App() {
                                             options={{ headerShown: false }}  // This hides the default navigation header
                                         />
                                         <Stack.Screen name="ContractOffer" component={ContractOffer} />
-                                        <Stack.Screen name="FilterIssue" component={FilterIssuePage} />
+                                        <Stack.Screen name="FilterIssue" component={FilterIssuePage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="MyJobs" component={MyJobsPage} />
                                         <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
                                         <Stack.Screen name="UploadID" component={UploadID} />

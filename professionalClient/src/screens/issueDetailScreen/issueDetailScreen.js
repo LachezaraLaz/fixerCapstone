@@ -74,7 +74,8 @@ export default function IssueDetailScreen({issue, onClose}) {
     // Animation setup
     const SCREEN_HEIGHT = Dimensions.get('window').height;
     const MAX_HEIGHT = SCREEN_HEIGHT * 0.9;
-    const MIN_HEIGHT = SCREEN_HEIGHT * 0.35;
+    const MIN_HEIGHT = Math.min(SCREEN_HEIGHT * 0.35, MAX_HEIGHT - 60); // Ensure MIN < MAX - 50
+
     const modalHeight = useRef(new Animated.Value(MIN_HEIGHT)).current;
     const lastGestureDy = useRef(0);
 

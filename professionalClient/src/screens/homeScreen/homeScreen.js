@@ -45,10 +45,11 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
-    const [selectedFilters, setSelectedFilters] = React.useState([]);
+    // const [selectedFilters, setSelectedFilters] = React.useState([]);
+    const { selectedFilters = [], distanceRange, rating, timeline } = route.params || {};
     const [typesOfWork, setTypesOfWork] = React.useState([]);
-    const [rating, setRating] = React.useState(route.params?.rating || 0);
-    const [timeline, setTimeline] = React.useState(route.params?.timeline || '');
+    // const [rating, setRating] = React.useState(route.params?.rating || 0);
+    // const [timeline, setTimeline] = React.useState(route.params?.timeline || '');
     const [bankingInfoAdded, setBankingInfoAdded] = React.useState(false); // New state for banking info status
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
@@ -181,14 +182,14 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         };
     }, [navigation]);
 
-    React.useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            setSelectedFilters(route.params?.selectedFilters || []);
-            setRating(route.params?.rating || 0);
-            setTimeline(route.params?.timeline || '');
-        });
-        return unsubscribe;
-    }, [navigation, route.params]);
+    // React.useEffect(() => {
+    //     const unsubscribe = navigation.addListener('focus', () => {
+    //         setSelectedFilters(route.params?.selectedFilters || []);
+    //         setRating(route.params?.rating || 0);
+    //         setTimeline(route.params?.timeline || '');
+    //     });
+    //     return unsubscribe;
+    // }, [navigation, route.params]);
 
 
     /**
@@ -243,26 +244,66 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      * @param {Object} currentLocation - The current location with latitude and longitude.
      * @param {Array} route.params.distanceRange - The distance range [minDistance, maxDistance] to filter issues by.
      */
-    const filteredIssues = React.useMemo(() => {
-        return issues.filter(issue => {
-            const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
-            let matchesDistance = true;
-            if (currentLocation && route.params?.distanceRange) {
-                const [minDistance, maxDistance] = route.params.distanceRange;
-                const distance = calculateDistance(
-                    currentLocation.latitude,
-                    currentLocation.longitude,
-                    issue.latitude,
-                    issue.longitude
-                );
-                matchesDistance = distance >= minDistance && distance <= maxDistance;
-            }
-            const matchesRating = route.params?.rating ? issue.rating === route.params.rating : true; // filter value of star
-            const matchesUrgency = route.params?.timeline ? issue.timeline === route.params.timeline : true; // filter value of timeline
+    // const filteredIssues = React.useMemo(() => {
+    //     return issues.filter(issue => {
+    //         const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
+    //         let matchesDistance = true;
+    //         if (currentLocation && route.params?.distanceRange) {
+    //             const [minDistance, maxDistance] = route.params.distanceRange;
+    //             const distance = calculateDistance(
+    //                 currentLocation.latitude,
+    //                 currentLocation.longitude,
+    //                 issue.latitude,
+    //                 issue.longitude
+    //             );
+    //             matchesDistance = distance >= minDistance && distance <= maxDistance;
+    //         }
+    //         const matchesRating = route.params?.rating ? issue.rating === route.params.rating : true; // filter value of star
+    //         const matchesUrgency = route.params?.timeline ? issue.timeline === route.params.timeline : true; // filter value of timeline
 
-            return matchesProfessional && matchesDistance && matchesRating && matchesUrgency;
-        });
-    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange, route.params?.rating, route.params?.timeline]);
+    //         return matchesProfessional && matchesDistance && matchesRating && matchesUrgency;
+    //     });
+    // }, [issues, selectedFilters, currentLocation, route.params?.distanceRange, route.params?.rating, route.params?.timeline]);
+
+
+    const filteredIssues = issues.filter(issue => {
+        const typeOfWork = issue.professionalNeeded || ''; // Get the professional types
+    
+        // Match if ANY selected filter appears in the professionalNeeded string
+        const matchesType =
+            selectedFilters.length === 0 ||
+            selectedFilters.some(filter => {
+                const typesArray = typeOfWork.split(',').map(t => t.trim().toLowerCase());
+                return typesArray.includes(filter.toLowerCase());
+            });
+    
+        // Distance filter
+        let matchesDistance = true;
+        if (currentLocation && distanceRange && distanceRange.length === 2) {
+            const [minDistance, maxDistance] = distanceRange;
+            const distance = calculateDistance(
+                currentLocation.latitude,
+                currentLocation.longitude,
+                issue.latitude,
+                issue.longitude
+            );
+            matchesDistance = distance >= minDistance && distance <= maxDistance;
+        }
+    
+        // Rating filter
+        const matchesRating = !rating || issue.rating >= rating;
+    
+        // Timeline filter
+        const matchesTimeline = !timeline || issue.timeline === timeline;
+    
+        return matchesType && matchesDistance && matchesRating && matchesTimeline;
+    });
+    
+    
+    
+
+
+
 
     if (loading) {
         return (

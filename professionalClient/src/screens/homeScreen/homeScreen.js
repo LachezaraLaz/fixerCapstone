@@ -12,6 +12,7 @@ import { AppState } from 'react-native';
 import { Platform } from 'react-native';
 import IssueDetailScreen from '../issueDetailScreen/issueDetailScreen';
 import CustomAlertLocation from '../../../components/customAlertLocation';
+import NotificationButton from '../../../components/notificationButton';
 
 
 /**
@@ -210,7 +211,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         try {
             if (chatClient) await chatClient.disconnectUser();
             await AsyncStorage.multiRemove(['token', 'streamToken', 'userId', 'userName']);
-            Alert.alert('Logged out', 'You have been logged out successfully');
+            // Alert.alert('Logged out', 'You have been logged out successfully');
             setIsLoggedIn(false);
         } catch (error) {
             console.error("Error logging out: ", error);
@@ -273,7 +274,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     const mapHeight = scrollY.interpolate({
         inputRange: [0, 500],
-        outputRange: [450, 150],
+        outputRange: [350, 150],
         extrapolate: 'clamp',
     });
 
@@ -361,6 +362,17 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     return (
         <SafeAreaView style={styles.container}>
+
+            {/* Header */}
+            <View style={styles.customHeader}>
+                <Text style={styles.headerLogo}>Fixr</Text>
+                <Text style={styles.headerTitle}>Home</Text>
+                <NotificationButton
+                    testID="notification-button"
+                    onPress={() => navigation.navigate('NotificationPage')}
+                />
+            </View>
+
             {/* Notice for banking information */}
             {!bankingInfoAdded && Platform.OS !== 'ios' && (
                 <View style={styles.noticeContainer}>

@@ -134,8 +134,8 @@ export default function App() {
                         ) : (
                             <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                                 <>
-                                    <Stack.Screen name="welcomePage" component={WelcomePage} />
-                                    <Stack.Screen name="SignInPage">
+                                    <Stack.Screen name="welcomePage" component={WelcomePage} options={{ headerShown: false }}/>
+                                    <Stack.Screen name="SignInPage" options={{ headerShown: false }}>
                                         {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                     </Stack.Screen>
                                     <Stack.Screen name="SignUpPage" component={SignUpPage} />

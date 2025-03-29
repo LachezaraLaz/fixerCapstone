@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { IPAddress } from '../../../ipAddress';
+import OrangeButton from "../../../components/orangeButton";
+import {Ionicons} from "@expo/vector-icons";
+import {LanguageContext} from "../../../context/LanguageContext";
+import {I18n} from "i18n-js";
+import {en, fr} from "../../../localization";
 
 /**
  * @module fixerClient
@@ -15,6 +20,10 @@ const NotificationPage = () => {
     const [hasMore, setHasMore] = useState(true);           // Track if more notifications are available
     const [page, setPage] = useState(1);                    // Current page for "Load More"
     const navigation = useNavigation();                     // Navigation hook
+
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
     useEffect(() => {
         fetchNotifications();
@@ -40,7 +49,8 @@ const NotificationPage = () => {
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setNotifications(response.data);
+            const sorted = sortNotifications(response.data);
+            setNotifications(sorted);
         } catch (error) {
             console.error('Error fetching notifications:', error.message);
         } finally {
@@ -75,7 +85,9 @@ const NotificationPage = () => {
                 const newNotifications = response.data.filter(
                     (newNotification) => !notifications.some((notif) => notif._id === newNotification._id)
                 );
-                setNotifications((prevNotifications) => [...prevNotifications, ...newNotifications]);
+                const merged = [...notifications, ...newNotifications];
+                const sorted = sortNotifications(merged);
+                setNotifications(sorted);
                 setPage((prevPage) => prevPage + 1);
             } else {
                 setHasMore(false); // No more notifications
@@ -104,14 +116,31 @@ const NotificationPage = () => {
                 { isRead: !isRead },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            setNotifications((prevNotifications) =>
-                prevNotifications.map((notification) =>
-                    notification._id === id ? { ...notification, isRead: !isRead } : notification
-                )
-            );
+
+            setNotifications((prev) => {
+                const updated = prev.map((notification) =>
+                    notification._id === id
+                        ? { ...notification, isRead: !isRead }
+                        : notification
+                );
+                return sortNotifications(updated);
+            });
         } catch (error) {
             console.error('Error updating notification status:', error.message);
         }
+    };
+
+    /**
+     * Sorts the notification list, starting with the unread ones
+     * @param array - notifications
+     * @returns {*}
+     */
+    const sortNotifications = (array) => {
+        return array.slice().sort((a, b) => {
+            if (a.isRead && !b.isRead) return 1;  // b should come before a
+            if (!a.isRead && b.isRead) return -1; // a should come before b
+            return 0; // If both unread or both read, leave as-is
+        });
     };
 
     /**
@@ -119,80 +148,195 @@ const NotificationPage = () => {
      *
      * @param {Object} param - The parameter object.
      * @param {Object} param.item - The notification item.
-     * @param {string} param.item._id - The unique identifier of the notification.
+     * @param {string} param.item.id - The unique identifier of the notification.
      * @param {boolean} param.item.isRead - The read status of the notification.
      * @param {string} param.item.message - The message content of the notification.
      * @param {string} param.item.createdAt - The creation date of the notification.
      * @returns {JSX.Element} The rendered notification component.
      */
-    const renderNotification = ({ item }) => (
-        <TouchableOpacity
-            onPress={() => {
-                toggleReadStatus(item._id, item.isRead);
-                navigation.navigate('NotificationDetail', { notification: item });
-            }}
-        >
-            <View style={[styles.notification, item.isRead ? styles.read : styles.unread]}>
-                <Text style={styles.message}>{item.message}</Text>
-                <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>
-            </View>
-        </TouchableOpacity>
-    );
+    const renderNotification = ({ item }) => {
+        const [first, title, last] = correctNotification(item)
 
+        return (
+            <TouchableOpacity
+                onPress={() => {
+                    toggleReadStatus(item.id, item.isRead);
+                    navigation.navigate('NotificationDetail', { notification: item });
+                }}
+                style={[styles.notificationContainer, item.isRead ? styles.read : styles.unread]}
+            >
+                <Text style={item.isRead ? styles.message : styles.unreadMessage}>
+                    {i18n.t(`${first}`) + ` "${title}" ` + i18n.t(`${last}`)}
+                </Text>
+                <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>
+            </TouchableOpacity>
+        );
+    }
+
+
+
+    const correctNotification = (item) => {
+        const message = item.message;
+        let start = '';
+        let end = '';
+
+        const first = message.substring(0, message.indexOf('"'));
+        const title = message.substring(message.indexOf('"') + 1, message.lastIndexOf('"'));
+        const last = message.substring(message.lastIndexOf('"') + 1);
+
+        if (first.includes("Your issue titled"))
+            start = 'your_issue_titled';
+        else if (first.includes("Congrats"))
+            start = 'your_quote_for_the_job_accepted';
+        else if (first.includes("Sorry"))
+            start = 'your_quote_for_the_job_rejected';
+
+        if (last.includes("has been created successfully."))
+            end = 'has_been_created';
+        else if (last.includes("has received a new quote."))
+            end = 'has_received_a_new_quote';
+        else if (last.includes("has been accepted. The job is now in progress."))
+            end = 'has_been_accepted';
+        else if (last.includes("has been rejected."))
+            end = 'has_been_rejected';
+
+        return [start, title, end]
+    }
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Notifications</Text>
+            <View style={styles.containerHeader}>
+            {/*    <>*/}
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <Ionicons name="arrow-back" size={28} color="orange" />
+                    </TouchableOpacity>
+
+                    <Text style={styles.title}>Notifications</Text>
+            {/*    </>*/}
+            </View>
             {notifications.length === 0 ? (
-                <Text style={styles.noNotifications}>No notifications available</Text>
+                <Text style={styles.noNotifications}>{i18n.t('no_notifications_available')}</Text>
             ) : (
+                <>
                 <FlatList
                     data={notifications}
-                    keyExtractor={(item) => item._id}
+                    style={styles.list}
+                    keyExtractor={(item) => item.id}
                     renderItem={renderNotification}
-                    ListFooterComponent={
-                        hasMore ? (
-                            <TouchableOpacity
-                                style={styles.loadMoreButton}
-                                onPress={fetchMoreNotifications}
-                                disabled={loading}
-                            >
-                                <Text style={styles.loadMoreText}>
-                                    {loading ? 'Loading...' : 'Load More'}
-                                </Text>
-                            </TouchableOpacity>
-                        ) : (
-                            <Text style={styles.noMoreNotifications}>No more notifications</Text>
-                        )
-                    }
                 />
+                {hasMore ? (
+                    <OrangeButton
+                        style={{marginTop: 0}}
+                        title={loading ? `${i18n.t('loading')}` : `${i18n.t('load_more')}`}
+                        onPress={fetchMoreNotifications}
+                        disabled={loading}
+                    />
+                    ) : (
+                    <OrangeButton
+                        style={{marginTop: 0}}
+                        title={i18n.t('no_more_notifications')}
+                        disabled={true}
+                    />
+                    )
+                }
+                </>
             )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-    notification: { padding: 15, marginBottom: 10, borderRadius: 5 },
-    message: { fontSize: 16 },
-    date: { fontSize: 12, color: 'gray' },
-    read: { backgroundColor: '#d3d3d3' },
-    unread: { backgroundColor: '#add8e6' },
-    noNotifications: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
+    container: { 
+        flex: 1, 
+        padding: 20, 
+        backgroundColor: '#fff' 
+    },
+    containerHeader: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingBottom: 10, 
+        backgroundColor: '#fff',
+        paddingTop: 10,
+    },
+    title: { 
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
+    },
+    backButton: {
+        position: 'absolute',
+        left: 4,
+        top:10,
+    },
+    list: {
+        marginTop: 10,
+        marginBottom: 40,
+    },
+    notificationContainer: {
+        borderRadius: 12,
+        padding: 15,
+        marginHorizontal: 10,
+        marginVertical: 8,
+        // Simple shadow on iOS
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        // Elevation for Android
+        elevation: 2,
+    },
+    message: { 
+        fontSize: 16, 
+        color: 'black' 
+    },
+    unreadMessage: { 
+        fontSize: 16, 
+        color: 'white' 
+    },
+    date: { 
+        fontSize: 12, 
+        color: 'gray' 
+    },
+    read: { 
+        backgroundColor: 'white', 
+        borderWidth: 1, 
+        borderColor: 'orange' 
+    },
+    unread: { 
+        backgroundColor: 'orange' 
+    },
+    noNotifications: {
+        fontSize: 16,
+        color: 'gray',
+        textAlign: 'center',
+        marginTop: 20
+    },
     loadMoreButton: {
-        padding: 10,
+        position: 'absolute',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        bottom: 10,
         backgroundColor: '#007BFF',
         borderRadius: 5,
         marginTop: 20,
         alignItems: 'center',
+        alignSelf: 'center',
+        elevation: 2,
     },
-    loadMoreText: { color: 'white', fontSize: 16 },
+    loadMoreText: { 
+        color: 'white', 
+        fontSize: 16 
+    },
     noMoreNotifications: {
+        position: 'absolute',
         fontSize: 16,
+        bottom: 10,
         color: 'gray',
         textAlign: 'center',
+        alignSelf: 'center',
         marginTop: 20,
     },
+
 });
 
 export default NotificationPage;

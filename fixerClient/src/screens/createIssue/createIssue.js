@@ -10,7 +10,7 @@ import {
     TouchableWithoutFeedback,
     Alert,
     ActivityIndicator,
-    KeyboardAvoidingView, 
+    KeyboardAvoidingView,
     Platform ,
 } from 'react-native';
 import {memo, useContext, useEffect, useState, useMemo, useCallback} from 'react';
@@ -227,7 +227,7 @@ export default function CreateIssue({ navigation }) {
                     title: 'Invalid Job Category',
                     message: error.response?.data?.error || 'Please provide a home service or blue-collar job description.',
                 });
-                setCustomAlertVisible(true);                  
+                setCustomAlertVisible(true);
             } else {
                 console.error('Error enhancing description:', error);
                 setCustomAlertContent({
@@ -408,7 +408,7 @@ export default function CreateIssue({ navigation }) {
             setCustomAlertVisible(true);
             return;
         }
-          
+
         setLoading(true); // Start loading
 
         try {
@@ -429,7 +429,7 @@ export default function CreateIssue({ navigation }) {
             formData.append('status', "open");
             formData.append('timeline', selectedTimeLine);
             formData.append('imageUrl', selectedImage);
-            formData.append('address', fullAddress); 
+            formData.append('address', fullAddress);
 
             if (selectedImage) {
                 formData.append('image', {
@@ -581,6 +581,7 @@ export default function CreateIssue({ navigation }) {
                                     </TouchableOpacity>
                                 </View>
                             </View>
+
                         )}
                     </View>
 

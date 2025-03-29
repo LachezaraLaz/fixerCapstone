@@ -63,7 +63,7 @@ const createIssue = async (req, res) => {
         // Create a notification for the issue creator
         const notification = new Notification({
             userId: clientInfo._id,  // Use the client's ID
-            message: `Your issue titled "${title}" has been created successfully.`,
+            message: `🎉 Congrats! Your issue titled "${title}" has been created successfully.`,
             isRead: false
         });
         await notification.save();

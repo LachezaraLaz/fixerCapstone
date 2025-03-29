@@ -312,12 +312,24 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
             elevation: 5,
           }}>
             <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.title}</Text>
-            <Text style={{ fontSize: 14, marginTop: 5 }}>
-              <Ionicons name="hammer-outline" size={14} /> {item.professionalNeeded}
-            </Text>
-            <Text style={{ fontSize: 14, marginTop: 2 }}>
-              <Ionicons name="alarm-outline" size={14} /> {item.timeline}
-            </Text>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+                <Ionicons name="hammer-outline" size={14} style={{ marginRight: 4 }} />
+                <Text style={{ fontSize: 14 }}>{item.professionalNeeded}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                <Ionicons name="alarm-outline" size={14} style={{ marginRight: 4 }} />
+                <Text
+                    style={{
+                    fontSize: 14,
+                    color: item.timeline === 'high-priority' ? 'red' : item.timeline ? 'orange' : 'grey'
+                    }}
+                >
+                    {item.timeline ? formatTimeline(item.timeline) : 'N/A'}
+                </Text>
+            </View>
+
           </View>
         </TouchableOpacity>
     );
@@ -441,6 +453,15 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     };
     
     const groupedIssues = groupJobsByLocation(filteredIssues);
+
+    const formatTimeline = (timeline) => {
+        if (!timeline) return null;
+        return timeline
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join('-');
+    };
+      
     
     const handleCloseIssueDetail = () => {
         Animated.timing(modalTranslateY, {
@@ -597,8 +618,13 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                                     </Text>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Text style={styles.issueReviews}>|</Text>
-                                        <Text style={[styles.issueReviews, { color: issue.timeline === 'high-priority' ? 'red' : 'orange' }]}>
-                                            {issue.timeline}
+                                        <Text
+                                        style={[
+                                            styles.issueReviews,
+                                            { color: issue.timeline === 'high-priority' ? 'red' : issue.timeline ? 'orange' : 'grey' }
+                                        ]}
+                                        >
+                                        {issue.timeline ? formatTimeline(issue.timeline) : 'N/A'}
                                         </Text>
                                     </View>
 

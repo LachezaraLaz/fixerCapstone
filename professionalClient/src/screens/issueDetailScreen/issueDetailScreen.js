@@ -187,12 +187,15 @@ import axios from 'axios';
 
                     <View style={styles.infoContainer}>
                         <View style={styles.infoBox}>
-                            <Ionicons name="calendar-outline" size={18} color="#007AFF"/>
-                            <Text style={styles.infoText}>Created: {issue?.createdAt?.slice(0, 10) || "Unknown"}</Text>
-                        </View>
-                        <View style={styles.infoBox}>
                             <Ionicons name="hammer-outline" size={18} color="#FF5733"/>
                             <Text style={styles.infoText}>{issue?.professionalNeeded || "Unknown Professional"}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.infoContainer}>
+                        <View style={styles.infoBox}>
+                            <Ionicons name="calendar-outline" size={18} color="#007AFF"/>
+                            <Text style={styles.infoText}>Created: {issue?.createdAt?.slice(0, 10) || "Unknown"}</Text>
                         </View>
                     </View>
 

@@ -78,8 +78,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        marginBottom: 10,
-        marginTop: 30,
+        marginTop: 15,
     },
     infoBox: {
         flexDirection: 'row',
@@ -88,7 +87,6 @@ export const styles = StyleSheet.create({
         paddingVertical: 6,
         paddingHorizontal: 10,
         borderRadius: 10,
-        marginRight: 8,
     },
     infoText: {
         fontSize: 14,
@@ -127,7 +125,8 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 20,
-        marginBottom: 20,
+        marginBottom: 10,
+        marginTop:15
     },
 
     urgencyText: {
@@ -163,6 +162,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 30,
         marginBottom: 100,
+        paddingRight: 10,
     },
 
     locationText: {

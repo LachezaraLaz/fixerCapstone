@@ -251,20 +251,27 @@ const NotificationPage = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
+    container: { flex: 1, padding: 20, backgroundColor: '#fff' },
 
     containerHeader: {
-        flexDirection: 'row',
+        position: 'relative',
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        paddingVertical: 1,
+        justifyContent: 'center',
+        paddingBottom: 10,
+        backgroundColor: '#fff',
+        paddingTop: 10,
     },
 
-    title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginLeft: 80 },
+    title: { 
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
+    },
 
     backButton: {
-        alignItems: 'left',
-        justifyContent: 'center',
+        position: 'absolute',
+        left: 4,
+        top:10,
     },
 
     list: {
@@ -275,7 +282,7 @@ const styles = StyleSheet.create({
     notificationContainer: {
         borderRadius: 12,
         padding: 15,
-        marginHorizontal: 16,
+        marginHorizontal: 10,
         marginVertical: 8,
         // Simple shadow on iOS
         shadowColor: '#000',

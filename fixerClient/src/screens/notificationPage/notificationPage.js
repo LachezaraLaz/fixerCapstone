@@ -251,34 +251,33 @@ const NotificationPage = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-
+    container: { 
+        flex: 1, 
+        padding: 20, 
+        backgroundColor: '#fff' 
+    },
     containerHeader: {
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 10,
+        paddingBottom: 10, 
         backgroundColor: '#fff',
         paddingTop: 10,
     },
-
     title: { 
         fontSize: 20,
         fontWeight: 'bold',
         color: 'black',
     },
-
     backButton: {
         position: 'absolute',
         left: 4,
         top:10,
     },
-
     list: {
         marginTop: 10,
         marginBottom: 40,
     },
-
     notificationContainer: {
         borderRadius: 12,
         padding: 15,
@@ -292,23 +291,32 @@ const styles = StyleSheet.create({
         // Elevation for Android
         elevation: 2,
     },
-    message: { fontSize: 16, color: 'black' },
-
-    unreadMessage: { fontSize: 16, color: 'white' },
-
-    date: { fontSize: 12, color: 'gray' },
-
-    read: { backgroundColor: 'white', borderWidth: 1, borderColor: 'orange' },
-
-    unread: { backgroundColor: 'orange' },
-
+    message: { 
+        fontSize: 16, 
+        color: 'black' 
+    },
+    unreadMessage: { 
+        fontSize: 16, 
+        color: 'white' 
+    },
+    date: { 
+        fontSize: 12, 
+        color: 'gray' 
+    },
+    read: { 
+        backgroundColor: 'white', 
+        borderWidth: 1, 
+        borderColor: 'orange' 
+    },
+    unread: { 
+        backgroundColor: 'orange' 
+    },
     noNotifications: {
         fontSize: 16,
         color: 'gray',
         textAlign: 'center',
         marginTop: 20
     },
-
     loadMoreButton: {
         position: 'absolute',
         paddingHorizontal: 20,
@@ -319,12 +327,12 @@ const styles = StyleSheet.create({
         marginTop: 20,
         alignItems: 'center',
         alignSelf: 'center',
-
         elevation: 2,
     },
-
-    loadMoreText: { color: 'white', fontSize: 16 },
-
+    loadMoreText: { 
+        color: 'white', 
+        fontSize: 16 
+    },
     noMoreNotifications: {
         position: 'absolute',
         fontSize: 16,

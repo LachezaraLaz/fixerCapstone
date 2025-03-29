@@ -97,7 +97,7 @@ const NotificationPage = () => {
 
     /**
      * Toggles the read status of a notification.
-     *
+     * 
      * @param {string} id - The ID of the notification to update.
      * @param {boolean} isRead - The current read status of the notification.
      * @returns {Promise<void>} - A promise that resolves when the update is complete.
@@ -204,26 +204,33 @@ const NotificationPage = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
+    container: { 
+        flex: 1, 
+        padding: 20, 
+        backgroundColor: '#fff' 
+    },
     containerHeader: {
-        flexDirection: 'row',
+        position: 'relative',
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        paddingVertical: 12,
-    },
-
-    title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginLeft: 80 },
-
-    backButton: {
-        alignItems: 'left',
         justifyContent: 'center',
+        paddingBottom: 10, 
+        backgroundColor: '#fff',
+        paddingTop: 10,
     },
-
+    title: { 
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
+    },
+    backButton: {
+        position: 'absolute',
+        left: 4,
+        top:10,
+    },
     list: {
         marginTop: 10,
         marginBottom: 40,
     },
-
     notificationContainer: {
         borderRadius: 12,
         padding: 15,
@@ -237,23 +244,32 @@ const styles = StyleSheet.create({
         // Elevation for Android
         elevation: 2,
     },
-
-   readMessage: { fontSize: 16, color: 'black' },
-
-    unreadMessage: { fontSize: 16, color: 'white' },
-
-    date: { fontSize: 12, color: 'gray' },
-
-    readBox: { backgroundColor: 'white', borderWidth: 1, borderColor: 'orange' },
-
-    unreadBox: { backgroundColor: 'orange' },
+    readMessage: { 
+        fontSize: 16, 
+        color: 'black' 
+    },
+    unreadMessage: { 
+        fontSize: 16, 
+        color: 'white' 
+    },
+    date: { 
+        fontSize: 12, 
+        color: 'gray' 
+    },
+    readBox: { 
+        backgroundColor: 'white', 
+        borderWidth: 1, 
+        borderColor: 'orange' 
+    },
+    unreadBox: { 
+        backgroundColor: 'orange' 
+    },
     noNotifications: {
         fontSize: 16,
         color: 'gray',
         textAlign: 'center',
         marginTop: 20
     },
-
     loadMoreButton: {
         position: 'absolute',
         paddingHorizontal: 20,
@@ -264,12 +280,12 @@ const styles = StyleSheet.create({
         marginTop: 20,
         alignItems: 'center',
         alignSelf: 'center',
-
         elevation: 2,
     },
-
-    loadMoreText: { color: 'white', fontSize: 16 },
-
+    loadMoreText: { 
+        color: 'white', 
+        fontSize: 16 
+    },
     noMoreNotifications: {
         position: 'absolute',
         fontSize: 16,

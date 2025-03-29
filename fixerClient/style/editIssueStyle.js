@@ -1,61 +1,30 @@
-import {StyleSheet} from "react-native";
+import { StyleSheet } from 'react-native';
 
-export const styles = StyleSheet.create({
-    customHeader: {
-        width: '100%',
-        height: 70,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        backgroundColor: '#ffffff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-    },
-
-    headerLogo: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#f28500',
-    },
-
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#333',
-        textAlign: 'center',
-        flex: 1,
-    },
-    workBlocksContainer: {
-        paddingHorizontal: 16,
-        marginVertical: 16,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    workBlocks: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    workBlock: {
-        backgroundColor: '#f0f0f0',
-        width: '48%',
-        padding: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    workText: {
+const styles = StyleSheet.create({
+    text: {
+        color: "orange",
         fontSize: 16,
-        textAlign: 'center',
+        fontWeight: "bold"
     },
     imageWrapper: {
         width: '100%',
         height: '100%',
         position: 'relative',
+    },
+    removeButton: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        backgroundColor: 'orange',
+        borderRadius: 15,
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    removeText: {
+        fontSize: 12,
+        color: 'orange',
     },
     imagePreview: {
         width: '100%',
@@ -66,6 +35,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        // marginTop: 14,
     },
     uploadBox: {
         width: 300,
@@ -95,4 +65,60 @@ export const styles = StyleSheet.create({
         borderRadius: 8,
         marginTop: 20,
     },
+    aiEnhanceButton: {
+        position: 'absolute',
+        bottom: 30,
+        right: 15,
+        backgroundColor: '#ff8c00',
+        borderRadius: 50,
+        width: 32,
+        height: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 2,
+    },
+    headerContainer: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingBottom: 20,
+        backgroundColor: '#fff',
+    },
+    backButton: {
+        position: 'absolute',
+        left: 4,
+        top:0,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
+    },
+    badgeInfo: {
+        fontSize: 12,
+        color: '#666',
+        marginBottom: 4,
+        marginLeft: 8,
+        marginTop: -10,
+    },
+    loadingOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 999,
+    },
+
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#555',
+    },
+
 });
+
+export default styles;

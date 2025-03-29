@@ -35,7 +35,7 @@ import DropdownField from '../../../components/dropdownField';
 import ProfessionalSelector from '../../../components/searchAndSelectTagField';
 import CustomAlertError from '../../../components/customAlertError';
 import CustomAlertSuccess from '../../../components/customAlertSuccess';
-import styles from '../../../style/createIssueStyle'
+import styles from '../../../style/editIssueStyle'
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -60,7 +60,7 @@ export default function EditIssue({ route, navigation }) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState('');
     const [selectedProfessionals, setSelectedProfessionals] = useState([]);
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState('');
     const [selectedTimeLine, setSelectedTimeLine] = useState(null);
     const [currentAddress, setCurrentAddress] = useState('Loading address...');
     const [currentLongitude, setCurrentLongitude] = useState('');
@@ -86,7 +86,6 @@ export default function EditIssue({ route, navigation }) {
     const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
 
 
-
     /**
      * Asynchronously handles the enhancement of a job description using an AI service.
      * If the description is empty, an alert prompts the user to enter a description first.
@@ -99,16 +98,11 @@ export default function EditIssue({ route, navigation }) {
      * @returns {Promise<void>} A promise that resolves when the AI enhancement process is complete.
      */
     const handleAiEnhancement = async () => {
-        if (!description.trim()) {
-            Alert.alert('No text', 'Please enter some description first.');
-            return;
-        }
-
         try {
             setLoadingAi(true);
             // Call AI endpoint
             const response = await axios.post(
-                'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
+                `https://fixercapstone-production.up.railway.app/issue/aiEnhancement`,
                 { description }
             );
 
@@ -119,15 +113,15 @@ export default function EditIssue({ route, navigation }) {
             // Handle 400 Bad Request (Invalid Category)
             if (error.response && error.response.status === 400) {
                 setCustomAlertContent({
-                    title: 'Invalid Job Category',
-                    message: error.response?.data?.error || 'Please provide a home service or blue-collar job description.',
+                    title: i18n.t('ai_description_error_title'),
+                    message: error.response?.data?.error || i18n.t('ai_description_error_message'),
                 });
                 setCustomAlertVisible(true);
             } else {
                 console.error('Error enhancing description:', error);
                 setCustomAlertContent({
                     title: 'Error',
-                    message: 'Could not enhance your description. Please try again.',
+                    message: i18n.t('ai_description_error_message_2'),
                 });
                 setCustomAlertVisible(true);
             }
@@ -175,8 +169,8 @@ export default function EditIssue({ route, navigation }) {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
             setCustomAlertContent({
-                title: "Permission Required",
-                message: "Please allow access to your gallery through your phone settings App",
+                title: i18n.t('pick_image_permission_title'),
+                message: i18n.t('pick_image_permission_message'),
             });
             setCustomAlertVisible(true);
             return;
@@ -207,15 +201,11 @@ export default function EditIssue({ route, navigation }) {
 
 
     /**
-     * Asynchronously fetches the user's profile information from the server.
-     * It retrieves the user's token from AsyncStorage and uses it to make an authenticated GET request to fetch the profile data.
-     * If the profile contains a street and postal code, they are set as the default location.
-     * If the profile response is missing either the street or postal code, a warning is logged.
-     * Any errors during the fetch operation are caught and logged to the console.
+     * Asynchronously fetches the job/issue information from the server.
      *
      * @async
-     * @function fetchUserProfile
-     * @returns {Promise<void>} A promise that resolves when the profile fetch process is complete.
+     * @function fetchJobDetails
+     * @returns {Promise<void>} A promise that resolves when the job fetch process is complete.
      */
     useEffect(() => {
         fetchJobDetails();
@@ -253,7 +243,7 @@ export default function EditIssue({ route, navigation }) {
 
 
     /**
-     * Asynchronously verifies the user's address by sending a request to a server with the street and postal code.
+     * Asynchronously verifies the user's new address by sending a request to a server with the street and postal code.
      * If the default location is used, the stored default address is sent; otherwise, the newly entered street and postal code are sent.
      * The server response provides coordinates and a flag indicating if the address is valid.
      * The coordinates and validity status are then stored in the respective state variables.
@@ -265,20 +255,28 @@ export default function EditIssue({ route, navigation }) {
      */
     const verifyAddress = async () => {
         try {
-            const response = await axios.post('http://192.168.0.68:3000/client/verifyAddress', {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
                 street: useCurrentLocation ? currentAddress : newStreet,
                 postalCode: useCurrentLocation ? currentAddress.split(',')[1]?.trim() : newPostalCode,
             });
-
-            const { coordinates, isAddressValid } = response.data;
-            setCoordinates(coordinates);
-            console.log("in verify address, coords are ", coordinates);
-            setIsAddressValid(isAddressValid);
+            if (response.data.status === "success") {
+                const { coordinates, isAddressValid } = response.data;
+                setCoordinates(coordinates);
+                setIsAddressValid(isAddressValid);
+            }
+            else if (response.data.status === "error") {
+                console.log("❌ Address verification error.");
+                setCustomAlertContent({
+                    title: "Address Error",
+                    message: i18n.t('address_error_message'),
+                });
+                setCustomAlertVisible(true);
+            }
         } catch (error) {
             console.log("❌ Address verification error:", error);
             setCustomAlertContent({
                 title: "Address Error",
-                message: "Could not verify the address. Please double-check your info.",
+                message: i18n.t('address_error_message'),
             });
             setCustomAlertVisible(true);
         }
@@ -307,14 +305,77 @@ export default function EditIssue({ route, navigation }) {
     };
 
     /**
-     * Asynchronously posts a new job/issue to the server if the form is valid.
+     * Fetches the details of a job from the server and updates the state with the retrieved data.
+     *
+     * @async
+     * @function fetchJobDetails
+     * @returns {Promise<void>}
+     * @throws Will alert the user if there is an invalid session, job ID, or if an error occurs during the fetch.
+     *
+     * @description
+     * This function retrieves the job details using the provided job ID and token stored in AsyncStorage.
+     * If the token or job ID is invalid, it alerts the user and navigates back.
+     * On successful fetch, it updates the state with the job details including title, description, professional needed, and image.
+     * It also sets a flag if the description is not in the predefined list of common issues.
+     * If the fetch fails, it alerts the user about the failure.
+     */
+    const fetchJobDetails = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token || !jobId) {
+                setCustomAlertContent({
+                    title: "Error",
+                    message: i18n.t('invalid_session_id_error'),
+                });
+                setCustomAlertVisible(true);
+                navigation.goBack();
+                return;
+            }
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (response.status === 200) {
+                const { title, description, professionalNeeded, imageUrl, timeline, longitude, latitude } = response.data;
+                setTitle(title);
+                setDescription(description);
+                setSelectedProfessionals(professionalNeeded.split(',').map(item => item.trim()));
+                setSelectedImage(imageUrl);
+                setSelectedTimeLine(timeline);
+                setCurrentLongitude(longitude);
+                setCurrentLatitude(latitude);
+                await fetchAddress(longitude, latitude);
+            } else {
+                Alert.alert('Failed to load job details');
+            }
+        } catch (error) {
+            Alert.alert('Failed to load job details');
+            setCustomAlertContent({
+                title: "Error",
+                message: i18n.t('job_fetching_error_message'),
+            });
+            setCustomAlertVisible(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
+
+    /**
+     * Asynchronously updates the job/issue on the server if the form is valid.
      * The function first checks if all required fields are completed. If any fields are missing or invalid, an alert is shown.
-     * If the form is valid, it sends a POST request to the server with the job details, including the title, description, selected professionals, email, status, timeline, address, and optionally an image.
-     * If the request is successful (status 201), the form is reset, and a success alert is shown.
+     * If the form is valid, it sends a PUT request to the server with the job details, including the title, description, selected professionals, email, status, timeline, address, and optionally an image.
+     * If the request is successful (status 200), the form is reset, and a success alert is shown.
      * If any error occurs during the posting process, an error alert is displayed with a message.
      *
      * @async
-     * @function postIssue
+     * @function updateIssue
      * @returns {Promise<void>} A promise that resolves when the issue is posted.
      * @throws Will throw an error if the request fails or if required fields are empty.
      */
@@ -352,7 +413,7 @@ export default function EditIssue({ route, navigation }) {
             (useCurrentLocation ? formData.append('latitude', currentLatitude) : formData.append('latitude', coordinates.latitude));
             (useCurrentLocation ? formData.append('longitude',currentLongitude) : formData.append('longitude', coordinates.longitude));
 
-            if (selectedImage) {
+            if (selectedImage && selectedImage !== "null") {
                 formData.append('image', {
                     uri: selectedImage,
                     type: 'image/*',
@@ -371,12 +432,14 @@ export default function EditIssue({ route, navigation }) {
                 latitude: useCurrentLocation ? currentLatitude : coordinates.latitude,
             });
 
-            const response = await axios.put(`http://${IPAddress}:3000/issue/${jobId}`, formData, {
-                headers: {
+            const response = await axios.put(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, formData,
+                {
+               headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
                 },
-            });
+            }
+            );
             console.log("✅ Response:", response.data);
 
             if (response.status === 200) {
@@ -388,8 +451,8 @@ export default function EditIssue({ route, navigation }) {
                 setSelectedTimeLine(null);
 
                 setSuccessAlertContent({
-                    title: i18n.t('job_posted_successfully'),
-                    message: i18n.t('your_job_has_been_posted'),
+                    title: i18n.t('job_modified_successfully'),
+                    //message: i18n.t('your_job_has_been_posted'),
                 });
                 setSuccessAlertVisible(true);
             } else {
@@ -403,7 +466,7 @@ export default function EditIssue({ route, navigation }) {
             console.log("❌ Error:", error.response?.data || error.message);
             setCustomAlertContent({
                 title: "Error",
-                message: "An error occurred. Please try again.",
+                message: i18n.t('job_modification_error_message'),
             });
             setCustomAlertVisible(true);
         } finally {
@@ -411,65 +474,9 @@ export default function EditIssue({ route, navigation }) {
         }
     };
 
-    /**
-     * Fetches the details of a job from the server and updates the state with the retrieved data.
-     *
-     * @async
-     * @function fetchJobDetails
-     * @returns {Promise<void>}
-     * @throws Will alert the user if there is an invalid session, job ID, or if an error occurs during the fetch.
-     *
-     * @description
-     * This function retrieves the job details using the provided job ID and token stored in AsyncStorage.
-     * If the token or job ID is invalid, it alerts the user and navigates back.
-     * On successful fetch, it updates the state with the job details including title, description, professional needed, and image.
-     * It also sets a flag if the description is not in the predefined list of common issues.
-     * If the fetch fails, it alerts the user about the failure.
-     */
-    const fetchJobDetails = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token || !jobId) {
-                Alert.alert('Invalid session or job ID');
-                navigation.goBack();
-                return;
-            }
-            const response = await axios.get(`http://${IPAddress}:3000/issue/${jobId}`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-            console.log("after call", response.data);
-            if (response.status === 200) {
-                const { title, description, professionalNeeded, imageUrl, timeline, longitude, latitude } = response.data;
-                setTitle(title);
-                setDescription(description);
-                setSelectedProfessionals(professionalNeeded.split(',').map(item => item.trim()));
-                setSelectedImage(imageUrl);
-                setSelectedTimeLine(timeline);
-                setCurrentLongitude(longitude);
-                setCurrentLatitude(latitude);
-                console.log("in fetchJobDetails after setting currentLongitude and lat ", currentLongitude, currentLatitude);
-                console.log("but the long and lat from the response are: ", longitude, latitude);
-                await fetchAddress(longitude, latitude);
-            } else {
-                Alert.alert('Failed to load job details');
-            }
-        } catch (error) {
-            Alert.alert('An error occurred while loading job details');
-        } finally {
-            setLoading(false);
-        }
-    };
 
-    if (loading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        );
-    }
 
     const fetchAddress = async (longitude, latitude) => {
-        console.log("in fetchAddress. lat  is: ",currentLatitude," long is: ",currentLongitude);
         const formattedAddress = await getAddressFromCoords(latitude,longitude);
         setCurrentAddress(formattedAddress);
     };
@@ -480,7 +487,7 @@ export default function EditIssue({ route, navigation }) {
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // adjust as needed
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
             >
                 <View style={{ flex: 1 }}>
                     <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
@@ -493,7 +500,7 @@ export default function EditIssue({ route, navigation }) {
                                 testID="back-button"
                                 onPress={() => navigation.goBack()}
                             >
-                                <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                                <Ionicons name="arrow-back" size={28} color='#ff8c00' />
                             </TouchableOpacity>
 
                             <Text style={styles.headerTitle}>{i18n.t('modify_issue')}</Text>
@@ -529,6 +536,7 @@ export default function EditIssue({ route, navigation }) {
                                     <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
                                 )}
                             </TouchableOpacity>
+
                             {/* Show AI preview */}
                             {showAiPreview && (
                                 <View style={{
@@ -553,7 +561,7 @@ export default function EditIssue({ route, navigation }) {
                                         }}
                                                           onPress={handleAcceptAiSuggestion}
                                         >
-                                            <Text style={{ color: '#fff' }}>Accept</Text>
+                                            <Text style={{ color: '#fff' }}>{`${i18n.t('accept')}`}</Text>
                                         </TouchableOpacity>
 
                                         <TouchableOpacity style={{
@@ -563,7 +571,7 @@ export default function EditIssue({ route, navigation }) {
                                         }}
                                                           onPress={handleRejectAiSuggestion}
                                         >
-                                            <Text style={{ color: '#fff' }}>Reject</Text>
+                                            <Text style={{ color: '#fff' }}>{`${i18n.t('reject')}`}</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -595,7 +603,7 @@ export default function EditIssue({ route, navigation }) {
                         {/*Image upload*/}
                         <View style={styles.imageContainer}>
                             <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
-                                {selectedImage ? (
+                                {selectedImage && selectedImage !== 'null' &&  selectedImage !== "https://via.placeholder.com/150" ? (
                                     <View style={styles.imageWrapper}>
                                         <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
                                         <TouchableOpacity style={{...styles.removeButton}} onPress={removeImage}>
@@ -716,7 +724,7 @@ export default function EditIssue({ route, navigation }) {
                         {/* Create Issue Button */ }
                         <View>
                             <OrangeButton
-                                testID={'post-job-button'}
+                                testID={'modify-job-button'}
                                 title={i18n.t('modify_issue')}
                                 variant="normal"
                                 onPress={updateIssue}
@@ -744,7 +752,7 @@ export default function EditIssue({ route, navigation }) {
                     {loading && (
                         <View style={styles.loadingOverlay}>
                             <ActivityIndicator size="large" color="#FF8C00" />
-                            <Text style={styles.loadingText}>{i18n.t('posting_your_job')}</Text>
+                            <Text style={styles.loadingText}>{i18n.t('updating_your_job')}</Text>
                         </View>
                     )}
                 </View>

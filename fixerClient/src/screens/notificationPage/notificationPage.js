@@ -248,7 +248,7 @@ const NotificationPage = () => {
                             onPress={fetchMoreNotifications}
                             disabled={loading}
                         />
-                        ) : (
+                    ) : (
                         <OrangeButton
                             style={{marginTop: 0}}
                             title={i18n.t('no_more_notifications')}

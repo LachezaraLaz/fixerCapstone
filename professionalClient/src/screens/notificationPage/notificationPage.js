@@ -118,6 +118,22 @@ const NotificationPage = () => {
         }
     };
 
+    // Old notifications
+    const notifTimeLimit = 4 * 24 * 60 * 60 * 1000;    // 4 days
+    const now = new Date();
+
+    // New list
+    const currentNotifications = notifications.filter((n) => {
+        const isOlderThanFiveDays = (now - new Date(n.createdAt)) > notifTimeLimit;
+        return !(n.isRead && isOlderThanFiveDays);
+    });
+
+    // Old List
+    const oldNotifications = notifications.filter((n) => {
+        const isOlderThanFiveDays = (now - new Date(n.createdAt)) > notifTimeLimit;
+        return n.isRead && isOlderThanFiveDays;
+    });
+
     /**
      * Renders a notification item as a touchable component.
      *
@@ -166,31 +182,36 @@ const NotificationPage = () => {
                 <Text style={styles.title}>Notifications</Text>
                 {/*    </>*/}
             </View>
-            {notifications.length === 0 ? (
+            {currentNotifications.length === 0 ? (
                 <Text style={styles.noNotifications}>No notifications available</Text>
             ) : (
                 <>
-                <FlatList
-                data={notifications}
-                style={styles.list}
-                keyExtractor={(item) => item.id}
-                renderItem={renderItem}
-            />
-            {hasMore ? (
-                <OrangeButton
-                    style={{marginTop: 0}}
-                    title='Load More'
-                    onPress={fetchMoreNotifications}
-                    disabled={loading}
-                />
-            ) : (
-                <OrangeButton
-                    style={{marginTop: 0}}
-                    title="No more notifications"
-                    disabled={true}
-                />
-                )
-            }
+                    <FlatList
+                        data={currentNotifications}
+                        style={styles.list}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderItem}
+                    />
+                    {hasMore ? (
+                        <OrangeButton
+                            style={{marginTop: 0}}
+                            title='Load More'
+                            onPress={fetchMoreNotifications}
+                            disabled={loading}
+                        />
+                    ) : (
+                        <OrangeButton
+                            style={{marginTop: 0}}
+                            title="No more notifications"
+                            disabled={true}
+                        />
+                        )
+                    }
+                    <OrangeButton
+                        title="View Old Notifications"
+                        onPress={() => navigation.navigate('oldNotifications', { oldNotifications })}
+                        style={{ marginTop: 10 }}
+                    />
                 </>
             )}
         </View>

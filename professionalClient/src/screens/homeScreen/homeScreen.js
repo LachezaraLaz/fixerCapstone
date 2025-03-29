@@ -26,6 +26,7 @@ import NotificationButton from '../../../components/notificationButton';
 import Carousel from 'react-native-snap-carousel-v4';
 
 
+
 /**
  * @module professionalClient
  */
@@ -200,30 +201,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         };
     }, [navigation]);
 
-    // React.useEffect(() => {
-    //     const unsubscribe = navigation.addListener('focus', () => {
-    //         setSelectedFilters(route.params?.selectedFilters || []);
-    //         setRating(route.params?.rating || 0);
-    //         setTimeline(route.params?.timeline || '');
-    //     });
-    //     return unsubscribe;
-    // }, [navigation, route.params]);
-
-    React.useEffect(() => {
-        const listener = modalTranslateY.addListener(({ value }) => {
-          setShowCarousel(value > 200); // only hide when nearly full screen
-        });
-      
-        return () => {
-          modalTranslateY.removeListener(listener);
-        };
-    }, []);
-      
-      
-    
-
-    
-
     /**
      * Handles the user logout process.
      *
@@ -259,44 +236,11 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      * @name filteredIssues
      * @returns {Array} - The filtered list of unique issues.
      *
-     * @example
-     * // Example usage:
-     * const issues = [
-     *   { _id: '1', professionalNeeded: 'plumber', latitude: 40.7128, longitude: -74.0060 },
-     *   { _id: '2', professionalNeeded: 'electrician', latitude: 34.0522, longitude: -118.2437 }
-     * ];
-     * const selectedFilters = ['plumber'];
-     * const currentLocation = { latitude: 37.7749, longitude: -122.4194 };
-     * const route = { params: { distanceRange: [0, 100] } };
-     * const result = filteredIssues(issues, selectedFilters, currentLocation, route.params.distanceRange);
-     * console.log(result);
-     *
      * @param {Array} issues - The list of issues to filter.
      * @param {Array} selectedFilters - The list of selected filters for professionals needed.
      * @param {Object} currentLocation - The current location with latitude and longitude.
      * @param {Array} route.params.distanceRange - The distance range [minDistance, maxDistance] to filter issues by.
      */
-    // const filteredIssues = React.useMemo(() => {
-    //     return issues.filter(issue => {
-    //         const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
-    //         let matchesDistance = true;
-    //         if (currentLocation && route.params?.distanceRange) {
-    //             const [minDistance, maxDistance] = route.params.distanceRange;
-    //             const distance = calculateDistance(
-    //                 currentLocation.latitude,
-    //                 currentLocation.longitude,
-    //                 issue.latitude,
-    //                 issue.longitude
-    //             );
-    //             matchesDistance = distance >= minDistance && distance <= maxDistance;
-    //         }
-    //         const matchesRating = route.params?.rating ? issue.rating === route.params.rating : true; // filter value of star
-    //         const matchesUrgency = route.params?.timeline ? issue.timeline === route.params.timeline : true; // filter value of timeline
-
-    //         return matchesProfessional && matchesDistance && matchesRating && matchesUrgency;
-    //     });
-    // }, [issues, selectedFilters, currentLocation, route.params?.distanceRange, route.params?.rating, route.params?.timeline]);
-
 
     const filteredIssues = issues.filter(issue => {
         const typeOfWork = issue.professionalNeeded || ''; // Get the professional types
@@ -378,8 +322,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         </TouchableOpacity>
     );
       
-      
-
     
     if (loading) {
         return (
@@ -446,29 +388,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     /**
      * Handles marker click: Opens bottom sheet with issue details.
      */
-    // const handleMarkerPress = (issue) => {
-    //     setSelectedMarker(issue);
-
-    //     modalTranslateY.setValue(500);
-    //     Animated.spring(modalTranslateY, {
-    //         toValue: 0,
-    //         friction: 8,
-    //         tension: 50,
-    //         useNativeDriver: true,
-    //     }).start();
-
-    //     if (mapRef.current) {
-    //         mapRef.current.animateToRegion({
-    //             latitude: issue.latitude,
-    //             longitude: issue.longitude,
-    //             latitudeDelta: 0.0122,
-    //             longitudeDelta: 0.0121,
-    //         }, 500);
-    //     }
-    // };
-
     const roundCoord = (coord) => Math.round(coord * 10000) / 10000;
-
 
     const handleMarkerPress = (selected) => {
         const lat = roundCoord(selected.latitude);
@@ -482,6 +402,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
         setSelectedMarker(jobsAtSameLocation || []);
         setSelectedIssue(selected);
+        setShowCarousel(true);
 
         modalTranslateY.setValue(500);
         Animated.spring(modalTranslateY, {
@@ -519,12 +440,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         return groups;
     };
     
-    
     const groupedIssues = groupJobsByLocation(filteredIssues);
     
-
-
-
     const handleCloseIssueDetail = () => {
         Animated.timing(modalTranslateY, {
             toValue: 500,  // go down (Out of screen)
@@ -532,6 +449,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
             useNativeDriver: true,
         }).start(() => {
             setSelectedMarker(null); // close modal when animation is finished
+            setShowCarousel(false);
         });
     };
 
@@ -593,27 +511,30 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             return (
                                 <Marker
                                     key={`marker-${index}`}
-                                    coordinate={{ latitude: firstIssue.latitude, longitude: firstIssue.longitude }}
+                                    coordinate={{latitude: firstIssue.latitude, longitude: firstIssue.longitude}}
                                     onPress={() => handleMarkerPress(firstIssue)}
                                 >
                                     <View style={{
                                         backgroundColor: '#f28500',
-                                        paddingHorizontal: 10,
-                                        paddingVertical: 6,
+                                        paddingHorizontal: 8,
+                                        paddingVertical: 2,
                                         borderRadius: 20,
                                         borderWidth: 2,
                                         borderColor: '#fff',
                                         shadowColor: '#000',
-                                        shadowOffset: { width: 0, height: 2 },
+                                        shadowOffset: {width: 0, height: 2},
                                         shadowOpacity: 0.3,
                                         shadowRadius: 3,
                                         elevation: 5,
                                         flexDirection: 'row',
                                         alignItems: 'center',
                                     }}>
-                                        <Ionicons name="construct" size={16} color="#fff" />
-                                        {group.length > 1 && (
-                                            <Text style={{ color: '#fff', marginLeft: 5, fontWeight: 'bold' }}>{group.length}</Text>
+
+                                        {group.length > 0 && (
+                                            <Text style={{
+                                                color: '#fff',
+                                                fontWeight: 'bold'
+                                            }}>{group.length}</Text>
                                         )}
                                     </View>
                                 </Marker>

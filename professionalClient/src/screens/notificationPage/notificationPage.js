@@ -109,10 +109,10 @@ const NotificationPage = () => {
                         ? { ...notification, isRead: !isRead }
                         : notification
                 );
+                fetchNotifications();
+
                 return sortNotifications(updated);
             });
-
-            // fetchNotifications();  // Refresh list after update
         } catch (error) {
             console.error('Error updating notification status:', error);
         }

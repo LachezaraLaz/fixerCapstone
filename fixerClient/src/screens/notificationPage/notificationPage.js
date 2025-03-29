@@ -123,6 +123,8 @@ const NotificationPage = () => {
                         ? { ...notification, isRead: !isRead }
                         : notification
                 );
+                fetchNotifications();
+
                 return sortNotifications(updated);
             });
         } catch (error) {

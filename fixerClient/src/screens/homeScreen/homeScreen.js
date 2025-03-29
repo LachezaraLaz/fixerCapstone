@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import {
     SafeAreaView,
@@ -22,6 +22,7 @@ import HeroImage from '../homeScreen/HomePageIMG/HomePage_IMG1.png';
 import {LanguageContext} from "../../../context/LanguageContext";
 import {I18n} from "i18n-js";
 import {en, fr} from "../../../localization";
+import {useFocusEffect} from "@react-navigation/native";
 
 /**
  * @module fixerClient
@@ -94,13 +95,11 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         loadOffers();
     }, []);
 
-    useEffect(() => {
-        const getCount = async () => {
-            const count = await fetchNotificationNumber();
-            setUnreadCount(count);
-        };
-        getCount();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotificationNumber();
+        }, [])
+    );
 
     /**
      * Handles the user logout process.
@@ -137,11 +136,10 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             const readNotifications = response.data.filter(
                 (notif) => !notif.isRead
             );
-
-            return readNotifications.length;
+            setUnreadCount(readNotifications.length);
         } catch (error) {
             console.error('Error fetching notifications:', error.message);
-            return 0;
+            setUnreadCount(0);
         }
     };
 

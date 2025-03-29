@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Alert, TouchableOpacity, RefreshControl, SafeAreaView } from 'react-native';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import {useNavigation, useIsFocused, useFocusEffect} from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NotificationButton from "../../../components/notificationButton";
@@ -22,13 +22,11 @@ export default function MyJobsProfessional() {
     const navigation = useNavigation();
     const isFocused = useIsFocused();
 
-    useEffect(() => {
-        const getCount = async () => {
-            const count = await fetchNotificationNumber();
-            setUnreadCount(count);
-        };
-        getCount();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotificationNumber();
+        }, [])
+    );
 
     /**
      * Gets the number of unread notifications
@@ -45,10 +43,10 @@ export default function MyJobsProfessional() {
                 (notif) => !notif.isRead
             );
 
-            return readNotifications.length;
+            setUnreadCount(readNotifications.length);
         } catch (error) {
             console.error('Error fetching notifications:', error.message);
-            return 0;
+            setUnreadCount(0);
         }
     };
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, RefreshControl, SafeAreaView } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import {useNavigation, useIsFocused, useFocusEffect} from '@react-navigation/native';
 import { styles } from '../../../style/myIssues/myIssuesStyle';
 import JobBox from '../../../components/jobBox';
 import NotificationButton from "../../../components/notificationButton";
@@ -38,13 +38,11 @@ export default function MyIssuesPosted() {
         }
     }, [isFocused]);
 
-    useEffect(() => {
-        const getCount = async () => {
-            const count = await fetchNotificationNumber();
-            setUnreadCount(count);
-        };
-        getCount();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotificationNumber();
+        }, [])
+    );
 
     /**
      * Gets the number of unread notifications
@@ -61,10 +59,10 @@ export default function MyIssuesPosted() {
                 (notif) => !notif.isRead
             );
 
-            return readNotifications.length;
+            setUnreadCount(readNotifications.length);
         } catch (error) {
             console.error('Error fetching notifications:', error.message);
-            return 0;
+            setUnreadCount(0);
         }
     };
 

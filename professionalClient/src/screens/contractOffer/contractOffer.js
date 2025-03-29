@@ -102,8 +102,14 @@ export default function ContractOffer({ route, navigation }) {
             setJobDescriptionError(true);
             setErrorAlertContent({
                 title: 'Missing Job Description',
-                message: 'Please enter a job description.'
-            });
+                message: 'Please enter a job description.',
+                buttons: [
+                    {
+                        text: 'OK',
+                        onPress: () => setErrorAlertVisible(false)
+                    }
+                ]
+            });            
             setErrorAlertVisible(true);
             return;
         }
@@ -113,8 +119,14 @@ export default function ContractOffer({ route, navigation }) {
             setToolsMaterialsError(true);
             setErrorAlertContent({
                 title: 'Missing Tools and Materials',
-                message: 'Please specify the tools and materials required.'
-            });
+                message: 'Please specify the tools and materials required.',
+                buttons: [
+                    {
+                        text: 'OK',
+                        onPress: () => setErrorAlertVisible(false)
+                    }
+                ]
+            });            
             setErrorAlertVisible(true);
             return;
         }
@@ -124,8 +136,14 @@ export default function ContractOffer({ route, navigation }) {
             setTermsConditionsError(true);
             setErrorAlertContent({
                 title: 'Missing Terms and Conditions',
-                message: 'Please specify terms and conditions.'
-            });
+                message: 'Please specify terms and conditions.',
+                buttons: [
+                    {
+                        text: 'OK',
+                        onPress: () => setErrorAlertVisible(false)
+                    }
+                ]
+            });            
             setErrorAlertVisible(true);
             return;
         }
@@ -135,8 +153,14 @@ export default function ContractOffer({ route, navigation }) {
             setPriceError(true);
             setErrorAlertContent({
                 title: 'Invalid Price',
-                message: 'Please enter a valid positive number (less than $100,000) for the price.'
-            });
+                message: 'Please enter a valid positive number (less than $100,000) for the price.',
+                buttons: [
+                    {
+                        text: 'OK',
+                        onPress: () => setErrorAlertVisible(false)
+                    }
+                ]
+            });            
             setErrorAlertVisible(true);
             return;
         }
@@ -145,8 +169,14 @@ export default function ContractOffer({ route, navigation }) {
         if (!selectedIssue || !selectedIssue.userEmail || !selectedIssue.id) {
             setErrorAlertContent({
                 title: 'Error',
-                message: 'Unable to retrieve complete issue details. Please try again.'
-            });
+                message: 'Unable to retrieve complete issue details. Please try again.',
+                buttons: [
+                    {
+                        text: 'OK',
+                        onPress: () => setErrorAlertVisible(false)
+                    }
+                ]
+            });            
             setErrorAlertVisible(true);
             return;
         }
@@ -156,8 +186,14 @@ export default function ContractOffer({ route, navigation }) {
             if (!token) {
                 setErrorAlertContent({
                     title: 'Error',
-                    message: 'User token not found.'
-                });
+                    message: 'User token not found.',
+                    buttons: [
+                        {
+                            text: 'OK',
+                            onPress: () => setErrorAlertVisible(false)
+                        }
+                    ]
+                });                
                 setErrorAlertVisible(true);
                 return;
             }
@@ -200,23 +236,43 @@ export default function ContractOffer({ route, navigation }) {
             } else {
                 setErrorAlertContent({
                     title: 'Error',
-                    message: 'Failed to submit the quote.'
-                });
+                    message: 'Failed to submit the quote.',
+                    buttons: [
+                        {
+                            text: 'OK',
+                            onPress: () => setErrorAlertVisible(false)
+                        }
+                    ]
+                });                
                 setErrorAlertVisible(true);
             }
         } catch (error) {
             if (error.response?.status === 400) {
                 setErrorAlertContent({
                     title: 'Error',
-                    message: 'You have already submitted a quote for this issue.'
+                    message: 'You have already submitted a quote for this issue.',
+                    buttons: [
+                        {
+                            text: 'OK',
+                            onPress: () => setErrorAlertVisible(false)
+                        }
+                    ]
                 });
+                
                 setErrorAlertVisible(true);
             } else {
                 console.error('Error submitting quote:', error);
                 setErrorAlertContent({
                     title: 'Error',
-                    message: 'An error occurred while submitting the quote.'
+                    message: 'An error occurred while submitting the quote.',
+                    buttons: [
+                        {
+                            text: 'OK',
+                            onPress: () => setErrorAlertVisible(false)
+                        }
+                    ]
                 });
+                
                 setErrorAlertVisible(true);
             }
         }
@@ -320,8 +376,10 @@ export default function ContractOffer({ route, navigation }) {
                 visible={errorAlertVisible}
                 title={errorAlertContent.title}
                 message={errorAlertContent.message}
+                buttons={errorAlertContent.buttons}
                 onClose={() => setErrorAlertVisible(false)}
             />
+
         </KeyboardAvoidingView>
     );
 }

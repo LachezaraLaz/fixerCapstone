@@ -5,6 +5,10 @@ import { IPAddress } from '../../../ipAddress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+
+import InputField  from '../../../components/inputField';
+import PasswordField from '../../../components/passwordField';
 
 /**
  * @module professionalClient
@@ -47,7 +51,7 @@ export default function SignInPage({ setIsLoggedIn }) {
                  await AsyncStorage.setItem('userId', userId);
                  await AsyncStorage.setItem('userName', userName);
 
-                Alert.alert("Signed in successfully");
+                // Alert.alert("Signed in successfully");
                 setIsLoggedIn(true);
                  setTimeout(() => {
                      navigation.dispatch(
@@ -72,9 +76,13 @@ export default function SignInPage({ setIsLoggedIn }) {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Sign In</Text>
+            <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                <Text style={styles.backText}>Back</Text>
+            </TouchableOpacity>
 
-            <TextInput
-                style={styles.input}
+            {/* Email Field */}
+            <InputField
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
@@ -82,13 +90,21 @@ export default function SignInPage({ setIsLoggedIn }) {
                 autoCapitalize="none"
             />
 
-            <TextInput
+            {/* Password Field */}
+            <PasswordField
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={true} // Always hide password by default
+            />
+
+            {/* <TextInput
                 style={styles.input}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
-            />
+            /> */}
 
             <TouchableOpacity style={styles.button} onPress={handleSignIn} testID={'sign-in-button'}>
                 <Text style={styles.buttonText}>Sign In</Text>
@@ -118,6 +134,19 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
+    backButton: {
+        position: 'absolute',
+        top: 40,
+        left: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        zIndex: 1,
+    },
+    backText: {
+        marginLeft: 8,
+        fontSize: 18,
+        color: '#1E90FF',
+    },
     input: {
         height: 50,
         borderColor: '#ddd',
@@ -137,13 +166,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     signUpText: {
-        color: 'grey',
+        color: '#1E90FF',
         textAlign: 'center',
         marginTop: 15,
         fontSize: 16,
     },
     forgotPasswordText: {
-        color: 'grey',
+        color: '#1E90FF',
         textAlign: 'center',
         marginTop: 15,
         fontSize: 16,

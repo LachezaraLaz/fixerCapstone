@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native';
 const { width, height } = Dimensions.get('window');
+import OrangeButton from "../../../components/orangeButton";
+
 
 
 export default function WelcomePage({ navigation }) {
@@ -39,13 +41,10 @@ export default function WelcomePage({ navigation }) {
                     Welcome to Fixr!
                 </Animated.Text>
             </View>
-                <TouchableOpacity style={styles.buttonSI} onPress={() => navigation.navigate('SignInPage')}>
-                    <Text style={styles.buttonText}>Sign In</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity style={styles.buttonSU} onPress={() => navigation.navigate('SignUpPage')}>
-                    <Text style={styles.buttonText}>Sign Up</Text>
-                </TouchableOpacity>
+            <OrangeButton title="Sign In" onPress={() => navigation.navigate('SignInPage')} variant="normal" />
+            <OrangeButton title="Sign Up" onPress={() => navigation.navigate('SignUpPage')} variant="normal" />
+                
         </View>
     );
 };

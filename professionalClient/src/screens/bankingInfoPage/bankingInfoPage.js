@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { InteractionManager } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import OrangeButton from "../../../components/orangeButton";
 
 const BankingInfoPage = () => {
     const [loading, setLoading] = useState(false);
@@ -31,9 +33,15 @@ const BankingInfoPage = () => {
 
             console.log("After createPaymentMethod");
 
+            if (!paymentMethod){
+                Alert.alert('Error', error.message);
+                return;
+            }
+
             if (error) {
                 console.log("Payment error:", error);
-                if (!isUnmounted.current) Alert.alert('Error', error.message);
+                if (!isUnmounted.current) 
+                    Alert.alert('Error', error.message);
                 return;
             }
 
@@ -145,7 +153,19 @@ const BankingInfoPage = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Add Credit Card</Text>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    testID="back-button"
+                    onPress={() => navigation.goBack()}
+                >
+                    <Ionicons name="arrow-back" size={28} color="orange" />
+                </TouchableOpacity>
+
+                <Text style={styles.headerTitle}>Banking Information</Text>
+            </View>
+            
+            {/* <Text style={styles.title}>Add Credit Card</Text> */}
             <Text style={styles.subtitle}>
                 Please enter your credit card details to enable payments.
             </Text>
@@ -175,7 +195,7 @@ const BankingInfoPage = () => {
             {/*    <Text style={styles.buttonText}>Test Navigation</Text>*/}
             {/*</TouchableOpacity>*/}
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={styles.button}
                 onPress={handleSubmit}
                 disabled={loading}
@@ -183,7 +203,16 @@ const BankingInfoPage = () => {
                 <Text style={styles.buttonText}>
                     {loading ? 'Submitting...' : 'Submit'}
                 </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <OrangeButton
+                title={loading ? 'Submitting...' : 'Submit'}
+                onPress={handleSubmit}
+                testID="submit-button"
+                variant="normal"
+                disabled={loading}
+            />
+                       
         </View>
     );
 };
@@ -195,10 +224,27 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
     title: {
-        fontSize: 24,
+        fontSize: 16,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 8,
+    },
+    headerContainer: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingBottom: 20,
+        backgroundColor: '#fff',
+    },
+    backButton: {
+        position: 'absolute',
+        left: 4,
+        top:0,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
     },
     subtitle: {
         fontSize: 16,

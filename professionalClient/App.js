@@ -110,7 +110,7 @@ export default function App() {
                                             options={{ headerShown: false }}  // This hides the default navigation header
                                         />
                                         <Stack.Screen name="ContractOffer" component={ContractOffer} />
-                                        <Stack.Screen name="FilterIssue" component={FilterIssuePage} />
+                                        <Stack.Screen name="FilterIssue" component={FilterIssuePage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="MyJobs" component={MyJobsPage} />
                                         <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
                                         <Stack.Screen name="UploadID" component={UploadID} />
@@ -120,7 +120,7 @@ export default function App() {
                                         <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
                                         <Stack.Screen name="ProfessionalAccountSettingsPage" component={ProfessionalAccountSettingsPage}/>
                                         <Stack.Screen name="SettingsPage" component={SettingsPage} />
-                                        <Stack.Screen name="IssueDetails" component={issueDetails} />
+                                        <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>
                                         <Stack.Screen name="ChatScreen" component={ChatScreen}/>
                                         {/* Add BankingInfoPage here */}
                                         <Stack.Screen
@@ -134,11 +134,11 @@ export default function App() {
                         ) : (
                             <Stack.Navigator initialRouteName={isLoggedIn ? 'MainTabs' : 'welcomePage'}>
                                 <>
-                                    <Stack.Screen name="welcomePage" component={WelcomePage} />
-                                    <Stack.Screen name="SignInPage">
+                                    <Stack.Screen name="welcomePage" component={WelcomePage} options={{ headerShown: false }}/>
+                                    <Stack.Screen name="SignInPage" options={{ headerShown: false }}>
                                         {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                     </Stack.Screen>
-                                    <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                    <Stack.Screen name="SignUpPage" component={SignUpPage} options={{ headerShown: false }}/>
                                     <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
                                     <Stack.Screen name="EnterPin" component={EnterPin} />
                                     <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />

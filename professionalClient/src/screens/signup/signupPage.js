@@ -129,7 +129,13 @@ export default function SignUpPage({ navigation }) {
             setCustomAlertContent({
                 title: "Error",
                 message: "All fields are required",
-            });
+                buttons: [
+                  {
+                    text: "OK",
+                    onPress: () => setCustomAlertVisible(false)
+                  }
+                ]
+            });              
             setCustomAlertVisible(true);
             return;
         }
@@ -137,7 +143,13 @@ export default function SignUpPage({ navigation }) {
             setCustomAlertContent({
                 title: "Error",
                 message: "Please enter a valid email address",
-            });
+                buttons: [
+                  {
+                    text: "OK",
+                    onPress: () => setCustomAlertVisible(false)
+                  }
+                ]
+            });              
             setCustomAlertVisible(true);
             return;
         }
@@ -145,7 +157,13 @@ export default function SignUpPage({ navigation }) {
             setCustomAlertContent({
                 title: "Error",
                 message: "Password does not meet the required criteria",
-            });
+                buttons: [
+                  {
+                    text: "OK",
+                    onPress: () => setCustomAlertVisible(false)
+                  }
+                ]
+            });              
             setCustomAlertVisible(true);
             return;
         }
@@ -153,7 +171,13 @@ export default function SignUpPage({ navigation }) {
             setCustomAlertContent({
                 title: "Error",
                 message: "Passwords do not match",
-            });
+                buttons: [
+                  {
+                    text: "OK",
+                    onPress: () => setCustomAlertVisible(false)
+                  }
+                ]
+            });              
             setCustomAlertVisible(true);
             return;
         }
@@ -161,7 +185,13 @@ export default function SignUpPage({ navigation }) {
             setCustomAlertContent({
                 title: "Error",
                 message: "First name and last name must start with a capital letter",
-            });
+                buttons: [
+                  {
+                    text: "OK",
+                    onPress: () => setCustomAlertVisible(false)
+                  }
+                ]
+            });              
             setCustomAlertVisible(true);
             return;
         }
@@ -187,7 +217,13 @@ export default function SignUpPage({ navigation }) {
                         setCustomAlertContent({
                             title: "Error",
                             message: "An account with this email already exists",
-                        });
+                            buttons: [
+                              {
+                                text: "OK",
+                                onPress: () => setCustomAlertVisible(false)
+                              }
+                            ]
+                        });                          
                         setCustomAlertVisible(true);
                     } else {
                         Alert.alert("Error", error.response.data.message || 'An unexpected error occurred');
@@ -196,7 +232,13 @@ export default function SignUpPage({ navigation }) {
                     setCustomAlertContent({
                         title: "Error",
                         message: "Network error",
-                    });
+                        buttons: [
+                          {
+                            text: "OK",
+                            onPress: () => setCustomAlertVisible(false)
+                          }
+                        ]
+                    });                      
                     setCustomAlertVisible(true);
                 } else {
                     Alert.alert("Error", "An unexpected error occurred");
@@ -304,6 +346,7 @@ export default function SignUpPage({ navigation }) {
                     visible={customAlertVisible}
                     title={customAlertContent.title}
                     message={customAlertContent.message}
+                    buttons={customAlertContent.buttons}
                     onClose={() => setCustomAlertVisible(false)}
                 />
                 <CustomAlertSuccess

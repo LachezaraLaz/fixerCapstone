@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         textAlign: 'center',
         color: '#333',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     closeButton: {
         backgroundColor: '#FF5C5C',
@@ -42,6 +42,13 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 14,
+        textAlign: "center"
+    },
+    buttonContainer: {
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        marginTop: 20,
+        gap: 10,
     },
 });
 

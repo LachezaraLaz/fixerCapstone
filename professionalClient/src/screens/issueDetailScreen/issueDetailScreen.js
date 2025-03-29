@@ -13,15 +13,14 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {styles} from '../../../style/issueDetailScreen/issueDetailScreenStyle';
-import DefaultIssueImage from '../../../assets/noImage.png';
+
 import {getAddressFromCoords} from '../../../utils/geoCoding_utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import CustomAlertError from '../../../components/customAlertError';
 
-// export default function IssueDetailScreen({issue, onClose}) {
-// export default function IssueDetailScreen({ issues = [], onClose }) {
-    export default function IssueDetailScreen({ issue, issues, onClose }) {
 
+export default function IssueDetailScreen({ issue, issues, onClose }) {
     const navigation = useNavigation();
     const [address, setAddress] = useState('Loading address...');
     const [client, setClient] = useState({firstName: '', lastName: ''});
@@ -31,16 +30,25 @@ import axios from 'axios';
     const [currentIndex, setCurrentIndex] = useState(() => {
     // Try to find selectedIssue in the issues array
     const index = issues.findIndex(i => i._id === issue?._id || i.id === issue?.id);
-    return index >= 0 ? index : 0;
+        return index >= 0 ? index : 0;
     });
     
     const currentIssue = issues[currentIndex] || issue; // ✅ fallback to the passed-in issue
-      
+    const [errorAlertVisible, setErrorAlertVisible] = useState(false);
+    const [errorAlertContent, setErrorAlertContent] = useState({ title: '', message: '' });
 
     // Guard against undefined
     if (!issue) return null;
 
 
+    /**
+     * useEffect hook that fetches and sets the address when the selected issue changes.
+     *
+     * - Calls `getAddressFromCoords` with the issue's latitude and longitude.
+     * - Updates the address state with the formatted result.
+     *
+     * @function useEffect
+     */
     useEffect(() => {
         const fetchAddress = async () => {
             const formattedAddress = await getAddressFromCoords(issue.latitude, issue.longitude);
@@ -49,6 +57,15 @@ import axios from 'axios';
         fetchAddress();
     }, [issue]);
 
+
+    /**
+     * useEffect hook that sets the client information based on the selected issue.
+     *
+     * - Uses `firstName` and `lastName` from the issue if available.
+     * - Defaults to "Unknown" if client info is missing.
+     *
+     * @function useEffect
+     */
     useEffect(() => {
         // Simplified client info handling - using issue props directly
         if (issue.firstName && issue.lastName) {
@@ -61,6 +78,16 @@ import axios from 'axios';
         }
     }, [issue]);
 
+
+    /**
+     * useEffect hook that checks if the professional has added their banking information.
+     *
+     * - Retrieves `userId` and `token` from AsyncStorage.
+     * - Sends a GET request to the backend to fetch banking info status.
+     * - Updates state based on the response.
+     *
+     * @function useEffect
+     */
     useEffect(() => {
         const fetchBankingInfoStatus = async () => {
             try {
@@ -94,12 +121,29 @@ import axios from 'axios';
     const modalHeight = useRef(new Animated.Value(MIN_HEIGHT)).current;
     const lastGestureDy = useRef(0);
 
+    /**
+     * Interpolates the opacity of a button based on the modal's height.
+     *
+     * - Fades in the button as the modal expands from `MIN_HEIGHT` to just below `MAX_HEIGHT`.
+     * - Clamps the output to keep values within the 0–1 range.
+     *
+     * @constant {Animated.AnimatedInterpolation} buttonOpacity - The animated opacity value for the button.
+     */
     const buttonOpacity = modalHeight.interpolate({
         inputRange: [MIN_HEIGHT, MAX_HEIGHT - 50],
         outputRange: [0, 1],
         extrapolate: 'clamp',
     });
 
+
+    /**
+     * useEffect hook that listens to changes in modal height to toggle scrollability.
+     *
+     * - Enables scroll when the modal height is near or at its maximum.
+     * - Cleans up the listener on component unmount or dependency change.
+     *
+     * @function useEffect
+     */
     useEffect(() => {
         const listener = modalHeight.addListener(({ value }) => {
             setScrollEnabled(value >= MAX_HEIGHT - 5);
@@ -107,27 +151,67 @@ import axios from 'axios';
         return () => modalHeight.removeListener(listener);
     }, [modalHeight]);
 
+
+    /**
+     * Checks if the user has added a payment method before allowing access to certain features.
+     *
+     * - If no banking info is found, shows an alert prompting the user to add one.
+     * - Navigates to the banking info page if the user chooses to proceed.
+     *
+     * @function handlePaymentMethodCheck
+     * @returns {boolean} - Returns true if payment method exists, false otherwise.
+     */
     const handlePaymentMethodCheck = () => {
         if (!bankingInfoAdded) {
-            Alert.alert(
-                'Payment Method Required',
-                'Cannot use this feature until a payment method has been added.',
-                [
+            // Alert.alert(
+            //     'Payment Method Required',
+            //     'Cannot use this feature until a payment method has been added.',
+            //     [
+            //         {
+            //             text: 'Add Payment Method',
+            //             onPress: () => navigation.navigate('BankingInfoPage')
+            //         },
+            //         {
+            //             text: 'Cancel',
+            //             style: 'cancel'
+            //         }
+            //     ]
+            // );
+            setErrorAlertContent({
+                title: 'Payment Method Required',
+                message: 'Cannot use this feature until a payment method has been added.',
+                buttons: [
                     {
                         text: 'Add Payment Method',
-                        onPress: () => navigation.navigate('BankingInfoPage')
+                        onPress: () => {
+                            setErrorAlertVisible(false);
+                            navigation.navigate('BankingInfoPage');
+                        }
                     },
                     {
                         text: 'Cancel',
-                        style: 'cancel'
+                        onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            );
+            });
+            setErrorAlertVisible(true);
+            
             return false;
         }
         return true;
     };
 
+
+    /**
+     * Handles the action to navigate to a different screen after checking for payment method and closing the modal.
+     *
+     * - Verifies payment method availability using `handlePaymentMethodCheck`.
+     * - Animates the modal to close before navigating.
+     * - Navigates to the specified screen with the current issue as a parameter.
+     *
+     * @function handleAction
+     * @param {string} screen - The name of the screen to navigate to.
+     */
     const handleAction = (screen) => {
         if (!handlePaymentMethodCheck()) return;
 
@@ -141,6 +225,16 @@ import axios from 'axios';
         });
     };
 
+
+    /**
+     * PanResponder instance that allows the user to drag and resize a modal vertically.
+     *
+     * - Sets pan responder on vertical drag gesture.
+     * - Calculates and sets new modal height dynamically during drag.
+     * - On release, determines whether to collapse or expand the modal based on velocity and position.
+     *
+     * @constant {PanResponderInstance} panResponder - The configured PanResponder for modal interaction.
+     */
     const panResponder = useRef(
         PanResponder.create({
             onMoveShouldSetPanResponder: (_, gestureState) => Math.abs(gestureState.dy) > 5,
@@ -206,35 +300,55 @@ import axios from 'axios';
                         </View>
                     </View>
 
-                    <TouchableOpacity
+                    {issue.imageUrl ? (
+                    <>
+                        <TouchableOpacity
                         onPress={() => setModalVisible(true)}
-                        style={{width: '100%', height: 250, borderColor: 'grey', borderWidth: 2}}
-                    >
-                        <Image
-                            testID="image-touchable"
-                            source={issue.imageUrl ? {uri: issue.imageUrl} : DefaultIssueImage}
-                            style={styles.headerImage}
-                        />
-                    </TouchableOpacity>
-
-                    <Modal
-                        testID="image-modal"
-                        visible={modalVisible}
-                        transparent={true}
-                        animationType="fade"
-                        onRequestClose={() => setModalVisible(false)}
-                    >
-                        <View style={styles.modalBackground}>
-                            <TouchableOpacity style={styles.modalCloseIcon} onPress={() => setModalVisible(false)}>
-                                <Ionicons name="close-circle" size={35} color="#fff"/>
-                            </TouchableOpacity>
+                        style={{
+                            width: '100%',
+                            height: 250,
+                            borderColor: 'grey',
+                            borderWidth: 2,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: '#f9f9f9',
+                        }}
+                        >
                             <Image
-                                source={issue.imageUrl ? {uri: issue.imageUrl} : DefaultIssueImage}
-                                style={styles.zoomedImage}
-                                resizeMode="contain"
+                                testID="image-touchable"
+                                source={{ uri: issue.imageUrl }}
+                                style={styles.headerImage}
+                                resizeMode="cover"
                             />
+                        </TouchableOpacity>
+
+                        <Modal
+                            testID="image-modal"
+                            visible={modalVisible}
+                            transparent={true}
+                            animationType="fade"
+                            onRequestClose={() => setModalVisible(false)}
+                        >
+                            <View style={styles.modalBackground}>
+                                <TouchableOpacity style={styles.modalCloseIcon} onPress={() => setModalVisible(false)}>
+                                    <Ionicons name="close-circle" size={35} color="#fff" />
+                                </TouchableOpacity>
+                                <Image
+                                    source={{ uri: issue.imageUrl }}
+                                    style={styles.zoomedImage}
+                                    resizeMode="contain"
+                                />
+                            </View>
+                        </Modal>
+                    </>
+                    ) : (
+                        <View style={{ width: '100%', alignItems: 'center', marginTop: 12 }}>
+                            <Text style={{ color: 'grey', fontSize: 14 }}>
+                                There is no image for this job
+                            </Text>
                         </View>
-                    </Modal>
+                    )}
+
 
                     <View style={styles.locationContainer}>
                         <Ionicons name="location-outline" size={18} color="#f5a623"/>
@@ -260,6 +374,17 @@ import axios from 'axios';
                     <Text style={styles.chatButtonText}>Chat</Text>
                 </TouchableOpacity>
             </Animated.View>
+            <CustomAlertError
+                visible={errorAlertVisible}
+                title={errorAlertContent.title}
+                message={errorAlertContent.message}
+                buttons={errorAlertContent.buttons}
+                onClose={() => {
+                    setErrorAlertVisible(false);
+                }}
+            />
+
         </Animated.View>
+        
     );
 }

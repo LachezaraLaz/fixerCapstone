@@ -12,6 +12,7 @@ const jobDTO = (job) => ({
     rating: job.rating,
     comment: job.comment,
     professionalEmail: job.professionalEmail,
+    timeline: job.timeline,
 });
 
 module.exports = { jobDTO };

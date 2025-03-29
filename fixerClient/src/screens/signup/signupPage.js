@@ -145,18 +145,22 @@ export default function SignUpPage({ navigation }) {
     // Format postal code as A1B 2C3
     const formatPostalCode = (text) => {
         // Remove all non-alphanumeric characters
-        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '');
-
-        // Insert a space after the first 3 characters
+        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    
+        // Limit to 6 characters (A1B2C3) before formatting
+        formattedText = formattedText.slice(0, 6);
+    
+        // Insert space after the first 3 characters if enough characters exist
         if (formattedText.length > 3) {
             formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
         }
-
-        // Convert to uppercase
-        formattedText = formattedText.toUpperCase();
-
+    
+        // Limit final result to 7 characters (A1B 2C3)
+        formattedText = formattedText.slice(0, 7);
+    
         setPostalCode(formattedText);
     };
+    
 
     // Check if email and password are valid to show name and address fields
     const checkEmailAndPassword = () => {

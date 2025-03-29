@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AppState } from 'react-native';
 import { Platform } from 'react-native';
 import IssueDetailScreen from '../issueDetailScreen/issueDetailScreen';
+import CustomAlertLocation from '../../../components/customAlertLocation';
 
 
 /**
@@ -45,6 +46,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const [currentLocation, setCurrentLocation] = React.useState(null);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [typesOfWork, setTypesOfWork] = React.useState([]);
+    const [rating, setRating] = React.useState(route.params?.rating || 0);
+    const [timeline, setTimeline] = React.useState(route.params?.timeline || '');
     const [bankingInfoAdded, setBankingInfoAdded] = React.useState(false); // New state for banking info status
     const scrollY = React.useRef(new Animated.Value(0)).current;
     const { chatClient } = useChatContext();
@@ -52,9 +55,11 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const scrollViewRef = React.useRef(null);
     const navigation = useNavigation();
     const [locationPermission, setLocationPermission] = React.useState(null);
-    const [selectedIssue, setSelectedIssue] = React.useState(null);
+    // const [selectedIssue, setSelectedIssue] = React.useState(null);
     const [selectedMarker, setSelectedMarker] = React.useState(null);
     const modalTranslateY = React.useRef(new Animated.Value(500)).current; // Start off screen (500 px under screen)
+    const [errorAlertVisible, setErrorAlertVisible] = React.useState(false);
+    const [errorAlertContent, setErrorAlertContent] = React.useState({ title: '', message: '' });
 
     /**
      * Fetches all issues from the server and updates the state with the fetched data.
@@ -71,7 +76,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const fetchAllIssues = async () => {
         try {
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
-            console.log('Response data:', response.data);
             const fixedIssues = response.data.jobs
                 .map(issue => ({
                     ...issue,
@@ -80,7 +84,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 }))
                 .filter(issue => issue.latitude !== null && issue.longitude !== null); // Remove invalid locations
             setIssues(fixedIssues);
-
             const uniqueTypes = [...new Set(fixedIssues.map(issue => issue.professionalNeeded))];
             setTypesOfWork(uniqueTypes);
         } catch (error) {
@@ -179,12 +182,13 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
 
     React.useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            if (route.params?.selectedFilters || route.params?.distanceRange) {
-                setSelectedFilters(route.params.selectedFilters || []);
-            }
+            setSelectedFilters(route.params?.selectedFilters || []);
+            setRating(route.params?.rating || 0);
+            setTimeline(route.params?.timeline || '');
         });
         return unsubscribe;
-    }, [navigation, route.params?.selectedFilters, route.params?.distanceRange]);
+    }, [navigation, route.params]);
+
 
     /**
      * Handles the user logout process.
@@ -252,9 +256,12 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 );
                 matchesDistance = distance >= minDistance && distance <= maxDistance;
             }
-            return matchesProfessional && matchesDistance;
+            const matchesRating = route.params?.rating ? issue.rating === route.params.rating : true; // filter value of star
+            const matchesUrgency = route.params?.timeline ? issue.timeline === route.params.timeline : true; // filter value of timeline
+
+            return matchesProfessional && matchesDistance && matchesRating && matchesUrgency;
         });
-    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange]);
+    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange, route.params?.rating, route.params?.timeline]);
 
     if (loading) {
         return (
@@ -301,14 +308,11 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      */
     const handleRecenterMap = () => {
         if (locationPermission !== 'granted') {
-            Alert.alert(
-                "Location Permission Denied",
-                "To use this feature, enable location services in settings.",
-                [
-                    { text: "Back", style: "cancel" },
-                    { text: "Go to Settings", onPress: () => Linking.openSettings() }
-                ]
-            );
+            setErrorAlertContent({
+                title: 'Location Permission Denied',
+                message: 'To use this feature, enable location services in settings.'
+            });
+            setErrorAlertVisible(true);
             return;
         }
         if (mapRef.current && currentLocation) {
@@ -396,9 +400,9 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
-                        {filteredIssues.map((issue) => (
+                        {filteredIssues.map((issue, index) => (
                             <Marker
-                                key={issue._id}
+                                key={issue._id || `marker-${index}`}
                                 coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
                                 onPress={() => handleMarkerPress(issue)}
                             />
@@ -428,6 +432,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             typesOfWork,
                             selectedFilters,
                             distanceRange: route.params?.distanceRange || [0, 50], // Pass current distance range or default
+                            rating,
+                            timeline,
                         })}
                     >
                         <Ionicons name="filter" size={24} color="#333" />
@@ -437,9 +443,9 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 {/* Issues List */}
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Issues</Text>
-                    {filteredIssues.map((issue) => (
+                    {filteredIssues.map((issue, index) => (
                         <TouchableOpacity
-                            key={issue._id}
+                            key={issue._id || `issue-${index}`}
                             style={styles.issueCard}
                             onPress={() => handleIssueClick(issue)}
                         >
@@ -447,9 +453,21 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                                 <Text style={styles.issueTitle}>{issue.title}</Text>
                                 <Text style={styles.issueDescription}>{issue.description}</Text>
                                 <View style={styles.issueRatingContainer}>
-                                    <Ionicons name="star" size={16} color="#f1c40f" />
-                                    <Text style={styles.issueRating}>{issue.rating}</Text>
-                                    <Text style={styles.issueReviews}>| {issue.comments} reviews</Text>
+                                    <Ionicons
+                                        name="star"
+                                        size={16}
+                                        color={issue.rating ? "#f1c40f" : "#ccc"} // Grey if rating is null/0
+                                    />
+                                    <Text style={[styles.issueRating, { color: issue.rating ? '#f1c40f' : '#ccc' }]}>
+                                        {issue.rating || 'No rating'}
+                                    </Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Text style={styles.issueReviews}>|</Text>
+                                        <Text style={[styles.issueReviews, { color: issue.timeline === 'high-priority' ? 'red' : 'orange' }]}>
+                                            {issue.timeline}
+                                        </Text>
+                                    </View>
+
                                 </View>
                             </View>
                         </TouchableOpacity>
@@ -480,6 +498,19 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     />
                 </Animated.View>
             )}
+            <CustomAlertLocation
+                visible={errorAlertVisible}
+                title={errorAlertContent.title}
+                message={errorAlertContent.message}
+                confirmText="Go to Settings"
+                cancelText="Back"
+                onConfirm={() => {
+                    setErrorAlertVisible(false);
+                    Linking.openSettings();
+                }}
+                onClose={() => setErrorAlertVisible(false)}
+            />
+
         </SafeAreaView>
     );
 }

@@ -205,6 +205,8 @@ const updateQuoteStatus = async (req, res) => {
     try {
         // Fetch the quote to get the associated job (issueId)
         const quote = await Quotes.findById(quoteId);
+        const profEmail = quote.professionalEmail;
+
         if (!quote) {
             return res.status(404).json({ message: 'Quote not found.' });
         }
@@ -222,7 +224,7 @@ const updateQuoteStatus = async (req, res) => {
             }
 
             // Update the status of the associated issue to "in progress"
-            await Jobs.findByIdAndUpdate(quote.issueId, { status: 'In progress' });
+            await Jobs.findByIdAndUpdate(quote.issueId, { status: 'In progress', professionalEmail: profEmail});
             //logger.info("issue number", issueId, "has been updated to in progress because the client accepted a quote");
 
             // Automatically reject all other quotes for the same job

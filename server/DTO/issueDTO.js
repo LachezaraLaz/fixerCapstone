@@ -9,6 +9,12 @@ const issueDTO = (job) => ({
     createdAt: job.createdAt,
     latitude: job.latitude || 0.0,
     longitude: job.longitude || 0.0,
+    timeline: job.timeline,
+    rating: job.rating,
+    comment: job.comment,
+    imageUrl: job.imageUrl,
+    firstName: job.firstName,
+    lastName: job.lastName,
 });
 
 module.exports = { issueDTO };

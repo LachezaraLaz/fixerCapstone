@@ -127,6 +127,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 20,
+        marginBottom: 20,
     },
 
     urgencyText: {
@@ -135,13 +136,11 @@ export const styles = StyleSheet.create({
     },
 
     headerImage: {
-        marginTop: 30,
-        marginLeft: 20,
-        width: '50%',
-        height: 110,
-        borderTopLeftRadius: 25,
-        borderTopRightRadius: 25,
+        width: '100%',    // or numeric value, e.g., 300
+        height: 245,      // always define height explicitly
+        resizeMode: 'contain', // or 'cover' based on your preference
     },
+
     modalBackground: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.9)',
@@ -159,11 +158,11 @@ export const styles = StyleSheet.create({
         height: '80%',
     },
 
-
     locationContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 30,
+        marginBottom: 100,
     },
 
     locationText: {
@@ -217,6 +216,17 @@ export const styles = StyleSheet.create({
         color: '#ffffff',
         fontWeight: '600',
         fontSize: 16,
+    },
+
+    disabledSendButton: {
+        backgroundColor: '#d84315',
+        borderColor: '#d84315',
+    },
+    disabledChatButton: {
+        backgroundColor: '#d84315',
+    },
+    disabledButtonText: {
+        color: '#ffffff',
     },
 
 });

@@ -26,10 +26,10 @@ const { logger } = require('../utils/logger');
  * @throws {Error} - Throws an error if the issue creation fails.
  */
 const createIssue = async (req, res) => {
-    const { title, description, professionalNeeded, email, status = 'open',timeline } = req.body;
+    const { title, description, professionalNeeded, email, status = 'open',timeline, address } = req.body;
     let imageUrl = null;
 
-    if (!title || !description || !professionalNeeded) {
+    if (!title || !description || !professionalNeeded || !address) {
         return res.status(400).json({ message: 'Some required fields are missing.' });
     }
 
@@ -43,7 +43,7 @@ const createIssue = async (req, res) => {
             return res.status(404).json({ message: 'Client information not found' });
         }
 
-        const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
+        // const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
         const { latitude, longitude } = await getCoordinatesFromAddress(address);
 
         const newIssue = await Jobs.create({

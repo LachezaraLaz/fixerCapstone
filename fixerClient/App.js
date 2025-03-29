@@ -75,8 +75,8 @@ export default function App() {
                     {isLoggedIn ? (
                         <ChatProvider>
                             <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
-                                <Stack.Screen name="MainTabs">
-                                    {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                <Stack.Screen name="MainTabs" options={{ headerShown: false }}>
+                                    {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn}/>}
                                 </Stack.Screen>
 
                                 {/* Screens when user is NOT logged in */}
@@ -93,18 +93,18 @@ export default function App() {
                                 {/* Screens when user IS logged in */}
                                 {isLoggedIn && (
                                     <>
-                                        <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
+                                        <Stack.Screen name="DetailsScreen" component={DetailsScreen}  />
                                         <Stack.Screen name="ProfilePage" component={ProfilePage} options={{ headerShown: false }} />
-                                        <Stack.Screen name="CreateIssue" component={CreateIssue} />
-                                        <Stack.Screen name="SettingsPage" component={SettingsPage} />
-                                        <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
+                                        <Stack.Screen name="CreateIssue" component={CreateIssue} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} options={{ headerShown: false }}/>
                                         <Stack.Screen name="EditIssue" component={EditIssue} />
                                         <Stack.Screen name="NotificationPage" component={NotificationPage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
                                         <Stack.Screen name="OffersPage" component={OffersPage} />
-                                        <Stack.Screen name="addReview" component={addReview} />
-                                        <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage}/>
-                                        <Stack.Screen name="IssueDetails" component={issueDetails} />
+                                        <Stack.Screen name="addReview" component={addReview} options={{ headerShown: false }}/>
+                                        <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>
 
                                     </>
                                 )}

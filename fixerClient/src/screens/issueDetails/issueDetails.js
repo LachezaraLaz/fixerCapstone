@@ -103,7 +103,7 @@ const IssueDetails = () => {
     const currentStatus = job.status?.toLowerCase() || "pending";
     const statusStyle = statusColors[currentStatus] || statusColors["pending"];
 
-    const deleteReopenIssue = async (job, currentStatus) => {
+    const updateIssueStatus = async (job, currentStatus) => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
@@ -116,23 +116,25 @@ const IssueDetails = () => {
 
             // Show a confirmation popup before proceeding
             Alert.alert(
-                `Confirm ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`, // Capitalize first letter
-                `Are you sure you want to ${actionText} this issue?`,
+                i18n.t(`${actionText.toLowerCase()}`), // Use dynamic translation for the title
+                `${i18n.t('are_you_sure')} ${i18n.t(`${actionText.toLowerCase()}`)} ${i18n.t('this_issue')}${
+                    newStatus === 'Open' ? ' ' + i18n.t('modify_issue_text') : ''
+                }`,
                 [
                     {
                         text: `${i18n.t('cancel')}`,
                         style: "cancel"
                     },
                     {
-                        text: `Yes`,
+                        text: `${i18n.t('yes')}`,
                         onPress: async () => {
                             try {
-                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/delete/${job.id}?status=${newStatus}`,
+                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/updateStatus/${job.id}?status=${newStatus}`,
                                     {headers: {Authorization: `Bearer ${token}`}}
                                 );
 
-                                if (response.status === 200) {
-                                    Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Closed' : 'Reopened'} successfully`);
+                                if (response.status === 200 || response.status === 201) {
+                                    Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Deleted' : 'Reopened'} successfully`);
                                     navigation.navigate("MyIssuesPosted");
                                 } else {
                                     Alert.alert(`Failed to ${actionText} the job`);
@@ -262,7 +264,7 @@ const IssueDetails = () => {
                         />
                         <OrangeButton
                             title="Reopen Issue"
-                            onPress={() => deleteReopenIssue(job, job.status)}
+                            onPress={() => updateIssueStatus(job, job.status)}
                         />
                     </>
                 ) : job.status.toLowerCase() === "open" || job.status.toLowerCase() === "pending" ? (
@@ -273,9 +275,13 @@ const IssueDetails = () => {
                         />
                         <OrangeButton
                             title={i18n.t('delete_issue')}
-                            onPress={() => deleteReopenIssue(job, job.status)}
+                            onPress={() => updateIssueStatus(job, job.status)}
                         />
                     </>
+                ) : job.status.toLowerCase() === "in progress" ? (
+                        <>
+                            <Text style={styles.detailSubLabel}>{i18n.t('jobInProgressComment')} </Text>
+                        </>
                 ) : null}
 
             </ScrollView>

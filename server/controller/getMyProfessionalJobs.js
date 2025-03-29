@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
+const { Quotes } = require('../model/quoteModel');
 
 /**
  * @module server/controller
@@ -42,7 +42,6 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-
 /**
  * Retrieves the professional's jobs based on their email from the JWT.
  *
@@ -65,7 +64,6 @@ const getMyProfessionalJobs = async (req, res) => {
         const quotes = await Quotes.find({ professionalEmail }).populate('issueId')
         let amountEarned = 0;
 
-
         const jobsByStatus = {
             all: [],
             done: [],
@@ -76,6 +74,7 @@ const getMyProfessionalJobs = async (req, res) => {
 
         quotes.forEach((quote) => {
             const jobDetails = {
+                id: quote.issueId?._id,
                 title: quote.issueId?.title || 'No title',
                 description: quote.issueId?.description || 'No description',
                 professionalNeeded: quote.issueId?.professionalNeeded || "No Professional",
@@ -85,13 +84,13 @@ const getMyProfessionalJobs = async (req, res) => {
                 imageUrl: quote.issueId?.imageUrl || 'https://via.placeholder.com/100',
             };
 
-            if (quote.status === 'accepted') {
+            if (quote.status.toLowerCase() === 'accepted' && quote.issueId.status.toLowerCase() === 'in progress') {
                 jobsByStatus.active.push(jobDetails);
                 jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'pending') {
+            } else if (quote.status.toLowerCase() === 'pending' && quote.issueId.status.toLowerCase() === 'open') {
                 jobsByStatus.pending.push(jobDetails);
                 jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'done') {
+            } else if (quote.status.toLowerCase() === 'done' || (quote.status.toLowerCase() === 'accepted' && quote.issueId.status.toLowerCase() === 'completed')) {
                 jobsByStatus.done.push(jobDetails);
                 jobsByStatus.all.push(jobDetails);
                 amountEarned += quote.price;

@@ -280,25 +280,25 @@ export default function CreateIssue({ navigation }) {
     useEffect(() => {
         fetchUserProfile();
     }, []);
-
+      
     const fetchUserProfile = async () => {
         try {
-            const token = await AsyncStorage.getItem('token');
-
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile/`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            const { street, postalCode } = response.data;
-
-            if (street && postalCode) {
-                setDefaultLocation(`${street}, ${postalCode}`);
-            } else {
-                console.warn('⚠️ Missing street or postal code in profile response');
-            }
-
+          const token = await AsyncStorage.getItem('token');
+      
+          const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile/`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          const { street, postalCode } = response.data;
+      
+          if (street && postalCode) {
+            setDefaultLocation(`${street}, ${postalCode}`);
+          } else {
+            console.warn('⚠️ Missing street or postal code in profile response');
+          }
+      
         } catch (error) {
-            console.error('❌ Failed to fetch profile:', error);
+          console.error('❌ Failed to fetch profile:', error);
         }
     };
 
@@ -317,18 +317,18 @@ export default function CreateIssue({ navigation }) {
     const formatPostalCode = (text) => {
         // Remove all non-alphanumeric characters
         let formattedText = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-
+    
         // Limit to 6 characters (A1B2C3) before formatting
         formattedText = formattedText.slice(0, 6);
-
+    
         // Insert space after the first 3 characters if enough characters exist
         if (formattedText.length > 3) {
             formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
         }
-
+    
         // Limit final result to 7 characters (A1B 2C3)
         formattedText = formattedText.slice(0, 7);
-
+    
         setNewPostalCode(formattedText);
     };
 
@@ -350,7 +350,7 @@ export default function CreateIssue({ navigation }) {
                 street: useDefaultLocation ? defaultLocation : newStreet,
                 postalCode: useDefaultLocation ? defaultLocation.split(',')[1]?.trim() : newPostalCode,
             });
-
+    
             const { coordinates, isAddressValid } = response.data;
             setCoordinates(coordinates);
             setIsAddressValid(isAddressValid);
@@ -362,7 +362,7 @@ export default function CreateIssue({ navigation }) {
             });
             setCustomAlertVisible(true);
         }
-    };
+    };  
 
 
     /**
@@ -378,11 +378,11 @@ export default function CreateIssue({ navigation }) {
      */
     const isFormValid = () => {
         return (
-            title &&
-            description &&
-            selectedProfessionals.length > 0 &&
-            selectedTimeLine &&
-            (useDefaultLocation || isAddressValid)
+          title &&
+          description &&
+          selectedProfessionals.length > 0 &&
+          selectedTimeLine &&
+          (useDefaultLocation || isAddressValid)
         );
     };
 
@@ -418,8 +418,8 @@ export default function CreateIssue({ navigation }) {
 
             // Create a full address for geocoding
             const fullAddress = useDefaultLocation
-                ? defaultLocation
-                : `${newStreet}, ${newPostalCode}`;
+            ? defaultLocation
+            : `${newStreet}, ${newPostalCode}`;
 
             const formData = new FormData();
             formData.append('title', title);
@@ -496,217 +496,218 @@ export default function CreateIssue({ navigation }) {
                 style={{ flex: 1 }}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // adjust as needed
             >
-                <View style={{ flex: 1 }}>
-                    <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
-                                contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
-                                keyboardShouldPersistTaps="handled"
-                    >
-                        <View style={styles.headerContainer}>
-                            <TouchableOpacity
-                                style={styles.backButton}
-                                testID="back-button"
-                                onPress={() => navigation.goBack()}
-                            >
-                                <Ionicons name="arrow-back" size={28} color="#1E90FF" />
-                            </TouchableOpacity>
+            <View style={{ flex: 1 }}>
+                <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
+                            contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+                            keyboardShouldPersistTaps="handled"
+                >
+                    <View style={styles.headerContainer}>
+                        <TouchableOpacity
+                            style={styles.backButton}
+                            testID="back-button"
+                            onPress={() => navigation.goBack()}
+                        >
+                            <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                        </TouchableOpacity>
 
-                            <Text style={styles.headerTitle}>{i18n.t('create_job')}</Text>
-                        </View>
+                        <Text style={styles.headerTitle}>{i18n.t('create_job')}</Text>
+                    </View>
 
-                        {/* title field */}
-                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('title')}*</Text>
+                    {/* title field */}
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('title')}*</Text>
+                    <InputField 
+                        placeholder={`${i18n.t('title')}`}
+                        value={title}
+                        onChangeText={setTitle}
+                    />
+
+                    {/* description field */}
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('job_description')}*</Text>
+                    <View style={{ position: 'relative' }}>
+
                         <InputField
-                            placeholder={`${i18n.t('title')}`}
-                            value={title}
-                            onChangeText={setTitle}
-                        />
+                            placeholder={`${i18n.t('describe_your_service')}`}
+                            value={description}
+                            onChangeText={setDescription}
+                            multiline/>
 
-                        {/* description field */}
-                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('job_description')}*</Text>
-                        <View style={{ position: 'relative' }}>
-
-                            <InputField
-                                placeholder={`${i18n.t('describe_your_service')}`}
-                                value={description}
-                                onChangeText={setDescription}
-                                multiline/>
-
-                            {/* AI Enhancement Button */}
-                            <TouchableOpacity
-                                style={[styles.aiEnhanceButton, { marginTop: 10 }]}
-                                onPress={handleAiEnhancement}
-                                disabled={loadingAi}
-                            >
-                                {loadingAi ? (
-                                    <ActivityIndicator color="#fff" />
-                                ) : (
-                                    <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
-                                )}
-                            </TouchableOpacity>
-                            {/* Show AI preview */}
-                            {showAiPreview && (
-                                <View style={{
-                                    borderWidth: 1,
-                                    borderColor: '#ccc',
-                                    borderRadius: 8,
-                                    padding: 10,
-                                    marginTop: 20,
-                                    backgroundColor: '#f9f9f9'
-                                }}>
-                                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 8 }}>
-                                        AI's Suggestion:
-                                    </Text>
-                                    <Text style={{ color: '#333', marginBottom: 16 }}>{aiSuggestion}</Text>
-
-                                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                        <TouchableOpacity style={{
-                                            backgroundColor: 'green',
-                                            padding: 10,
-                                            borderRadius: 8,
-                                            marginRight: 10
-                                        }}
-                                                          onPress={handleAcceptAiSuggestion}
-                                        >
-                                            <Text style={{ color: '#fff' }}>Accept</Text>
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity style={{
-                                            backgroundColor: 'red',
-                                            padding: 10,
-                                            borderRadius: 8
-                                        }}
-                                                          onPress={handleRejectAiSuggestion}
-                                        >
-                                            <Text style={{ color: '#fff' }}>Reject</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
+                        {/* AI Enhancement Button */}
+                        <TouchableOpacity
+                            style={[styles.aiEnhanceButton, { marginTop: 10 }]}
+                            onPress={handleAiEnhancement}
+                            disabled={loadingAi}
+                        >
+                            {loadingAi ? (
+                                <ActivityIndicator color="#fff" />
+                            ) : (
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
                             )}
-                        </View>
+                        </TouchableOpacity>
+                        {/* Show AI preview */}
+                        {showAiPreview && (
+                            <View style={{
+                                borderWidth: 1,
+                                borderColor: '#ccc',
+                                borderRadius: 8,
+                                padding: 10,
+                                marginTop: 20,
+                                backgroundColor: '#f9f9f9'
+                            }}>
+                                <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 8 }}>
+                                    AI's Suggestion:
+                                </Text>
+                                <Text style={{ color: '#333', marginBottom: 16 }}>{aiSuggestion}</Text>
 
-                        {/* Word & Character Counter - Positioned Below the Input */}
-                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                            <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
-                                {description.length} chars
-                            </Text>
-                        </View>
+                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                    <TouchableOpacity style={{
+                                        backgroundColor: 'green',
+                                        padding: 10,
+                                        borderRadius: 8,
+                                        marginRight: 10
+                                    }}
+                                        onPress={handleAcceptAiSuggestion}
+                                    >
+                                        <Text style={{ color: '#fff' }}>Accept</Text>
+                                    </TouchableOpacity>
 
-                        {/* Service type selector field */}
-                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_service_type')}*</Text>
-                        <View style={styles.pickerContainer}>
-
-                            <Text style={ styles.badgeInfo }>
-                                {i18n.t('badges_remaining', { count: 2 - selectedProfessionals.length })}
-                            </Text>
-                            <MemoizedProfessionalSelector
-                                selectedProfessionals={selectedProfessionals}
-                                setSelectedProfessionals={setSelectedProfessionals}
-                            />
-                        </View>
-
-                        {/* Image upload label */}
-                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('image')}</Text>
-                        {/*Image upload*/}
-                        <View style={styles.imageContainer}>
-                            {uploadSection}
-                        </View>
-                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 30 }}>{i18n.t('select_timeline')}*</Text>
-                        <View style={styles.pickerContainer}>
-                            <DropdownField
-                                translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
-                                placeholder={i18n.t('select_timeline')}
-                                open={openTimeLine}
-                                items={itemsTimeLine}
-                                value={selectedTimeLine}
-                                setOpen={setOpenTimeLine}
-                                setItems={setItemsTimeLine}
-                                setValue={setSelectedTimeLine}
-                            />
-                        </View>
-                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 20, marginTop:30 }}>{i18n.t('location')}*</Text>
-
-                        <View style={{ marginBottom: 16 }}>
-                            {/* Use default location */}
-                            {locationSelector}
-                        </View>
-
-
-                        {!useDefaultLocation && (
-                            <View style={{ marginBottom: 20 }}>
-                                <InputField
-                                    placeholder={i18n.t('street_address')}
-                                    value={newStreet}
-                                    onChangeText={setNewStreet}
-                                />
-                                <InputField
-                                    placeholder={i18n.t('postal_code')}
-                                    value={newPostalCode}
-                                    onChangeText={formatPostalCode}
-                                />
-                                <OrangeButton
-                                    title={i18n.t('verify_address')}
-                                    onPress={verifyAddress}
-                                    variant="normal"
-                                />
-
-                                {isAddressValid && coordinates && (
-                                    <>
-                                        <Text style={{ marginTop: 10, color: 'green' }}>
-                                            ✅ {i18n.t('valid_address_entered')}
-                                        </Text>
-                                        <MemoizedMapView
-                                            style={{ width: '100%', height: 200, marginTop: 10, borderRadius: 10 }}
-                                            initialRegion={{
-                                                latitude: coordinates.latitude,
-                                                longitude: coordinates.longitude,
-                                                latitudeDelta: 0.005,
-                                                longitudeDelta: 0.005,
-                                            }}
-                                        >
-                                            <MemoizedMarker coordinate={coordinates} />
-                                        </MemoizedMapView>
-                                    </>
-                                )}
+                                    <TouchableOpacity style={{
+                                        backgroundColor: 'red',
+                                        padding: 10,
+                                        borderRadius: 8
+                                    }}
+                                        onPress={handleRejectAiSuggestion}
+                                    >
+                                        <Text style={{ color: '#fff' }}>Reject</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
 
                         )}
+                    </View>
+
+                    {/* Word & Character Counter - Positioned Below the Input */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                        <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
+                            {description.length} chars
+                        </Text>
+                    </View>
+
+                    {/* Service type selector field */}
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_service_type')}*</Text>
+                    <View style={styles.pickerContainer}>
+
+                        <Text style={ styles.badgeInfo }>
+                            {i18n.t('badges_remaining', { count: 2 - selectedProfessionals.length })}
+                        </Text>
+                        <MemoizedProfessionalSelector
+                            selectedProfessionals={selectedProfessionals}
+                            setSelectedProfessionals={setSelectedProfessionals}
+                        />
+                    </View>
+
+                    {/* Image upload label */}
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('image')}</Text>
+                    {/*Image upload*/}
+                    <View style={styles.imageContainer}>
+                        {uploadSection}
+                    </View>
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 30 }}>{i18n.t('select_timeline')}*</Text>
+                    <View style={styles.pickerContainer}>
+                        <DropdownField
+                            translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
+                            placeholder={i18n.t('select_timeline')}
+                            open={openTimeLine}
+                            items={itemsTimeLine}
+                            value={selectedTimeLine}
+                            setOpen={setOpenTimeLine}
+                            setItems={setItemsTimeLine}
+                            setValue={setSelectedTimeLine}
+                        />
+                    </View>
+                    <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 20, marginTop:30 }}>{i18n.t('location')}*</Text>
+
+                    <View style={{ marginBottom: 16 }}>
+                        {/* Use default location */}
+                        {locationSelector}
+                    </View>
 
 
-                        {/* Create Issue Button */ }
-                        <View>
+                    {!useDefaultLocation && (
+                        <View style={{ marginBottom: 20 }}>
+                            <InputField
+                            placeholder={i18n.t('street_address')}
+                            value={newStreet}
+                            onChangeText={setNewStreet}
+                            />
+                            <InputField
+                            placeholder={i18n.t('postal_code')}
+                            value={newPostalCode}
+                            onChangeText={formatPostalCode}
+                            />
                             <OrangeButton
-                                testID={'post-job-button'}
-                                title={i18n.t('create_job')}
+                                title={i18n.t('verify_address')}
+                                onPress={verifyAddress}
                                 variant="normal"
-                                onPress={postIssue}
-                                disabled={!isFormValid() || loading}
                             />
 
+                            {isAddressValid && coordinates && (
+                                <>
+                                    <Text style={{ marginTop: 10, color: 'green' }}>
+                                        ✅ {i18n.t('valid_address_entered')}
+                                    </Text>
+                                    <MemoizedMapView
+                                        style={{ width: '100%', height: 200, marginTop: 10, borderRadius: 10 }}
+                                        initialRegion={{
+                                            latitude: coordinates.latitude,
+                                            longitude: coordinates.longitude,
+                                            latitudeDelta: 0.005,
+                                            longitudeDelta: 0.005,
+                                        }}
+                                    >
+                                        <MemoizedMarker coordinate={coordinates} />
+                                    </MemoizedMapView>
+                                </>
+                            )}
                         </View>
-                    </ScrollView>
-
-                    <CustomAlertError
-                        visible={customAlertVisible}
-                        title={customAlertContent.title}
-                        message={customAlertContent.message}
-                        onClose={() => setCustomAlertVisible(false)}
-                    />
-                    <CustomAlertSuccess
-                        visible={successAlertVisible}
-                        title={successAlertContent.title}
-                        message={successAlertContent.message}
-                        onClose={() => {
-                            setSuccessAlertVisible(false);
-                            navigation.goBack(); // If you want to redirect after success
-                        }}
-                    />
-                    {loading && (
-                        <View style={styles.loadingOverlay}>
-                            <ActivityIndicator size="large" color="#FF8C00" />
-                            <Text style={styles.loadingText}>{i18n.t('posting_your_job')}</Text>
-                        </View>
+                        
                     )}
-                </View>
+
+
+                    {/* Create Issue Button */ }
+                    <View>
+                        <OrangeButton
+                            testID={'post-job-button'}
+                            title={i18n.t('create_job')}
+                            variant="normal"
+                            onPress={postIssue}
+                            disabled={!isFormValid() || loading}
+                        />
+
+                   </View>
+                </ScrollView>
+                
+                <CustomAlertError
+                    visible={customAlertVisible}
+                    title={customAlertContent.title}
+                    message={customAlertContent.message}
+                    onClose={() => setCustomAlertVisible(false)}
+                />
+                <CustomAlertSuccess
+                    visible={successAlertVisible}
+                    title={successAlertContent.title}
+                    message={successAlertContent.message}
+                    onClose={() => {
+                        setSuccessAlertVisible(false);
+                        navigation.goBack(); // If you want to redirect after success
+                    }}
+                />
+                {loading && (
+                    <View style={styles.loadingOverlay}>
+                        <ActivityIndicator size="large" color="#FF8C00" />
+                        <Text style={styles.loadingText}>{i18n.t('posting_your_job')}</Text>
+                    </View>
+                )}
+            </View>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
     );

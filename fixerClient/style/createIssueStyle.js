@@ -1,35 +1,35 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    button: {
-        padding: 14,
-        borderRadius: 8,
-        flex: 1,
-        justifyContent: 'center',
-        minWidth: '90%',
-        alignSelf: 'center',
-        alignItems: 'center',
-        shadowRadius: 4,
-        elevation: 5,
-        marginTop: 50,
-    },
+    // container: {
+    //     flex: 1,
+    //     backgroundColor: '#ffffff',
+    // },
+    // button: {
+    //     padding: 14,
+    //     borderRadius: 8,
+    //     flex: 1,
+    //     justifyContent: 'center',
+    //     minWidth: '90%',
+    //     alignSelf: 'center',
+    //     alignItems: 'center',
+    //     shadowRadius: 4,
+    //     elevation: 5,
+    //     marginTop: 50,
+    // },
     text: {
         color: "orange",
         fontSize: 16,
         fontWeight: "bold"
     },
-    mapContainer: {
-        flex: 1,
-        marginTop: 40,
-    },
-    map: {
-        width: 361,
-        height: 222,
-    },
+    // mapContainer: {
+    //     flex: 1,
+    //     marginTop: 40,
+    // },
+    // map: {
+    //     width: 361,
+    //     height: 222,
+    // },
     imageWrapper: {
         width: '100%',
         height: '100%',
@@ -50,11 +50,16 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'orange',
     },
+    imagePreview: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+    },
     imageContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 45,
+        // marginTop: 14,
     },
     uploadBox: {
         width: 300,
@@ -75,20 +80,15 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         tintColor: '#667085',
     },
-    textPlaceholder: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#F79009',
-    },
+    // textPlaceholder: {
+    //     fontSize: 16,
+    //     fontWeight: 'bold',
+    //     color: '#F79009',
+    // },
     supportedFormats: {
         fontSize: 12,
         color: '#667085',
         marginTop: 5,
-    },
-    imagePreview: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 10,
     },
     pickerContainer: {
         borderRadius: 8,
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     },
     aiEnhanceButton: {
         position: 'absolute',
-        bottom: 15,
+        bottom: 30,
         right: 15,
         backgroundColor: '#ff8c00',
         borderRadius: 50,
@@ -106,17 +106,59 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         elevation: 2,
     },
-    footer: {
-        padding: 16,
+    // footer: {
+    //     padding: 16,
+    //     alignItems: 'center',
+    //     borderTopWidth: 1,
+    //     borderColor: '#e0e0e0',
+    //     marginTop: 16,
+    // },
+    // footerText: {
+    //     fontSize: 12,
+    //     color: '#666',
+    // },
+    headerContainer: {
+        position: 'relative',
         alignItems: 'center',
-        borderTopWidth: 1,
-        borderColor: '#e0e0e0',
-        marginTop: 16,
+        justifyContent: 'center',
+        paddingBottom: 20,
+        backgroundColor: '#fff',
     },
-    footerText: {
+    backButton: {
+        position: 'absolute',
+        left: 4,
+        top:0,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
+    },
+    badgeInfo: {
         fontSize: 12,
         color: '#666',
+        marginBottom: 4,
+        marginLeft: 8,
+        marginTop: -10,
     },
+    loadingOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 999,
+    },
+      
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#555',
+    },
+      
 });
 
 export default styles;

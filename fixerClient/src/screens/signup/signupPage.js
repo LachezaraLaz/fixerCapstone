@@ -158,7 +158,7 @@ export default function SignUpPage({ navigation }) {
         // Limit final result to 7 characters (A1B 2C3)
         formattedText = formattedText.slice(0, 7);
     
-        setNewPostalCode(formattedText);
+        setPostalCode(formattedText);
     };
     
 

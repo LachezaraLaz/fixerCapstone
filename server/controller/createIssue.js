@@ -29,8 +29,6 @@ const createIssue = async (req, res) => {
     const { title, description, professionalNeeded, email, status = 'open',timeline, address } = req.body;
     let imageUrl = null;
 
-    console.log(address);
-
     if (!title || !description || !professionalNeeded || !address) {
         return res.status(400).json({ message: 'Some required fields are missing.' });
     }
@@ -46,7 +44,6 @@ const createIssue = async (req, res) => {
         }
 
         // const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
-        // const { latitude, longitude } = await getCoordinatesFromAddress(address);
         const { latitude, longitude } = await getCoordinatesFromAddress(address);
 
         const newIssue = await Jobs.create({
@@ -66,7 +63,7 @@ const createIssue = async (req, res) => {
         // Create a notification for the issue creator
         const notification = new Notification({
             userId: clientInfo._id,  // Use the client's ID
-            message: `Your issue titled "${title}" has been created successfully.`,
+            message: `🎉 Congrats! Your issue titled "${title}" has been created successfully.`,
             isRead: false
         });
         await notification.save();

@@ -1,5 +1,4 @@
 //import dependencies
-import * as React from 'react';
 import 'react-native-get-random-values';
 import {
     ScrollView,
@@ -11,10 +10,10 @@ import {
     TouchableWithoutFeedback,
     Alert,
     ActivityIndicator,
-    KeyboardAvoidingView, 
+    KeyboardAvoidingView,
     Platform ,
 } from 'react-native';
-import {useContext, useEffect, useState} from 'react';
+import {memo, useContext, useEffect, useState, useMemo, useCallback} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
@@ -49,6 +48,11 @@ export default function CreateIssue({ navigation }) {
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
 
+    //Memo
+    const [selectedImage, setSelectedImage] = useState(null);
+    const MemoizedMapView = memo(MapView);
+    const MemoizedProfessionalSelector = memo(ProfessionalSelector);
+
     //AI
     const [loadingAi, setLoadingAi] = useState(false);
     const [aiSuggestion, setAiSuggestion] = useState('');
@@ -58,7 +62,6 @@ export default function CreateIssue({ navigation }) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState('');
     const [selectedProfessionals, setSelectedProfessionals] = useState([]);
-    const [selectedImage, setSelectedImage] = useState(null);
     const [selectedTimeLine, setSelectedTimeLine] = useState(null);
     const [itemsTimeLine, setItemsTimeLine] = useState([
         { label: `${i18n.t('low_priority')}`, value: 'low-priority'},
@@ -78,7 +81,116 @@ export default function CreateIssue({ navigation }) {
     const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
     const [successAlertVisible, setSuccessAlertVisible] = useState(false);
     const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
-      
+
+    /**
+     * Asynchronously requests permission to access the user's media library and allows them to select an image.
+     * If permission is granted, the media library is opened for the user to pick an image.
+     * If the image selection is not canceled, the URI of the selected image is set.
+     * If permission is not granted, the user is alerted to grant permission through phone settings.
+     *
+     * @async
+     * @function pickImage
+     * @returns {Promise<void>} A promise that resolves when the image picking process is complete.
+     */
+    const pickImage = useCallback(async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permissionResult.granted) {
+            setCustomAlertContent({
+                title: "Permission Required",
+                message: "Please allow access to your gallery through your phone settings App",
+            });
+            setCustomAlertVisible(true);
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaType,
+            allowsEditing: true,
+            aspect: [4, 4],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    }, []);
+
+    /**
+     * Removes the selected image by setting the selected image to null.
+     * This effectively clears the image from the user's selection.
+     *
+     * @function removeImage
+     * @returns {void} This function does not return a value.
+     */
+    const removeImage = useCallback(() => {
+        setSelectedImage(null);
+    }, []);
+
+    const uploadSection = useMemo(() => (
+        <View style={styles.imageContainer}>
+            <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
+                {selectedImage ? (
+                    <View style={styles.imageWrapper}>
+                        <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+                        <TouchableOpacity style={styles.removeButton} onPress={removeImage}>
+                            <Text style={styles.removeText}>✖</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <View style={styles.placeholder}>
+                        <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
+                        <Text style={styles.text}>{i18n.t('take_from_your_gallery')}</Text>
+                        <Text style={styles.supportedFormats}>JPEG, PNG, HEIC, MP4</Text>
+                    </View>
+                )}
+            </TouchableOpacity>
+        </View>
+    ), [selectedImage, pickImage, removeImage, i18n]);
+
+
+    const locationSelector = useMemo(() => (
+        <View style={{ marginBottom: 16 }}>
+            {/* Use default location */}
+            <TouchableOpacity
+                style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}
+                onPress={() => setUseDefaultLocation(true)}
+            >
+                <Ionicons
+                    name={useDefaultLocation ? 'radio-button-on' : 'radio-button-off'}
+                    size={20}
+                    color="#1E90FF"
+                />
+                <Text style={{ marginLeft: 10, fontSize: 15 }}>
+                    {i18n.t('use_default_address')}
+                </Text>
+            </TouchableOpacity>
+
+            {defaultLocation && (
+                <Text style={{ marginLeft: 30, color: '#888', fontSize: 13, marginBottom: 10 }}>
+                    {defaultLocation}
+                </Text>
+            )}
+
+            {/* Enter other location */}
+            <TouchableOpacity
+                style={{ flexDirection: 'row', alignItems: 'center' }}
+                onPress={() => setUseDefaultLocation(false)}
+            >
+                <Ionicons
+                    name={!useDefaultLocation ? 'radio-button-on' : 'radio-button-off'}
+                    size={20}
+                    color="#1E90FF"
+                />
+                <Text style={{ marginLeft: 10, fontSize: 15 }}>{i18n.t('enter_new_address')}</Text>
+            </TouchableOpacity>
+        </View>
+    ), [useDefaultLocation, defaultLocation, i18n]);
+
+
+
+    const MemoizedMarker = memo(({ coordinate }) => {
+        return <Marker coordinate={coordinate} />;
+    });
 
     /**
      * Asynchronously handles the enhancement of a job description using an AI service.
@@ -115,7 +227,7 @@ export default function CreateIssue({ navigation }) {
                     title: 'Invalid Job Category',
                     message: error.response?.data?.error || 'Please provide a home service or blue-collar job description.',
                 });
-                setCustomAlertVisible(true);                  
+                setCustomAlertVisible(true);
             } else {
                 console.error('Error enhancing description:', error);
                 setCustomAlertContent({
@@ -136,10 +248,10 @@ export default function CreateIssue({ navigation }) {
      * @function handleAcceptAiSuggestion
      * @returns {void} This function does not return a value.
      */
-    const handleAcceptAiSuggestion = () => {
+    const handleAcceptAiSuggestion = useCallback(() => {
         setDescription(aiSuggestion);
         setShowAiPreview(false);
-    };
+    }, [aiSuggestion]);
 
     /**
      * Rejects the AI-generated description suggestion and clears the suggestion.
@@ -148,55 +260,10 @@ export default function CreateIssue({ navigation }) {
      * @function handleRejectAiSuggestion
      * @returns {void} This function does not return a value.
      */
-    const handleRejectAiSuggestion = () => {
+    const handleRejectAiSuggestion = useCallback(() => {
         setAiSuggestion('');
         setShowAiPreview(false);
-    };
-
-
-    /**
-     * Asynchronously requests permission to access the user's media library and allows them to select an image.
-     * If permission is granted, the media library is opened for the user to pick an image.
-     * If the image selection is not canceled, the URI of the selected image is set.
-     * If permission is not granted, the user is alerted to grant permission through phone settings.
-     *
-     * @async
-     * @function pickImage
-     * @returns {Promise<void>} A promise that resolves when the image picking process is complete.
-     */
-    const pickImage = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permissionResult.granted) {
-            setCustomAlertContent({
-                title: "Permission Required",
-                message: "Please allow access to your gallery through your phone settings App",
-            });
-            setCustomAlertVisible(true);
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaType,
-            allowsEditing: true,
-            aspect: [4, 4],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setSelectedImage(result.assets[0].uri);
-        }
-    };
-
-    /**
-     * Removes the selected image by setting the selected image to null.
-     * This effectively clears the image from the user's selection.
-     *
-     * @function removeImage
-     * @returns {void} This function does not return a value.
-     */
-    const removeImage = () => {
-        setSelectedImage(null);
-    };
+    }, []);
 
 
     /**
@@ -341,7 +408,7 @@ export default function CreateIssue({ navigation }) {
             setCustomAlertVisible(true);
             return;
         }
-          
+
         setLoading(true); // Start loading
 
         try {
@@ -362,7 +429,7 @@ export default function CreateIssue({ navigation }) {
             formData.append('status', "open");
             formData.append('timeline', selectedTimeLine);
             formData.append('imageUrl', selectedImage);
-            formData.append('address', fullAddress); 
+            formData.append('address', fullAddress);
 
             if (selectedImage) {
                 formData.append('image', {
@@ -458,7 +525,7 @@ export default function CreateIssue({ navigation }) {
                     <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('job_description')}*</Text>
                     <View style={{ position: 'relative' }}>
 
-                        <InputField 
+                        <InputField
                             placeholder={`${i18n.t('describe_your_service')}`}
                             value={description}
                             onChangeText={setDescription}
@@ -514,6 +581,7 @@ export default function CreateIssue({ navigation }) {
                                     </TouchableOpacity>
                                 </View>
                             </View>
+
                         )}
                     </View>
 
@@ -531,7 +599,7 @@ export default function CreateIssue({ navigation }) {
                         <Text style={ styles.badgeInfo }>
                             {i18n.t('badges_remaining', { count: 2 - selectedProfessionals.length })}
                         </Text>
-                        <ProfessionalSelector
+                        <MemoizedProfessionalSelector
                             selectedProfessionals={selectedProfessionals}
                             setSelectedProfessionals={setSelectedProfessionals}
                         />
@@ -541,22 +609,7 @@ export default function CreateIssue({ navigation }) {
                     <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('image')}</Text>
                     {/*Image upload*/}
                     <View style={styles.imageContainer}>
-                        <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
-                            {selectedImage ? (
-                                <View style={styles.imageWrapper}>
-                                    <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
-                                    <TouchableOpacity style={{...styles.removeButton}} onPress={removeImage}>
-                                        <Text style={{...styles.removeText}}>✖</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            ) : (
-                                <View style={styles.placeholder}>
-                                    <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
-                                    <Text style={{ ...styles.text }}>{i18n.t('take_from_your_gallery')}</Text>
-                                    <Text style={{...styles.supportedFormats}}>JPEG, PNG, HEIC, MP4</Text>
-                                </View>
-                            )}
-                        </TouchableOpacity>
+                        {uploadSection}
                     </View>
                     <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 30 }}>{i18n.t('select_timeline')}*</Text>
                     <View style={styles.pickerContainer}>
@@ -575,38 +628,7 @@ export default function CreateIssue({ navigation }) {
 
                     <View style={{ marginBottom: 16 }}>
                         {/* Use default location */}
-                        <TouchableOpacity
-                            style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}
-                            onPress={() => setUseDefaultLocation(true)}
-                        >
-                            <Ionicons
-                            name={useDefaultLocation ? 'radio-button-on' : 'radio-button-off'}
-                            size={20}
-                            color="#1E90FF"
-                            />
-                            <Text style={{ marginLeft: 10, fontSize: 15 }}>
-                            {i18n.t('use_default_address')}
-                            </Text>
-                        </TouchableOpacity>
-
-                        {defaultLocation && (
-                            <Text style={{ marginLeft: 30, color: '#888', fontSize: 13, marginBottom: 10 }}>
-                            {defaultLocation}
-                            </Text>
-                        )}
-
-                        {/* Enter other location */}
-                        <TouchableOpacity
-                            style={{ flexDirection: 'row', alignItems: 'center' }}
-                            onPress={() => setUseDefaultLocation(false)}
-                        >
-                            <Ionicons
-                            name={!useDefaultLocation ? 'radio-button-on' : 'radio-button-off'}
-                            size={20}
-                            color="#1E90FF"
-                            />
-                            <Text style={{ marginLeft: 10, fontSize: 15 }}>{i18n.t('enter_new_address')}</Text>
-                        </TouchableOpacity>
+                        {locationSelector}
                     </View>
 
 
@@ -633,7 +655,7 @@ export default function CreateIssue({ navigation }) {
                                     <Text style={{ marginTop: 10, color: 'green' }}>
                                         ✅ {i18n.t('valid_address_entered')}
                                     </Text>
-                                    <MapView
+                                    <MemoizedMapView
                                         style={{ width: '100%', height: 200, marginTop: 10, borderRadius: 10 }}
                                         initialRegion={{
                                             latitude: coordinates.latitude,
@@ -642,8 +664,8 @@ export default function CreateIssue({ navigation }) {
                                             longitudeDelta: 0.005,
                                         }}
                                     >
-                                        <Marker coordinate={coordinates} />
-                                    </MapView>
+                                        <MemoizedMarker coordinate={coordinates} />
+                                    </MemoizedMapView>
                                 </>
                             )}
                         </View>

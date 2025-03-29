@@ -11,11 +11,11 @@ import DropDownPicker from "react-native-dropdown-picker";
  */
 
 const FilterIssuePage = ({ navigation, route }) => {
-    const { typesOfWork, selectedFilters, distanceRange: initialDistanceRange } = route.params;
+    const { typesOfWork, selectedFilters, distanceRange: initialDistanceRange, rating: initialRating, timeline: initialTimeline } = route.params;
     const [filters, setFilters] = React.useState(selectedFilters);
     const [distanceRange, setDistanceRange] = React.useState(initialDistanceRange || [0, 50]);
-    const [rating, setRating] = useState(0);
-    const [timeline, setTimeline] = useState('');
+    const [rating, setRating] = useState(initialRating || 0);           // <-- Initialized from params
+    const [timeline, setTimeline] = useState(initialTimeline || '');    // <-- Initialized from params
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [urgencyOptions, setUrgencyOptions] = useState([
         { label: 'select timeline', value: '' },

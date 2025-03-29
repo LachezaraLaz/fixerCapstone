@@ -69,10 +69,7 @@ export default function MyIssuesPosted() {
             setJobs({
                 all: response.data.jobs,
                 inProgress: response.data.jobs.filter(job =>
-                                                      
-                    job.status?.toLowerCase() === inProgressLabel.toLowerCase() || job.status?.toLowerCase() === 'open'
-              // Previous line is from create_issue_client_enhancement branch and fixes a bug but the following line is on main and it handles it differently as it gives the option for In Progress as well so i will leave it here commented out and will confirm functionality right away after merging and create a PR right away if necessary
-//                     job.status === inProgressLabel || job.status === 'Open' || job.status === 'In progress'
+                    job.status?.toLowerCase() === 'in progress' || job.status?.toLowerCase() === 'open' || job.status === inProgressLabel
                 ),
                 completed: response.data.jobs.filter(job =>
                     job.status === 'Completed' || job.status === 'Closed' || job.status === 'Reopened'

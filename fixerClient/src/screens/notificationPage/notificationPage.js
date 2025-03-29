@@ -137,27 +137,6 @@ const NotificationPage = () => {
     };
 
     /**
-     * Gets the type of notification (approval/refusal) and changes the color accordingly
-     *
-     * @param item - the notification
-     * @returns {{backgroundColor: string}} - the background color
-     */
-    const getNotificationStyle = (item) => {
-        if (item.isRead) {
-            return styles.read;
-        }
-        // If it's unread, check the message for keywords
-        const msg = item.message.toLowerCase();
-        if (msg.includes('accepted')) {
-            return styles.accepted;
-        }
-        if (msg.includes('rejected')) {
-            return styles.rejected;
-        }
-        return styles.unread; // Default unread color for neutral notifications
-    };
-
-    /**
      * Sorts the notification list, starting with the unread ones
      * @param array - notifications
      * @returns {*}
@@ -190,7 +169,7 @@ const NotificationPage = () => {
                     toggleReadStatus(item.id, item.isRead);
                     navigation.navigate('NotificationDetail', { notification: item });
                 }}
-                style={[styles.notificationContainer, getNotificationStyle(item)]}
+                style={[styles.notificationContainer, item.isRead ? styles.read : styles.unread]}
             >
                 <Text style={item.isRead ? styles.message : styles.unreadMessage}>
                     {i18n.t(`${first}`) + ` "${title}" ` + i18n.t(`${last}`)}
@@ -314,15 +293,7 @@ const styles = StyleSheet.create({
 
     read: { backgroundColor: 'white', borderWidth: 1, borderColor: 'orange' },
 
-    unread: { backgroundColor: '#add8e6' },
-
-    accepted: {
-        backgroundColor: 'orange', // Light green
-    },
-
-    rejected: {
-        backgroundColor: 'orange', // Light red
-    },
+    unread: { backgroundColor: 'orange' },
 
     noNotifications: {
         fontSize: 16,

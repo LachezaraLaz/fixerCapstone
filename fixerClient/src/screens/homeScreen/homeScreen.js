@@ -32,6 +32,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const [miniOffers, setMiniOffers] = useState([]);
     const [loadingOffers, setLoadingOffers] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
     const {locale, setLocale}  = useContext(LanguageContext);
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
@@ -93,6 +94,14 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         loadOffers();
     }, []);
 
+    useEffect(() => {
+        const getCount = async () => {
+            const count = await fetchNotificationNumber();
+            setUnreadCount(count);
+        };
+        getCount();
+    }, []);
+
     /**
      * Handles the user logout process.
      */
@@ -114,6 +123,28 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }
     };
 
+    /**
+     * Gets the number of unread notifications
+     * @returns {Promise<number|*>} - unread notifications
+     */
+    const fetchNotificationNumber = async () => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const readNotifications = response.data.filter(
+                (notif) => !notif.isRead
+            );
+
+            return readNotifications.length;
+        } catch (error) {
+            console.error('Error fetching notifications:', error.message);
+            return 0;
+        }
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView
@@ -125,10 +156,35 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 <View style={styles.customHeader}>
                     <Text style={styles.headerLogo}>Fixr</Text>
                     <Text style={styles.headerTitle}>{i18n.t('home')}</Text>
-                    <NotificationButton
-                        testID="notification-button"
-                        onPress={() => navigation.navigate('NotificationPage')}
-                    />
+
+                    <View style={{ position: 'relative' }}>
+                        <NotificationButton
+                            testID="notification-button"
+                            onPress={() => navigation.navigate('NotificationPage')}
+                        />
+                        {unreadCount > 0 && (
+                            <View
+                                style={{
+                                    position: 'absolute',
+                                    right: -2,
+                                    top: -2,
+                                    backgroundColor: 'red',
+                                    borderRadius: 8,
+                                    width: 16,
+                                    height: 16,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Text style={{
+                                    color: 'white',
+                                    fontSize: 10,
+                                    fontWeight: 'bold' }}>
+                                    {unreadCount}
+                                </Text>
+                            </View>
+                        )}
+                    </View>
                 </View>
 
                 {/* Hero/Greeting */}
@@ -297,6 +353,9 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 )}
                 {/* Logout Button at Bottom */}
                 <View style={styles.logoutContainer}>
+                    <TouchableOpacity onPress={fetchNotificationNumber}>
+                        <Text style={styles.logoutButton}>Heyy</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                         <Text style={styles.logoutText}>{i18n.t('logout')}</Text>
                     </TouchableOpacity>

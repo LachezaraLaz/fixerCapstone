@@ -145,6 +145,22 @@ const NotificationPage = () => {
         });
     };
 
+    // Old notifications
+    const notifTimeLimit = 5 * 24 * 60 * 60 * 1000;    // 5 days
+    const now = new Date();
+
+    // New list
+    const currentNotifications = notifications.filter((n) => {
+        const isOlderThanFiveDays = (now - new Date(n.createdAt)) > notifTimeLimit;
+        return !(n.isRead && isOlderThanFiveDays);
+    });
+
+    // Old List
+    const oldNotifications = notifications.filter((n) => {
+        const isOlderThanFiveDays = (now - new Date(n.createdAt)) > notifTimeLimit;
+        return n.isRead && isOlderThanFiveDays;
+    });
+
     /**
      * Renders a notification item.
      *
@@ -176,7 +192,7 @@ const NotificationPage = () => {
     }
 
 
-
+    // Correct notifications depending on the language selected
     const correctNotification = (item) => {
         const message = item.message;
         let start = '';
@@ -204,42 +220,47 @@ const NotificationPage = () => {
 
         return [start, title, end]
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.containerHeader}>
-            {/*    <>*/}
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={28} color="orange" />
-                    </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
+                </TouchableOpacity>
 
-                    <Text style={styles.title}>Notifications</Text>
-            {/*    </>*/}
+                <Text style={styles.title}>Notifications</Text>
             </View>
-            {notifications.length === 0 ? (
+
+            {currentNotifications.length === 0 ? (
                 <Text style={styles.noNotifications}>{i18n.t('no_notifications_available')}</Text>
             ) : (
                 <>
-                <FlatList
-                    data={notifications}
-                    style={styles.list}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderNotification}
-                />
-                {hasMore ? (
-                    <OrangeButton
-                        style={{marginTop: 0}}
-                        title={loading ? `${i18n.t('loading')}` : `${i18n.t('load_more')}`}
-                        onPress={fetchMoreNotifications}
-                        disabled={loading}
+                    <FlatList
+                        data={currentNotifications}
+                        style={styles.list}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderNotification}
                     />
-                    ) : (
+                    {hasMore ? (
+                        <OrangeButton
+                            style={{marginTop: 0}}
+                            title={loading ? `${i18n.t('loading')}` : `${i18n.t('load_more')}`}
+                            onPress={fetchMoreNotifications}
+                            disabled={loading}
+                        />
+                        ) : (
+                        <OrangeButton
+                            style={{marginTop: 0}}
+                            title={i18n.t('no_more_notifications')}
+                            disabled={true}
+                        />
+                        )
+                    }
                     <OrangeButton
-                        style={{marginTop: 0}}
-                        title={i18n.t('no_more_notifications')}
-                        disabled={true}
+                        title="View Old Notifications"
+                        onPress={() => navigation.navigate('OldNotificationsPage', { oldNotifications })}
+                        style={{ marginVertical: 0 }}
                     />
-                    )
-                }
                 </>
             )}
         </View>

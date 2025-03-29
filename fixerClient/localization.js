@@ -223,7 +223,7 @@ const fr = {
     your_quote_for_the_job_accepted: "🎉 Félécitations! Votre soumission pour la tâche",
     has_been_accepted: "a été acceptée. La tâche est maintenant en cours.",
     your_quote_for_the_job_rejected: "🔴 Désolé! Votre soumission pour la tâche",
-    has_been_rejected: "à été refusée.",}
+    has_been_rejected: "à été refusée.",
 }
 
 export {en, fr}

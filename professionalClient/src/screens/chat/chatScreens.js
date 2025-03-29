@@ -17,7 +17,7 @@ export default function ChatScreens() {
 
     return (
         <Chat client={chatClient}>
-            <Stack.Navigator>
+            <Stack.Navigator screenOptions={{headerShown: false}}>
                 <Stack.Screen name="ChatListPage" component={ChatListPage} />
                 <Stack.Screen name="ChatPage" component={ChatPage} />
             </Stack.Navigator>

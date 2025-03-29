@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useLayoutEffect} from "react";
+import React, {useState, useEffect} from "react";
 import {View, Text, StyleSheet, Keyboard, Platform, TouchableOpacity} from "react-native";
 import { Channel, MessageList, MessageInput } from "stream-chat-expo";
 import { useChatContext } from "./chatContext";
@@ -10,12 +10,6 @@ const ChatPage = () => {
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
     const navigation = useNavigation();
-
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerShown: false, // Hides the header
-        });
-    }, [navigation]);
 
     useEffect(() => {
         const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";

@@ -1,6 +1,7 @@
 import React from "react";
 import { ChannelList } from "stream-chat-expo";
 import { useChatContext } from './chatContext';
+import {View, Text} from "react-native";
 
 /**
  * @module professionalClient
@@ -31,11 +32,27 @@ const ChannelListScreen = ({ navigation }) => {
     };
 
     return (
-        <ChannelList
-            onSelect={handleSelectChannel}
-            filters={filters}
-            sort={sort}
-        />
+        <>
+            <View style={{
+                position: 'relative',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 20,
+                backgroundColor: '#fff',
+            }}>
+                <Text style={{
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                }}>
+                    Chats
+                </Text>
+            </View>
+            <ChannelList
+                onSelect={handleSelectChannel}
+                filters={filters}
+                sort={sort}
+            />
+        </>
     );
 };
 

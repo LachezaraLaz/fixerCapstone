@@ -146,7 +146,7 @@ const NotificationPage = () => {
     };
 
     // Old notifications
-    const notifTimeLimit = 5 * 24 * 60 * 60 * 1000;    // 5 days
+    const notifTimeLimit = 4 * 24 * 60 * 60 * 1000;    // 4 days
     const now = new Date();
 
     // New list
@@ -258,7 +258,7 @@ const NotificationPage = () => {
                     }
                     <OrangeButton
                         title="View Old Notifications"
-                        onPress={() => navigation.navigate('OldNotificationsPage', { oldNotifications })}
+                        onPress={() => navigation.navigate('oldNotifications', { oldNotifications })}
                         style={{ marginVertical: 0 }}
                     />
                 </>

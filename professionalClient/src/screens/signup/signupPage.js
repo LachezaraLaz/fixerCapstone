@@ -241,7 +241,17 @@ export default function SignUpPage({ navigation }) {
                     });                      
                     setCustomAlertVisible(true);
                 } else {
-                    Alert.alert("Error", "An unexpected error occurred");
+                    setCustomAlertContent({
+                        title: "Error",
+                        message: "An unexpected error occurred",
+                        buttons: [
+                          {
+                            text: "OK",
+                            onPress: () => setCustomAlertVisible(false)
+                          }
+                        ]
+                    });
+                    setCustomAlertVisible(true);                      
                 }
             }
         }
@@ -302,7 +312,7 @@ export default function SignUpPage({ navigation }) {
                             isValid={isPasswordValid} // Green when all criteria are met
                             isError={!isPasswordValid && password.length > 0} // Red when criteria are not met
                         />
-            
+
                         {/* Password Criteria */}
                         {password.length > 0 && (
                             <View style={styles.passwordCriteriaContainer}>

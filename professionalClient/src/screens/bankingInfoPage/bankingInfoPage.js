@@ -33,9 +33,15 @@ const BankingInfoPage = () => {
 
             console.log("After createPaymentMethod");
 
+            if (!paymentMethod){
+                Alert.alert('Error', error.message);
+                return;
+            }
+
             if (error) {
                 console.log("Payment error:", error);
-                if (!isUnmounted.current) Alert.alert('Error', error.message);
+                if (!isUnmounted.current) 
+                    Alert.alert('Error', error.message);
                 return;
             }
 
@@ -189,7 +195,7 @@ const BankingInfoPage = () => {
             {/*    <Text style={styles.buttonText}>Test Navigation</Text>*/}
             {/*</TouchableOpacity>*/}
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={styles.button}
                 onPress={handleSubmit}
                 disabled={loading}
@@ -197,7 +203,16 @@ const BankingInfoPage = () => {
                 <Text style={styles.buttonText}>
                     {loading ? 'Submitting...' : 'Submit'}
                 </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <OrangeButton
+                title={loading ? 'Submitting...' : 'Submit'}
+                onPress={handleSubmit}
+                testID="submit-button"
+                variant="normal"
+                disabled={loading}
+            />
+                       
         </View>
     );
 };

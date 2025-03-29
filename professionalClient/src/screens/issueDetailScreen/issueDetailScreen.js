@@ -163,20 +163,6 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
      */
     const handlePaymentMethodCheck = () => {
         if (!bankingInfoAdded) {
-            // Alert.alert(
-            //     'Payment Method Required',
-            //     'Cannot use this feature until a payment method has been added.',
-            //     [
-            //         {
-            //             text: 'Add Payment Method',
-            //             onPress: () => navigation.navigate('BankingInfoPage')
-            //         },
-            //         {
-            //             text: 'Cancel',
-            //             style: 'cancel'
-            //         }
-            //     ]
-            // );
             setErrorAlertContent({
                 title: 'Payment Method Required',
                 message: 'Cannot use this feature until a payment method has been added.',
@@ -359,7 +345,7 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
 
             <Animated.View style={[styles.bottomButtonsContainer, {opacity: buttonOpacity}]}>
                 <TouchableOpacity
-                    style={[styles.sendQuoteButton, !bankingInfoAdded && styles.disabledSendButton]}
+                    style={[styles.sendQuoteButton, !bankingInfoAdded && styles.disabledTextSendButton]}
                     onPress={() => handleAction('ContractOffer')}
                 >
                     <Text style={[styles.sendQuoteButtonText, !bankingInfoAdded && styles.disabledButtonText]}>
@@ -368,7 +354,7 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[styles.chatButton, !bankingInfoAdded && styles.disabledChatButton]}
+                    style={[styles.chatButton, !bankingInfoAdded && styles.disabledTextChatButton]}
                     onPress={() => handleAction('ChatScreen')}
                 >
                     <Text style={styles.chatButtonText}>Chat</Text>

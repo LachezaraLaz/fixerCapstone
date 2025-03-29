@@ -18,13 +18,28 @@ import {getAddressFromCoords} from '../../../utils/geoCoding_utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-export default function IssueDetailScreen({issue, onClose}) {
+// export default function IssueDetailScreen({issue, onClose}) {
+// export default function IssueDetailScreen({ issues = [], onClose }) {
+    export default function IssueDetailScreen({ issue, issues, onClose }) {
+
     const navigation = useNavigation();
     const [address, setAddress] = useState('Loading address...');
     const [client, setClient] = useState({firstName: '', lastName: ''});
     const [modalVisible, setModalVisible] = useState(false);
     const [bankingInfoAdded, setBankingInfoAdded] = useState(false);
     const [scrollEnabled, setScrollEnabled] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(() => {
+    // Try to find selectedIssue in the issues array
+    const index = issues.findIndex(i => i._id === issue?._id || i.id === issue?.id);
+    return index >= 0 ? index : 0;
+    });
+    
+    const currentIssue = issues[currentIndex] || issue; // ✅ fallback to the passed-in issue
+      
+
+    // Guard against undefined
+    if (!issue) return null;
+
 
     useEffect(() => {
         const fetchAddress = async () => {
@@ -74,7 +89,7 @@ export default function IssueDetailScreen({issue, onClose}) {
     // Animation setup
     const SCREEN_HEIGHT = Dimensions.get('window').height;
     const MAX_HEIGHT = SCREEN_HEIGHT * 0.9;
-    const MIN_HEIGHT = Math.min(SCREEN_HEIGHT * 0.35, MAX_HEIGHT - 60); // Ensure MIN < MAX - 50
+    const MIN_HEIGHT = Math.min(SCREEN_HEIGHT * 0.35, MAX_HEIGHT - 60); 
 
     const modalHeight = useRef(new Animated.Value(MIN_HEIGHT)).current;
     const lastGestureDy = useRef(0);
@@ -184,7 +199,7 @@ export default function IssueDetailScreen({issue, onClose}) {
                     <View style={styles.urgencyContentContainer}>
                         <Text style={styles.subtitle}>Urgency Timeline</Text>
                         <View style={styles.urgencyContainer}>
-                            <Text style={styles.urgencyText}>{issue.priority || "High Priority"}</Text>
+                            <Text style={styles.urgencyText}>{issue.timeline || "High Priority"}</Text>
                         </View>
                     </View>
 

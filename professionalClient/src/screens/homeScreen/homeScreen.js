@@ -1,5 +1,15 @@
 import * as React from 'react';
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Linking } from 'react-native';
+import { 
+    View, 
+    Text, 
+    TouchableOpacity, 
+    Alert, 
+    ActivityIndicator, 
+    SafeAreaView, 
+    Animated, 
+    Linking, 
+    Dimensions
+} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 import { styles } from '../../../style/homescreen/homeScreenStyle';
@@ -13,6 +23,7 @@ import { Platform } from 'react-native';
 import IssueDetailScreen from '../issueDetailScreen/issueDetailScreen';
 import CustomAlertLocation from '../../../components/customAlertLocation';
 import NotificationButton from '../../../components/notificationButton';
+import Carousel from 'react-native-snap-carousel-v4';
 
 
 /**
@@ -62,6 +73,13 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const modalTranslateY = React.useRef(new Animated.Value(500)).current; // Start off screen (500 px under screen)
     const [errorAlertVisible, setErrorAlertVisible] = React.useState(false);
     const [errorAlertContent, setErrorAlertContent] = React.useState({ title: '', message: '' });
+
+    const [showCarousel, setShowCarousel] = React.useState(true);
+    const [selectedIssue, setSelectedIssue] = React.useState(null);
+    const [carouselIndex, setCarouselIndex] = React.useState(0);
+
+
+
 
     /**
      * Fetches all issues from the server and updates the state with the fetched data.
@@ -191,6 +209,20 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     //     return unsubscribe;
     // }, [navigation, route.params]);
 
+    React.useEffect(() => {
+        const listener = modalTranslateY.addListener(({ value }) => {
+          setShowCarousel(value > 200); // only hide when nearly full screen
+        });
+      
+        return () => {
+          modalTranslateY.removeListener(listener);
+        };
+    }, []);
+      
+      
+    
+
+    
 
     /**
      * Handles the user logout process.
@@ -298,13 +330,57 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     
         return matchesType && matchesDistance && matchesRating && matchesTimeline;
     });
+
+
+    const renderItem = ({ item }) => (
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedIssue(item);
+            
+            modalTranslateY.setValue(500); // Start from bottom
+            
+            // Animate map to center on this item
+            mapRef.current?.animateToRegion({
+              latitude: item.latitude,
+              longitude: item.longitude,
+              latitudeDelta: 0.0122,
+              longitudeDelta: 0.0121,
+            }, 500);
+      
+            // Animate modal up (but carousel still visible until modalTranslateY === 0)
+            Animated.spring(modalTranslateY, {
+              toValue: 0,
+              friction: 8,
+              tension: 50,
+              useNativeDriver: true,
+            }).start();
+          }}
+        >
+          <View style={{
+            backgroundColor: '#fff',
+            padding: 10,
+            borderRadius: 10,
+            width: 260,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 5,
+          }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.title}</Text>
+            <Text style={{ fontSize: 14, marginTop: 5 }}>
+              <Ionicons name="hammer-outline" size={14} /> {item.professionalNeeded}
+            </Text>
+            <Text style={{ fontSize: 14, marginTop: 2 }}>
+              <Ionicons name="alarm-outline" size={14} /> {item.timeline}
+            </Text>
+          </View>
+        </TouchableOpacity>
+    );
+      
+      
+
     
-    
-    
-
-
-
-
     if (loading) {
         return (
             <View style={styles.container}>
@@ -370,8 +446,42 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     /**
      * Handles marker click: Opens bottom sheet with issue details.
      */
-    const handleMarkerPress = (issue) => {
-        setSelectedMarker(issue);
+    // const handleMarkerPress = (issue) => {
+    //     setSelectedMarker(issue);
+
+    //     modalTranslateY.setValue(500);
+    //     Animated.spring(modalTranslateY, {
+    //         toValue: 0,
+    //         friction: 8,
+    //         tension: 50,
+    //         useNativeDriver: true,
+    //     }).start();
+
+    //     if (mapRef.current) {
+    //         mapRef.current.animateToRegion({
+    //             latitude: issue.latitude,
+    //             longitude: issue.longitude,
+    //             latitudeDelta: 0.0122,
+    //             longitudeDelta: 0.0121,
+    //         }, 500);
+    //     }
+    // };
+
+    const roundCoord = (coord) => Math.round(coord * 10000) / 10000;
+
+
+    const handleMarkerPress = (selected) => {
+        const lat = roundCoord(selected.latitude);
+        const lng = roundCoord(selected.longitude);
+        const key = `${lat},${lng}`;
+
+        const jobsAtSameLocation = groupedIssues.find(group => {
+            const first = group[0];
+            return roundCoord(first.latitude) === lat && roundCoord(first.longitude) === lng;
+        });
+
+        setSelectedMarker(jobsAtSameLocation || []);
+        setSelectedIssue(selected);
 
         modalTranslateY.setValue(500);
         Animated.spring(modalTranslateY, {
@@ -380,16 +490,40 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
             tension: 50,
             useNativeDriver: true,
         }).start();
-
-        if (mapRef.current) {
-            mapRef.current.animateToRegion({
-                latitude: issue.latitude,
-                longitude: issue.longitude,
-                latitudeDelta: 0.0122,
-                longitudeDelta: 0.0121,
-            }, 500);
-        }
+    
+        mapRef.current?.animateToRegion({
+            latitude: selected.latitude,
+            longitude: selected.longitude,
+            latitudeDelta: 0.0122,
+            longitudeDelta: 0.0121,
+        }, 500);
     };
+
+    const groupJobsByLocation = (issues) => {
+        const groups = [];
+    
+        for (let issue of issues) {
+            const matchGroup = groups.find(group => {
+                const latDiff = Math.abs(group[0].latitude - issue.latitude);
+                const lngDiff = Math.abs(group[0].longitude - issue.longitude);
+                return latDiff < 0.00005 && lngDiff < 0.00005; // adjust threshold as needed
+            });
+    
+            if (matchGroup) {
+                matchGroup.push(issue);
+            } else {
+                groups.push([issue]);
+            }
+        }
+    
+        return groups;
+    };
+    
+    
+    const groupedIssues = groupJobsByLocation(filteredIssues);
+    
+
+
 
     const handleCloseIssueDetail = () => {
         Animated.timing(modalTranslateY, {
@@ -453,13 +587,39 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
-                        {filteredIssues.map((issue, index) => (
-                            <Marker
-                                key={issue._id || `marker-${index}`}
-                                coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
-                                onPress={() => handleMarkerPress(issue)}
-                            />
-                        ))}
+                        {groupedIssues.map((group, index) => {
+                            const firstIssue = group[0]; // Use first for lat/lng and popup
+
+                            return (
+                                <Marker
+                                    key={`marker-${index}`}
+                                    coordinate={{ latitude: firstIssue.latitude, longitude: firstIssue.longitude }}
+                                    onPress={() => handleMarkerPress(firstIssue)}
+                                >
+                                    <View style={{
+                                        backgroundColor: '#f28500',
+                                        paddingHorizontal: 10,
+                                        paddingVertical: 6,
+                                        borderRadius: 20,
+                                        borderWidth: 2,
+                                        borderColor: '#fff',
+                                        shadowColor: '#000',
+                                        shadowOffset: { width: 0, height: 2 },
+                                        shadowOpacity: 0.3,
+                                        shadowRadius: 3,
+                                        elevation: 5,
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                    }}>
+                                        <Ionicons name="construct" size={16} color="#fff" />
+                                        {group.length > 1 && (
+                                            <Text style={{ color: '#fff', marginLeft: 5, fontWeight: 'bold' }}>{group.length}</Text>
+                                        )}
+                                    </View>
+                                </Marker>
+                            );
+                        })}
+
                     </MapView>
                     {/* Recenter Button */}
                     <View style={styles.recenterButtonWrapper}>
@@ -544,13 +704,62 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                         right: 0,
                         bottom: 0,
                         transform: [{ translateY: modalTranslateY }],
+                        zIndex: 1000,
                     }}>
                     <IssueDetailScreen
-                        issue={selectedMarker}
+                        key={selectedIssue?.id}
+                        issue={selectedIssue}
+                        issues={selectedMarker}
                         onClose={handleCloseIssueDetail}
                     />
                 </Animated.View>
             )}
+            {selectedMarker && showCarousel && (
+    <View
+        style={{
+            position: 'absolute',
+            bottom: 320,
+            left: 0,
+            right: 0,
+            alignItems: 'center',
+            zIndex: 998,
+            elevation: 10,
+        }}
+    >
+       <Carousel
+  data={selectedMarker}
+  renderItem={renderItem}
+  sliderWidth={Dimensions.get('window').width}
+  itemWidth={280}
+  layout={'default'}
+  inactiveSlideScale={0.95}
+  inactiveSlideOpacity={0.8}
+  loop={false}
+  enableSnap={true}
+  onSnapToItem={(index) => {
+    setCarouselIndex(index);
+    setSelectedIssue(selectedMarker[index]); // make sure modal updates too
+  }}
+/>
+<View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 8 }}>
+  {selectedMarker.map((_, index) => (
+    <View
+      key={`dot-${index}`}
+      style={{
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        marginHorizontal: 4,
+        backgroundColor: index === carouselIndex ? '#f28500' : '#ccc',
+      }}
+    />
+  ))}
+</View>
+
+    </View>
+)}
+
+
             <CustomAlertLocation
                 visible={errorAlertVisible}
                 title={errorAlertContent.title}

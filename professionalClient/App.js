@@ -120,7 +120,7 @@ export default function App() {
                                         <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
                                         <Stack.Screen name="ProfessionalAccountSettingsPage" component={ProfessionalAccountSettingsPage}/>
                                         <Stack.Screen name="SettingsPage" component={SettingsPage} />
-                                        <Stack.Screen name="IssueDetails" component={issueDetails} />
+                                        <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>
                                         <Stack.Screen name="ChatScreen" component={ChatScreen}/>
                                         {/* Add BankingInfoPage here */}
                                         <Stack.Screen

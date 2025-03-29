@@ -18,9 +18,9 @@ const FilterIssuePage = ({ navigation, route }) => {
     const [timeline, setTimeline] = useState(initialTimeline || '');    // <-- Initialized from params
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [urgencyOptions, setUrgencyOptions] = useState([
-        { label: 'select timeline', value: '' },
-        { label: 'low-priority', value: 'low-priority' },
-        { label: 'high-priority', value: 'high-priority' },
+        { label: 'Select Timeline', value: '' },
+        { label: 'Low-Priority', value: 'low-priority' },
+        { label: 'Ligh-Priority', value: 'high-priority' },
     ]);
 
     const getUniqueWorkTypes = () => {

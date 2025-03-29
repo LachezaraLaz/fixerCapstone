@@ -18,12 +18,6 @@ const NotificationPage = () => {
     const [page, setPage] = useState(1);                    //
     const navigation = useNavigation(); // Use the navigation hook
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerShown: false, // Hides the header
-        });
-    }, [navigation]);
-
     useEffect(() => {
         fetchNotifications();
     }, []);

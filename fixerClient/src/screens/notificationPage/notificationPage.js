@@ -25,12 +25,6 @@ const NotificationPage = () => {
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerShown: false, // Hides the header
-        });
-    }, [navigation]);
-
     useEffect(() => {
         fetchNotifications();
     }, []);

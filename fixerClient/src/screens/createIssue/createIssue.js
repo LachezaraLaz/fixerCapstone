@@ -16,7 +16,7 @@ import {
     ActivityIndicator,
     StyleSheet
 } from 'react-native';
-import {useContext, useEffect, useState} from 'react';
+import {useContext, useEffect, useLayoutEffect, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
@@ -29,6 +29,7 @@ import MapView, { Marker } from "react-native-maps";
 import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
+import {Ionicons} from "@expo/vector-icons";
 
 /**
  * @module fixerClient
@@ -68,6 +69,12 @@ export default function CreateIssue({ navigation }) {
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [other, setOther] = useState(false);
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: false, // Hides the header
+        });
+    }, [navigation]);
 
     /**
      * Asynchronously picks an image from the user's media library.
@@ -291,9 +298,49 @@ export default function CreateIssue({ navigation }) {
         setSelectedImage(null);
     };
 
+    // const styles = StyleSheet.create({
+    //     container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
+    //
+    //     containerHeader: {
+    //         flexDirection: 'row',
+    //         alignItems: 'center',
+    //         justifyContent: 'flex-start',
+    //         paddingVertical: 1,
+    //     },
+    //
+    //     title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginLeft: 80 },
+    // });
+
     return (
         //possibility to dismiss the keyboard just by touching the screen
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <>
+            <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                paddingVertical: 12,
+                backgroundColor: 'white',
+            }}>
+                {/*    <>*/}
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={{
+                        alignItems: 'left',
+                        justifyContent: 'center',
+                        paddingLeft: 8,
+                    }}>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
+                </TouchableOpacity>
+
+                <Text style={{
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    marginLeft: 80
+                }}>Create Issue</Text>
+                {/*    </>*/}
+            </View>
             <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
                         contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
                         keyboardShouldPersistTaps="handled"
@@ -485,6 +532,7 @@ export default function CreateIssue({ navigation }) {
                     <OrangeButton testID={'post-job-button'} title={i18n.t('create_issue')} variant="normal" onPress={postIssue}/>
                 </View>
             </ScrollView>
+            </>
         </TouchableWithoutFeedback>
     );
 }

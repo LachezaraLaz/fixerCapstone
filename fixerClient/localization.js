@@ -122,6 +122,15 @@ const en = {
     has_received_a_new_quote: "has received a new quote.",
     has_been_accepted: "has been accepted. The job is now in progress.",
     has_been_rejected: "has been rejected.",
+    review_incomplete_form: "Please provide both a rating and a comment.",
+    review_rating_error: "Rating must be a number between 1 and 5.",
+    review_added_successfully: "Your review has been added successfully!",
+    review_submission_error: "Something went wrong while adding your review. Please try again.",
+    add_modify_review: "Add/Modify Review",
+    review_rating_placeholder: "Enter a rating from 1 (bad) to 5 (excellent)",
+    review_comment_placeholder: "Write your comment here...",
+    submit_review: "Submit Review",
+
 }
 
 const fr = {
@@ -248,6 +257,14 @@ const fr = {
     has_been_accepted: "a été acceptée. La tâche est maintenant en cours.",
     your_quote_for_the_job_rejected: "🔴 Désolé! Votre soumission pour la tâche",
     has_been_rejected: "à été refusée.",
+    review_incomplete_form: "Veuillez fournir à la fois une note et un commentaire.",
+    review_rating_error: "La note doit être un chiffre entre 1 et 5.",
+    review_added_successfully: "Votre avis a été ajouté avec succès !",
+    review_submission_error: "Une erreur s'est produite lors de l'ajout de votre avis. Veuillez réessayer.",
+    add_modify_review: "Ajouter/Modifier un avis",
+    review_rating_placeholder: "Entrez une note de 1 (mauvais) à 5 (excellent)",
+    review_comment_placeholder: "Écrivez votre commentaire ici...",
+    submit_review: "Soumettre l'avis",
 }
 
 export {en, fr}

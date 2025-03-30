@@ -104,23 +104,23 @@ async function sendVerificationEmail(user, token) {
 <body>
     <div class="container">
         <div class="header">
-            <h1 style="color:white;">Welcome to Fixit</h1>
+            <h1 style="color:white;">Welcome to Fixr</h1>
         </div>
         <div class="content">
             <p>Hello,</p>
-            <p>Thank you for signing up with <strong>Fixit</strong>! Please confirm your email address to complete your registration and start using our services.</p>
-            <p style="text-align: center;">
+            <p>Thank you for signing up with <strong>Fixr</strong>! Please confirm your email address to complete your registration and start using our services.</p>
+            <p style="text-align: center;text-decoration: none;color: white;">
                 <a class="btn" href="${verificationUrl}">Verify My Email</a>
             </p>
             <p>If you did not sign up for this account, you can safely ignore this email.</p>
             <br>
-            <p>Thanks,<br>The Fixit Team</p>
+            <p>Thanks,<br>The Fixr Team</p>
             <div class="logo">
-                <img src="https://i.postimg.cc/W3ddyG99/medium-shot-man-posing-studio-1.png" alt="Fixit Logo" />
+                <img src="https://i.postimg.cc/W3ddyG99/medium-shot-man-posing-studio-1.png" alt="Fixr Logo" />
             </div>
         </div>
         <div class="footer">
-            &copy; ${new Date().getFullYear()} Fixit. All rights reserved.
+            &copy; ${new Date().getFullYear()} Fixr. All rights reserved.
         </div>
     </div>
 </body>

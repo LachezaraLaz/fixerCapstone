@@ -102,8 +102,8 @@ export default function App() {
                                             {props => <SettingsPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                         </Stack.Screen>
                                         <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} options={{ headerShown: false }}/>
-                                        <Stack.Screen name="EditIssue" component={EditIssue} />
-                                        <Stack.Screen name="NotificationPage" component={NotificationPage} />
+                                        <Stack.Screen name="EditIssue" component={EditIssue} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="NotificationPage" component={NotificationPage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
                                         <Stack.Screen name="OffersPage" component={OffersPage} />
                                         <Stack.Screen name="addReview" component={addReview} options={{ headerShown: false }}/>

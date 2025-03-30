@@ -89,7 +89,7 @@ export const styles = StyleSheet.create({
     },
 
     urgencyContainer: {
-        marginBottom: 20,
+        marginBottom: 12,
         zIndex: 1000,
         backgroundColor: 'white',
     },
@@ -102,7 +102,7 @@ export const styles = StyleSheet.create({
     starContainer: {
         flexDirection: 'row',
         justifyContent: 'left',
-        marginBottom: 16,
+        marginBottom: 36,
     },
 
 });

@@ -78,8 +78,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        marginBottom: 10,
-        marginTop: 30,
+        marginTop: 15,
     },
     infoBox: {
         flexDirection: 'row',
@@ -88,7 +87,6 @@ export const styles = StyleSheet.create({
         paddingVertical: 6,
         paddingHorizontal: 10,
         borderRadius: 10,
-        marginRight: 8,
     },
     infoText: {
         fontSize: 14,
@@ -127,6 +125,8 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 20,
+        marginBottom: 10,
+        marginTop:15
     },
 
     urgencyText: {
@@ -135,13 +135,11 @@ export const styles = StyleSheet.create({
     },
 
     headerImage: {
-        marginTop: 30,
-        marginLeft: 20,
-        width: '50%',
-        height: 110,
-        borderTopLeftRadius: 25,
-        borderTopRightRadius: 25,
+        width: '100%',    // or numeric value, e.g., 300
+        height: 245,      // always define height explicitly
+        resizeMode: 'contain', // or 'cover' based on your preference
     },
+
     modalBackground: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.9)',
@@ -159,11 +157,12 @@ export const styles = StyleSheet.create({
         height: '80%',
     },
 
-
     locationContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 30,
+        marginBottom: 100,
+        paddingRight: 10,
     },
 
     locationText: {
@@ -171,9 +170,7 @@ export const styles = StyleSheet.create({
         color: '#444',
     },
 
-
     // Buttons
-
     bottomButtonsContainer: {
         position: 'absolute',
         bottom: 70,
@@ -190,33 +187,51 @@ export const styles = StyleSheet.create({
 
     sendQuoteButton: {
         flex: 1,
+        backgroundColor: '#FFF',
         borderWidth: 1,
-        borderColor: '#f28500',
-        paddingVertical: 14,
-        borderRadius: 8,
-        marginRight: 10,
+        borderColor: '#FFA500',
+        paddingVertical: 10,
+        borderRadius: 6,
+        marginRight: 6,
+        justifyContent: 'center',
         alignItems: 'center',
     },
 
     sendQuoteButtonText: {
-        color: '#f28500',
+        color: '#FFA500',
+        fontSize: 14,
         fontWeight: '600',
-        fontSize: 16,
     },
 
     chatButton: {
         flex: 1,
-        backgroundColor: '#f28500',
-        paddingVertical: 14,
-        borderRadius: 8,
-        marginLeft: 10,
+        backgroundColor: '#FFA500',
+        paddingVertical: 10,
+        borderRadius: 6,
+        justifyContent: 'center',
         alignItems: 'center',
     },
 
     chatButtonText: {
-        color: '#ffffff',
+        color: '#FFF',
+        fontSize: 14,
         fontWeight: '600',
-        fontSize: 16,
+    },
+    disabledSendButton: {
+        backgroundColor: '#FFF',
+        borderColor: '#FFA500',
+    },
+
+    disabledTextSendButton: {
+        backgroundColor: '#FFF',
+        borderColor: '#FFA500',
+    },
+
+    disabledChatButton: {
+        backgroundColor: '#FFA500',
+    },
+    disabledTextChatButton: {
+        color: '#FFF',
     },
 
 });

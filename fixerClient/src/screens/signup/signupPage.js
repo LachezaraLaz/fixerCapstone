@@ -12,7 +12,7 @@ import LanguageModal from "../../../components/LanguageModal";
 import languageStyle from '../../../style/languageStyle';
 import { LanguageContext } from "../../../context/LanguageContext";
 
-import { IPAddress } from '../../../ipAddress';
+import { IPAddress } from '../../../ipAddress'; 
 
 /**
  * @module fixerClient
@@ -158,7 +158,7 @@ export default function SignUpPage({ navigation }) {
         // Limit final result to 7 characters (A1B 2C3)
         formattedText = formattedText.slice(0, 7);
     
-        setNewPostalCode(formattedText);
+        setPostalCode(formattedText);
     };
     
 
@@ -487,28 +487,5 @@ const styles = StyleSheet.create({
         height: 200,
         marginTop: 20,
         marginBottom: 20,
-    },
-});
-
-
-
-const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-        height: 50,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        color: 'black',
-    },
-    inputAndroid: {
-        height: 50,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        color: 'black',
     },
 });

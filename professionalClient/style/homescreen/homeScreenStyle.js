@@ -6,9 +6,31 @@ export const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
 
+    /* Header */
+    customHeader: { 
+        width: '100%',
+        height: 70,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        backgroundColor: '#ffffff',
+    },
+    headerLogo: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: 'orange',
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#333',
+        textAlign: 'center',
+    },
+
     // Explicitly set height for mapContainer to ensure visibility
     mapContainer: {
-        height: 350, // Adjust height as needed
+        height: 200, // Adjust height as needed
         borderRadius: 10,
         overflow: 'hidden',
         margin: 16,

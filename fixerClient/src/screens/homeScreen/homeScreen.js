@@ -351,9 +351,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 )}
                 {/* Logout Button at Bottom */}
                 <View style={styles.logoutContainer}>
-                    <TouchableOpacity onPress={fetchNotificationNumber}>
-                        <Text style={styles.logoutButton}>Heyy</Text>
-                    </TouchableOpacity>
                     <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                         <Text style={styles.logoutText}>{i18n.t('logout')}</Text>
                     </TouchableOpacity>

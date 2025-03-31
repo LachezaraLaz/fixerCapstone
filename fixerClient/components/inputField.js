@@ -9,10 +9,11 @@ const InputField = ({
     onChangeText,
     isValid,
     isError,
-    disabled = false,
-    secureTextEntry = false,
-    multiline = false, 
+    disabled = false, // default = false
+    secureTextEntry = false, // default = false
+    multiline = false, // default = false
     style,
+    showFloatingLabel = true, // default = true
 }) => {
     const [focused, setFocused] = useState(false);
     const animatedValue = useRef(new Animated.Value(1)).current;
@@ -60,7 +61,7 @@ const InputField = ({
                 ]}
             >
                 {/* Floating Label (Placeholder) */}
-                {value && (
+                {value && showFloatingLabel && (
                     <Text style={[styles.floatingLabel, disabled && styles.disabledText]}>
                         {placeholder}
                     </Text>

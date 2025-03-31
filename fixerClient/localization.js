@@ -141,7 +141,6 @@ const en = {
     job_modification_error_message: "An error occurred. Please try again.",
     job_fetching_error_message: "Failed to load job details",
     invalid_session_id_error: "Invalid session or job ID. Please try logging into your account again.",
-    jobInProgressComment: "This issue is currently in progress. For any changes or updates, please reach out to the professional assigned using the chat feature." , 
     no_notifications_available: "No notifications available",
     loading: "Loading...",
     load_more: "Load More",
@@ -153,6 +152,7 @@ const en = {
     has_received_a_new_quote: "has received a new quote.",
     has_been_accepted: "has been accepted. The job is now in progress.",
     has_been_rejected: "has been rejected.",
+    report:"Report a Professional",
 }
 
 const fr = {
@@ -309,6 +309,7 @@ const fr = {
     has_been_accepted: "a été acceptée. La tâche est maintenant en cours.",
     your_quote_for_the_job_rejected: "🔴 Désolé! Votre soumission pour la tâche",
     has_been_rejected: "à été refusée.",
+    report:"Rapport un professionnel",
 }
 
 export {en, fr}

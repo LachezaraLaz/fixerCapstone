@@ -29,6 +29,7 @@ import issueDetails from "./src/screens/issueDetails/issueDetails";
 import { LanguageProvider } from "./context/LanguageContext";
 import { Text } from "react-native";
 import { LogBox } from 'react-native';
+import reportPage from './src/screens/profilPage/reportPage';
 
 // Suppress the specific warning
 LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
@@ -109,7 +110,7 @@ export default function App() {
                                         <Stack.Screen name="addReview" component={addReview} options={{ headerShown: false }}/>
                                         <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>
-
+                                        <Stack.Screen name="ReportPage" component={reportPage} options={{ headerShown: false }}/>
                                     </>
                                 )}
                             </Stack.Navigator>

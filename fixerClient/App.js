@@ -75,10 +75,7 @@ export default function App() {
                     {isLoggedIn ? (
                         <ChatProvider>
                             <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
-                                <Stack.Screen
-                                    name="MainTabs"
-                                    options={{ headerShown: false }}
-                                >
+                                <Stack.Screen name="MainTabs">
                                     {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
                                 </Stack.Screen>
 

@@ -446,7 +446,7 @@ export default function AdminDashboard() {
                                 ) : (
                                     filteredClients.map((client) => (
                                         <tr key={client._id}>
-                                            <td style={styles.tableCell}>{truncateId(client._id)}</td>
+                                            <td style={styles.tableCell}>{truncateId(client._id)}...</td>
                                             <td style={styles.tableCell}>{client.firstName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{client.lastName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{client.email || 'N/A'}</td>
@@ -546,7 +546,7 @@ export default function AdminDashboard() {
                                 ) : (
                                     filteredProfessionals.map((prof) => (
                                         <tr key={prof._id}>
-                                            <td style={styles.tableCell}>{truncateId(prof._id)}</td>
+                                            <td style={styles.tableCell}>{truncateId(prof._id)}...</td>
                                             <td style={styles.tableCell}>{prof.firstName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{prof.lastName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{prof.email || 'N/A'}</td>
@@ -664,7 +664,7 @@ export default function AdminDashboard() {
                                 ) : (
                                     filteredJobs.map((job) => (
                                         <tr key={job._id}>
-                                            <td style={styles.tableCell}>{truncateId(job._id)}</td>
+                                            <td style={styles.tableCell}>{truncateId(job._id)}...</td>
                                             <td style={styles.tableCell}>{job.title}</td>
                                             <td style={styles.tableCell}>
                                                 {job.description && job.description.length > 50
@@ -790,7 +790,7 @@ export default function AdminDashboard() {
                                 ) : (
                                     filteredQuotes.map((quote) => (
                                         <tr key={quote._id}>
-                                            <td style={styles.tableCell}>{truncateId(quote._id)}</td>
+                                            <td style={styles.tableCell}>{truncateId(quote._id)}...</td>
                                             <td style={styles.tableCell}>{quote.professionalEmail}</td>
                                             <td style={styles.tableCell}>{quote.clientEmail}</td>
                                             <td style={styles.tableCell}>
@@ -1347,6 +1347,7 @@ const styles = {
         border: "none",
         borderRadius: "5px",
         cursor: "pointer",
+        marginLeft: "10px",
     },
     tableCell: {
         padding: "10px 15px",

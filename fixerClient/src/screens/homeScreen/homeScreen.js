@@ -101,26 +101,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         }, [])
     );
 
-    /**
-     * Handles the user logout process.
-     */
-    const handleLogout = async () => {
-        try {
-            if (chatClient) {
-                await chatClient.disconnectUser();
-            }
-            await AsyncStorage.removeItem('token');
-            await AsyncStorage.removeItem('streamToken');
-            await AsyncStorage.removeItem('userId');
-            await AsyncStorage.removeItem('userName');
-
-            Alert.alert(`${i18n.t('logged_out')}`, `${i18n.t('you_have_been_logged_out_successfully')}`);
-            setIsLoggedIn(false);
-        } catch (error) {
-            console.error("Error logging out: ", error);
-            Alert.alert(`${i18n.t('error')}`, `${i18n.t('an_error_occurred_while_logging_out')}`);
-        }
-    };
 
     /**
      * Gets the number of unread notifications
@@ -349,12 +329,6 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         </ScrollView>
                     </View>
                 )}
-                {/* Logout Button at Bottom */}
-                <View style={styles.logoutContainer}>
-                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                        <Text style={styles.logoutText}>{i18n.t('logout')}</Text>
-                    </TouchableOpacity>
-                </View>
                 <View style={{ height: 40 }} />
             </ScrollView>
         </SafeAreaView>

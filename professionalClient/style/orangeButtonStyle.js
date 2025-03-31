@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         margin: 8,
-        marginTop: 50
+        marginTop: 20,
     },
     text: {
         color: 'white',

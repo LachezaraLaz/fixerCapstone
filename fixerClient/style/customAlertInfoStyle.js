@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 
-
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
@@ -23,17 +22,17 @@ const styles = StyleSheet.create({
     alertTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#FF5C5C',
+        color: '#3498db', // Changed to blue for info
         marginBottom: 8,
     },
     alertMessage: {
         fontSize: 15,
         textAlign: 'center',
         color: '#333',
-        marginBottom: 10,
+        marginBottom: 20,
     },
     closeButton: {
-        backgroundColor: '#FF5C5C',
+        backgroundColor: '#3498db', // Changed to blue for info
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 10,
@@ -42,13 +41,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 14,
-        textAlign: "center"
-    },
-    buttonContainer: {
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        marginTop: 20,
-        gap: 10,
     },
 });
 

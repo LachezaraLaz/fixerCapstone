@@ -18,10 +18,19 @@ const FilterIssuePage = ({ navigation, route }) => {
     const [timeline, setTimeline] = useState(initialTimeline || '');    // <-- Initialized from params
     const [openTimeLine, setOpenTimeLine] = useState(false);
     const [urgencyOptions, setUrgencyOptions] = useState([
-        { label: 'select timeline', value: '' },
-        { label: 'low-priority', value: 'low-priority' },
-        { label: 'high-priority', value: 'high-priority' },
+        { label: 'Select Timeline', value: '' },
+        { label: 'Low-Priority', value: 'low-priority' },
+        { label: 'Ligh-Priority', value: 'high-priority' },
     ]);
+
+    const getUniqueWorkTypes = () => {
+        const allTypes = typesOfWork.flatMap(type =>
+            type.split(',').map(t => t.trim()) // Split "Plumbing, Handyman" into ["Plumbing", "Handyman"]
+        );
+        return Array.from(new Set(allTypes)); // Remove duplicates
+    };
+    
+    const workTypeOptions = getUniqueWorkTypes();
 
     /**
      * Handles the selection of a filter type. If the filter type is already selected, it removes it from the filters.
@@ -54,6 +63,7 @@ const FilterIssuePage = ({ navigation, route }) => {
             },
         });
     };
+    
 
     const handleRatingSelect = (value) => {
         setRating(value === rating ? 0 : value);
@@ -72,14 +82,14 @@ const FilterIssuePage = ({ navigation, route }) => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={24} color="#333" />
+                    <Ionicons name="arrow-back" size={24} color="orange" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Filters</Text>
             </View>
 
             <ScrollView contentContainerStyle={styles.filterList}>
                 <View style={styles.filterGrid}>
-                    {typesOfWork.map((type, index) => (
+                    {workTypeOptions.map((type, index) => (
                         <TouchableOpacity
                             key={index}
                             onPress={() => handleFilterSelect(type)}

@@ -1,43 +1,317 @@
-import React, { useState, useEffect } from 'react';
+//import dependencies
+import * as React from 'react';
+import 'react-native-get-random-values';
 import {
+    ScrollView,
     View,
     Text,
-    TextInput,
-    Button,
+    Image,
+    TouchableOpacity,
+    Keyboard,
+    TouchableWithoutFeedback,
     Alert,
     ActivityIndicator,
-    TouchableOpacity,
-    Image,
-    StyleSheet,
-    ScrollView,
+    KeyboardAvoidingView,
+    Platform ,
 } from 'react-native';
+import {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
 import * as ImagePicker from 'expo-image-picker';
+import MapView, { Marker } from "react-native-maps";
+import { Ionicons } from '@expo/vector-icons';
+import { getAddressFromCoords } from '../../../utils/geoCoding_utils';
+
+//import for language translation
+import {en, fr} from '../../../localization'
+import { I18n } from "i18n-js";
+import { LanguageContext } from "../../../context/LanguageContext";
+
+//import components and styles
+import OrangeButton from "../../../components/orangeButton";
+import InputField from '../../../components/inputField';
+import DropdownField from '../../../components/dropdownField';
+import ProfessionalSelector from '../../../components/searchAndSelectTagField';
+import CustomAlertError from '../../../components/customAlertError';
+import CustomAlertSuccess from '../../../components/customAlertSuccess';
+import styles from '../../../style/editIssueStyle'
+
 import { IPAddress } from '../../../ipAddress';
+
 
 /**
  * @module fixerClient
  */
 
 export default function EditIssue({ route, navigation }) {
-    const { jobId } = route.params;
+    //translation
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
 
-    const [title, setTitle] = useState('');
+    //AI
+    const [loadingAi, setLoadingAi] = useState(false);
+    const [aiSuggestion, setAiSuggestion] = useState('');
+    const [showAiPreview, setShowAiPreview] = useState(false);
+
+    // List of fields in the page
+    const { jobId } = route.params;
+    const [title, setTitle] = useState("");
     const [description, setDescription] = useState('');
-    const [professionalNeeded, setProfessionalNeeded] = useState('');
-    const [image, setImage] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [other, setOther] = useState(false);
+    const [selectedProfessionals, setSelectedProfessionals] = useState([]);
+    const [selectedImage, setSelectedImage] = useState('');
+    const [selectedTimeLine, setSelectedTimeLine] = useState(null);
+    const [currentAddress, setCurrentAddress] = useState('Loading address...');
+    const [currentLongitude, setCurrentLongitude] = useState('');
+    const [currentLatitude, setCurrentLatitude] = useState('');
+
+    const [itemsTimeLine, setItemsTimeLine] = useState([
+        { label: `${i18n.t('low_priority')}`, value: 'low-priority'},
+        { label: `${i18n.t('high_priority')}`, value: 'high-priority' },
+    ]);
+    const [openTimeLine, setOpenTimeLine] = useState(false);
+    const [useCurrentLocation, setUseCurrentLocation] = useState(true);
+    const [newStreet, setNewStreet] = useState('');
+    const [newPostalCode, setNewPostalCode] = useState('');
+    const [coordinates, setCoordinates] = useState(null);
+    const [isAddressValid, setIsAddressValid] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+
+    //const for custom alerts
+    const [customAlertVisible, setCustomAlertVisible] = useState(false);
+    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
+    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
+
+
+    /**
+     * Asynchronously handles the enhancement of a job description using an AI service.
+     * If the description is empty, an alert prompts the user to enter a description first.
+     * Once the description is provided, it sends the description to the AI endpoint for enhancement.
+     * If the AI enhancement is successful, the improved description is displayed for preview.
+     * If an error occurs, it handles specific errors (e.g., invalid category or general errors) and shows appropriate alerts.
+     *
+     * @async
+     * @function handleAiEnhancement
+     * @returns {Promise<void>} A promise that resolves when the AI enhancement process is complete.
+     */
+    const handleAiEnhancement = async () => {
+        try {
+            setLoadingAi(true);
+            // Call AI endpoint
+            const response = await axios.post(
+                `https://fixercapstone-production.up.railway.app/issue/aiEnhancement`,
+                { description }
+            );
+
+            const { improvedDescription } = response.data;
+            setAiSuggestion(improvedDescription);
+            setShowAiPreview(true);
+        } catch (error) {
+            // Handle 400 Bad Request (Invalid Category)
+            if (error.response && error.response.status === 400) {
+                setCustomAlertContent({
+                    title: i18n.t('ai_description_error_title'),
+                    message: error.response?.data?.error || i18n.t('ai_description_error_message'),
+                });
+                setCustomAlertVisible(true);
+            } else {
+                console.error('Error enhancing description:', error);
+                setCustomAlertContent({
+                    title: 'Error',
+                    message: i18n.t('ai_description_error_message_2'),
+                });
+                setCustomAlertVisible(true);
+            }
+        } finally {
+            setLoadingAi(false);
+        }
+    };
+
+    /**
+     * Accepts the AI-generated description suggestion and updates the description field.
+     * The AI suggestion is set as the new description, and the AI preview is hidden.
+     *
+     * @function handleAcceptAiSuggestion
+     * @returns {void} This function does not return a value.
+     */
+    const handleAcceptAiSuggestion = () => {
+        setDescription(aiSuggestion);
+        setShowAiPreview(false);
+    };
+
+    /**
+     * Rejects the AI-generated description suggestion and clears the suggestion.
+     * The AI suggestion is reset to an empty string, and the AI preview is hidden.
+     *
+     * @function handleRejectAiSuggestion
+     * @returns {void} This function does not return a value.
+     */
+    const handleRejectAiSuggestion = () => {
+        setAiSuggestion('');
+        setShowAiPreview(false);
+    };
+
+
+    /**
+     * Asynchronously requests permission to access the user's media library and allows them to select an image.
+     * If permission is granted, the media library is opened for the user to pick an image.
+     * If the image selection is not canceled, the URI of the selected image is set.
+     * If permission is not granted, the user is alerted to grant permission through phone settings.
+     *
+     * @async
+     * @function pickImage
+     * @returns {Promise<void>} A promise that resolves when the image picking process is complete.
+     */
+    const pickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permissionResult.granted) {
+            setCustomAlertContent({
+                title: i18n.t('pick_image_permission_title'),
+                message: i18n.t('pick_image_permission_message'),
+            });
+            setCustomAlertVisible(true);
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaType,
+            allowsEditing: true,
+            aspect: [4, 4],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    };
+
+    /**
+     * Removes the selected image by setting the selected image to null.
+     * This effectively clears the image from the user's selection.
+     *
+     * @function removeImage
+     * @returns {void} This function does not return a value.
+     */
+    const removeImage = () => {
+        setSelectedImage(null);
+    };
+
+
+    /**
+     * Asynchronously fetches the job/issue information from the server.
+     *
+     * @async
+     * @function fetchJobDetails
+     * @returns {Promise<void>} A promise that resolves when the job fetch process is complete.
+     */
+    useEffect(() => {
+        fetchJobDetails();
+    }, []);
+
+
+    /**
+     * Formats a postal code input by removing all non-alphanumeric characters and ensuring it follows a specific pattern.
+     * The postal code is first converted to uppercase and restricted to a maximum of 6 characters before formatting.
+     * A space is inserted after the first three characters if enough characters exist.
+     * The final result is limited to 7 characters (e.g., A1B 2C3).
+     * The formatted postal code is then set to the `newPostalCode` state.
+     *
+     * @function formatPostalCode
+     * @param {string} text - The raw postal code input to be formatted.
+     * @returns {void} This function does not return a value.
+     */
+    const formatPostalCode = (text) => {
+        // Remove all non-alphanumeric characters
+        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+
+        // Limit to 6 characters (A1B2C3) before formatting
+        formattedText = formattedText.slice(0, 6);
+
+        // Insert space after the first 3 characters if enough characters exist
+        if (formattedText.length > 3) {
+            formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
+        }
+
+        // Limit final result to 7 characters (A1B 2C3)
+        formattedText = formattedText.slice(0, 7);
+
+        setNewPostalCode(formattedText);
+    };
+
+
+    /**
+     * Asynchronously verifies the user's new address by sending a request to a server with the street and postal code.
+     * If the default location is used, the stored default address is sent; otherwise, the newly entered street and postal code are sent.
+     * The server response provides coordinates and a flag indicating if the address is valid.
+     * The coordinates and validity status are then stored in the respective state variables.
+     * If an error occurs during the verification process, an alert is shown to inform the user.
+     *
+     * @async
+     * @function verifyAddress
+     * @returns {Promise<void>} A promise that resolves when the address verification process is complete.
+     */
+    const verifyAddress = async () => {
+        try {
+            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
+                street: useCurrentLocation ? currentAddress : newStreet,
+                postalCode: useCurrentLocation ? currentAddress.split(',')[1]?.trim() : newPostalCode,
+            });
+            if (response.data.status === "success") {
+                const { coordinates, isAddressValid } = response.data;
+                setCoordinates(coordinates);
+                setIsAddressValid(isAddressValid);
+            }
+            else if (response.data.status === "error") {
+                console.log("❌ Address verification error.");
+                setCustomAlertContent({
+                    title: "Address Error",
+                    message: i18n.t('address_error_message'),
+                });
+                setCustomAlertVisible(true);
+            }
+        } catch (error) {
+            console.log("❌ Address verification error:", error);
+            setCustomAlertContent({
+                title: "Address Error",
+                message: i18n.t('address_error_message'),
+            });
+            setCustomAlertVisible(true);
+        }
+    };
+
+
+    /**
+     * Validates the form by checking if all required fields are filled and meet the necessary conditions.
+     * The form is considered valid if:
+     * - The title and description are not empty.
+     * - At least one professional is selected.
+     * - A timeline is selected.
+     * - Either the default location is used, or the address is verified as valid.
+     *
+     * @function isFormValid
+     * @returns {boolean} Returns true if all form conditions are met, otherwise false.
+     */
+    const isFormValid = () => {
+        return (
+            title &&
+            description &&
+            selectedProfessionals.length > 0 &&
+            selectedTimeLine &&
+            (currentAddress || isAddressValid)
+        );
+    };
 
     /**
      * Fetches the details of a job from the server and updates the state with the retrieved data.
-     * 
+     *
      * @async
      * @function fetchJobDetails
      * @returns {Promise<void>}
      * @throws Will alert the user if there is an invalid session, job ID, or if an error occurs during the fetch.
-     * 
+     *
      * @description
      * This function retrieves the job details using the provided job ID and token stored in AsyncStorage.
      * If the token or job ID is invalid, it alerts the user and navigates back.
@@ -49,160 +323,41 @@ export default function EditIssue({ route, navigation }) {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token || !jobId) {
-                Alert.alert('Invalid session or job ID');
+                setCustomAlertContent({
+                    title: "Error",
+                    message: i18n.t('invalid_session_id_error'),
+                });
+                setCustomAlertVisible(true);
                 navigation.goBack();
                 return;
             }
-
             const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-
             if (response.status === 200) {
-                const { title, description, professionalNeeded, image } = response.data;
+                const { title, description, professionalNeeded, imageUrl, timeline, longitude, latitude } = response.data;
                 setTitle(title);
                 setDescription(description);
-                setProfessionalNeeded(professionalNeeded);
-                setImage(image);
-                setOther(!["Dripping Faucets", "Clogged Drains", "Leaky Pipes", "Flickering Lights", "Dead Outlets", "Faulty Switch"].includes(description));
+                setSelectedProfessionals(professionalNeeded.split(',').map(item => item.trim()));
+                setSelectedImage(imageUrl);
+                setSelectedTimeLine(timeline);
+                setCurrentLongitude(longitude);
+                setCurrentLatitude(latitude);
+                await fetchAddress(longitude, latitude);
             } else {
                 Alert.alert('Failed to load job details');
             }
         } catch (error) {
-            Alert.alert('An error occurred while loading job details');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchJobDetails();
-    }, []);
-
-    /**
-     * Asynchronously picks an image from the device's media library.
-     * Requests permission to access the media library if not already granted.
-     * If permission is granted, opens the image picker allowing the user to select an image.
-     * If an image is selected and not canceled, sets the image URI.
-     *
-     * @async
-     * @function pickImage
-     * @returns {Promise<void>} A promise that resolves when the image picking process is complete.
-     */
-    const pickImage = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permissionResult.granted) {
-            Alert.alert('Permission to access images is required!');
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled && result.assets && result.assets.length > 0) {
-            setImage(result.assets[0].uri);
-        }
-    };
-
-    /**
-     * Updates the job with the provided details.
-     * 
-     * This function performs the following steps:
-     * 1. Validates that all required fields (title, professionalNeeded, description) are filled.
-     * 2. Retrieves the authentication token from AsyncStorage.
-     * 3. Constructs a FormData object with the job details and optional image.
-     * 4. Sends a PUT request to update the job on the server.
-     * 5. Handles the server response and displays appropriate alerts based on the outcome.
-     * 6. Manages loading state during the update process.
-     * 
-     * @async
-     * @function updateJob
-     * @returns {Promise<void>} - A promise that resolves when the job update process is complete.
-     * @throws Will display an alert if any error occurs during the update process.
-     */
-    const updateJob = async () => {
-        if (!title || title.trim().length < 5) {
-            Alert.alert("Invalid Title", "Title must be at least 5 characters long.");
-            return;
-        }
-
-        if (!professionalNeeded) {
-            Alert.alert("Invalid Professional", "Please select a professional type (Plumber/Electrician).");
-            return;
-        }
-
-        if (!description || description.trim().length < 10) {
-            Alert.alert("Invalid Description", "Please provide a description with at least 10 characters.");
-            return;
-        }
-
-        if (image) {
-            const validImageTypes = ['image/jpeg', 'image/png'];
-            const imageType = image.split('.').pop().toLowerCase();
-            if (!validImageTypes.includes(`image/${imageType}`)) {
-                Alert.alert("Invalid Image", "Only JPEG and PNG images are supported.");
-                return;
-            }
-        }
-
-        setLoading(true);
-
-        try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert('You are not logged in');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('title', title);
-            formData.append('description', description);
-            formData.append('professionalNeeded', professionalNeeded);
-            formData.append('status', "Open");
-
-            if (image) {
-                formData.append('image', {
-                    uri: image,
-                    type: `image/${image.split('.').pop().toLowerCase()}`,
-                    name: 'issue_image.jpg',
-                });
-            }
-
-            const response = await axios.put(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
-                },
+            Alert.alert('Failed to load job details');
+            setCustomAlertContent({
+                title: "Error",
+                message: i18n.t('job_fetching_error_message'),
             });
-
-            console.log('Response from server:', response.data); // Debugging line
-
-            if (response.status === 200) {
-                Alert.alert('Job updated successfully');
-                navigation.goBack();
-            } else {
-                Alert.alert('Failed to update job');
-            }
-        } catch (error) {
-            if (error.response) {
-                console.error('Server responded with an error:', error.response.data);
-                Alert.alert(`Error: ${error.response.data.message || 'Failed to update job'}`);
-            } else if (error.request) {
-                console.error('No response received:', error.request);
-                Alert.alert('No response from server. Please try again later.');
-            } else {
-                console.error('Error updating job:', error.message);
-                Alert.alert('An error occurred while updating the job');
-            }
+            setCustomAlertVisible(true);
         } finally {
             setLoading(false);
         }
     };
-
 
     if (loading) {
         return (
@@ -212,116 +367,396 @@ export default function EditIssue({ route, navigation }) {
         );
     }
 
+    /**
+     * Asynchronously updates the job/issue on the server if the form is valid.
+     * The function first checks if all required fields are completed. If any fields are missing or invalid, an alert is shown.
+     * If the form is valid, it sends a PUT request to the server with the job details, including the title, description, selected professionals, email, status, timeline, address, and optionally an image.
+     * If the request is successful (status 200), the form is reset, and a success alert is shown.
+     * If any error occurs during the posting process, an error alert is displayed with a message.
+     *
+     * @async
+     * @function updateIssue
+     * @returns {Promise<void>} A promise that resolves when the issue is posted.
+     * @throws Will throw an error if the request fails or if required fields are empty.
+     */
+    const updateIssue = async () => {
+
+        if (!isFormValid()){
+            setCustomAlertContent({
+                title: "Missing Fields",
+                message: "Some fields are empty. Please complete everything for the professional to provide the most informed quote!",
+            });
+            setCustomAlertVisible(true);
+            return;
+        }
+
+        setLoading(true); // Start loading
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const decodedToken = jwtDecode(token);
+            const userEmail = decodedToken.email;
+
+            // Create a full address for geocoding
+            const fullAddress = useCurrentLocation
+                ? currentAddress
+                : `${newStreet}, ${newPostalCode}`;
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('professionalNeeded', selectedProfessionals.join(', '));
+            formData.append('email', userEmail);
+            formData.append('status', "open");
+            formData.append('timeline', selectedTimeLine);
+            formData.append('imageUrl', selectedImage);
+            (useCurrentLocation ? formData.append('latitude', currentLatitude) : formData.append('latitude', coordinates.latitude));
+            (useCurrentLocation ? formData.append('longitude',currentLongitude) : formData.append('longitude', coordinates.longitude));
+
+            if (selectedImage && selectedImage !== "null") {
+                formData.append('image', {
+                    uri: selectedImage,
+                    type: 'image/*',
+                    name: 'issue_image.jpg',
+                });
+            }
+            console.log("🚀 Sending Data:", {
+                title: title,
+                description: description,
+                professionalNeeded: selectedProfessionals,
+                email: userEmail,
+                status: "Open",
+                imageUrl: selectedImage ? "✅ Image Attached" : "❌ No Image",
+                address: fullAddress,
+                longitude: useCurrentLocation ? currentLongitude : coordinates.longitude,
+                latitude: useCurrentLocation ? currentLatitude : coordinates.latitude,
+            });
+
+            const response = await axios.put(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, formData,
+                {
+               headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                },
+            }
+            );
+            console.log("✅ Response:", response.data);
+
+            if (response.status === 200) {
+                // Reset all fields to default values
+                setTitle('');
+                setDescription('');
+                setSelectedProfessionals([]);
+                setSelectedImage(null);
+                setSelectedTimeLine(null);
+
+                setSuccessAlertContent({
+                    title: i18n.t('job_modified_successfully'),
+                    //message: i18n.t('your_job_has_been_posted'),
+                });
+                setSuccessAlertVisible(true);
+            } else {
+                setCustomAlertContent({
+                    title: "Error",
+                    message: "Failed to post the job.",
+                });
+                setCustomAlertVisible(true);
+            }
+        } catch (error) {
+            console.log("❌ Error:", error.response?.data || error.message);
+            setCustomAlertContent({
+                title: "Error",
+                message: i18n.t('job_modification_error_message'),
+            });
+            setCustomAlertVisible(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+
+    const fetchAddress = async (longitude, latitude) => {
+        const formattedAddress = await getAddressFromCoords(latitude,longitude);
+        setCurrentAddress(formattedAddress);
+    };
+
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20 }}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Edit Job</Text>
-            <TextInput
-                placeholder="Title"
-                value={title}
-                onChangeText={setTitle}
-                style={{ borderBottomWidth: 1, marginBottom: 10 }}
-            />
+        //possibility to dismiss the keyboard just by touching the screen
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+            >
+                <View style={{ flex: 1 }}>
+                    <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
+                                contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+                                keyboardShouldPersistTaps="handled"
+                    >
+                        <View style={styles.headerContainer}>
+                            <TouchableOpacity
+                                style={styles.backButton}
+                                testID="back-button"
+                                onPress={() => navigation.goBack()}
+                            >
+                                <Ionicons name="arrow-back" size={28} color='#ff8c00' />
+                            </TouchableOpacity>
 
-            {/* Professional selection options */}
-            <View style={styles.workBlocksContainer}>
-                <Text style={styles.sectionTitle}>Professional Needed</Text>
-                <View style={styles.workBlocks}>
-                    <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('plumber')}>
-                        <Text style={styles.workText}>Plumber</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.workBlock} onPress={() => setProfessionalNeeded('electrician')}>
-                        <Text style={styles.workText}>Electrician</Text>
-                    </TouchableOpacity>
+                            <Text style={styles.headerTitle}>{i18n.t('modify_issue')}</Text>
+                        </View>
+
+                        {/* title field */}
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('title')}*</Text>
+                        <InputField
+                            placeholder={`${i18n.t('title')}`}
+                            value={title}
+                            onChangeText={setTitle}
+                        />
+
+                        {/* description field */}
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('job_description')}*</Text>
+                        <View style={{ position: 'relative' }}>
+
+                            <InputField
+                                placeholder={`${i18n.t('describe_your_service')}`}
+                                value={description}
+                                onChangeText={setDescription}
+                                multiline/>
+
+                            {/* AI Enhancement Button */}
+                            <TouchableOpacity
+                                style={[styles.aiEnhanceButton, { marginTop: 10 }]}
+                                onPress={handleAiEnhancement}
+                                disabled={loadingAi}
+                            >
+                                {loadingAi ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    <Text style={{ color: '#fff', fontWeight: 'bold' }}>AI</Text>
+                                )}
+                            </TouchableOpacity>
+
+                            {/* Show AI preview */}
+                            {showAiPreview && (
+                                <View style={{
+                                    borderWidth: 1,
+                                    borderColor: '#ccc',
+                                    borderRadius: 8,
+                                    padding: 10,
+                                    marginTop: 20,
+                                    backgroundColor: '#f9f9f9'
+                                }}>
+                                    <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 8 }}>
+                                        AI's Suggestion:
+                                    </Text>
+                                    <Text style={{ color: '#333', marginBottom: 16 }}>{aiSuggestion}</Text>
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                        <TouchableOpacity style={{
+                                            backgroundColor: 'green',
+                                            padding: 10,
+                                            borderRadius: 8,
+                                            marginRight: 10
+                                        }}
+                                                          onPress={handleAcceptAiSuggestion}
+                                        >
+                                            <Text style={{ color: '#fff' }}>{`${i18n.t('accept')}`}</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity style={{
+                                            backgroundColor: 'red',
+                                            padding: 10,
+                                            borderRadius: 8
+                                        }}
+                                                          onPress={handleRejectAiSuggestion}
+                                        >
+                                            <Text style={{ color: '#fff' }}>{`${i18n.t('reject')}`}</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            )}
+                        </View>
+
+                        {/* Word & Character Counter - Positioned Below the Input */}
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                            <Text style={{ fontSize: 12, color: '#555', marginRight: 10 }}>
+                                {description.length} chars
+                            </Text>
+                        </View>
+
+                        {/* Service type selector field */}
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2 }}>{i18n.t('select_service_type')}*</Text>
+                        <View style={styles.pickerContainer}>
+
+                            <Text style={ styles.badgeInfo }>
+                                {i18n.t('badges_remaining', { count: 2 - selectedProfessionals.length })}
+                            </Text>
+                            <ProfessionalSelector
+                                selectedProfessionals={selectedProfessionals}
+                                setSelectedProfessionals={setSelectedProfessionals}
+                            />
+                        </View>
+
+                        {/* Image upload label */}
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 15 }}>{i18n.t('image')}</Text>
+                        {/*Image upload*/}
+                        <View style={styles.imageContainer}>
+                            <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
+                                {selectedImage && selectedImage !== 'null' &&  selectedImage !== "https://via.placeholder.com/150" ? (
+                                    <View style={styles.imageWrapper}>
+                                        <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+                                        <TouchableOpacity style={{...styles.removeButton}} onPress={removeImage}>
+                                            <Text style={{...styles.removeText}}>✖</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                ) : (
+                                    <View style={styles.placeholder}>
+                                        <Image source={require('../../../assets/folder-add.png')} style={styles.icon} />
+                                        <Text style={{ ...styles.text }}>{i18n.t('take_from_your_gallery')}</Text>
+                                        <Text style={{...styles.supportedFormats}}>JPEG, PNG, HEIC, MP4</Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Timeline Field */}
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 2, marginTop: 30 }}>{i18n.t('select_timeline')}*</Text>
+                        <View style={styles.pickerContainer}>
+                            <DropdownField
+                                translation={{ PLACEHOLDER: `${i18n.t('select_timeline')}` }}
+                                placeholder={i18n.t('select_timeline')}
+                                open={openTimeLine}
+                                items={itemsTimeLine}
+                                value={selectedTimeLine}
+                                setOpen={setOpenTimeLine}
+                                setItems={setItemsTimeLine}
+                                setValue={setSelectedTimeLine}
+                            />
+                        </View>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 20, marginTop:30 }}>{i18n.t('location')}*</Text>
+
+                        <View style={{ marginBottom: 16 }}>
+                            {/* Use Current Issue location */}
+                            <TouchableOpacity
+                                style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}
+                                onPress={() => setUseCurrentLocation(true)}
+                            >
+                                <Ionicons
+                                    name={useCurrentLocation ? 'radio-button-on' : 'radio-button-off'}
+                                    size={20}
+                                    color="#1E90FF"
+                                />
+                                <Text style={{ marginLeft: 10, fontSize: 15 }}>
+                                    {i18n.t('use_current_address')}
+                                </Text>
+                            </TouchableOpacity>
+
+                            {currentAddress && (
+                                <Text style={{ marginLeft: 30, color: '#888', fontSize: 13, marginBottom: 10 }}>
+                                    {currentAddress}
+                                </Text>
+                            )}
+
+                            {/* Enter other location */}
+                            <TouchableOpacity
+                                style={{ flexDirection: 'row', alignItems: 'center' }}
+                                onPress={() => setUseCurrentLocation(false)}
+                            >
+                                <Ionicons
+                                    name={!useCurrentLocation ? 'radio-button-on' : 'radio-button-off'}
+                                    size={20}
+                                    color="#1E90FF"
+                                />
+                                <Text style={{ marginLeft: 10, fontSize: 15 }}>{i18n.t('enter_new_address')}</Text>
+                            </TouchableOpacity>
+                        </View>
+
+
+                        {!useCurrentLocation && (
+                            <View style={{ marginBottom: 20 }}>
+                                <InputField
+                                    placeholder={i18n.t('street_address')}
+                                    value={newStreet}
+                                    onChangeText={setNewStreet}
+                                />
+                                <InputField
+                                    placeholder={i18n.t('postal_code')}
+                                    value={newPostalCode}
+                                    onChangeText={formatPostalCode}
+                                />
+                                <OrangeButton
+                                    title={i18n.t('verify_address')}
+                                    onPress={verifyAddress}
+                                    variant="normal"
+                                />
+
+                                {isAddressValid && coordinates && (
+                                    <>
+                                        <Text style={{ marginTop: 10, color: 'green' }}>
+                                            ✅ {i18n.t('valid_address_entered')}
+                                        </Text>
+                                        <MapView
+                                            style={{ width: '100%', height: 200, marginTop: 10, borderRadius: 10 }}
+                                            initialRegion={{
+                                                latitude: coordinates.latitude,
+                                                longitude: coordinates.longitude,
+                                                latitudeDelta: 0.005,
+                                                longitudeDelta: 0.005,
+                                            }}
+                                        >
+                                            <Marker
+                                                coordinate={{
+                                                    latitude: coordinates.latitude,
+                                                    longitude: coordinates.longitude,
+                                                }}
+                                                title="Selected Location"
+                                                description="This is the verified address"
+                                            />
+                                        </MapView>
+                                    </>
+                                )}
+                            </View>
+
+                        )}
+
+
+                        {/* Create Issue Button */ }
+                        <View>
+                            <OrangeButton
+                                testID={'modify-job-button'}
+                                title={i18n.t('modify_issue')}
+                                variant="normal"
+                                onPress={updateIssue}
+                                disabled={!isFormValid() || loading}
+                            />
+
+                        </View>
+                    </ScrollView>
+
+                    <CustomAlertError
+                        visible={customAlertVisible}
+                        title={customAlertContent.title}
+                        message={customAlertContent.message}
+                        onClose={() => setCustomAlertVisible(false)}
+                    />
+                    <CustomAlertSuccess
+                        visible={successAlertVisible}
+                        title={successAlertContent.title}
+                        message={successAlertContent.message}
+                        onClose={() => {
+                            setSuccessAlertVisible(false);
+                            navigation.goBack();
+                        }}
+                    />
+                    {loading && (
+                        <View style={styles.loadingOverlay}>
+                            <ActivityIndicator size="large" color="#FF8C00" />
+                            <Text style={styles.loadingText}>{i18n.t('updating_your_job')}</Text>
+                        </View>
+                    )}
                 </View>
-
-                <Text style={styles.sectionTitle}>Issue Description</Text>
-                {professionalNeeded === 'plumber' && (
-                    <View style={styles.workBlocks}>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Dripping Faucets'); setOther(false); }}>
-                            <Text style={styles.workText}>Dripping Faucets</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Clogged Drains'); setOther(false); }}>
-                            <Text style={styles.workText}>Clogged Drains</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Leaky Pipes'); setOther(false); }}>
-                            <Text style={styles.workText}>Leaky Pipes</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => setOther(true)}>
-                            <Text style={styles.workText}>Other</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {professionalNeeded === 'electrician' && (
-                    <View style={styles.workBlocks}>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Flickering Lights'); setOther(false); }}>
-                            <Text style={styles.workText}>Flickering Lights</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Dead Outlets'); setOther(false); }}>
-                            <Text style={styles.workText}>Dead Outlets</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => { setDescription('Faulty Switch'); setOther(false); }}>
-                            <Text style={styles.workText}>Faulty Switch</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.workBlock} onPress={() => setOther(true)}>
-                            <Text style={styles.workText}>Other</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-            </View>
-
-            {other && (
-                <TextInput
-                    placeholder="Describe the issue..."
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline
-                    style={{ borderBottomWidth: 1, height: 100, textAlignVertical: 'top', marginBottom: 10 }}
-                />
-            )}
-
-            {/* Image upload */}
-            <TouchableOpacity onPress={pickImage} style={{ marginBottom: 15 }}>
-                <View style={{ backgroundColor: '#eee', padding: 10, alignItems: 'center', borderRadius: 5 }}>
-                    <Text>Upload Image</Text>
-                </View>
-            </TouchableOpacity>
-
-            {image && (
-                <View style={{ alignItems: 'center', marginBottom: 15 }}>
-                    <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
-                </View>
-            )}
-
-            <Button title="Save Changes" onPress={updateJob} />
-        </ScrollView>
+            </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
     );
 }
-
-const styles = StyleSheet.create({
-    workBlocksContainer: {
-        paddingHorizontal: 16,
-        marginVertical: 16,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    workBlocks: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    workBlock: {
-        backgroundColor: '#f0f0f0',
-        width: '48%',
-        padding: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    workText: {
-        fontSize: 16,
-        textAlign: 'center',
-    },
-});

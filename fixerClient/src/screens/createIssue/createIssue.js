@@ -507,7 +507,7 @@ export default function CreateIssue({ navigation }) {
                             testID="back-button"
                             onPress={() => navigation.goBack()}
                         >
-                            <Ionicons name="arrow-back" size={28} color="#1E90FF" />
+                            <Ionicons name="arrow-back" size={28} color='#ff8c00' />
                         </TouchableOpacity>
 
                         <Text style={styles.headerTitle}>{i18n.t('create_job')}</Text>

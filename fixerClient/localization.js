@@ -130,7 +130,21 @@ const en = {
     review_rating_placeholder: "Enter a rating from 1 (bad) to 5 (excellent)",
     review_comment_placeholder: "Write your comment here...",
     submit_review: "Submit Review",
-
+    offer_page_title: "Offers",
+    offer_price: "Price",
+    offer_date_invalid: "Invalid Date",
+    accepted: "Accepted",
+    rejected: "Rejected",
+    offer_profile_error:"Error fetching profile. Please try again later.",
+    offer_fetch_error: "Failed to fetch offers. Please try again later.",
+    no_offers_error: "No offers found for your jobs.",
+    offer_accepted_title: "Offer Accepted",
+    offer_accepted_message: "You have accepted the offer.",
+    offer_accepted_error: "An error occurred while accepting the offer.",
+    offer_rejected_title: "Offers Rejected",
+    offer_rejected_message: "You have rejected the offer.",
+    offer_rejected_error: "An error occurred while rejecting the offer.",
+    no_offers_message:"No offers available for your jobs.",
 }
 
 const fr = {
@@ -265,6 +279,21 @@ const fr = {
     review_rating_placeholder: "Entrez une note de 1 (mauvais) à 5 (excellent)",
     review_comment_placeholder: "Écrivez votre commentaire ici...",
     submit_review: "Soumettre l'avis",
+    offer_page_title: "Offres",
+    offer_price: "Prix",
+    offer_date_invalid: "Date invalide",
+    accepted: "Acceptée",
+    rejected: "Rejetée",
+    offer_profile_error: "Erreur lors du chargement du profil. Veuillez réessayer",
+    offer_fetch_error: "Erreur lors de la récupération des offres. Veuillez réessayer",
+    no_offers_error: "Aucune offre trouvée pour vos tâche.",
+    offer_accepted_title: "Offre acceptée",
+    offer_accepted_message: "Vous avez accepté l'offre.",
+    offer_accepted_error: "Une erreur s'est produite lors de l'acceptation de l'offre.",
+    offer_rejected_title: "Offre rejetée",
+    offer_rejected_message: "Vous avez rejeté l'offre.",
+    offer_rejected_error: "Une erreur s'est produite lors du rejet de l'offre.",
+    no_offers_message: "Aucune offre disponible pour vos tâches",
 }
 
 export {en, fr}

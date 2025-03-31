@@ -257,7 +257,7 @@ const NotificationPage = () => {
                     {/*    )*/}
                     {/*}*/}
                     <OrangeButton
-                        title="View Old Notifications"
+                        title={i18n.t('view_old_notifications')}
                         onPress={() => navigation.navigate('OldNotifications', { oldNotifications })}
                         style={{ marginVertical: 0 }}
                     />

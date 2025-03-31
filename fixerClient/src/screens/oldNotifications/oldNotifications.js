@@ -1,23 +1,92 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import {Ionicons} from "@expo/vector-icons";
+
+import {LanguageContext} from "../../../context/LanguageContext";
+import {I18n} from "i18n-js";
+import {en, fr} from "../../../localization";
 
 const OldNotifications = () => {
     const route = useRoute();
     const navigation = useNavigation();
 
+    const {locale, setLocale}  = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
+
     // Retrieve the old & read notifications
     const { oldNotifications } = route.params || { oldNotifications: [] };
 
-    const renderNotification = ({ item }) => (
-        <TouchableOpacity
-            style={[styles.notificationContainer, styles.readContainer]}
-        >
-            <Text style={styles.message}>{item.message}</Text>
-            <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>
-        </TouchableOpacity>
-    );
+    const toggleReadStatus = async (id, isRead) => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+            await axios.patch(
+                `https://fixercapstone-production.up.railway.app/notification/${id}/read`,
+                { isRead: !isRead },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setNotifications((prev) => {
+                const updated = prev.map((notification) =>
+                    notification._id === id
+                        ? { ...notification, isRead: !isRead }
+                        : notification
+                );
+                fetchNotifications();
+
+                return sortNotifications(updated);
+            });
+        } catch (error) {
+            console.error('Error updating notification status:', error.message);
+        }
+    };
+
+    // Correct notifications depending on the language selected
+    const correctNotification = (item) => {
+        const message = item.message;
+        let start = '';
+        let end = '';
+
+        const first = message.substring(0, message.indexOf('"'));
+        const title = message.substring(message.indexOf('"') + 1, message.lastIndexOf('"'));
+        const last = message.substring(message.lastIndexOf('"') + 1);
+
+        if (first.includes("Your issue titled"))
+            start = 'your_issue_titled';
+        else if (first.includes("Congrats"))
+            start = 'your_quote_for_the_job_accepted';
+        else if (first.includes("Sorry"))
+            start = 'your_quote_for_the_job_rejected';
+
+        if (last.includes("has been created successfully."))
+            end = 'has_been_created';
+        else if (last.includes("has received a new quote."))
+            end = 'has_received_a_new_quote';
+        else if (last.includes("has been accepted. The job is now in progress."))
+            end = 'has_been_accepted';
+        else if (last.includes("has been rejected."))
+            end = 'has_been_rejected';
+
+        return [start, title, end]
+    }
+
+    const renderNotification = ({ item }) => {
+        const [first, title, last] = correctNotification(item)
+
+        return (
+            <TouchableOpacity
+                onPress={() => {
+                    toggleReadStatus(item.id, item.isRead);
+                    navigation.navigate('NotificationDetail', { notification: item });
+                }}
+                style={[styles.notificationContainer, styles.readContainer]}
+            >
+                <Text style={styles.message}>{i18n.t(`${first}`) + ` "${title}" ` + i18n.t(`${last}`)}</Text>
+                <Text style={styles.date}>{new Date(item.createdAt).toLocaleString()}</Text>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -28,12 +97,12 @@ const OldNotifications = () => {
                     style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
-                <Text style={styles.title}>Old Notifications</Text>
+                <Text style={styles.title}>{i18n.t('old_notifications')}</Text>
             </View>
 
             {oldNotifications.length === 0 ? (
                 <Text style={styles.noNotifications}>
-                    No old notifications to display.
+                    {i18n.t('no_old_notifications')}
                 </Text>
             ) : (
                 <FlatList

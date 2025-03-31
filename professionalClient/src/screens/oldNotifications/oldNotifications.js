@@ -22,7 +22,11 @@ const OldNotifications = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <TouchableOpacity
+                    testID="old-notifs-back-button"
+                    onPress={() => navigation.goBack()}
+                    style={styles.backButton}
+                >
                     <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
                 <Text style={styles.title}>Old Notifications</Text>

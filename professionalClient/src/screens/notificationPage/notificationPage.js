@@ -47,47 +47,47 @@ const NotificationPage = () => {
         }
     };
 
-    /**
-     * Fetches more notifications from the server and updates the state.
-     *
-     * This function will fetch additional notifications from the server if not currently loading and if there are more notifications to fetch.
-     * It retrieves the token from AsyncStorage and makes a GET request to the notification history endpoint.
-     * If new notifications are received, they are added to the existing notifications state.
-     * If no more notifications are available, it updates the state to indicate that there are no more notifications.
-     *
-     * @async
-     * @function fetchMoreNotifications
-     * @returns {Promise<void>} A promise that resolves when the notifications have been fetched and the state has been updated.
-     */
-    const fetchMoreNotifications = async () => {
-        if (loading || !hasMore) return;
-
-        setLoading(true);
-        const token = await AsyncStorage.getItem('token');
-        try {
-            const response = await axios.get('https://fixercapstone-production.up.railway.app/notification/history', {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { page, limit: 5 }, // Fetch 5 notifications at a time
-            });
-
-            if (Array.isArray(response.data) && response.data.length > 0) {
-                const newNotifications = response.data.filter(
-                    (newNotification) => !notifications.some((notif) => notif._id === newNotification._id)
-                );
-                const merged = [...notifications, ...newNotifications];
-                const sorted = sortNotifications(merged);
-                setNotifications(sorted);
-                setPage((prevPage) => prevPage + 1);
-            } else {
-                setHasMore(false); // No more notifications
-            }
-        } catch (error) {
-            console.error('Error fetching more notifications:', error.message);
-            setHasMore(false);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // /**
+    //  * Fetches more notifications from the server and updates the state.
+    //  *
+    //  * This function will fetch additional notifications from the server if not currently loading and if there are more notifications to fetch.
+    //  * It retrieves the token from AsyncStorage and makes a GET request to the notification history endpoint.
+    //  * If new notifications are received, they are added to the existing notifications state.
+    //  * If no more notifications are available, it updates the state to indicate that there are no more notifications.
+    //  *
+    //  * @async
+    //  * @function fetchMoreNotifications
+    //  * @returns {Promise<void>} A promise that resolves when the notifications have been fetched and the state has been updated.
+    //  */
+    // const fetchMoreNotifications = async () => {
+    //     if (loading || !hasMore) return;
+    //
+    //     setLoading(true);
+    //     const token = await AsyncStorage.getItem('token');
+    //     try {
+    //         const response = await axios.get('https://fixercapstone-production.up.railway.app/notification/history', {
+    //             headers: { Authorization: `Bearer ${token}` },
+    //             params: { page, limit: 5 }, // Fetch 5 notifications at a time
+    //         });
+    //
+    //         if (Array.isArray(response.data) && response.data.length > 0) {
+    //             const newNotifications = response.data.filter(
+    //                 (newNotification) => !notifications.some((notif) => notif._id === newNotification._id)
+    //             );
+    //             const merged = [...notifications, ...newNotifications];
+    //             const sorted = sortNotifications(merged);
+    //             setNotifications(sorted);
+    //             setPage((prevPage) => prevPage + 1);
+    //         } else {
+    //             setHasMore(false); // No more notifications
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching more notifications:', error.message);
+    //         setHasMore(false);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     /**
      * Toggles the read status of a notification.
@@ -192,25 +192,25 @@ const NotificationPage = () => {
                         keyExtractor={(item) => item.id}
                         renderItem={renderItem}
                     />
-                    {hasMore ? (
-                        <OrangeButton
-                            style={{marginTop: 0}}
-                            title='Load More'
-                            onPress={fetchMoreNotifications}
-                            disabled={loading}
-                        />
-                    ) : (
-                        <OrangeButton
-                            style={{marginTop: 0}}
-                            title="No more notifications"
-                            disabled={true}
-                        />
-                        )
-                    }
+                    {/*{hasMore ? (*/}
+                    {/*    <OrangeButton*/}
+                    {/*        style={{marginTop: 0}}*/}
+                    {/*        title='Load More'*/}
+                    {/*        onPress={fetchMoreNotifications}*/}
+                    {/*        disabled={loading}*/}
+                    {/*    />*/}
+                    {/*) : (*/}
+                    {/*    <OrangeButton*/}
+                    {/*        style={{marginTop: 0}}*/}
+                    {/*        title="No more notifications"*/}
+                    {/*        disabled={true}*/}
+                    {/*    />*/}
+                    {/*    )*/}
+                    {/*}*/}
                     <OrangeButton
                         title="View Old Notifications"
                         onPress={() => navigation.navigate('OldNotifications', { oldNotifications })}
-                        style={{ marginTop: 10 }}
+                        style={{ marginVertical: 0 }}
                     />
                 </>
             )}
@@ -221,14 +221,14 @@ const NotificationPage = () => {
 const styles = StyleSheet.create({
     container: { 
         flex: 1, 
-        padding: 20, 
+        padding: 20,
         backgroundColor: '#fff' 
     },
     containerHeader: {
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 10, 
+        paddingBottom: 10,
         backgroundColor: '#fff',
         paddingTop: 10,
     },
@@ -244,12 +244,12 @@ const styles = StyleSheet.create({
     },
     list: {
         marginTop: 10,
-        marginBottom: 40,
+        marginBottom: -20,
     },
     notificationContainer: {
         borderRadius: 12,
         padding: 15,
-        marginHorizontal: 16,
+        marginHorizontal: 10,
         marginVertical: 8,
         // Simple shadow on iOS
         shadowColor: '#000',
@@ -284,31 +284,6 @@ const styles = StyleSheet.create({
         color: 'gray',
         textAlign: 'center',
         marginTop: 20
-    },
-    loadMoreButton: {
-        position: 'absolute',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        bottom: 10,
-        backgroundColor: '#007BFF',
-        borderRadius: 5,
-        marginTop: 20,
-        alignItems: 'center',
-        alignSelf: 'center',
-        elevation: 2,
-    },
-    loadMoreText: { 
-        color: 'white', 
-        fontSize: 16 
-    },
-    noMoreNotifications: {
-        position: 'absolute',
-        fontSize: 16,
-        bottom: 10,
-        color: 'gray',
-        textAlign: 'center',
-        alignSelf: 'center',
-        marginTop: 20,
     },
 });
 

@@ -10,8 +10,33 @@ const OldNotifications = () => {
     // Retrieve the old & read notifications
     const { oldNotifications } = route.params || { oldNotifications: [] };
 
+    const toggleReadStatus = async (id, isRead) => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+            await axios.patch(`https://fixercapstone-production.up.railway.app/notification/${id}/read`, { isRead: !isRead }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setNotifications((prev) => {
+                const updated = prev.map((notification) =>
+                    notification._id === id
+                        ? { ...notification, isRead: !isRead }
+                        : notification
+                );
+                fetchNotifications();
+
+                return sortNotifications(updated);
+            });
+        } catch (error) {
+            console.error('Error updating notification status:', error);
+        }
+    };
+
     const renderNotification = ({ item }) => (
         <TouchableOpacity
+            onPress={() => {
+                toggleReadStatus(item.id, item.isRead); // Mark as read
+                navigation.navigate('NotificationDetail', { notification: item }); // Navigate to detail page
+            }}
             style={[styles.notificationContainer, styles.readContainer]}
         >
             <Text style={styles.message}>{item.message}</Text>

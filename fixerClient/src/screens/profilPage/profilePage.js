@@ -141,7 +141,7 @@ const ProfilePage = ({navigation, setIsLoggedIn}) => {
                 <View style={styles.customHeader}>
                     <Text style={styles.headerLogo}>Fixr</Text>
                     <Text style={styles.headerTitle}>{i18n.t('profile')}</Text>
-                    <SettingsButton onPress={() => navigation.navigate('SettingsPage', {setIsLoggedIn})} />
+                    <SettingsButton onPress={() => navigation.navigate('SettingsPage')} />
                 </View>
 
                 <View style={styles.profileContainer}>

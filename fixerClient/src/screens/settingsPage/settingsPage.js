@@ -16,10 +16,8 @@ import { useChatContext } from '../chat/chatContext';
  * @module fixerClient
  */
 
-export default function SettingsPage() {
-    const navigation = useNavigation();
+export default function SettingsPage({ setIsLoggedIn, navigation }) {
     const route = useRoute();
-    const { setIsLoggedIn } = route.params;
 
     // Language context
     const {locale, setLocale} = useContext(LanguageContext);
@@ -68,18 +66,22 @@ export default function SettingsPage() {
 
     const handleLogout = async () => {
         try {
+            if (chatClient) {
+                await chatClient.disconnectUser();
+            }
+
             await AsyncStorage.removeItem('token');
             await AsyncStorage.removeItem('streamToken');
             await AsyncStorage.removeItem('userId');
             await AsyncStorage.removeItem('userName');
 
-            Alert.alert(`${i18n.t('logged_out')}`, `${i18n.t('you_have_been_logged_out_successfully')}`);
             setIsLoggedIn(false);
         } catch (error) {
-            console.error("Error logging out: ", error);
-            Alert.alert(`${i18n.t('error')}`, `${i18n.t('an_error_occurred_while_logging_out')}`);
+          console.error("Error logging out: ", error);
+          Alert.alert(i18n.t('error'), i18n.t('an_error_occurred_while_logging_out'));
         }
-    };
+      };
+      
 
     /**
      * Handles language change and shows success message
@@ -112,15 +114,28 @@ export default function SettingsPage() {
         }
     };
 
+    const handleBack = () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          navigation.navigate('ProfilePage'); // fallback
+        }
+      };
+      
+
     return (
         <SafeAreaView style={styles.safeArea}>
             {/* Custom Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>{i18n.t('settings')}</Text>
+
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={styles.headerTitle}>{i18n.t('settings')}</Text>
+                </View>
             </View>
+
 
             <ScrollView contentContainerStyle={styles.container}>
                 <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('AccountSettingsPage')}>
@@ -244,9 +259,7 @@ const styles = {
         color: '#333',
         textAlign: 'center',
         flex: 1,
-        position:'absolute',
-        left:0,
-        right:0
+        marginLeft: -28, // offset for back button if needed
     },
     container: {
         padding: 16,

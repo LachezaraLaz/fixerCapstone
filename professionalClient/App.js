@@ -32,6 +32,7 @@ import { StripeProvider } from '@stripe/stripe-react-native';
 import issueDetails from "./src/screens/issueDetails/issueDetails";
 import ChatScreen from "./src/screens/chat/chatScreens";
 import { Text } from "react-native";
+import OldNotifications from "./src/screens/oldNotifications/oldNotifications";
 
 const Stack = createStackNavigator();
 
@@ -116,7 +117,8 @@ export default function App() {
                                         <Stack.Screen name="UploadID" component={UploadID} />
                                         <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
                                         <Stack.Screen name="NotificationPage" component={NotificationPage} options={{ headerShown: false }}/>
-                                        <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
+                                        <Stack.Screen name="NotificationDetail" component={NotificationDetail} options={{ headerShown: false }} />
+                                        <Stack.Screen name="OldNotifications" component={OldNotifications} options={{ headerShown: false }}/>
                                         <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
                                         <Stack.Screen name="ProfessionalAccountSettingsPage" component={ProfessionalAccountSettingsPage}/>
                                         <Stack.Screen name="SettingsPage" component={SettingsPage} />

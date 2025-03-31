@@ -153,6 +153,10 @@ const en = {
     has_received_a_new_quote: "has received a new quote.",
     has_been_accepted: "has been accepted. The job is now in progress.",
     has_been_rejected: "has been rejected.",
+    old_notifications: "Old Notifications",
+    no_old_notifications: "  No old notifications to display.",
+    view_old_notifications: "View Old Notifications",
+    notification_details: "Notification Details",
 }
 
 const fr = {
@@ -309,6 +313,10 @@ const fr = {
     has_been_accepted: "a été acceptée. La tâche est maintenant en cours.",
     your_quote_for_the_job_rejected: "🔴 Désolé! Votre soumission pour la tâche",
     has_been_rejected: "à été refusée.",
+    old_notifications: "Anciennes Notifications",
+    no_old_notifications: "  Pas d'anciennes notifications",
+    view_old_notifications: "Voir anciennes notifications",
+    notification_details: "Détails",
 }
 
 export {en, fr}

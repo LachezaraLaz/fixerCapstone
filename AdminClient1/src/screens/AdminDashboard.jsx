@@ -47,10 +47,14 @@ export default function AdminDashboard() {
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [passwordChangeStatus, setPasswordChangeStatus] = useState(null);
 
+    // Function to truncate ID to first 4 characters
+    const truncateId = (id) => {
+        if (!id) return 'N/A';
+        return id.toString().substring(0, 4);
+    };
 
 
-
-// Function to fetch clients data
+    // Function to fetch clients data
     // Update fetchClients function to fetch users both proffesional and clients
     const fetchClients = async () => {
         setIsLoadingClients(true);
@@ -413,11 +417,10 @@ export default function AdminDashboard() {
                         <div style={styles.tableContainer}>
                             <table style={styles.table}>
                                 <colgroup>
-                                    <col style={{width: "20%"}} />
                                     <col style={{width: "15%"}} />
-                                    <col style={{width: "15%"}} />
+                                    <col style={{width: "25%"}} />
+                                    <col style={{width: "25%"}} />
                                     <col style={{width: "35%"}} />
-                                    <col style={{width: "15%"}} />
                                 </colgroup>
                                 <thead>
                                 <tr>
@@ -425,35 +428,28 @@ export default function AdminDashboard() {
                                     <th style={styles.tableHeader}>First Name</th>
                                     <th style={styles.tableHeader}>Last Name</th>
                                     <th style={styles.tableHeader}>Email</th>
-                                    <th style={styles.tableHeader}>Approved</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {isLoadingClients ? (
                                     <tr>
-                                        <td colSpan="5" style={styles.loadingCell}>
+                                        <td colSpan="4" style={styles.loadingCell}>
                                             Loading clients...
                                         </td>
                                     </tr>
                                 ) : filteredClients.length === 0 ? (
                                     <tr>
-                                        <td colSpan="5" style={styles.emptyTableCell}>
+                                        <td colSpan="4" style={styles.emptyTableCell}>
                                             No clients found
                                         </td>
                                     </tr>
                                 ) : (
                                     filteredClients.map((client) => (
                                         <tr key={client._id}>
-                                            <td style={styles.tableCell}>{client._id || 'N/A'}</td>
+                                            <td style={styles.tableCell}>{truncateId(client._id)}</td>
                                             <td style={styles.tableCell}>{client.firstName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{client.lastName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{client.email || 'N/A'}</td>
-                                            <td style={{
-                                                ...styles.tableCell,
-                                                color: client.approved ? '#28a745' : '#dc3545'
-                                            }}>
-                                                {client.approved ? 'Yes' : 'No'}
-                                            </td>
                                         </tr>
                                     ))
                                 )}
@@ -550,7 +546,7 @@ export default function AdminDashboard() {
                                 ) : (
                                     filteredProfessionals.map((prof) => (
                                         <tr key={prof._id}>
-                                            <td style={styles.tableCell}>{prof._id || 'N/A'}</td>
+                                            <td style={styles.tableCell}>{truncateId(prof._id)}</td>
                                             <td style={styles.tableCell}>{prof.firstName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{prof.lastName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{prof.email || 'N/A'}</td>
@@ -668,7 +664,7 @@ export default function AdminDashboard() {
                                 ) : (
                                     filteredJobs.map((job) => (
                                         <tr key={job._id}>
-                                            <td style={styles.tableCell}>{job._id}</td>
+                                            <td style={styles.tableCell}>{truncateId(job._id)}</td>
                                             <td style={styles.tableCell}>{job.title}</td>
                                             <td style={styles.tableCell}>
                                                 {job.description && job.description.length > 50
@@ -794,7 +790,7 @@ export default function AdminDashboard() {
                                 ) : (
                                     filteredQuotes.map((quote) => (
                                         <tr key={quote._id}>
-                                            <td style={styles.tableCell}>{quote._id}</td>
+                                            <td style={styles.tableCell}>{truncateId(quote._id)}</td>
                                             <td style={styles.tableCell}>{quote.professionalEmail}</td>
                                             <td style={styles.tableCell}>{quote.clientEmail}</td>
                                             <td style={styles.tableCell}>
@@ -812,7 +808,7 @@ export default function AdminDashboard() {
                                             }}>
                                                 {quote.status && quote.status.charAt(0).toUpperCase() + quote.status.slice(1)}
                                             </td>
-                                            <td style={styles.tableCell}>{quote.jobId}</td>
+                                            <td style={styles.tableCell}>{truncateId(quote.jobId)}</td>
                                         </tr>
                                     ))
                                 )}
@@ -950,7 +946,7 @@ export default function AdminDashboard() {
         <div style={{ fontFamily: "'Poppins', sans-serif" }}>
             {/* Header */}
             <header style={styles.header}>
-                <h1 style={styles.headerText}>Fixer Admin</h1>
+                <h1 style={styles.headerText}>Fixr Admin</h1>
                 <button
                     onClick={handleLogout}
                     style={styles.logoutButton}
@@ -1390,4 +1386,5 @@ const styles = {
         margin: "0",
         fontSize: "14px",
     },
+
 };

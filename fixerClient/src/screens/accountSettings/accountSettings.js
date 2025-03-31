@@ -1,9 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { LanguageContext } from "../../../context/LanguageContext";
 import { useNavigation } from '@react-navigation/native';
+import { I18n } from "i18n-js";
+import { en, fr } from '../../../localization';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import OrangeButton from '../../../components/orangeButton';
+import InputField from "../../../components/inputField";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import CustomAlertSuccess from '../../../components/customAlertSuccess'
+import CustomAlertError from '../../../components/customAlertError'
 
 const AccountSettingsPage = () => {
     const navigation = useNavigation();
@@ -21,11 +28,31 @@ const AccountSettingsPage = () => {
         newPassword: '',
         confirmPassword: '',
     });
+    const [originalData, setOriginalData] = useState(null);
 
+    //For address validation, to allow editing in input fields, and for current password validation
     const [isEditing, setIsEditing] = useState(false);
     const [isCurrentPasswordValid, setIsCurrentPasswordValid] = useState(false);
     const [addressValidated, setAddressValidated] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    // Language context setup
+    const { locale, changeLanguage } = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
+
+    //For CustomAlertSuccess and for CustomAlertError
+    const [successAlert, setSuccessAlert] = useState({
+        visible: false,
+        title: '',
+        message: ''
+    });
+
+    const [errorAlert, setErrorAlert] = useState({
+        visible: false,
+        title: '',
+        message: ''
+    });
 
     // Fetch user profile data
     useEffect(() => {
@@ -33,7 +60,12 @@ const AccountSettingsPage = () => {
             try {
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
-                    Alert.alert("Error", "Authentication failed.");
+                    setErrorAlert({
+                        visible: true,
+                        title: i18n.t('error'),
+                        message: i18n.t('authentication_failed')
+                    });
+
                     return;
                 }
 
@@ -49,12 +81,16 @@ const AccountSettingsPage = () => {
                     email: response.data.email,
                     street: response.data.street || '',
                     postalCode: response.data.postalCode || '',
-                    provinceOrState: response.data.provinceOrState || '',
-                    country: response.data.country || '',
+                    provinceOrState: response.data.provinceOrState || 'QC',
+                    country: response.data.country || 'Canada',
                 }));
             } catch (error) {
                 console.error("Error fetching profile data:", error);
-                Alert.alert("Error", "Failed to load profile data.");
+                setErrorAlert({
+                    visible: true,
+                    title: i18n.t('error'),
+                    message: i18n.t('profile_data_failed_loading')
+                });
             } finally {
                 setLoading(false);
             }
@@ -71,10 +107,13 @@ const AccountSettingsPage = () => {
         if (['street', 'postalCode', 'provinceOrState', 'country'].includes(field)) {
             setAddressValidated(false);
         }
+
+        // No need to explicitly call hasFormChanged() here as React will
+        // re-render and evaluate the function in the button's disabled prop
     };
 
     // Verify Address Before Saving
-    const handleVerifyAddress = async () => {
+    const handleVerifyAddress = async (silent=false) => {
         try {
             const response = await axios.post(
                 `https://fixercapstone-production.up.railway.app/client/verifyAddress`,
@@ -105,16 +144,32 @@ const AccountSettingsPage = () => {
                 }
 
                 setAddressValidated(true);
-                Alert.alert("Success", "Address verified successfully.");
+
+                //only show success alert if not in silent mode
+                if(!silent) {
+                    setSuccessAlert({
+                        visible: true,
+                        title: i18n.t('success'),
+                        message: i18n.t('address_verified_successfully')
+                    });
+                }
                 return true;
             } else {
                 setAddressValidated(false);
-                Alert.alert("Error", "Invalid address. Please enter a valid address.");
+                setErrorAlert({
+                    visible: true,
+                    title: i18n.t('error'),
+                    message: i18n.t('invalid_address')
+                });
                 return false;
             }
         } catch (error) {
             setAddressValidated(false);
-            Alert.alert("Error", error.response?.data?.message || "An unexpected error occurred.");
+            setErrorAlert({
+                visible: true,
+                title: i18n.t('error'),
+                message: error.response?.data?.message || i18n.t('an_unexpected_error_occurred')
+            });
             return false;
         }
     };
@@ -123,7 +178,11 @@ const AccountSettingsPage = () => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
-                Alert.alert("Error", "Authentication failed.");
+                setErrorAlert({
+                    visible: true,
+                    title: i18n.t('error'),
+                    message: i18n.t('authentication_failed')
+                });
                 return;
             }
 
@@ -135,81 +194,166 @@ const AccountSettingsPage = () => {
 
             if (response.status === 200) {
                 setIsCurrentPasswordValid(true);
-                Alert.alert("Success", "Current password validated. You can now set a new password.");
+                setSuccessAlert({
+                    visible: true,
+                    title: i18n.t('success'),
+                    message: i18n.t('current_password_validated')
+                });
             }
         } catch (error) {
             setIsCurrentPasswordValid(false);
-            if (error.response) {
-                Alert.alert("Error", error.response.data?.error || "Incorrect password.");
+            if (error.response.status === 401 && error.response.data?.error === 'Current password is incorrect') {
+                setErrorAlert({
+                    visible: true,
+                    title: i18n.t('error'),
+                    message: i18n.t('current_password_error')
+                });
             } else if (error.request) {
-                Alert.alert("Error", "Network error. Please check your connection and try again.");
+                setErrorAlert({
+                    visible: true,
+                    title: i18n.t('error'),
+                    message: i18n.t('network_error')
+                });
             } else {
-                Alert.alert("Error", "Unexpected error occurred.");
+                setErrorAlert({
+                    visible: true,
+                    title: i18n.t('error'),
+                    message: i18n.t('an_unexpected_error_occurred')
+                });
             }
         }
     };
 
     // Save Changes API Call
+    // Save Changes API Call
     const handleSaveChanges = async () => {
         if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-            Alert.alert('Error', 'New passwords do not match.');
+            setErrorAlert({
+                visible: true,
+                title: i18n.t('error'),
+                message: i18n.t('new_passwords_match_error')
+            });
             return;
         }
 
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
-                Alert.alert("Error", "Authentication failed.");
+                setErrorAlert({
+                    visible: true,
+                    title: i18n.t('error'),
+                    message: i18n.t('authentication_failed')
+                });
                 return;
             }
 
-            // Always verify address if any address fields are filled
+            // For address validation, instead of calling handleVerifyAddress, logic is inlined
+            // to avoid any potential race conditions with alerts
+            let addressIsValid = true;
             if (formData.street || formData.postalCode) {
-                const isAddressVerified = await handleVerifyAddress();
-                if (!isAddressVerified) {
-                    return; // Stop if address is invalid
+                try {
+                    const addressResponse = await axios.post(
+                        `https://fixercapstone-production.up.railway.app/client/verifyAddress`,
+                        {
+                            street: formData.street,
+                            postalCode: formData.postalCode,
+                            provinceOrState: formData.provinceOrState,
+                            country: formData.country,
+                        }
+                    );
+
+                    if (addressResponse.data.isAddressValid) {
+                        // Fill in missing fields if available
+                        if (addressResponse.data.completeAddress) {
+                            const complete = addressResponse.data.completeAddress;
+                            // Update formData with any filled-in fields
+                            setFormData(prevState => ({
+                                ...prevState,
+                                postalCode: prevState.postalCode || complete.postalCode || '',
+                                provinceOrState: prevState.provinceOrState || complete.provinceOrState || '',
+                                country: prevState.country || complete.country || ''
+                            }));
+                        }
+                        setAddressValidated(true);
+                    } else {
+                        addressIsValid = false;
+                        setAddressValidated(false);
+                        setErrorAlert({
+                            visible: true,
+                            title: i18n.t('error'),
+                            message: i18n.t('invalid_address')
+                        });
+                        return; // Stop if address is invalid
+                    }
+                } catch (error) {
+                    addressIsValid = false;
+                    setAddressValidated(false);
+                    setErrorAlert({
+                        visible: true,
+                        title: i18n.t('error'),
+                        message: error.response?.data?.message || i18n.t('an_unexpected_error_occurred')
+                    });
+                    return; // Stop on error
                 }
             }
 
-            // Send full profile update request
-            const updatedData = {
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                street: formData.street,
-                postalCode: formData.postalCode,
-                provinceOrState: formData.provinceOrState,
-                country: formData.country,
-            };
+            if (addressIsValid) {
+                // If we get here, address validation passed or wasn't needed
+                // Proceed with the rest of the update logic
 
-            await axios.put(
-                `https://fixercapstone-production.up.railway.app/client/updateProfile`,
-                updatedData,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            // Only update password if it's changed
-            if (isCurrentPasswordValid && formData.newPassword) {
-                const passwordData = {
-                    email: formData.email,
-                    currentPassword: formData.currentPassword,
-                    newPassword: formData.newPassword,
+                // Send full profile update request
+                const updatedData = {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    street: formData.street,
+                    postalCode: formData.postalCode,
+                    provinceOrState: formData.provinceOrState,
+                    country: formData.country,
                 };
 
-                await axios.post(
-                    `https://fixercapstone-production.up.railway.app/reset/updatePasswordWithOld`,
-                    passwordData,
+                await axios.put(
+                    `https://fixercapstone-production.up.railway.app/client/updateProfile`,
+                    updatedData,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
-            } else if (!isCurrentPasswordValid && formData.newPassword) {
-                Alert.alert("Error", "Please validate your current password before updating.");
-                return;
-            }
 
-            Alert.alert("Success", "Your changes have been saved.");
-            setIsEditing(false);
+                // Only update password if it's changed
+                if (isCurrentPasswordValid && formData.newPassword) {
+                    const passwordData = {
+                        email: formData.email,
+                        currentPassword: formData.currentPassword,
+                        newPassword: formData.newPassword,
+                    };
+
+                    await axios.post(
+                        `https://fixercapstone-production.up.railway.app/reset/updatePasswordWithOld`,
+                        passwordData,
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    );
+                } else if (!isCurrentPasswordValid && formData.newPassword) {
+                    setErrorAlert({
+                        visible: true,
+                        title: i18n.t('error'),
+                        message: i18n.t('validate_password_please')
+                    });
+                    return;
+                }
+
+                // Show success message and exit edit mode
+                setSuccessAlert({
+                    visible: true,
+                    title: i18n.t('success'),
+                    message: i18n.t('changes_saved')
+                });
+                setIsEditing(false);
+            }
         } catch (error) {
             console.error("Update error:", error);
-            Alert.alert("Error", error.response?.data?.error || "Failed to update profile.");
+            setErrorAlert({
+                visible: true,
+                title: i18n.t('error'),
+                message: error.response?.data?.error || i18n.t('profile_update_error')
+            });
         }
     };
 
@@ -218,67 +362,104 @@ const AccountSettingsPage = () => {
         if (!isEditing) return null;
 
         return (
-            <TouchableOpacity
-                style={[styles.validateButton, {marginTop: 5}]}
-                onPress={handleVerifyAddress}
-            >
-                <Text style={styles.validateButtonText}>Verify Address</Text>
-            </TouchableOpacity>
+            <OrangeButton
+                title={i18n.t('verify_address')}
+                onPress={() => handleVerifyAddress(false)}
+                testID="verify-address-button"
+                style={{marginTop: 5}}
+            />
         );
+    };
+
+    const handleEditToggle = () => {
+        if (!isEditing) {
+            // Entering edit mode - save current data as original
+            setOriginalData({...formData});
+        }
+        setIsEditing(!isEditing);
+    };
+
+    const hasFormChanged = () => {
+        if (!originalData) return false;
+
+        // For basic fields, compare directly with original data
+        const basicFieldsChanged =
+            formData.firstName !== originalData.firstName ||
+            formData.lastName !== originalData.lastName ||
+            formData.street !== originalData.street ||
+            formData.postalCode !== originalData.postalCode ||
+            formData.provinceOrState !== originalData.provinceOrState ||
+            formData.country !== originalData.country;
+
+        // For password fields, check if they're filled and valid
+        const passwordChanged =
+            isCurrentPasswordValid &&
+            formData.newPassword &&
+            formData.confirmPassword &&
+            formData.newPassword === formData.confirmPassword;
+
+        return basicFieldsChanged || passwordChanged;
     };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             {/* Custom Header */}
+            {/* Custom Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={28} color="#333" />
-                </TouchableOpacity>
+                <Ionicons
+                    name="arrow-back"
+                    size={28}
+                    color="orange"
+                    onPress={() => navigation.goBack()}
+                />
 
-                <Text style={styles.headerTitle}>Account Settings</Text>
+                <Text style={styles.headerTitle}>{i18n.t('edit_profile')}</Text>
 
                 {/* Edit Button */}
-                <TouchableOpacity onPress={() => setIsEditing(!isEditing)}>
-                    <MaterialIcons name="edit" size={24} color={isEditing ? 'gray' : 'black'} />
-                </TouchableOpacity>
+                <MaterialIcons
+                    name="edit"
+                    size={24}
+                    color={isEditing ? 'gray' : 'black'}
+                    onPress= {handleEditToggle}
+                />
             </View>
-
+            {/* Keyboard handling wrapper */}
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={{ flex: 1 }}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+                >
             <ScrollView contentContainerStyle={styles.container}>
                 {loading ? <Text>Loading...</Text> : (
                     <>
                         <View style={styles.formGroup}>
-                            <Text style={styles.label}>First Name</Text>
-                            <TextInput
-                                style={[styles.input, !isEditing && styles.disabledInput]}
+                            <Text style={styles.label}>{i18n.t('first_name')}</Text>
+                            <InputField
                                 value={formData.firstName}
                                 onChangeText={(text) => handleInputChange('firstName', text)}
-                                editable={isEditing}
+                                disabled={!isEditing}
                             />
                         </View>
 
                         <View style={styles.formGroup}>
-                            <Text style={styles.label}>Last Name</Text>
-                            <TextInput
-                                style={[styles.input, !isEditing && styles.disabledInput]}
+                            <Text style={styles.label}>{i18n.t('last_name')}</Text>
+                            <InputField
                                 value={formData.lastName}
                                 onChangeText={(text) => handleInputChange('lastName', text)}
-                                editable={isEditing}
+                                disabled={!isEditing}
                             />
                         </View>
 
                         {/* Address Fields with Visual Indicators */}
                         <View style={styles.formGroup}>
-                            <Text style={styles.label}>Street</Text>
+                            <Text style={styles.label}>{i18n.t('street')}</Text>
                             <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={[
-                                        styles.inputWithIcon,
-                                        !isEditing && styles.disabledInput,
-                                        addressValidated && styles.validInput
-                                    ]}
+                                <InputField
                                     value={formData.street}
                                     onChangeText={(text) => handleInputChange('street', text)}
-                                    editable={isEditing}
+                                    disabled={!isEditing}
+                                    isValid={addressValidated}
                                 />
                                 {addressValidated && (
                                     <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
@@ -287,99 +468,99 @@ const AccountSettingsPage = () => {
                         </View>
 
                         <View style={styles.formGroup}>
-                            <Text style={styles.label}>Postal Code</Text>
+                            <Text style={styles.label}>{i18n.t('postal_code')}</Text>
                             <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={[
-                                        styles.inputWithIcon,
-                                        !isEditing && styles.disabledInput,
-                                        addressValidated && styles.validInput
-                                    ]}
+                                <InputField
                                     value={formData.postalCode}
                                     onChangeText={(text) => handleInputChange('postalCode', text)}
-                                    editable={isEditing}
+                                    disabled={!isEditing}
+                                    isValid={addressValidated}
                                 />
                                 {addressValidated && (
                                     <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
                                 )}
                             </View>
                         </View>
+{/*This part of the code is currently commented out since the app will only be used for Quebec and Canada. Kept for future expansion to other territories.*/}
+                        {/*<View style={styles.formGroup}>*/}
+                        {/*    <Text style={styles.label}>Province/State</Text>*/}
+                        {/*    <View style={styles.inputContainer}>*/}
+                        {/*        <TextInput*/}
+                        {/*            style={[*/}
+                        {/*                styles.inputWithIcon,*/}
+                        {/*                !isEditing && styles.disabledInput,*/}
+                        {/*                addressValidated && styles.validInput*/}
+                        {/*            ]}*/}
+                        {/*            value={formData.provinceOrState}*/}
+                        {/*            onChangeText={(text) => handleInputChange('provinceOrState', text)}*/}
+                        {/*            editable={isEditing}*/}
+                        {/*        />*/}
+                        {/*        {addressValidated && (*/}
+                        {/*            <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />*/}
+                        {/*        )}*/}
+                        {/*    </View>*/}
+                        {/*</View>*/}
 
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>Province/State</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={[
-                                        styles.inputWithIcon,
-                                        !isEditing && styles.disabledInput,
-                                        addressValidated && styles.validInput
-                                    ]}
-                                    value={formData.provinceOrState}
-                                    onChangeText={(text) => handleInputChange('provinceOrState', text)}
-                                    editable={isEditing}
-                                />
-                                {addressValidated && (
-                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
-                                )}
-                            </View>
-                        </View>
-
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>Country</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={[
-                                        styles.inputWithIcon,
-                                        !isEditing && styles.disabledInput,
-                                        addressValidated && styles.validInput
-                                    ]}
-                                    value={formData.country}
-                                    onChangeText={(text) => handleInputChange('country', text)}
-                                    editable={isEditing}
-                                />
-                                {addressValidated && (
-                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
-                                )}
-                            </View>
-                        </View>
+                        {/*<View style={styles.formGroup}>*/}
+                        {/*    <Text style={styles.label}>Country</Text>*/}
+                        {/*    <View style={styles.inputContainer}>*/}
+                        {/*        <TextInput*/}
+                        {/*            style={[*/}
+                        {/*                styles.inputWithIcon,*/}
+                        {/*                !isEditing && styles.disabledInput,*/}
+                        {/*                addressValidated && styles.validInput*/}
+                        {/*            ]}*/}
+                        {/*            value={formData.country}*/}
+                        {/*            onChangeText={(text) => handleInputChange('country', text)}*/}
+                        {/*            editable={isEditing}*/}
+                        {/*        />*/}
+                        {/*        {addressValidated && (*/}
+                        {/*            <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />*/}
+                        {/*        )}*/}
+                        {/*    </View>*/}
+                        {/*</View>*/}
 
                         {/* Address Verification Button */}
                         {isEditing && <AddressVerificationButton />}
 
                         <View style={styles.formGroup}>
-                            <Text style={styles.label}>Current Password</Text>
-                            <TextInput
-                                style={styles.input}
-                                secureTextEntry
+                            <Text style={styles.label}>{i18n.t('current_password')}</Text>
+                            <InputField
                                 value={formData.currentPassword}
                                 onChangeText={(text) => handleInputChange('currentPassword', text)}
-                                editable={isEditing}
+                                disabled={!isEditing}
+                                secureTextEntry={true}
                             />
                             {isEditing && (
-                                <TouchableOpacity onPress={validateCurrentPassword} style={styles.validateButton}>
-                                    <Text style={styles.validateButtonText}>Validate</Text>
-                                </TouchableOpacity>
+                                <OrangeButton
+                                    title={i18n.t('validate')}
+                                    onPress={validateCurrentPassword}
+                                    testID="validate-password-button"
+                                    style={{marginTop: 10}}
+                                />
                             )}
                         </View>
 
                         {isCurrentPasswordValid && (
                             <>
                                 <View style={styles.formGroup}>
-                                    <Text style={styles.label}>New Password</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        secureTextEntry
+                                    <Text style={styles.label}>{i18n.t('new_password')}</Text>
+                                    <InputField
                                         value={formData.newPassword}
                                         onChangeText={(text) => handleInputChange('newPassword', text)}
+                                        secureTextEntry={true}
                                     />
                                 </View>
                                 <View style={styles.formGroup}>
-                                    <Text style={styles.label}>Confirm Password</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        secureTextEntry
+                                    <Text style={styles.label}>{i18n.t('confirm_password')}</Text>
+                                    <InputField
                                         value={formData.confirmPassword}
                                         onChangeText={(text) => handleInputChange('confirmPassword', text)}
+                                        secureTextEntry={true}
+                                        isValid={formData.newPassword && formData.confirmPassword &&
+                                            formData.newPassword === formData.confirmPassword}
+                                        isError={formData.newPassword && formData.confirmPassword &&
+                                            formData.newPassword !== formData.confirmPassword}
                                     />
                                     {formData.newPassword && formData.confirmPassword && (
                                         <Text style={{
@@ -387,8 +568,8 @@ const AccountSettingsPage = () => {
                                             marginTop: 5
                                         }}>
                                             {formData.newPassword === formData.confirmPassword
-                                                ? "Passwords match ✓"
-                                                : "Passwords don't match ✗"}
+                                                ? i18n.t('new_passwords_match')
+                                                : i18n.t('new_passwords_mismatch')}
                                         </Text>
                                     )}
                                 </View>
@@ -396,13 +577,35 @@ const AccountSettingsPage = () => {
                         )}
 
                         {isEditing && (
-                            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-                                <Text style={styles.saveButtonText}>Save Changes</Text>
-                            </TouchableOpacity>
+                            <OrangeButton
+                                title={i18n.t('save_changes')}
+                                onPress={handleSaveChanges}
+                                testID="save-changes-button"
+                                style={{
+                                    marginTop: 20,
+                                    opacity: hasFormChanged() ? 1 : 0.5,
+                            }}
+                                disabled={!hasFormChanged()}
+                            />
                         )}
                     </>
                 )}
             </ScrollView>
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+
+            <CustomAlertSuccess
+                visible={successAlert.visible}
+                title={successAlert.title}
+                message={successAlert.message}
+                onClose={() => setSuccessAlert({ ...successAlert, visible: false })}
+            />
+            <CustomAlertError
+                visible={errorAlert.visible}
+                title={errorAlert.title}
+                message={errorAlert.message}
+                onClose={() => setErrorAlert({ ...errorAlert, visible: false })}
+            />
         </SafeAreaView>
     );
 };

@@ -60,7 +60,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 await AsyncStorage.setItem('userId', userId);
                 await AsyncStorage.setItem('userName', userName);
 
-                Alert.alert(`${i18n.t('signed_in_successfully')}`);
+                // Alert.alert(`${i18n.t('signed_in_successfully')}`);
                 setIsLoggedIn(true);
 
                 setTimeout(() => {

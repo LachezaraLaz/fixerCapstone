@@ -94,9 +94,13 @@ export default function App() {
                                 {isLoggedIn && (
                                     <>
                                         <Stack.Screen name="DetailsScreen" component={DetailsScreen}  />
-                                        <Stack.Screen name="ProfilePage" component={ProfilePage} options={{ headerShown: false }} />
+                                        <Stack.Screen name="ProfilePage" options={{ headerShown: false }}>
+                                            {props => <ProfilePage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                        </Stack.Screen>
                                         <Stack.Screen name="CreateIssue" component={CreateIssue} options={{ headerShown: false }}/>
-                                        <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="SettingsPage" options={{ headerShown: false }}>
+                                            {props => <SettingsPage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                        </Stack.Screen>
                                         <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} options={{ headerShown: false }}/>
                                         <Stack.Screen name="EditIssue" component={EditIssue} options={{ headerShown: false }}/>
                                         <Stack.Screen name="NotificationPage" component={NotificationPage} options={{ headerShown: false }}/>
@@ -118,7 +122,7 @@ export default function App() {
                                 <Stack.Screen name="SignInPage" options={{ headerShown: false }}>
                                     {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                 </Stack.Screen>
-                                <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                <Stack.Screen name="SignUpPage" component={SignUpPage} options={{headerShown:false}} />
                                 <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
                                 <Stack.Screen name="EnterPin" component={EnterPin} />
                                 <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />

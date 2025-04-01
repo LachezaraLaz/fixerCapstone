@@ -9,13 +9,69 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {jwtDecode} from "jwt-decode";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
-const reportPage = ({navigation}) => {
+const ReportPage = ({navigation}) => {
     // States for the form fields
     const [issues, setIssues] = useState([]);
     const [selectedIssue, setSelectedIssue] = useState(null);
     const [professionalName, setProfessionalName] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState(new Date().toLocaleDateString()); // Set today's date
+
+
+    // Effect hook to set the default date to today's date
+    useEffect(() => {
+        const today = moment().format('YYYY-MM-DD');  // Formats the date as YYYY-MM-DD
+        setDate(today);  // Set today's date
+    }, []);
+
+    // Update professional's name when an issue is selected
+    const handleIssueSelect = (selectedTitle) => {
+        setSelectedIssue(selectedTitle); // Update the selected issue's title
+
+        // Find the corresponding issue object based on the title
+        const selectedIssueObj = issues.find(issue => issue.title === selectedTitle);
+
+        if (selectedIssueObj) {
+            // Update professional name based on the selected issue's professional email
+            setProfessionalName(selectedIssueObj.professionalEmail || 'No professional assigned');
+        } else {
+            setProfessionalName('No professional assigned');
+        }
+    };
+
+
+
+    const updateProfessionalName = (issue) => {
+        setProfessionalName(issue?.professionalEmail || 'No professional assigned');
+    };
+
+    useEffect(() => {
+        if (issues.length > 0) {
+            updateProfessionalName(issues[0].professionalEmail || 'No professional assigned');
+        }
+    }, [issues]);
+
+
+
+    // Fetch issues when the page loads
+    useEffect(() => {
+        const fetchJobs = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const decodedToken = jwtDecode(token);
+            const userEmail = decodedToken.email;
+
+            try {
+                const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`);
+                setIssues(response.data.jobs); // Set the jobs state to the fetched data
+            } catch (error) {
+                console.error('Error fetching jobs:', error);
+                Alert.alert('Error', 'Could not fetch jobs');
+            }
+        };
+
+        fetchJobs();
+    }, []);
+
 
     const handleSubmit = async () => {
         if (!description || !date || !professionalName) {
@@ -52,7 +108,7 @@ const reportPage = ({navigation}) => {
                         },
                     ],
                     { cancelable: false }
-                    );
+                );
             } else {
                 console.error('Error sending email:', error.response);
                 Alert.alert('Error', 'Could not send email');
@@ -62,65 +118,7 @@ const reportPage = ({navigation}) => {
             Alert.alert('Error', 'Could not send email');
         }
     };
-
-    // Effect hook to set the default date to today's date
-    useEffect(() => {
-        const today = moment().format('YYYY-MM-DD');  // Formats the date as YYYY-MM-DD
-        setDate(today);  // Set today's date
-    }, []);
-
-    useEffect(() => {
-        if (issues.length > 0) {
-            setSelectedIssue(issues[0]._id); // Set default issue selection
-            updateProfessionalName(issues[0]);  // Automatically set the professional name of the first issue
-        }
-    }, [issues]);
-
-    const updateProfessionalName = (issue) => {
-        if (issue && issue.professionalEmail) {
-            setProfessionalName(issue.professionalEmail);  // Set the professional's email if available
-        } else {
-            setProfessionalName('No professional assigned');
-        }
-    };
-
-
-    // Fetch issues when the page loads
-    useEffect(() => {
-        const fetchJobs = async () => {
-            const token = await AsyncStorage.getItem('token');
-            const decodedToken = jwtDecode(token);
-            const userEmail = decodedToken.email;
-
-            try {
-                const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`);
-                setIssues(response.data.jobs); // Set the jobs state to the fetched data
-            } catch (error) {
-                console.error('Error fetching jobs:', error);
-                Alert.alert('Error', 'Could not fetch jobs');
-            }
-        };
-
-        fetchJobs();
-    }, []);
-
-
-    // Update professional's name when an issue is selected
-    const handleIssueSelect = (issueId) => {
-        setSelectedIssue(issueId);
-
-        // Find the selected issue object
-        const selectedIssueObj = issues.find(issue => issue._id === issueId);
-
-        if (selectedIssueObj) {
-            // Update the professional name using the selected issue object
-            updateProfessionalName(selectedIssueObj);
-        } else {
-            setProfessionalName('No professional assigned');
-        }
-    };
-
-
+    
     return (
         <ScrollView style={styles.container}>
             <Text style={styles.title}>Report a Professional</Text>
@@ -152,11 +150,11 @@ const reportPage = ({navigation}) => {
             <View style={styles.pickerContainer}>
                 <Picker
                     selectedValue={selectedIssue}
-                    onValueChange={handleIssueSelect} // Call the function directly
+                    onValueChange={handleIssueSelect}
                     style={styles.picker}
                 >
                     {issues.map((issue, index) => (
-                        <Picker.Item key={index} label={issue.title} value={issue._id} />
+                        <Picker.Item key={index} label={issue.title} value={issue.title} />
                     ))}
                 </Picker>
             </View>
@@ -257,4 +255,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default reportPage;
+export default ReportPage;

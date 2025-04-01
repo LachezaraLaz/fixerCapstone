@@ -258,7 +258,7 @@ const IssueDetails = () => {
                 {job.status.toLowerCase() === "completed" || job.status.toLowerCase() === "closed" ? (
                     <>
                         <OrangeButton
-                            title="Add Review"
+                            title={i18n.t('add_modify_review')}
                             onPress={() => navigation.navigate("addReview", {jobId})}
                             variant="normal"
                         />

@@ -22,26 +22,9 @@ export const styles = StyleSheet.create({
     },
 
     container: {
-        flex: 1,
-        backgroundColor: "#f7f7f7",
+        display: 'flex',
         paddingHorizontal: 20,
         paddingVertical: 20,
-    },
-
-    input: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 10,
-        padding: 12,
-        marginBottom: 20,
-        fontSize: 16,
-        backgroundColor: '#fff',
-        marginHorizontal: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-        elevation: 2,
     },
 
     textArea: {

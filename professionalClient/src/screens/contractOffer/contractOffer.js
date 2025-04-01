@@ -113,7 +113,7 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
@@ -130,7 +130,7 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
@@ -147,7 +147,7 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
@@ -165,7 +165,7 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
@@ -181,7 +181,7 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
@@ -198,7 +198,7 @@ export default function ContractOffer({ route, navigation }) {
                             onPress: () => setErrorAlertVisible(false)
                         }
                     ]
-                });                
+                });
                 setErrorAlertVisible(true);
                 return;
             }
@@ -259,7 +259,7 @@ export default function ContractOffer({ route, navigation }) {
                             onPress: () => setErrorAlertVisible(false)
                         }
                     ]
-                });                
+                });
                 setErrorAlertVisible(true);
             }
         } catch (error) {
@@ -274,7 +274,7 @@ export default function ContractOffer({ route, navigation }) {
                         }
                     ]
                 });
-                
+
                 setErrorAlertVisible(true);
             } else {
                 console.error('Error submitting quote:', error);
@@ -288,7 +288,7 @@ export default function ContractOffer({ route, navigation }) {
                         }
                     ]
                 });
-                
+
                 setErrorAlertVisible(true);
             }
         }
@@ -300,23 +300,23 @@ export default function ContractOffer({ route, navigation }) {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         >
-
-
             <View style={{ flex: 1 }}>
+                <View style={styles.headerContainer}>
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        testID="back-button"
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Ionicons name="arrow-back" size={28} color='#ff8c00'/>
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Submit a Quote</Text>
+                </View>
+
                 <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
                             contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
                             keyboardShouldPersistTaps="handled"
                 >
-                    <View style={styles.headerContainer}>
-                        <TouchableOpacity
-                            style={styles.backButton}
-                            testID="back-button"
-                            onPress={() => navigation.goBack()}
-                        >
-                            <Ionicons name="arrow-back" size={28} color='#ff8c00' />
-                        </TouchableOpacity>
-                        <Text style={styles.headerTitle}>Submit a Quote</Text>
-                    </View>
+
                 <View style={styles.containerTitle}>
                     <Text style={styles.title}>{issue.title}</Text>
                 </View>

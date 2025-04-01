@@ -5,14 +5,16 @@ export const styles = StyleSheet.create({
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 20,
+        paddingVertical: 20,
         backgroundColor: '#fff',
+        // borderBottomWidth: 1,
+        // borderBottomColor: '#e0e0e0',
     },
 
     backButton: {
         position: 'absolute',
-        left: 4,
-        top:0,
+        left: 16,
+        top:20,
     },
     headerTitle: {
         fontSize: 20,

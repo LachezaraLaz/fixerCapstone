@@ -30,6 +30,8 @@ import { LanguageProvider } from "./context/LanguageContext";
 import { Text } from "react-native";
 import { LogBox } from 'react-native';
 import OfferDetails from './src/screens/OfferDetails/OfferDetails';
+import AllCategories from './src/screens/AllCategories/AllCategories';
+
 
 
 // Suppress the specific warning
@@ -105,6 +107,7 @@ export default function App() {
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
                                         <Stack.Screen name="OffersPage" component={OffersPage} />
                                         <Stack.Screen name="OfferDetails" component={OfferDetails} />
+                                        <Stack.Screen name="AllCategories" component={AllCategories} />
                                         <Stack.Screen name="addReview" component={addReview} options={{ headerShown: false }}/>
                                         <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>

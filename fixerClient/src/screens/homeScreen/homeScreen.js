@@ -216,7 +216,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 {/* Categories Section */}
                 <View style={styles.categoriesHeader}>
                     <Text style={styles.categoriesTitle}>{i18n.t('categories')}</Text>
-                    <TouchableOpacity onPress={() => console.log('View All Categories')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('AllCategories')}>
                         <Text style={styles.viewAllText}>{i18n.t('view_all')}</Text>
                     </TouchableOpacity>
                 </View>

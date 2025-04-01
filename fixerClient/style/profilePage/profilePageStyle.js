@@ -172,7 +172,7 @@ export const styles = StyleSheet.create({
     reviewDate: {
         fontSize: 12,
         color: '#888',
-    },
+    }, 
 
     noReviewsText: {
         fontSize: 14,
@@ -237,5 +237,33 @@ export const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    header: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    reportButton: {
+        position: 'absolute', // Fixes button at bottom
+        bottom: 90, // Adjust height from the bottom
+        // left: '18%', // Centers the button horizontally
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#E63946', // Professional red shade
+        paddingVertical: 14,
+        paddingHorizontal: 25,
+        borderRadius: 30,
+        elevation: 6, // Shadow for Android
+        shadowColor: '#E63946', // Shadow for iOS
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+    },
+    reportButtonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginLeft: 8,
     },
 });

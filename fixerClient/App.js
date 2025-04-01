@@ -29,6 +29,7 @@ import issueDetails from "./src/screens/issueDetails/issueDetails";
 import { LanguageProvider } from "./context/LanguageContext";
 import { Text } from "react-native";
 import { LogBox } from 'react-native';
+import ReportPage from './src/screens/profilPage/reportPage';
 import OldNotifications from "./src/screens/oldNotifications/oldNotifications";
 
 // Suppress the specific warning
@@ -111,7 +112,7 @@ export default function App() {
                                         <Stack.Screen name="addReview" component={addReview} options={{ headerShown: false }}/>
                                         <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>
-
+                                        <Stack.Screen name="ReportPage" component={ReportPage} options={{ headerShown: false }}/>
                                     </>
                                 )}
                             </Stack.Navigator>

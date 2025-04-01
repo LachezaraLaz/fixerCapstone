@@ -11,8 +11,7 @@ import SettingsButton from "../../../components/settingsButton";
 import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
-import DropDownPicker from 'react-native-dropdown-picker';
-
+import {Ionicons} from "@expo/vector-icons";
 /**
  * @module fixerClient
  */
@@ -136,6 +135,7 @@ const ProfilePage = ({navigation, setIsLoggedIn}) => {
     };
 
     return (
+        <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 150 }} showsVerticalScrollIndicator={false}>
             <View style={styles.globalFont}>
                 <View style={styles.customHeader}>
@@ -160,8 +160,6 @@ const ProfilePage = ({navigation, setIsLoggedIn}) => {
                     <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'left' }}>{i18n.t('street')}</Text>
                 </View>
                 <Text style={smallTransparentText}>{client.street}, {client.provinceOrState}, {client.country}, {client.postalCode}</Text>
-
-
                 {/*<View style={styles.descriptionContainer}>*/}
                 {/*    <Text style={styles.sectionTitle}>Description</Text>*/}
                 {/*    <Text style={styles.descriptionText}>*/}
@@ -241,9 +239,17 @@ const ProfilePage = ({navigation, setIsLoggedIn}) => {
                 {/*            nestedScrollEnabled={true}*/}
                 {/*        />*/}
                 {/*    </View>*/}
-                {/*</View>*/}
+                {/*</View>*/} 
             </View>
         </ScrollView>
+        <View style={{ position: 'absolute', bottom: 10, left: 0, right: 0, alignItems: 'center' }}>
+  
+            <TouchableOpacity style={styles.reportButton} activeOpacity={0.7} onPress={() => navigation.navigate('ReportPage')}>
+                <Ionicons name="alert-circle-outline" size={22} color="white" />
+                <Text style={styles.reportButtonText}>{i18n.t('report')}</Text>
+            </TouchableOpacity>
+        </View>
+        </View>
     );
 };
 

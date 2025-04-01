@@ -8,6 +8,8 @@ import {Picker} from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {jwtDecode} from "jwt-decode";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import InputField from '../../../components/inputField';
+
 
 const ReportPage = ({navigation}) => {
     // States for the form fields
@@ -121,10 +123,21 @@ const ReportPage = ({navigation}) => {
     
     return (
         <ScrollView style={styles.container}>
-            <Text style={styles.title}>Report a Professional</Text>
+
+             <View style={styles.headerContainer}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    testID="back-button"
+                    onPress={() => navigation.goBack()}
+                >
+                    <Ionicons name="arrow-back" size={28} color='#ff8c00' />
+                </TouchableOpacity>
+
+                <Text style={styles.headerTitle}>Report a Professional</Text>
+            </View>
 
             {/* Description field */}
-            <TextInput
+            {/* <TextInput
                 style={[styles.input, styles.descriptionInput]} // Custom style for description field
                 placeholder="Describe the issue..."
                 placeholderTextColor="#bbb"
@@ -133,6 +146,12 @@ const ReportPage = ({navigation}) => {
                 multiline
                 numberOfLines={6}
                 textAlignVertical="top"  // Ensures the text starts at the top
+            /> */}
+            <InputField
+                placeholder="Describe the issue..."
+                value={description}
+                onChangeText={setDescription}
+                multiline
             />
 
             {/* Date field */}
@@ -183,17 +202,17 @@ const styles = StyleSheet.create({
     },
     labelDropdown: {
         fontSize: 16,
-        fontWeight: 'bold',
+        // fontWeight: 'bold',
         marginBottom: 10,
         color: '#555',
     },
-    title: {
-        fontSize: 28,
-        fontWeight: '700',
-        color: '#333',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
+    // title: {
+    //     fontSize: 28,
+    //     fontWeight: '700',
+    //     color: '#333',
+    //     textAlign: 'center',
+    //     marginBottom: 20,
+    // },
     label: {
         fontSize: 16,
         fontWeight: '500',
@@ -232,19 +251,36 @@ const styles = StyleSheet.create({
         color: '#FFF',
     },
     pickerContainer: {
-            marginBottom: 25, // Add more space below picker
-            backgroundColor: '#FFF',
-            borderRadius: 12,
-            borderWidth: 1,
-            borderColor: '#DDD',
-            overflow: 'hidden',
-            padding: 10,
-            elevation: 3,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.2,
-            shadowRadius: 4,
-        },
+        marginBottom: 25, // Add more space below picker
+        backgroundColor: '#FFF',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#DDD',
+        overflow: 'hidden',
+        padding: 10,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    headerContainer: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingBottom: 20,
+        backgroundColor: '#fff',
+    },
+    backButton: {
+        position: 'absolute',
+        left: 4,
+        top:0,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
+    },
     picker: {
         height: 55,
         width: '100%',

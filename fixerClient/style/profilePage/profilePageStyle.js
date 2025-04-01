@@ -172,7 +172,7 @@ export const styles = StyleSheet.create({
     reviewDate: {
         fontSize: 12,
         color: '#888',
-    },
+    }, 
 
     noReviewsText: {
         fontSize: 14,
@@ -246,7 +246,7 @@ export const styles = StyleSheet.create({
     reportButton: {
         position: 'absolute', // Fixes button at bottom
         bottom: 90, // Adjust height from the bottom
-        left: '18%', // Centers the button horizontally
+        // left: '18%', // Centers the button horizontally
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

@@ -439,6 +439,7 @@ const AccountSettingsPage = () => {
                                 value={formData.firstName}
                                 onChangeText={(text) => handleInputChange('firstName', text)}
                                 disabled={!isEditing}
+                                showFloatingLabel={false}
                             />
                         </View>
 
@@ -448,38 +449,41 @@ const AccountSettingsPage = () => {
                                 value={formData.lastName}
                                 onChangeText={(text) => handleInputChange('lastName', text)}
                                 disabled={!isEditing}
+                                showFloatingLabel={false}
                             />
                         </View>
 
                         {/* Address Fields with Visual Indicators */}
                         <View style={styles.formGroup}>
                             <Text style={styles.label}>{i18n.t('street')}</Text>
-                            <View style={styles.inputContainer}>
+                            {/* <View style={styles.inputContainer}> */}
                                 <InputField
                                     value={formData.street}
                                     onChangeText={(text) => handleInputChange('street', text)}
                                     disabled={!isEditing}
                                     isValid={addressValidated}
+                                    showFloatingLabel={false}
                                 />
                                 {addressValidated && (
                                     <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
                                 )}
-                            </View>
+                            {/* </View> */}
                         </View>
 
                         <View style={styles.formGroup}>
                             <Text style={styles.label}>{i18n.t('postal_code')}</Text>
-                            <View style={styles.inputContainer}>
+                            {/* <View style={styles.inputContainer}> */}
                                 <InputField
                                     value={formData.postalCode}
                                     onChangeText={(text) => handleInputChange('postalCode', text)}
                                     disabled={!isEditing}
                                     isValid={addressValidated}
+                                    showFloatingLabel={false}
                                 />
                                 {addressValidated && (
                                     <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
                                 )}
-                            </View>
+                            {/* </View> */}
                         </View>
 {/*This part of the code is currently commented out since the app will only be used for Quebec and Canada. Kept for future expansion to other territories.*/}
                         {/*<View style={styles.formGroup}>*/}

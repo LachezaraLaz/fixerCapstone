@@ -29,6 +29,8 @@ import issueDetails from "./src/screens/issueDetails/issueDetails";
 import { LanguageProvider } from "./context/LanguageContext";
 import { Text } from "react-native";
 import { LogBox } from 'react-native';
+import OfferDetails from './src/screens/OfferDetails/OfferDetails';
+import AllCategories from './src/screens/AllCategories/AllCategories';
 import ReportPage from './src/screens/profilPage/reportPage';
 import OldNotifications from "./src/screens/oldNotifications/oldNotifications";
 
@@ -106,9 +108,12 @@ export default function App() {
                                         <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} options={{ headerShown: false }}/>
                                         <Stack.Screen name="EditIssue" component={EditIssue} options={{ headerShown: false }}/>
                                         <Stack.Screen name="NotificationPage" component={NotificationPage} options={{ headerShown: false }}/>
+
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail} options={{ headerShown: false }} />
                                         <Stack.Screen name="OldNotifications" component={OldNotifications} options={{ headerShown: false }} />
-                                        <Stack.Screen name="OffersPage" component={OffersPage} options={{ headerShown: false }} />
+                                        <Stack.Screen name="OffersPage" component={OffersPage} />
+                                        <Stack.Screen name="OfferDetails" component={OfferDetails} />
+                                        <Stack.Screen name="AllCategories" component={AllCategories} />
                                         <Stack.Screen name="addReview" component={addReview} options={{ headerShown: false }}/>
                                         <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>

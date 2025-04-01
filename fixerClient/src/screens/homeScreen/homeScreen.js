@@ -28,6 +28,7 @@ import {useFocusEffect} from "@react-navigation/native";
  * @module fixerClient
  */
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
+    const [searchQuery, setSearchQuery] = useState('');
     const { chatClient } = useChatContext();
     const [firstName, setFirstName] = useState('');
     const [miniOffers, setMiniOffers] = useState([]);
@@ -61,39 +62,79 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         fetchUserData();
     }, []);
 
+    const refreshOffers = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
+            const profile = await axios.get(
+                `https://fixercapstone-production.up.railway.app/client/profile`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            const email = profile.data.email;
+
+            const resp = await axios.get(
+                `https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setMiniOffers(Array.isArray(resp.data) ? resp.data : []);
+        } catch (e) {
+            console.error('Error refreshing offers:', e);
+        } finally {
+            setLoadingOffers(false);
+        }
+    };
+
     useEffect(() => {
-        const loadOffers = async () => {
-            try {
-                const token = await AsyncStorage.getItem('token');
-                if (!token) return;
-
-                // fetch client email
-                const profile = await axios.get(
-                    `https://fixercapstone-production.up.railway.app/client/profile`,
-                    //`http://192.168.0.19:3000/client/profile`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
-                const email = profile.data.email;
-
-                // fetch all offers for client
-                const resp = await axios.get(
-                    `https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
-                    //`http://192.168.0.19:3000/quotes/client/${email}`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
-                //console.log('API Response:', resp.data);
-
-                setMiniOffers(Array.isArray(resp.data) ? resp.data : []);
-            } catch (e) {
-                console.error('Error loading mini-offers:', e);
-            } finally {
-                setLoadingOffers(false);
-            }
-        };
-        loadOffers();
+        refreshOffers();
     }, []);
+
+    const handleAcceptOffer = async (offerId) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
+            const response = await axios.put(
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                { status: 'accepted' },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 200) {
+                Alert.alert(i18n.t('success'), i18n.t('offer_accepted'));
+                refreshOffers();
+            } else {
+                Alert.alert(i18n.t('error'), i18n.t('failed_to_accept_offer'));
+            }
+        } catch (error) {
+            console.error('Error accepting offer:', error);
+            Alert.alert(i18n.t('error'), i18n.t('error_accepting_offer'));
+        }
+    };
+
+    const handleRejectOffer = async (offerId) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
+            const response = await axios.put(
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                { status: 'rejected' },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 200) {
+                Alert.alert(i18n.t('success'), i18n.t('offer_rejected'));
+                refreshOffers();
+            } else {
+                Alert.alert(i18n.t('error'), i18n.t('failed_to_reject_offer'));
+            }
+        } catch (error) {
+            console.error('Error rejecting offer:', error);
+            Alert.alert(i18n.t('error'), i18n.t('error_rejecting_offer'));
+        }
+    };
 
     useFocusEffect(
         useCallback(() => {
@@ -122,6 +163,11 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             setUnreadCount(0);
         }
     };
+    const filteredOffers = miniOffers.filter((offer) => {
+        const name = `${offer.professionalFirstName ?? ''} ${offer.professionalLastName ?? ''}`.toLowerCase();
+        const email = offer.professionalEmail?.toLowerCase() ?? '';
+        return name.includes(searchQuery.toLowerCase()) || email.includes(searchQuery.toLowerCase());
+    });
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -185,6 +231,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         onSearch={() => console.log("Search button pressed")}
                         onFilter={() => console.log("Filter button pressed")}
                         filterButtonTestID="filter-button"
+                        onSearchChange={setSearchQuery}
                     />
                 </View>
 
@@ -203,7 +250,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 {/* Categories Section */}
                 <View style={styles.categoriesHeader}>
                     <Text style={styles.categoriesTitle}>{i18n.t('categories')}</Text>
-                    <TouchableOpacity onPress={() => console.log('View All Categories')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('AllCategories')}>
                         <Text style={styles.viewAllText}>{i18n.t('view_all')}</Text>
                     </TouchableOpacity>
                 </View>
@@ -255,7 +302,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 ) : (
                     <View style={{ height: 330 }}>
                         <ScrollView style={styles.requestsContainer}>
-                            {miniOffers.length ? miniOffers.map((offer) => {
+                            {filteredOffers.length ? filteredOffers.map((offer) => {
                                 // If the pro has no reviews, we'll show grey star & "0" rating
                                 const hasReviews = offer.professionalReviewCount > 0;
                                 const starColor = hasReviews ? "#FFA500" : "grey";
@@ -265,7 +312,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
 
                                 return (
-                                    <View key={offer._id} style={styles.requestCard}>
+                                    <TouchableOpacity key={offer._id} style={styles.requestCard} onPress={() => navigation.navigate('OfferDetails', { offerId: offer._id })}>
                                         <Image
                                             source={{ uri: 'https://via.placeholder.com/60' }}
                                             style={styles.requestUserImage}
@@ -312,16 +359,22 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                                             {/* Accept/Reject if pending */}
                                             {offer.status === 'pending' && (
                                                 <View style={styles.requestButtonsRow}>
-                                                    <TouchableOpacity style={styles.rejectButton}>
+                                                    <TouchableOpacity
+                                                        style={styles.rejectButton}
+                                                        onPress={() => handleRejectOffer(offer._id)}
+                                                    >
                                                         <Text style={styles.rejectText}>{i18n.t('reject')}</Text>
                                                     </TouchableOpacity>
-                                                    <TouchableOpacity style={styles.acceptButton}>
+                                                    <TouchableOpacity
+                                                        style={styles.acceptButton}
+                                                        onPress={() => handleAcceptOffer(offer._id)}
+                                                    >
                                                         <Text style={styles.acceptText}>{i18n.t('accept')}</Text>
                                                     </TouchableOpacity>
                                                 </View>
                                             )}
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                                 );
                             }) : (
                                 <Text style={styles.emptyText}>{i18n.t('no_requests_available')}</Text>

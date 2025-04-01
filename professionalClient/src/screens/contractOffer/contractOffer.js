@@ -217,7 +217,6 @@ export default function ContractOffer({ route, navigation }) {
                     ]
                 });
                 setErrorAlertVisible(true);
-                //Alert.alert('Error', 'Unable to retrieve client email from the selected issue.');
                 return;
             }
 

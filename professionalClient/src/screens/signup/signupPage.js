@@ -264,17 +264,15 @@ export default function SignUpPage({ navigation }) {
                 style={{ flex: 1 }}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // adjust as needed
             >
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
+                </TouchableOpacity>
             <View style={{ flex: 1 }}>
                 <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
                             contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
                             keyboardShouldPersistTaps="handled"
                 >
                     <View style={styles.container}>
-                        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                            <Ionicons name="arrow-back" size={28} color="#1E90FF" />
-                            <Text style={styles.backText}>Back</Text>
-                        </TouchableOpacity>
-            
                         <Text style={styles.title}>Sign Up</Text>
 
                         <InputField
@@ -423,7 +421,7 @@ const styles = StyleSheet.create({
     },
     backButton: {
         position: 'absolute',
-        top: 0,
+        top: 40,
         left: 20,
         flexDirection: 'row',
         alignItems: 'center',

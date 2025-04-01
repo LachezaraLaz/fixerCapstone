@@ -141,7 +141,7 @@ export default function App() {
                                         {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                     </Stack.Screen>
                                     <Stack.Screen name="SignUpPage" component={SignUpPage} options={{ headerShown: false }}/>
-                                    <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                    <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} options={{ headerShown: false }} />
                                     <Stack.Screen name="EnterPin" component={EnterPin} />
                                     <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
                                 </>

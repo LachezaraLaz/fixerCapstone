@@ -17,6 +17,7 @@ const { serverClient } = require('./services/streamClient');
 const reviewRouter = require('./routes/reviewRoute');
 const paymentRoutes = require('./routes/paymentRoute');
 const geocodeRoute = require('./routes/geoCodeRoute');
+const chatRoute = require('./routes/chatRoute');
 
 const app = express();
 const cors = require('cors');
@@ -55,6 +56,7 @@ app.use('/reviews', reviewRouter.reviewRouter);
 app.use('/users', userRouter.userRouter);
 
 app.use('/payment', paymentRoutes.paymentRouter);
+app.use('/chat', chatRoute.chatRouter);
 
 app.use(cors()); // duplicate ?
 app.use('/api/geocode', geocodeRoute);

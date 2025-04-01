@@ -285,6 +285,7 @@ export default function AdminDashboard() {
                     }))
                 ].sort((a, b) => b.date - a.date).slice(0, 5);
 
+
                 return (
                     <div style={styles.tabContent}>
                         <h2 style={styles.tabTitle}>Dashboard Overview</h2>
@@ -1000,6 +1001,41 @@ export default function AdminDashboard() {
         }
     };
 
+    const toggleBan = async (userId, newBanStatus) => {
+        try {
+            const token = localStorage.getItem("authToken"); // Get token from storage
+            if (!token) {
+                alert("You must be logged in to perform this action.");
+                return;
+            }
+
+            console.log(`Attempting to ban user: ${userId} with status: ${newBanStatus}`);
+
+            const response = await fetch(`/api/admin/clients/ban/${userId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` // Send token
+                },
+                body: JSON.stringify({ banned: newBanStatus }),
+            });
+
+            const data = await response.json();
+            console.log("Response from server:", data);
+
+            if (response.ok) {
+                alert(`User has been ${newBanStatus ? "banned" : "unbanned"}`);
+                window.location.reload();
+            } else {
+                alert(`Failed to update ban status: ${data.message}`);
+            }
+        } catch (error) {
+            console.error("Error updating ban status:", error);
+        }
+    };
+
+
+
     return (
         <div style={{ fontFamily: "'Poppins', sans-serif" }}>
             {/* Header */}
@@ -1120,6 +1156,10 @@ export default function AdminDashboard() {
                                     <p><strong>Payment Setup:</strong> {selectedEntry.paymentSetup ? "Yes" : "No"}</p>
                                     <p><strong>Stripe Account ID:</strong> {selectedEntry.stripeAccountId ?? "Not connected"}</p>
                                     <p><strong>Banking Info Added:</strong> {selectedEntry.bankingInfoAdded ? "Yes" : "No"}</p>
+                                    <button onClick={() => toggleBan(selectedEntry._id, !selectedEntry.banned)}>
+                                        {selectedEntry.banned ? "Unban" : "Ban"}
+                                    </button>
+
                                 </>
                             )}
 

@@ -9,6 +9,7 @@ const clientSchema = new mongoose.Schema({
   approved: { type: Boolean, default: false },
   accountType: { type: String, enum: ["client", "professional"] },
   verified: Boolean,
+  banned: { type: Boolean, default: false }, // banning professionals
 
   // Address fields
   street: String,

@@ -223,8 +223,18 @@ const updateQuoteStatus = async (req, res) => {
                 return res.status(404).json({ message: 'Failed to update the quote.' });
             }
 
+            // Before updating, check if the job already has an accepted quote
+            const existingJob = await Jobs.findById(quote.issueId);
+            if (existingJob.acceptedQuoteId) {
+                return res.status(400).json({ message: 'This job already has an accepted quote' });
+            }
+
             // Update the status of the associated issue to "in progress"
-            await Jobs.findByIdAndUpdate(quote.issueId, { status: 'In progress', professionalEmail: profEmail});
+            await Jobs.findByIdAndUpdate(quote.issueId, {
+                status: 'In progress',
+                professionalEmail: profEmail,
+                acceptedQuoteId: quoteId
+            });
             //logger.info("issue number", issueId, "has been updated to in progress because the client accepted a quote");
 
             // Automatically reject all other quotes for the same job

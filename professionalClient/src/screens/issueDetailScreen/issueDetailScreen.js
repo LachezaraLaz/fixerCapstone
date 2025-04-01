@@ -19,7 +19,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import CustomAlertError from '../../../components/customAlertError';
 
-
 export default function IssueDetailScreen({ issue, issues, onClose }) {
     const navigation = useNavigation();
     const [address, setAddress] = useState('Loading address...');
@@ -40,7 +39,6 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
     // Guard against undefined
     if (!issue) return null;
 
-
     /**
      * useEffect hook that fetches and sets the address when the selected issue changes.
      *
@@ -56,7 +54,6 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
         };
         fetchAddress();
     }, [issue]);
-
 
     /**
      * useEffect hook that sets the client information based on the selected issue.
@@ -77,7 +74,6 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
             setClient({firstName: 'Unknown', lastName: ''});
         }
     }, [issue]);
-
 
     /**
      * useEffect hook that checks if the professional has added their banking information.
@@ -135,7 +131,6 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
         extrapolate: 'clamp',
     });
 
-
     /**
      * useEffect hook that listens to changes in modal height to toggle scrollability.
      *
@@ -150,7 +145,6 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
         });
         return () => modalHeight.removeListener(listener);
     }, [modalHeight]);
-
 
     /**
      * Checks if the user has added a payment method before allowing access to certain features.
@@ -198,8 +192,12 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
      * @function handleAction
      * @param {string} screen - The name of the screen to navigate to.
      */
-    const handleAction = (screen) => {
+    const handleAction = async (screen) => {
         if (!handlePaymentMethodCheck()) return;
+
+        if (screen === "ChatScreen") {
+            await initializeChat();
+        }
 
         Animated.timing(modalHeight, {
             toValue: 0,
@@ -207,10 +205,41 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
             useNativeDriver: false,
         }).start(() => {
             onClose();
-            setTimeout(() => navigation.navigate(screen, { issue }), 100);
+            setTimeout(() => navigation.navigate(screen, {issue}), 100);
         });
     };
 
+    const initializeChat = async () => {
+        try {
+            // Construct the request body with required fields
+            const userId = await AsyncStorage.getItem('userId');
+            const requestBody = {
+                issueTitle: issue?.title,
+                clientEmail: issue?.userEmail,
+                professionalId: userId,
+            };
+
+            // Send the POST request
+            const response = await fetch('https://fixercapstone-production.up.railway.app/chat/init', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            // Handle response
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error from server:', errorData);
+            } else {
+                const data = await response.json();
+                console.log('Chat initialized successfully:', data);
+            }
+        } catch (error) {
+            console.error('Error calling initializeChat:', error);
+        }
+    };
 
     /**
      * PanResponder instance that allows the user to drag and resize a modal vertically.

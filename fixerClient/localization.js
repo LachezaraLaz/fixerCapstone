@@ -157,6 +157,7 @@ const en = {
     no_old_notifications: "  No old notifications to display.",
     view_old_notifications: "View Old Notifications",
     notification_details: "Notification Details",
+    submit: "Submit",
 }
 
 const fr = {
@@ -318,6 +319,7 @@ const fr = {
     no_old_notifications: "  Pas d'anciennes notifications",
     view_old_notifications: "Voir anciennes notifications",
     notification_details: "Détails",
+    submit: "Soumettre",
 }
 
 export {en, fr}

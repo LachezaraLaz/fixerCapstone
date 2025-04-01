@@ -1,8 +1,10 @@
-import React, { useState, useEffect,useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from 'react-native';
+import { useCallback, useRef } from 'react';
 import { styles } from '../../../style/profilePage/profilePageStyle';
 import { IPAddress } from '../../../ipAddress';
 import SettingsButton from "../../../components/settingsButton";
@@ -15,12 +17,12 @@ import DropDownPicker from 'react-native-dropdown-picker';
  * @module fixerClient
  */
 
-const ProfilePage = () => {
+const ProfilePage = ({navigation, setIsLoggedIn}) => {
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
-    const navigation = useNavigation();
-    let [modalVisible, setModalVisible] = useState(false);
-    const {locale, setLocale}  = useContext(LanguageContext);
+    const isMounted = useRef(true);
+    const initialLoadComplete = useRef(false);
+    const {locale, setLocale} = useContext(LanguageContext);
     const { changeLanguage } = useContext(LanguageContext);
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
@@ -32,48 +34,71 @@ const ProfilePage = () => {
         { label: 'Français', value: 'fr' }
     ]);
 
-
+    // Initial data load
     useEffect(() => {
-        /**
-         * Fetches the profile data of the client.
-         * 
-         * This function retrieves the authentication token from AsyncStorage and uses it to make a GET request
-         * to the profile endpoint. If the token is found, it sets the client data with the response. If no token
-         * is found, it logs an error message. Any errors during the fetch process are caught and logged.
-         * 
-         * @async
-         * @function fetchProfileData
-         * @returns {Promise<void>} A promise that resolves when the profile data has been fetched and the client state has been set.
-         */
-        const fetchProfileData = async () => {
-            try {
-                const token = await AsyncStorage.getItem('token');
+        isMounted.current = true;
+        if (!initialLoadComplete.current) {
+            fetchProfileData(true);
+        }
 
-                if (token) {
-                    const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    setClient(response.data);
-                } else {
-                    console.error('No token found');
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    // Silent refresh when coming back to the screen
+    useFocusEffect(
+        React.useCallback(() => {
+            // Only do a silent refresh if we already loaded initial data
+            if (initialLoadComplete.current && client) {
+                fetchProfileData(false);
+            }
+        }, [client])
+    );
+
+    // Function to fetch profile data
+    const fetchProfileData = async (isInitialLoad) => {
+        if (!isMounted.current) return;
+
+        // Only show loading indicator on initial load
+        if (isInitialLoad) {
+            setLoading(true);
+        }
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                console.error('No token found');
+                if (isMounted.current && isInitialLoad) {
+                    setLoading(false);
                 }
-            } catch (error) {
-                console.error('Error fetching profile data:', error);
-            } finally {
+                return;
+            }
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (isMounted.current) {
+                setClient(response.data);
+                if (isInitialLoad) {
+                    setLoading(false);
+                    initialLoadComplete.current = true;
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching profile data:', error);
+            if (isMounted.current && isInitialLoad) {
                 setLoading(false);
             }
-        };
-
-        fetchProfileData();
-    }, []);
+        }
+    };
 
     useEffect(() => {
         if (value !== locale) {
             changeLanguage(value); // ✅ persist + update
         }
     }, [value]);
-
-
 
     // const fetchReviews = async () => {
     //     try {
@@ -103,12 +128,19 @@ const ProfilePage = () => {
     //     ));
     // };
 
+    // Define new styles for the smaller, transparent text
+    const smallTransparentText = {
+        fontSize: 14,
+        color: 'rgba(0, 0, 0, 0.6)', // 60% opacity black
+        marginTop: 3,
+    };
+
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 150 }} showsVerticalScrollIndicator={false}>
             <View style={styles.globalFont}>
                 <View style={styles.customHeader}>
                     <Text style={styles.headerLogo}>Fixr</Text>
-                    <Text style={styles.headerTitle}>Profile</Text>
+                    <Text style={styles.headerTitle}>{i18n.t('profile')}</Text>
                     <SettingsButton onPress={() => navigation.navigate('SettingsPage')} />
                 </View>
 
@@ -116,18 +148,26 @@ const ProfilePage = () => {
                     <Image source={{ uri: client.idImageUrl || 'https://via.placeholder.com/50' }} style={styles.profileImage} />
                     <Text style={styles.nameText}>{client.firstName} {client.lastName}</Text>
 
+                    {/* Added email and address directly under the name */}
+                    <Text style={smallTransparentText}>{client.email}</Text>
                     {/*<View style={styles.ratingContainer}>*/}
                     {/*    {renderStars(professional.totalRating || 0)}*/}
                     {/*    <Text style={styles.reviewCountText}> ({professional.totalRating} )</Text>*/}
                     {/*</View>*/}
                 </View>
 
-                <View style={styles.descriptionContainer}>
-                    <Text style={styles.sectionTitle}>Description</Text>
-                    <Text style={styles.descriptionText}>
-                        {client.description || i18n.t('no_description_provided')}
-                    </Text>
+                <View style={{ marginTop: 30, marginBottom: 5 }}>
+                    <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'left' }}>{i18n.t('street')}</Text>
                 </View>
+                <Text style={smallTransparentText}>{client.street}, {client.provinceOrState}, {client.country}, {client.postalCode}</Text>
+
+
+                {/*<View style={styles.descriptionContainer}>*/}
+                {/*    <Text style={styles.sectionTitle}>Description</Text>*/}
+                {/*    <Text style={styles.descriptionText}>*/}
+                {/*        {client.description || i18n.t('no_description_provided')}*/}
+                {/*    </Text>*/}
+                {/*</View>*/}
 
                 {/*<View style={styles.reviewsContainer}>*/}
                 {/*    <View style={{ flexDirection: 'row', alignItems: 'center' }}>*/}
@@ -176,52 +216,32 @@ const ProfilePage = () => {
                 {/*    )}*/}
                 {/*</View>*/}
 
-
-                <View style={styles.emailContainer}>
-                    <Text style={styles.sectionTitle}>{i18n.t('email')}</Text>
-                    <Text style={styles.emailText}>{client.email}</Text>
-                </View>
-
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>{i18n.t('payment_method')}</Text>
-                    <View style={styles.inputBox}>
-                        <Text>💳 {i18n.t('visa_ending')} 1234</Text>
-                        <Text>Expiry 06/2024</Text>
-                    </View>
-                </View>
-
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>{i18n.t('language')}</Text>
-                    <View>
-                        <DropDownPicker
-                            open={open}
-                            value={value}
-                            items={items}
-                            setOpen={setOpen}
-                            setValue={setValue}
-                            setItems={setItems}
-                            placeholder={locale === 'en' ? 'English' : 'Français'}
-                            style={{
-                                backgroundColor: '#E7E7E7',
-                                borderColor: '#ddd',
-                            }}
-                            textStyle={{ fontSize: 13, fontWeight: 'bold' }}
-                            dropDownContainerStyle={{
-                                backgroundColor: '#E7E7E7',
-                                borderColor: '#ddd',
-                                zIndex: 1000
-                            }}
-                            listMode="SCROLLVIEW"
-                            nestedScrollEnabled={true}
-                        />
-                    </View>
-                </View>
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>{i18n.t('street_address')}</Text>
-                    <View style={styles.inputBox}>
-                        <Text>{client.street}, {client.provinceOrState}, {client.country}, {client.postalCode}</Text>
-                    </View>
-                </View>
+                {/*<View style={styles.sectionContainer}>*/}
+                {/*    <Text style={styles.sectionTitle}>{i18n.t('language')}</Text>*/}
+                {/*    <View>*/}
+                {/*        <DropDownPicker*/}
+                {/*            open={open}*/}
+                {/*            value={value}*/}
+                {/*            items={items}*/}
+                {/*            setOpen={setOpen}*/}
+                {/*            setValue={setValue}*/}
+                {/*            setItems={setItems}*/}
+                {/*            placeholder={locale === 'en' ? 'English' : 'Français'}*/}
+                {/*            style={{*/}
+                {/*                backgroundColor: '#E7E7E7',*/}
+                {/*                borderColor: '#ddd',*/}
+                {/*            }}*/}
+                {/*            textStyle={{ fontSize: 13, fontWeight: 'bold' }}*/}
+                {/*            dropDownContainerStyle={{*/}
+                {/*                backgroundColor: '#E7E7E7',*/}
+                {/*                borderColor: '#ddd',*/}
+                {/*                zIndex: 1000*/}
+                {/*            }}*/}
+                {/*            listMode="SCROLLVIEW"*/}
+                {/*            nestedScrollEnabled={true}*/}
+                {/*        />*/}
+                {/*    </View>*/}
+                {/*</View>*/}
             </View>
         </ScrollView>
     );

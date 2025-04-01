@@ -6,30 +6,25 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFF',
     },
-
-    /* Header */
-    customHeader: {
-        width: '100%',
-        height: 70,
-        flexDirection: 'row',
+    headerContainer: {
+        position: 'relative',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        backgroundColor: '#ffffff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
+        justifyContent: 'center',
+        paddingVertical: 20,
+        //paddingBottom: 20,
+        backgroundColor: '#fff',
+        // borderBottomWidth: 1,
+        // borderBottomColor: '#e0e0e0',
     },
-
     headerTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
-        color: '#333',
-        textAlign: 'center',
-        flex: 1,
+        color: 'black',
     },
     backButton: {
-        marginRight: 8,
-        padding: 4,
+        position: 'absolute',
+        left: 16,
+        top:20,
     },
 
     /* Requests Section */

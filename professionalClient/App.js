@@ -110,7 +110,7 @@ export default function App() {
                                             component={ProfilePage}
                                             options={{ headerShown: false }}  // This hides the default navigation header
                                         />
-                                        <Stack.Screen name="ContractOffer" component={ContractOffer} />
+                                        <Stack.Screen name="ContractOffer" component={ContractOffer} options={{ headerShown: false }} />
                                         <Stack.Screen name="FilterIssue" component={FilterIssuePage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="MyJobs" component={MyJobsPage} />
                                         <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
@@ -141,7 +141,7 @@ export default function App() {
                                         {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                     </Stack.Screen>
                                     <Stack.Screen name="SignUpPage" component={SignUpPage} options={{ headerShown: false }}/>
-                                    <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                    <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} options={{ headerShown: false }} />
                                     <Stack.Screen name="EnterPin" component={EnterPin} />
                                     <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
                                 </>

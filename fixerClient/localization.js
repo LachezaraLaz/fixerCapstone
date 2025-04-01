@@ -181,13 +181,21 @@ const en = {
     no_offers_message:"No offers available for your jobs.",
     signin_missing_field_error: "Both fields are required",
     signin_wrong_input: "Wrong email or password",
-
     forgot_password_missing_field: "The email field is required.",
     forgot_password_success: "Please check your email for a PIN to reset your password",
     forgot_password_failed: "Failed to send reset PIN",
     forgot_password_no_account: "Could not find your account",
-
-
+    signup_form_errors: {
+        check_email_password: "Please enter a valid email and matching passwords",
+        all_fields_required: "All fields are required",
+        valid_email:"Please enter a valid email address",
+        password_criteria: "Password does not meet the required criteria",
+        password_match: "Passwords do not match",
+        capital_letter: "First name and last name must start with a capital letter.",
+        address_not_valid: "Please enter a valid address",
+        user_already_exists: "User already exists",
+    },
+    signup_successful: "Account created successfully. An email was sent to verify your email."
 }
 
 const fr = {
@@ -373,12 +381,21 @@ const fr = {
     no_offers_message: "Aucune offre disponible pour vos tâches",
     signin_missing_field_error: "Les deux entrées sont requises.",
     signin_wrong_input: "E-mail ou mot de passe incorrect.",
-
     forgot_password_missing_field :"Veuillez spécifier votre adresse e-mail",
     forgot_password_success : "Veuillez vérifier votre e-mail pour obtenir un code PIN afin de réinitialiser votre mot de passe.",
     forgot_password_failed : "Nous avons rencontré un problème lors de l'envoi du code PIN de réinitialisation..",
     forgot_password_no_account : "Nous n'avons pas trouvé votre compte.",
-
+    signup_form_errors: {
+        check_email_password: "Veuillez entrer un courriel valide et des mots de passe correspondants",
+        all_fields_required: "Toutes les informations sont obligatoires",
+        valid_email: "Veuillez entrer une adresse courriel valide",
+        password_criteria: "Le mot de passe ne respecte pas les critères requis",
+        password_match: "Les mots de passe ne correspondent pas",
+        capital_letter: "Le prénom et le nom doivent commencer par une majuscule.",
+        address_not_valid: "Veuillez entrer une adresse valide",
+        user_already_exists: "L'utilisateur existe déjà",
+    },
+    signup_successful: "Compte créé avec succès. Un courriel a été envoyé pour vérifier votre adresse."
 }
 
 export {en, fr}

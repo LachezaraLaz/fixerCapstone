@@ -7,25 +7,22 @@ import {
     ActivityIndicator,
     Alert,
     StyleSheet,
-    Image
+    Image,
+    SafeAreaView
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import NotificationButton from '../../../components/notificationButton';
 import styles from '../../../style/homeScreenStyle';
-
 
 export default function OffersPage() {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [clientEmail, setClientEmail] = useState(null); // Store client email
+    const [clientEmail, setClientEmail] = useState(null);
     const navigation = useNavigation();
 
-    /**
-     * Fetch client profile to get client email.
-     * Uses the same approach as the ProfilePage.
-     */
     const fetchClientEmail = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
@@ -36,9 +33,8 @@ export default function OffersPage() {
 
             const response = await axios.get(
                 `https://fixercapstone-production.up.railway.app/client/profile`,
-                //`http://192.168.0.19:3000/client/profile`,
-                {headers: { Authorization: `Bearer ${token}` }
-            });
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
             if (response.status === 200 && response.data?.email) {
                 setClientEmail(response.data.email);
@@ -51,10 +47,6 @@ export default function OffersPage() {
         }
     };
 
-    /**
-     * Fetch all offers for the currently logged-in client,
-     * based on the fetched clientEmail.
-     */
     const fetchOffers = async (email) => {
         setLoading(true);
         try {
@@ -67,7 +59,6 @@ export default function OffersPage() {
 
             const response = await axios.get(
                 `https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
-                //`http://192.168.0.19:3000/quotes/client/${email}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -84,9 +75,6 @@ export default function OffersPage() {
         }
     };
 
-    /**
-     * Load client email first, then fetch offers using the retrieved email
-     */
     useEffect(() => {
         const loadClientData = async () => {
             await fetchClientEmail();
@@ -94,35 +82,23 @@ export default function OffersPage() {
         loadClientData();
     }, []);
 
-    /**
-     * Fetch offers when clientEmail is set
-     */
     useEffect(() => {
         if (clientEmail) {
             fetchOffers(clientEmail);
         }
     }, [clientEmail]);
 
-    /**
-     * Accept an offer by ID
-     */
     const handleAcceptOffer = async (offerId) => {
         try {
             const token = await AsyncStorage.getItem('token');
-            if (!token) return;
-
             const response = await axios.put(
                 `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
-                //`http://192.168.0.19:3000/quotes/${offerId}`,
                 { status: 'accepted' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-
             if (response.status === 200) {
-                Alert.alert('Offer Accepted', 'You have accepted the offer.');
-                fetchOffers(clientEmail); // Refresh offers
-            } else {
-                Alert.alert('Failed to accept the offer.');
+                Alert.alert('Offer Accepted');
+                fetchOffers(clientEmail);
             }
         } catch (error) {
             console.error('Error accepting offer:', error);
@@ -130,26 +106,17 @@ export default function OffersPage() {
         }
     };
 
-    /**
-     * Reject an offer by ID
-     */
     const handleRejectOffer = async (offerId) => {
         try {
             const token = await AsyncStorage.getItem('token');
-            if (!token) return;
-
             const response = await axios.put(
                 `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
-                //`http://192.168.0.19:3000/quotes/${offerId}`,
                 { status: 'rejected' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-
             if (response.status === 200) {
-                Alert.alert('Offer Rejected', 'You have rejected the offer.');
-                fetchOffers(clientEmail); // Refresh offers
-            } else {
-                Alert.alert('Failed to reject the offer.');
+                Alert.alert('Offer Rejected');
+                fetchOffers(clientEmail);
             }
         } catch (error) {
             console.error('Error rejecting offer:', error);
@@ -160,33 +127,65 @@ export default function OffersPage() {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator testID="loading-indicator" size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#0000ff" />
             </View>
         );
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+            {/* header */}
+            <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                backgroundColor: '#fff',
+            }}>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={{
+                        width: 40,
+                        height: 40,
+                        backgroundColor: '#fff',
+                        borderRadius: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        elevation: 4,
+                    }}
+                >
+                    <Ionicons name="arrow-back" size={20} color="black" />
+                </TouchableOpacity>
+
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Offers</Text>
+
+                <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
+            </View>
+
             <ScrollView style={styles.requestsContainer}>
                 {offers.length > 0 ? (
                     offers.map((offer) => (
-                        <TouchableOpacity key={offer._id} style={styles.requestCard}onPress={() => navigation.navigate('OfferDetails', { offerId: offer._id })}>
-                            {/* Profile Image on the Left */}
+                        <TouchableOpacity
+                            key={offer._id}
+                            style={styles.requestCard}
+                            onPress={() => navigation.navigate('OfferDetails', { offerId: offer._id })}
+                        >
                             <Image
                                 source={{ uri: 'https://via.placeholder.com/60' }}
                                 style={styles.requestUserImage}
                             />
-
-                            {/* Right-side content */}
                             <View style={styles.requestContent}>
-                                {/* Top Row: Name + Star Rating */}
                                 <View style={styles.requestTopRow}>
                                     <Text style={styles.requestUserName}>
                                         {(offer.professionalFirstName || offer.professionalLastName)
                                             ? `${offer.professionalFirstName} ${offer.professionalLastName}`
                                             : offer.professionalEmail}
                                     </Text>
-
                                     <View style={styles.requestRating}>
                                         <Ionicons name="star" size={16} color={(offer.professionalReviewCount ?? 0) > 0 ? "#FFA500" : "grey"} />
                                         <Text style={[styles.ratingText, { color: (offer.professionalReviewCount ?? 0) > 0 ? "#FFA500" : "grey" }]}>
@@ -197,12 +196,10 @@ export default function OffersPage() {
                                     </View>
                                 </View>
 
-                                {/* Price Row (replaces address) */}
                                 <View style={styles.requestAddressRow}>
                                     <Ionicons name="cash-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
                                     <Text style={styles.requestAddress}>Price: ${offer.price}</Text>
                                 </View>
-                                {/* Date */}
                                 <View style={styles.dateRow}>
                                     <Ionicons name="calendar-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
                                     <Text style={styles.date}>
@@ -212,12 +209,10 @@ export default function OffersPage() {
                                     </Text>
                                 </View>
 
-                                {/* Job Title (status) */}
                                 <Text style={styles.requestJob}>
                                     Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
                                 </Text>
 
-                                {/* Accept/Reject Buttons */}
                                 {offer.status === 'pending' && (
                                     <View style={styles.requestButtonsRow}>
                                         <TouchableOpacity style={styles.rejectButton} onPress={() => handleRejectOffer(offer._id)}>
@@ -235,6 +230,6 @@ export default function OffersPage() {
                     <Text style={styles.emptyText}>No offers available for your jobs.</Text>
                 )}
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }

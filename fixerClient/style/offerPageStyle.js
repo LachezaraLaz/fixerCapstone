@@ -7,24 +7,30 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
     },
     headerContainer: {
-        position: 'relative',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+    },
+
+    backButton: {
+        width: 40,
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 20,
-        //paddingBottom: 20,
-        backgroundColor: '#fff',
-        // borderBottomWidth: 1,
-        // borderBottomColor: '#e0e0e0',
     },
+
+    headerCenter: {
+        flex: 1,
+        alignItems: 'center',
+    },
+
     headerTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
         color: 'black',
-    },
-    backButton: {
-        position: 'absolute',
-        left: 16,
-        top:20,
     },
 
     /* Requests Section */

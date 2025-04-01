@@ -159,12 +159,14 @@ export default function OffersPage() {
             {/* header */}
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={28} color="orange"/>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>{i18n.t('offer_page_title')}</Text>
-
+                <View style={styles.headerCenter}>
+                    <Text style={styles.headerTitle}>{i18n.t('offer_page_title')}</Text>
+                </View>
                 <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
             </View>
+
 
             <ScrollView style={styles.requestsContainer}>
                 {offers.length > 0 ? (

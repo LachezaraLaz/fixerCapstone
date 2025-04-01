@@ -17,9 +17,11 @@ const { serverClient } = require('./services/streamClient');
 const reviewRouter = require('./routes/reviewRoute');
 const paymentRoutes = require('./routes/paymentRoute');
 const geocodeRoute = require('./routes/geoCodeRoute');
+const emailReportRouter = require('./routes/sendEmailReportRoute');
 
 const app = express();
 const cors = require('cors');
+app.use(bodyParser.json());
 app.use(cors({
     origin: ['https://fixercapstone-production.up.railway.app'],
 }));
@@ -55,8 +57,8 @@ app.use('/reviews', reviewRouter.reviewRouter);
 app.use('/users', userRouter.userRouter);
 
 app.use('/payment', paymentRoutes.paymentRouter);
+app.use('/send-email-report', emailReportRouter);
 
-app.use(cors()); // duplicate ?
 app.use('/api/geocode', geocodeRoute);
 
 

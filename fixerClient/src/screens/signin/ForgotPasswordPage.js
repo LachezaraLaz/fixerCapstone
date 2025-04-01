@@ -7,6 +7,11 @@ import { I18n } from "i18n-js";
 import LanguageModal from "../../../components/LanguageModal";
 import languageStyle from '../../../style/languageStyle';
 import { LanguageContext } from "../../../context/LanguageContext";
+import {Ionicons} from "@expo/vector-icons";
+import OrangeButton from "../../../components/orangeButton";
+import InputField  from '../../../components/inputField';
+import CustomAlertError from "../../../components/customAlertError";
+import CustomAlertSuccess from "../../../components/customAlertSuccess";
 
 /**
  * @module fixerClient
@@ -20,6 +25,12 @@ export default function ForgotPasswordPage({ navigation }) {
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
 
+    //For custom alerts
+    const [customAlertVisible, setCustomAlertVisible] = useState(false);
+    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
+    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
+
     /**
      * Handles the forgot password process by sending a password reset request to the server.
      * If the email field is empty, it alerts the user that the email field is required.
@@ -32,7 +43,11 @@ export default function ForgotPasswordPage({ navigation }) {
      */
     const handleForgotPassword = async () => {
         if (!email) {
-            Alert.alert('Error', 'Email field is required');
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('forgot_password_missing_field'),
+            });
+            setCustomAlertVisible(true);
             return;
         }
 
@@ -40,14 +55,27 @@ export default function ForgotPasswordPage({ navigation }) {
             const response = await axios.post(`https://fixercapstone-production.up.railway.app/reset/requestPasswordReset`, { email });
 
             if (response.status === 200) {
-                Alert.alert("Success", "Check your email for a PIN to reset your password");
+                setSuccessAlertContent({
+                    title: i18n.t('success'),
+                    message: i18n.t('forgot_password_success'),
+                });
+                setSuccessAlertVisible(true);
                 setIsPinSent(true); // Set the state to indicate the PIN has been sent
             }
-        } catch (error) {
+        } catch
+            (error) {
             if (error.response) {
-                Alert.alert("Error", error.response.data.error || 'Failed to send reset PIN');
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: (error.response.data.error) ? i18n.t('forgot_password_no_account') : i18n.t('forgot_password_failed'),
+                });
+                setCustomAlertVisible(true);
             } else {
-                Alert.alert("Error", `${i18n.t('an_unexpected_error_occurred')}`);
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: i18n.t('an_unexpected_error_occurred'),
+                });
+                setCustomAlertVisible(true);
             }
         }
     };
@@ -63,9 +91,14 @@ export default function ForgotPasswordPage({ navigation }) {
                 onClose={() => setModalVisible(false)}
                 setLocale={setLocale}
             />
+
+            <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={28} color="orange"/>
+            </TouchableOpacity>
+
             <Text style={styles.title}>{i18n.t('forgot_password_no_question_mark')}</Text>
 
-            <TextInput
+            <InputField
                 style={styles.input}
                 placeholder={i18n.t('email')}
                 value={email}
@@ -74,9 +107,7 @@ export default function ForgotPasswordPage({ navigation }) {
                 autoCapitalize="none"
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
-                <Text style={styles.buttonText}>{i18n.t('send_reset_pin')}</Text>
-            </TouchableOpacity>
+            <OrangeButton title={i18n.t('send_reset_pin')} onPress={handleForgotPassword} variant="normal" />
 
             {isPinSent && (
                 <TouchableOpacity onPress={() => navigation.navigate('EnterPin', { email })}>
@@ -87,6 +118,23 @@ export default function ForgotPasswordPage({ navigation }) {
             <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
                 <Text style={styles.signInText}>{i18n.t('sign_in')}</Text>
             </TouchableOpacity>
+
+            <CustomAlertError
+                visible={customAlertVisible}
+                title={customAlertContent.title}
+                message={customAlertContent.message}
+                onClose={() => setCustomAlertVisible(false)}
+            />
+
+            <CustomAlertSuccess
+                visible={successAlertVisible}
+                title={successAlertContent.title}
+                message={successAlertContent.message}
+                onClose={() => {
+                    setSuccessAlertVisible(false);
+                    navigation.navigate('EnterPin', { email });
+                }}
+            />
         </View>
     );
 }
@@ -97,6 +145,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 20,
         backgroundColor: '#fff',
+    },
+    backButton: {
+        position: 'absolute',
+        top: 40,
+        left: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        zIndex: 1,
     },
     title: {
         fontSize: 32,

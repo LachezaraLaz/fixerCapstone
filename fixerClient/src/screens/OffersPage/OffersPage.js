@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
     View,
     Text,
@@ -15,7 +15,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import NotificationButton from '../../../components/notificationButton';
-import styles from '../../../style/homeScreenStyle';
+//import styles from '../../../style/homeScreenStyle';
+
+import styles from '../../../style/offerPageStyle';
+
+import { LanguageContext } from "../../../context/LanguageContext";
+import { I18n } from "i18n-js";
+import { en, fr } from "../../../localization";
 
 export default function OffersPage() {
     const [offers, setOffers] = useState([]);
@@ -23,6 +29,16 @@ export default function OffersPage() {
     const [clientEmail, setClientEmail] = useState(null);
     const navigation = useNavigation();
 
+
+    //For translation
+    const { locale } = useContext(LanguageContext);
+    const i18n = new I18n({ en, fr });
+    i18n.locale = locale;
+
+    /**
+     * Fetch client profile to get client email.
+     * Uses the same approach as the ProfilePage.
+     */
     const fetchClientEmail = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
@@ -43,7 +59,7 @@ export default function OffersPage() {
             }
         } catch (error) {
             console.error('Error fetching client email:', error.response?.data || error.message);
-            Alert.alert('Error fetching profile. Please try again later.');
+            Alert.alert(i18n.t('offer_profile_error'));
         }
     };
 
@@ -69,7 +85,7 @@ export default function OffersPage() {
             }
         } catch (error) {
             console.error('Error fetching offers:', error.response?.data || error.message);
-            Alert.alert('Failed to fetch offers. Please try again later.');
+            Alert.alert(i18n.t('offer_fetch_error'));
         } finally {
             setLoading(false);
         }
@@ -97,12 +113,15 @@ export default function OffersPage() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             if (response.status === 200) {
-                Alert.alert('Offer Accepted');
+
+                Alert.alert(i18n.t('offer_accepted_title'), i18n.t('offer_accepted_message'));
                 fetchOffers(clientEmail);
+            } else {
+                Alert.alert('Failed to accept the offer.');
             }
         } catch (error) {
             console.error('Error accepting offer:', error);
-            Alert.alert('An error occurred while accepting the offer.');
+            Alert.alert(i18n.t('offer_accepted_error'));
         }
     };
 
@@ -115,12 +134,15 @@ export default function OffersPage() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             if (response.status === 200) {
-                Alert.alert('Offer Rejected');
+
+                Alert.alert(i18n.t('offer_rejected_title'), i18n.t('offer_rejected_message'));
                 fetchOffers(clientEmail);
+            } else {
+                Alert.alert('Failed to reject the offer.');
             }
         } catch (error) {
             console.error('Error rejecting offer:', error);
-            Alert.alert('An error occurred while rejecting the offer.');
+            Alert.alert(i18n.t('offer_rejected_error'));
         }
     };
 
@@ -135,34 +157,11 @@ export default function OffersPage() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
             {/* header */}
-            <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                backgroundColor: '#fff',
-            }}>
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={{
-                        width: 40,
-                        height: 40,
-                        backgroundColor: '#fff',
-                        borderRadius: 20,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 4,
-                        elevation: 4,
-                    }}
-                >
-                    <Ionicons name="arrow-back" size={20} color="black" />
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange"/>
                 </TouchableOpacity>
-
-                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Offers</Text>
+                <Text style={styles.headerTitle}>{i18n.t('offer_page_title')}</Text>
 
                 <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
             </View>
@@ -198,28 +197,35 @@ export default function OffersPage() {
 
                                 <View style={styles.requestAddressRow}>
                                     <Ionicons name="cash-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
-                                    <Text style={styles.requestAddress}>Price: ${offer.price}</Text>
+                                    <Text style={styles.requestAddress}>{i18n.t('offer_price')}: ${offer.price}</Text>
                                 </View>
                                 <View style={styles.dateRow}>
                                     <Ionicons name="calendar-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
                                     <Text style={styles.date}>
                                         {offer.createdAt && !isNaN(new Date(offer.createdAt))
                                             ? new Date(offer.createdAt).toLocaleDateString()
-                                            : 'Invalid Date'}
+                                            : i18n.t('offer_date_invalid')}
                                     </Text>
                                 </View>
 
                                 <Text style={styles.requestJob}>
-                                    Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
+                                    {i18n.t('status')}:  {
+                                    {
+                                        accepted: i18n.t('accepted'),
+                                        rejected: i18n.t('rejected'),
+                                        pending: i18n.t('status_client.pending'),
+                                        done: i18n.t('status_client.completed')
+                                    }[offer.status] || offer.status
+                                }
                                 </Text>
 
                                 {offer.status === 'pending' && (
                                     <View style={styles.requestButtonsRow}>
                                         <TouchableOpacity style={styles.rejectButton} onPress={() => handleRejectOffer(offer._id)}>
-                                            <Text style={styles.rejectText}>Reject</Text>
+                                            <Text style={styles.rejectText}>{i18n.t('reject')}</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={styles.acceptButton} onPress={() => handleAcceptOffer(offer._id)}>
-                                            <Text style={styles.acceptText}>Accept</Text>
+                                            <Text style={styles.acceptText}>{i18n.t('accept')}</Text>
                                         </TouchableOpacity>
                                     </View>
                                 )}
@@ -227,7 +233,7 @@ export default function OffersPage() {
                         </TouchableOpacity>
                     ))
                 ) : (
-                    <Text style={styles.emptyText}>No offers available for your jobs.</Text>
+                    <Text>{i18n.t('no_offers_message')}</Text>
                 )}
             </ScrollView>
         </SafeAreaView>

@@ -3,9 +3,12 @@ import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Platform, Ke
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
+import {Ionicons} from "@expo/vector-icons";
+
 // import { IPAddress } from '../../../ipAddress';
 import CustomAlertSuccess from '../../../components/customAlertSuccess';
 import CustomAlertError from '../../../components/customAlertError';
+import InputField from "../../../components/inputField";
 
 /**
  * @module professionalClient
@@ -62,10 +65,11 @@ export default function ContractOffer({ route, navigation }) {
             );
 
             // Show an error alert to the user
-            Alert.alert(
-                'Error',
-                error.response?.data?.message || 'Unable to fetch user address.'
-            );
+            setErrorAlertContent({
+                title: "Error",
+                message: error.response?.data?.message || "Unable to fetch user address.",
+            });
+            setCustomAlertVisible(true);
         }
     };
 
@@ -109,7 +113,7 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
@@ -126,7 +130,7 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
@@ -143,13 +147,14 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
 
         // Validate Price
-        if (!price || isNaN(parsedPrice) || parsedPrice <= 0 || parsedPrice > 100000) {
+        const isValidNumber = /^\d+$/.test(price);
+        if (!price || !isValidNumber|| isNaN(parsedPrice) || parsedPrice <= 0 || parsedPrice > 100000) {
             setPriceError(true);
             setErrorAlertContent({
                 title: 'Invalid Price',
@@ -160,7 +165,7 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
@@ -176,7 +181,7 @@ export default function ContractOffer({ route, navigation }) {
                         onPress: () => setErrorAlertVisible(false)
                     }
                 ]
-            });            
+            });
             setErrorAlertVisible(true);
             return;
         }
@@ -193,7 +198,7 @@ export default function ContractOffer({ route, navigation }) {
                             onPress: () => setErrorAlertVisible(false)
                         }
                     ]
-                });                
+                });
                 setErrorAlertVisible(true);
                 return;
             }
@@ -201,7 +206,17 @@ export default function ContractOffer({ route, navigation }) {
 
             if (!selectedIssue || !selectedIssue.userEmail) {
                 console.log('clientEmail is null or undefined');
-                Alert.alert('Error', 'Unable to retrieve client email from the selected issue.');
+                setErrorAlertContent({
+                    title: 'Error',
+                    message: 'Unable to retrieve client email from the selected issue.',
+                    buttons: [
+                        {
+                            text: 'OK',
+                            onPress: () => setErrorAlertVisible(false)
+                        }
+                    ]
+                });
+                setErrorAlertVisible(true);
                 return;
             }
 
@@ -243,7 +258,7 @@ export default function ContractOffer({ route, navigation }) {
                             onPress: () => setErrorAlertVisible(false)
                         }
                     ]
-                });                
+                });
                 setErrorAlertVisible(true);
             }
         } catch (error) {
@@ -258,7 +273,7 @@ export default function ContractOffer({ route, navigation }) {
                         }
                     ]
                 });
-                
+
                 setErrorAlertVisible(true);
             } else {
                 console.error('Error submitting quote:', error);
@@ -272,7 +287,7 @@ export default function ContractOffer({ route, navigation }) {
                         }
                     ]
                 });
-                
+
                 setErrorAlertVisible(true);
             }
         }
@@ -282,17 +297,31 @@ export default function ContractOffer({ route, navigation }) {
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         >
-            <ScrollView
-                contentContainerStyle={styles.container}
-                keyboardShouldPersistTaps="handled"
-            >
+            <View style={{ flex: 1 }}>
+                <View style={styles.headerContainer}>
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        testID="back-button"
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Ionicons name="arrow-back" size={28} color='#ff8c00'/>
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Submit a Quote</Text>
+                </View>
+
+                <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
+                            contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+                            keyboardShouldPersistTaps="handled"
+                >
+
                 <View style={styles.containerTitle}>
                     <Text style={styles.title}>{issue.title}</Text>
                 </View>
 
-                <Text style={styles.label}>Job Description</Text>
-                <TextInput
+                <Text style={styles.label}>Job Description*</Text>
+                <InputField
                     style={[
                         styles.inputContainer,
                         { height: 150, textAlignVertical: 'top' },
@@ -307,8 +336,8 @@ export default function ContractOffer({ route, navigation }) {
                     multiline
                 />
 
-                <Text style={styles.label}>Tools-Materials</Text>
-                <TextInput
+                <Text style={styles.label}>Tools-Materials*</Text>
+                <InputField
                     style={[
                         styles.inputContainer,
                         { height: 150, textAlignVertical: 'top' },
@@ -323,8 +352,8 @@ export default function ContractOffer({ route, navigation }) {
                     multiline
                 />
 
-                <Text style={styles.label}>Terms and Conditions</Text>
-                <TextInput
+                <Text style={styles.label}>Terms and Conditions*</Text>
+                <InputField
                     style={[
                         styles.inputContainer,
                         { height: 150, textAlignVertical: 'top' },
@@ -339,8 +368,8 @@ export default function ContractOffer({ route, navigation }) {
                     multiline
                 />
 
-                <Text style={styles.labelPrice}>Pricing $ (Hourly Rate)</Text>
-                <TextInput
+                <Text style={styles.labelPrice}>Pricing $ (Hourly Rate)*</Text>
+                <InputField
                     placeholder="50"
                     value={price}
                     keyboardType="numeric"
@@ -379,7 +408,7 @@ export default function ContractOffer({ route, navigation }) {
                 buttons={errorAlertContent.buttons}
                 onClose={() => setErrorAlertVisible(false)}
             />
-
+            </View>
         </KeyboardAvoidingView>
     );
 }

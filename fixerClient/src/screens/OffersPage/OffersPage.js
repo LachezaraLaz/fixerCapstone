@@ -175,8 +175,8 @@ export default function OffersPage() {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor:"#ffffff" }}>
-            <View style={styles.customHeader}>
+        <SafeAreaView style={{ flex: 1, backgroundColor:"#fff" }}>
+            <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="orange"/>
                 </TouchableOpacity>

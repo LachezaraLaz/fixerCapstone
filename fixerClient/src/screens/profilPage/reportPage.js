@@ -14,6 +14,7 @@ import {LanguageContext} from "../../../context/LanguageContext";
 import {I18n} from "i18n-js";
 import {en, fr} from "../../../localization";
 import InputField from '../../../components/inputField';
+import {IPAddress} from "../../../ipAddress";
 
 const ReportPage = ({navigation}) => {
     // States for the form fields
@@ -119,7 +120,7 @@ const ReportPage = ({navigation}) => {
             const userEmail = decodedToken.email;
 
             const response = await axios.post(
-                'https://fixercapstone-production.up.railway.app/send-email-report',
+                `https://fixercapstone-production.up.railway.app/send-email-report`,
                 formData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -185,7 +186,7 @@ const ReportPage = ({navigation}) => {
 
             {/* Date field */}
             <View style={reportPageStyles.inputContainer}>
-                <Text style={reportPageStyles.label}>Date</Text>
+                <Text style={reportPageStyles.label}>Date of Report</Text>
                 <TextInput
                     style={reportPageStyles.input}
                     value={date}

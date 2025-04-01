@@ -58,12 +58,17 @@ const authenticateJWT = (req, res, next) => {
  * @throws {Error} - If an error occurs while fetching the jobs, a 500 status code and an error message are sent.
  */
 const getMyProfessionalJobs = async (req, res) => {
-    const professionalEmail = req.user.email; // Retrieve professional's email from JWT
+    const professionalEmail = req.user.email;
 
     try {
-        const quotes = await Quotes.find({ professionalEmail }).populate('issueId')
-        let amountEarned = 0;
+        // Find quotes and only populate non-deleted jobs
+        const quotes = await Quotes.find({ professionalEmail })
+            .populate({
+                path: 'issueId',
+                match: { _id: { $exists: true } } // Only populate if job exists
+            });
 
+        let amountEarned = 0;
         const jobsByStatus = {
             all: [],
             done: [],
@@ -72,16 +77,22 @@ const getMyProfessionalJobs = async (req, res) => {
             amountEarned: 0,
         };
 
-        quotes.forEach((quote) => {
+        // Filter out quotes with null issueId (deleted jobs)
+        const validQuotes = quotes.filter(quote => quote.issueId !== null);
+
+        validQuotes.forEach((quote) => {
+            // Additional null check as safety net
+            if (!quote.issueId) return;
+
             const jobDetails = {
-                id: quote.issueId?._id,
-                title: quote.issueId?.title || 'No title',
-                description: quote.issueId?.description || 'No description',
-                professionalNeeded: quote.issueId?.professionalNeeded || "No Professional",
+                id: quote.issueId._id,
+                title: quote.issueId.title || 'No title',
+                description: quote.issueId.description || 'No description',
+                professionalNeeded: quote.issueId.professionalNeeded || "No Professional",
                 price: quote.price,
                 status: quote.status,
-                rating: quote.issueId?.rating || 'N/A',
-                imageUrl: quote.issueId?.imageUrl || 'https://via.placeholder.com/100',
+                rating: quote.issueId.rating || 'N/A',
+                imageUrl: quote.issueId.imageUrl || 'https://via.placeholder.com/100',
             };
 
             if (quote.status.toLowerCase() === 'accepted' && quote.issueId.status.toLowerCase() === 'in progress') {
@@ -96,11 +107,15 @@ const getMyProfessionalJobs = async (req, res) => {
                 amountEarned += quote.price;
             }
         });
+
         jobsByStatus.amountEarned = amountEarned;
         res.status(200).json(jobsByStatus);
     } catch (error) {
         console.error('Error fetching professional jobs:', error);
-        res.status(500).json({ error: 'An error occurred while fetching jobs.' });
+        res.status(500).json({
+            error: 'An error occurred while fetching jobs.',
+            details: error.message
+        });
     }
 };
 

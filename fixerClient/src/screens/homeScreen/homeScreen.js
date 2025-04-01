@@ -27,6 +27,7 @@ import {en, fr} from "../../../localization";
  * @module fixerClient
  */
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
+    const [searchQuery, setSearchQuery] = useState('');
     const { chatClient } = useChatContext();
     const [firstName, setFirstName] = useState('');
     const [miniOffers, setMiniOffers] = useState([]);
@@ -113,6 +114,11 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             Alert.alert(`${i18n.t('error')}`, `${i18n.t('an_error_occurred_while_logging_out')}`);
         }
     };
+    const filteredOffers = miniOffers.filter((offer) => {
+        const name = `${offer.professionalFirstName ?? ''} ${offer.professionalLastName ?? ''}`.toLowerCase();
+        const email = offer.professionalEmail?.toLowerCase() ?? '';
+        return name.includes(searchQuery.toLowerCase()) || email.includes(searchQuery.toLowerCase());
+    });
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -151,6 +157,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         onSearch={() => console.log("Search button pressed")}
                         onFilter={() => console.log("Filter button pressed")}
                         filterButtonTestID="filter-button"
+                        onSearchChange={setSearchQuery}
                     />
                 </View>
 
@@ -221,7 +228,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 ) : (
                     <View style={{ height: 330 }}>
                         <ScrollView style={styles.requestsContainer}>
-                            {miniOffers.length ? miniOffers.map((offer) => {
+                            {filteredOffers.length ? filteredOffers.map((offer) => {
                                 // If the pro has no reviews, we'll show grey star & "0" rating
                                 const hasReviews = offer.professionalReviewCount > 0;
                                 const starColor = hasReviews ? "#FFA500" : "grey";

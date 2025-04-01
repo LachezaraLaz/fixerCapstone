@@ -118,8 +118,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
             />
 
             <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={28} color="#1E90FF" />
-                <Text style={styles.backText}>{i18n.t('back')}</Text>
+                <Ionicons name="arrow-back" size={28} color="orange"/>
             </TouchableOpacity>
 
             <Text style={styles.title} testID='signInTitle'>{i18n.t('sign_in')}</Text>
@@ -150,12 +149,14 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
             <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordPage')}>
                 <Text style={styles.forgotPasswordText}>{i18n.t('forgot_password')}</Text>
             </TouchableOpacity>
+
             <CustomAlertError
                 visible={customAlertVisible}
                 title={customAlertContent.title}
                 message={customAlertContent.message}
                 onClose={() => setCustomAlertVisible(false)}
             />
+
         </View>
     );
 }

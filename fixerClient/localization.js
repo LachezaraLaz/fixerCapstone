@@ -182,6 +182,12 @@ const en = {
     signin_missing_field_error: "Both fields are required",
     signin_wrong_input: "Wrong email or password",
 
+    forgot_password_missing_field: "The email field is required.",
+    forgot_password_success: "Please check your email for a PIN to reset your password",
+    forgot_password_failed: "Failed to send reset PIN",
+    forgot_password_no_account: "Could not find your account",
+
+
 }
 
 const fr = {
@@ -367,6 +373,11 @@ const fr = {
     no_offers_message: "Aucune offre disponible pour vos tâches",
     signin_missing_field_error: "Les deux entrées sont requises.",
     signin_wrong_input: "E-mail ou mot de passe incorrect.",
+
+    forgot_password_missing_field :"Veuillez spécifier votre adresse e-mail",
+    forgot_password_success : "Veuillez vérifier votre e-mail pour obtenir un code PIN afin de réinitialiser votre mot de passe.",
+    forgot_password_failed : "Nous avons rencontré un problème lors de l'envoi du code PIN de réinitialisation..",
+    forgot_password_no_account : "Nous n'avons pas trouvé votre compte.",
 
 }
 

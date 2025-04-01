@@ -122,6 +122,7 @@ const en = {
     has_received_a_new_quote: "has received a new quote.",
     has_been_accepted: "has been accepted. The job is now in progress.",
     has_been_rejected: "has been rejected.",
+    no_requests_available: "No requests available.",
 }
 
 const fr = {
@@ -248,6 +249,7 @@ const fr = {
     has_been_accepted: "a été acceptée. La tâche est maintenant en cours.",
     your_quote_for_the_job_rejected: "🔴 Désolé! Votre soumission pour la tâche",
     has_been_rejected: "à été refusée.",
+    no_requests_available: "Aucune demande disponible.",
 }
 
 export {en, fr}

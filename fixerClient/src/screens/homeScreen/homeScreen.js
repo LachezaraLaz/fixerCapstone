@@ -60,39 +60,79 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         fetchUserData();
     }, []);
 
+    const refreshOffers = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
+            const profile = await axios.get(
+                `https://fixercapstone-production.up.railway.app/client/profile`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            const email = profile.data.email;
+
+            const resp = await axios.get(
+                `https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setMiniOffers(Array.isArray(resp.data) ? resp.data : []);
+        } catch (e) {
+            console.error('Error refreshing offers:', e);
+        } finally {
+            setLoadingOffers(false);
+        }
+    };
+
     useEffect(() => {
-        const loadOffers = async () => {
-            try {
-                const token = await AsyncStorage.getItem('token');
-                if (!token) return;
-
-                // fetch client email
-                const profile = await axios.get(
-                    `https://fixercapstone-production.up.railway.app/client/profile`,
-                    //`http://192.168.0.19:3000/client/profile`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
-                const email = profile.data.email;
-
-                // fetch all offers for client
-                const resp = await axios.get(
-                    `https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
-                    //`http://192.168.0.19:3000/quotes/client/${email}`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
-                //console.log('API Response:', resp.data);
-
-                setMiniOffers(Array.isArray(resp.data) ? resp.data : []);
-            } catch (e) {
-                console.error('Error loading mini-offers:', e);
-            } finally {
-                setLoadingOffers(false);
-            }
-        };
-        loadOffers();
+        refreshOffers();
     }, []);
+
+    const handleAcceptOffer = async (offerId) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
+            const response = await axios.put(
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                { status: 'accepted' },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 200) {
+                Alert.alert(i18n.t('success'), i18n.t('offer_accepted'));
+                refreshOffers();
+            } else {
+                Alert.alert(i18n.t('error'), i18n.t('failed_to_accept_offer'));
+            }
+        } catch (error) {
+            console.error('Error accepting offer:', error);
+            Alert.alert(i18n.t('error'), i18n.t('error_accepting_offer'));
+        }
+    };
+
+    const handleRejectOffer = async (offerId) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
+            const response = await axios.put(
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                { status: 'rejected' },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 200) {
+                Alert.alert(i18n.t('success'), i18n.t('offer_rejected'));
+                refreshOffers();
+            } else {
+                Alert.alert(i18n.t('error'), i18n.t('failed_to_reject_offer'));
+            }
+        } catch (error) {
+            console.error('Error rejecting offer:', error);
+            Alert.alert(i18n.t('error'), i18n.t('error_rejecting_offer'));
+        }
+    };
 
     /**
      * Handles the user logout process.
@@ -285,10 +325,16 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                                             {/* Accept/Reject if pending */}
                                             {offer.status === 'pending' && (
                                                 <View style={styles.requestButtonsRow}>
-                                                    <TouchableOpacity style={styles.rejectButton}>
+                                                    <TouchableOpacity
+                                                        style={styles.rejectButton}
+                                                        onPress={() => handleRejectOffer(offer._id)}
+                                                    >
                                                         <Text style={styles.rejectText}>{i18n.t('reject')}</Text>
                                                     </TouchableOpacity>
-                                                    <TouchableOpacity style={styles.acceptButton}>
+                                                    <TouchableOpacity
+                                                        style={styles.acceptButton}
+                                                        onPress={() => handleAcceptOffer(offer._id)}
+                                                    >
                                                         <Text style={styles.acceptText}>{i18n.t('accept')}</Text>
                                                     </TouchableOpacity>
                                                 </View>

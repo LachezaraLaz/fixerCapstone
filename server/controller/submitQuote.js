@@ -5,8 +5,6 @@ const Notification = require('../model/notificationModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { Jobs } = require('../model/createIssueModel');
 const { logger } = require('../utils/logger');
-const { initChat } = require('./initChat');
-
 
 /**
  * @module server/controller
@@ -250,10 +248,6 @@ const updateQuoteStatus = async (req, res) => {
             });
             await notification.save();
             logger.info("the accepted quote received a notification");
-
-            // initChat
-            const  clientId  = req.user.id;
-            await initChat(issue.title, clientId, professional._id.toString());
 
             // Notify other professionals whose quotes were rejected
             const otherProfessionals = await Quotes.find({

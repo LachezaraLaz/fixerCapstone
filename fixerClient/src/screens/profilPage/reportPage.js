@@ -13,6 +13,7 @@ import reportPageStyles from "../../../style/profilePage/reportPageStyle";
 import {LanguageContext} from "../../../context/LanguageContext";
 import {I18n} from "i18n-js";
 import {en, fr} from "../../../localization";
+import InputField from '../../../components/inputField';
 
 const ReportPage = ({navigation}) => {
     // States for the form fields
@@ -147,10 +148,24 @@ const ReportPage = ({navigation}) => {
     
     return (
         <ScrollView style={reportPageStyles.container}>
-            <Text style={reportPageStyles.label}>Report a Professional</Text>
+
+
+            <View style={reportPageStyles.headerContainer}>
+                 <TouchableOpacity
+                     style={reportPageStyles.backButton}
+                     testID="back-button"
+                     onPress={() => navigation.goBack()}
+                 >
+                     <Ionicons name="arrow-back" size={28} color='#ff8c00' />
+                 </TouchableOpacity>
+
+                 <Text style={reportPageStyles.headerTitle}>Report a Professional</Text>
+             </View>
+
+            {/* <Text style={reportPageStyles.label}>Report a Professional</Text> */}
 
             {/* Description field */}
-            <TextInput
+            {/* <TextInput
                 style={[reportPageStyles.input, reportPageStyles.descriptionInput]} // Custom style for description field
                 placeholder="Describe the issue..."
                 placeholderTextColor="#bbb"
@@ -159,7 +174,14 @@ const ReportPage = ({navigation}) => {
                 multiline
                 numberOfLines={6}
                 textAlignVertical="top"  // Ensures the text starts at the top
-            />
+            /> */}
+
+            <InputField
+                placeholder="Describe the issue..."
+                value={description}
+                onChangeText={setDescription}
+                multiline
+            />   
 
             {/* Date field */}
             <View style={reportPageStyles.inputContainer}>

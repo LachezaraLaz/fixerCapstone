@@ -47,6 +47,12 @@ export default function AdminDashboard() {
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [passwordChangeStatus, setPasswordChangeStatus] = useState(null);
 
+    // For popup when clicking on an entry in the table
+    const [entryType, setEntryType] = useState(null); // 'client', 'professional', 'job', 'quote'
+    const [selectedEntry, setSelectedEntry] = useState(null);
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const [hoveredRowId, setHoveredRowId] = useState(null);
+
     // Function to truncate ID to first 4 characters
     const truncateId = (id) => {
         if (!id) return 'N/A';
@@ -445,7 +451,20 @@ export default function AdminDashboard() {
                                     </tr>
                                 ) : (
                                     filteredClients.map((client) => (
-                                        <tr key={client._id}>
+                                        <tr key={client._id}
+                                            onClick={() => {
+                                                setSelectedEntry(client);
+                                                setEntryType("client");
+                                                setShowDetailsModal(true);
+                                            }}
+                                            onMouseEnter={() => setHoveredRowId(client._id)}
+                                            onMouseLeave={() => setHoveredRowId(null)}
+                                            style={{
+                                                cursor: "pointer",
+                                                backgroundColor: hoveredRowId === client._id ? "#f0f0f0" : "transparent",
+                                                transition: "background-color 0.2s"
+                                            }}
+                                        >
                                             <td style={styles.tableCell}>{truncateId(client._id)}...</td>
                                             <td style={styles.tableCell}>{client.firstName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{client.lastName || 'N/A'}</td>
@@ -545,7 +564,20 @@ export default function AdminDashboard() {
                                     </tr>
                                 ) : (
                                     filteredProfessionals.map((prof) => (
-                                        <tr key={prof._id}>
+                                        <tr key={prof._id}
+                                            onClick={() => {
+                                                setSelectedEntry(prof);
+                                                setEntryType("professional");
+                                                setShowDetailsModal(true);
+                                            }}
+                                            onMouseEnter={() => setHoveredRowId(prof._id)}
+                                            onMouseLeave={() => setHoveredRowId(null)}
+                                            style={{
+                                                cursor: "pointer",
+                                                backgroundColor: hoveredRowId === prof._id ? "#f0f0f0" : "transparent",
+                                                transition: "background-color 0.2s"
+                                            }}
+                                        >
                                             <td style={styles.tableCell}>{truncateId(prof._id)}...</td>
                                             <td style={styles.tableCell}>{prof.firstName || 'N/A'}</td>
                                             <td style={styles.tableCell}>{prof.lastName || 'N/A'}</td>
@@ -663,7 +695,20 @@ export default function AdminDashboard() {
                                     </tr>
                                 ) : (
                                     filteredJobs.map((job) => (
-                                        <tr key={job._id}>
+                                        <tr key={job._id}
+                                            onClick={() => {
+                                                setSelectedEntry(job);
+                                                setEntryType("job");
+                                                setShowDetailsModal(true);
+                                            }}
+                                            onMouseEnter={() => setHoveredRowId(job._id)}
+                                            onMouseLeave={() => setHoveredRowId(null)}
+                                            style={{
+                                                cursor: "pointer",
+                                                backgroundColor: hoveredRowId === job._id ? "#f0f0f0" : "transparent",
+                                                transition: "background-color 0.2s"
+                                            }}
+                                        >
                                             <td style={styles.tableCell}>{truncateId(job._id)}...</td>
                                             <td style={styles.tableCell}>{job.title}</td>
                                             <td style={styles.tableCell}>
@@ -789,7 +834,20 @@ export default function AdminDashboard() {
                                     </tr>
                                 ) : (
                                     filteredQuotes.map((quote) => (
-                                        <tr key={quote._id}>
+                                        <tr key={quote._id}
+                                            onClick={() => {
+                                                setSelectedEntry(quote);
+                                                setEntryType("quote");
+                                                setShowDetailsModal(true);
+                                            }}
+                                            onMouseEnter={() => setHoveredRowId(quote._id)}
+                                            onMouseLeave={() => setHoveredRowId(null)}
+                                            style={{
+                                                cursor: "pointer",
+                                                backgroundColor: hoveredRowId === quote._id ? "#f0f0f0" : "transparent",
+                                                transition: "background-color 0.2s"
+                                            }}
+                                        >
                                             <td style={styles.tableCell}>{truncateId(quote._id)}...</td>
                                             <td style={styles.tableCell}>{quote.professionalEmail}</td>
                                             <td style={styles.tableCell}>{quote.clientEmail}</td>
@@ -1028,6 +1086,92 @@ export default function AdminDashboard() {
                 <div style={styles.content}>
                     {renderTabContent()}
                 </div>
+
+                {showDetailsModal && selectedEntry && (
+                    <div style={styles.modalOverlay}>
+                        <div style={styles.modalContent}>
+                            <h3 style={styles.modalTitle}>
+                                {entryType.charAt(0).toUpperCase() + entryType.slice(1)} Details
+                            </h3>
+
+                            {entryType === "client" && (
+                                <>
+                                    <p><strong>ID:</strong> {selectedEntry._id}</p>
+                                    <p><strong>First Name:</strong> {selectedEntry.firstName}</p>
+                                    <p><strong>Last Name:</strong> {selectedEntry.lastName}</p>
+                                    <p><strong>Email:</strong> {selectedEntry.email}</p>
+                                    <p><strong>Verified:</strong> {selectedEntry.verified ? "Yes" : "No"}</p>
+                                    <p><strong>Address:</strong></p>
+                                    <p>{selectedEntry.street ?? "N/A"}</p>
+                                    <p>{selectedEntry.postalCode ?? ""} {selectedEntry.provinceOrState ?? ""}</p>
+                                    <p>{selectedEntry.country ?? ""}</p>
+                                </>
+                            )}
+
+                            {entryType === "professional" && (
+                                <>
+                                    <p><strong>ID:</strong> {selectedEntry._id}</p>
+                                    <p><strong>First Name:</strong> {selectedEntry.firstName}</p>
+                                    <p><strong>Last Name:</strong> {selectedEntry.lastName}</p>
+                                    <p><strong>Email:</strong> {selectedEntry.email}</p>
+                                    <p><strong>Verified:</strong> {selectedEntry.verified ? "Yes" : "No"}</p> 
+                                    <p><strong>Rating:</strong> {selectedEntry.totalRating ?? "N/A"}</p>
+                                    <p><strong>Review Count:</strong> {selectedEntry.reviewCount ?? 0}</p>
+                                    <p><strong>Payment Setup:</strong> {selectedEntry.paymentSetup ? "Yes" : "No"}</p>
+                                    <p><strong>Stripe Account ID:</strong> {selectedEntry.stripeAccountId ?? "Not connected"}</p>
+                                    <p><strong>Banking Info Added:</strong> {selectedEntry.bankingInfoAdded ? "Yes" : "No"}</p>
+                                </>
+                            )}
+
+                            {entryType === "job" && (
+                                <>
+                                    <p><strong>ID:</strong> {selectedEntry._id}</p>
+                                    <p><strong>Title:</strong> {selectedEntry.title}</p>
+                                    <p><strong>Description:</strong> {selectedEntry.description}</p>
+                                    <p><strong>Professional Needed:</strong> {selectedEntry.professionalNeeded}</p>
+                                    <p><strong>User Email:</strong> {selectedEntry.userEmail}</p>
+                                    <p><strong>Status:</strong> {selectedEntry.status}</p>
+                                    <p><strong>Created At:</strong> {new Date(selectedEntry.createdAt).toLocaleString()}</p>
+                                    <p><strong>Latitude:</strong> {selectedEntry.latitude ?? "N/A"}</p>
+                                    <p><strong>Longitude:</strong> {selectedEntry.longitude ?? "N/A"}</p>
+                                    <p><strong>Timeline:</strong> {selectedEntry.timeline ?? "N/A"}</p>
+                                    <p><strong>Professional Email:</strong> {selectedEntry.professionalEmail ?? "N/A"}</p>
+                                    <p><strong>Accepted Quote ID:</strong> {selectedEntry.acceptedQuoteId ?? "N/A"}</p>
+
+                                </>
+                            )}
+
+                            {entryType === "quote" && (
+                                <>
+                                    <p><strong>ID:</strong> {selectedEntry._id}</p>
+                                    <p><strong>Professional Email:</strong> {selectedEntry.professionalEmail}</p>
+                                    <p><strong>Client Email:</strong> {selectedEntry.clientEmail}</p>
+                                    <p><strong>Issue Title:</strong> {selectedEntry.issueTitle}</p>
+                                    <p><strong>Price:</strong> ${selectedEntry.price?.toFixed(2)}</p>
+                                    <p><strong>Description:</strong> {selectedEntry.jobDescription}</p>
+                                    <p><strong>Tools & Materials:</strong> {selectedEntry.toolsMaterials}</p>
+                                    <p><strong>Terms & Conditions:</strong> {selectedEntry.termsConditions}</p>
+                                    <p><strong>Status:</strong> {selectedEntry.status}</p>
+                                    <p><strong>Job ID:</strong> {selectedEntry.issueId}</p>
+                                    <p><strong>Created At:</strong> {new Date(selectedEntry.createdAt).toLocaleString()}</p>
+                                </>
+                            )}
+
+                            <div style={styles.modalButtons}>
+                                <button
+                                style={styles.cancelButton}
+                                onClick={() => {
+                                    setShowDetailsModal(false);
+                                    setSelectedEntry(null);
+                                    setEntryType(null);
+                                }}
+                                >
+                                Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

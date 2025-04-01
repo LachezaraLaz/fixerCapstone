@@ -4,7 +4,7 @@ const clientModel = require("../model/fixerClientModel");
 const getClients = async (req, res) => {
     try {
         // Fetch all users from the database with all relevant fields
-        const users = await clientModel.find({}, '_id firstName lastName email approved accountType');
+        const users = await clientModel.find().select("-password");
 
         // Return the data
         res.status(200).json({ users });

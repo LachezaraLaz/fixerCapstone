@@ -114,7 +114,7 @@ export default function ForgotPasswordPage({ navigation }) {
                 message={successAlertContent.message}
                 onClose={() => {
                     setSuccessAlertVisible(false);
-                    navigation.goBack();
+                    navigation.navigate('EnterPin', { email });
                 }}
             />
         </View>

@@ -62,7 +62,8 @@ export default function ForgotPasswordPage({ navigation }) {
                 setSuccessAlertVisible(true);
                 setIsPinSent(true); // Set the state to indicate the PIN has been sent
             }
-        } catch (error) {
+        } catch
+            (error) {
             if (error.response) {
                 setCustomAlertContent({
                     title: i18n.t('error'),
@@ -131,7 +132,7 @@ export default function ForgotPasswordPage({ navigation }) {
                 message={successAlertContent.message}
                 onClose={() => {
                     setSuccessAlertVisible(false);
-                    navigation.goBack();
+                    navigation.navigate('EnterPin', { email });
                 }}
             />
         </View>

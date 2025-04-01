@@ -343,5 +343,4 @@ const getQuotesByClientEmail = async (req, res) => {
     }
 };
 
-
-module.exports = { authenticateJWT, submitQuote, getQuotesByJob, updateQuoteStatus, getQuotesByClientEmail };
+module.exports = { authenticateJWT, submitQuote, getQuotesByJob, updateQuoteStatus, getQuotesByClientEmail};

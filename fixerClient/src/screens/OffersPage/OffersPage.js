@@ -170,7 +170,7 @@ export default function OffersPage() {
             <ScrollView style={styles.requestsContainer}>
                 {offers.length > 0 ? (
                     offers.map((offer) => (
-                        <View key={offer._id} style={styles.requestCard}>
+                        <TouchableOpacity key={offer._id} style={styles.requestCard}onPress={() => navigation.navigate('OfferDetails', { offerId: offer._id })}>
                             {/* Profile Image on the Left */}
                             <Image
                                 source={{ uri: 'https://via.placeholder.com/60' }}
@@ -229,7 +229,7 @@ export default function OffersPage() {
                                     </View>
                                 )}
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     ))
                 ) : (
                     <Text style={styles.emptyText}>No offers available for your jobs.</Text>

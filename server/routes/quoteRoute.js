@@ -1,5 +1,5 @@
 const express = require('express');
-const { submitQuote, authenticateJWT, getQuotesByJob, updateQuoteStatus, getQuotesByClientEmail } = require('../controller/submitQuote');
+const { submitQuote, authenticateJWT, getQuotesByJob, updateQuoteStatus, getQuotesByClientEmail} = require('../controller/submitQuote');
 const quoteRouter = express.Router();
 
 quoteRouter.post('/create', authenticateJWT, submitQuote);

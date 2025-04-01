@@ -29,6 +29,8 @@ import issueDetails from "./src/screens/issueDetails/issueDetails";
 import { LanguageProvider } from "./context/LanguageContext";
 import { Text } from "react-native";
 import { LogBox } from 'react-native';
+import OfferDetails from './src/screens/OfferDetails/OfferDetails';
+
 
 // Suppress the specific warning
 LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
@@ -102,6 +104,7 @@ export default function App() {
                                         <Stack.Screen name="NotificationPage" component={NotificationPage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
                                         <Stack.Screen name="OffersPage" component={OffersPage} />
+                                        <Stack.Screen name="OfferDetails" component={OfferDetails} />
                                         <Stack.Screen name="addReview" component={addReview} options={{ headerShown: false }}/>
                                         <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>

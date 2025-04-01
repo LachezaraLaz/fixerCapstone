@@ -278,7 +278,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
 
                                 return (
-                                    <View key={offer._id} style={styles.requestCard}>
+                                    <TouchableOpacity key={offer._id} style={styles.requestCard} onPress={() => navigation.navigate('OfferDetails', { offerId: offer._id })}>
                                         <Image
                                             source={{ uri: 'https://via.placeholder.com/60' }}
                                             style={styles.requestUserImage}
@@ -340,7 +340,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                                                 </View>
                                             )}
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                                 );
                             }) : (
                                 <Text style={styles.emptyText}>{i18n.t('no_requests_available')}</Text>

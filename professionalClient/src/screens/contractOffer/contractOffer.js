@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Platform, KeyboardAvoidingView} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Platform, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback} from 'react-native';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
@@ -283,6 +283,7 @@ export default function ContractOffer({ route, navigation }) {
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView
                 contentContainerStyle={styles.container}
                 keyboardShouldPersistTaps="handled"
@@ -359,6 +360,7 @@ export default function ContractOffer({ route, navigation }) {
                     <Text style={styles.submitButtonText}>Submit Quote</Text>
                 </TouchableOpacity>
             </ScrollView>
+            </TouchableWithoutFeedback>
 
             {/* Custom Success Alert */}
             <CustomAlertSuccess

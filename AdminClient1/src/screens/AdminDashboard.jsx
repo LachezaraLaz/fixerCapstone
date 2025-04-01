@@ -1156,10 +1156,16 @@ export default function AdminDashboard() {
                                     <p><strong>Payment Setup:</strong> {selectedEntry.paymentSetup ? "Yes" : "No"}</p>
                                     <p><strong>Stripe Account ID:</strong> {selectedEntry.stripeAccountId ?? "Not connected"}</p>
                                     <p><strong>Banking Info Added:</strong> {selectedEntry.bankingInfoAdded ? "Yes" : "No"}</p>
-                                    <button onClick={() => toggleBan(selectedEntry._id, !selectedEntry.banned)}>
+                                    <button
+                                        style={styles.button}
+                                        onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+                                        onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
+                                        onMouseDown={(e) => Object.assign(e.target.style, styles.buttonActive)}
+                                        onMouseUp={(e) => Object.assign(e.target.style, styles.buttonHover)}
+                                        onClick={() => toggleBan(selectedEntry._id, !selectedEntry.banned)}
+                                    >
                                         {selectedEntry.banned ? "Unban" : "Ban"}
                                     </button>
-
                                 </>
                             )}
 
@@ -1571,5 +1577,26 @@ const styles = {
         margin: "0",
         fontSize: "14px",
     },
+    button: {
+        padding: "12px 24px",
+        fontSize: "16px",
+        fontWeight: "bold",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        color: "#fff",
+        background: "linear-gradient(135deg, #ff4d4d, #c40000)",
+        boxShadow: "0 4px 10px rgba(255, 77, 77, 0.4)",
+    },
+    buttonHover: {
+        background: "linear-gradient(135deg, #ff1a1a, #900000)",
+        boxShadow: "0 6px 14px rgba(255, 26, 26, 0.5)",
+        transform: "scale(1.05)"
+    },
+    buttonActive: {
+        transform: "scale(0.98)",
+        boxShadow: "0 2px 6px rgba(255, 0, 0, 0.6)"
+    }
 
 };

@@ -141,7 +141,6 @@ const en = {
     job_modification_error_message: "An error occurred. Please try again.",
     job_fetching_error_message: "Failed to load job details",
     invalid_session_id_error: "Invalid session or job ID. Please try logging into your account again.",
-    jobInProgressComment: "This issue is currently in progress. For any changes or updates, please reach out to the professional assigned using the chat feature." , 
     no_notifications_available: "No notifications available",
     loading: "Loading...",
     load_more: "Load More",
@@ -180,6 +179,9 @@ const en = {
     offer_rejected_message: "You have rejected the offer.",
     offer_rejected_error: "An error occurred while rejecting the offer.",
     no_offers_message:"No offers available for your jobs.",
+    signin_missing_field_error: "Both fields are required",
+    signin_wrong_input: "Wrong email or password",
+
 }
 
 const fr = {
@@ -363,6 +365,8 @@ const fr = {
     offer_rejected_message: "Vous avez rejeté l'offre.",
     offer_rejected_error: "Une erreur s'est produite lors du rejet de l'offre.",
     no_offers_message: "Aucune offre disponible pour vos tâches",
+    signin_missing_field_error: "Les deux entrées sont requises.",
+    signin_wrong_input: "E-mail ou mot de passe incorrect.",
 
 }
 

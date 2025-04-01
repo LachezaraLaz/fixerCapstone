@@ -12,6 +12,7 @@ import { I18n } from "i18n-js";
 import LanguageModal from "../../../components/LanguageModal";
 import languageStyle from '../../../style/languageStyle';
 import { LanguageContext } from "../../../context/LanguageContext";
+import CustomAlertError from "../../../components/customAlertError";
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -28,6 +29,10 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
 
+    //For custom alerts
+    const [customAlertVisible, setCustomAlertVisible] = useState(false);
+    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
+
     /**
      * Handles the sign-in process for a client user.
      *
@@ -41,7 +46,11 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
      */
     const handleSignIn = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Both fields are required');
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('signin_missing_field_error'),
+            });
+            setCustomAlertVisible(true);
             return;
         }
 
@@ -60,7 +69,6 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 await AsyncStorage.setItem('userId', userId);
                 await AsyncStorage.setItem('userName', userName);
 
-                // Alert.alert(`${i18n.t('signed_in_successfully')}`);
                 setIsLoggedIn(true);
 
                 setTimeout(() => {
@@ -76,11 +84,23 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         } catch (error) {
             console.log('Error:', error); // Add this line
             if (error.response && error.response.status === 400) {
-                Alert.alert(`${i18n.t('error')}`, error.response.data.statusText || 'Wrong email or password');
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: i18n.t('signin_wrong_input'),
+                });
+                setCustomAlertVisible(true);
             } else if (error.response && error.response.status === 403) {
-                Alert.alert(`${i18n.t('please_verify_your_email_before_logging_in')}`);
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: i18n.t('please_verify_your_email_before_logging_in'),
+                });
+                setCustomAlertVisible(true);
             } else {
-                Alert.alert(`${i18n.t('error')}`, `${i18n.t('an_unexpected_error_occurred')}`);
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: i18n.t('an_unexpected_error_occurred'),
+                });
+                setCustomAlertVisible(true);
             }
         }
     };
@@ -130,6 +150,12 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
             <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordPage')}>
                 <Text style={styles.forgotPasswordText}>{i18n.t('forgot_password')}</Text>
             </TouchableOpacity>
+            <CustomAlertError
+                visible={customAlertVisible}
+                title={customAlertContent.title}
+                message={customAlertContent.message}
+                onClose={() => setCustomAlertVisible(false)}
+            />
         </View>
     );
 }

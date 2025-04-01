@@ -142,7 +142,7 @@ const IssueDetails = () => {
                                     Alert.alert(
                                         'Success',
                                         'Job completed and fee deducted successfully!\n' +
-                                        `Amount: $${deductResponse.data.data.amountDeducted}`
+                                        `Deducted fee: $${(deductResponse.data.data.amounts.platformFee)/100}`
                                     );
                                     navigation.navigate("MyJobs");
                                 } else {

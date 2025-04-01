@@ -135,7 +135,7 @@ const IssueDetails = () => {
 
                                 if (response.status === 200 || response.status === 201) {
                                     Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Deleted' : 'Reopened'} successfully`);
-                                    navigation.navigate("MyIssuesPosted");
+                                    navigation.navigate("JobsPosted");
                                 } else {
                                     Alert.alert(`Failed to ${actionText} the job`);
                                 }

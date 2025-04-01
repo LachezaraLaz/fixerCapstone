@@ -239,13 +239,16 @@ const ProfilePage = ({navigation, setIsLoggedIn}) => {
                 {/*            nestedScrollEnabled={true}*/}
                 {/*        />*/}
                 {/*    </View>*/}
-                {/*</View>*/}
+                {/*</View>*/} 
             </View>
         </ScrollView>
+        <View style={{ position: 'absolute', bottom: 10, left: 0, right: 0, alignItems: 'center' }}>
+  
             <TouchableOpacity style={styles.reportButton} activeOpacity={0.7} onPress={() => navigation.navigate('ReportPage')}>
                 <Ionicons name="alert-circle-outline" size={22} color="white" />
                 <Text style={styles.reportButtonText}>{i18n.t('report')}</Text>
             </TouchableOpacity>
+        </View>
         </View>
     );
 };

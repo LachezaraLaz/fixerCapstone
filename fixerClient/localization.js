@@ -206,7 +206,8 @@ const en = {
     password_special_char:"At least one special character",
     password_fails_criteria:"Password does not meet the required criteria.",
     report: "Report a Professional",
-    submit: "Submit"
+    submit: "Submit",
+    logging_out:"Logging out..."
 }
 
 const fr = {
@@ -417,7 +418,8 @@ const fr = {
     password_special_char:"Au moins un caractère spécial",
     password_fails_criteria:"Le mot de passe ne répond pas aux critères requis.",
     report: "Rapport un professionnel",
-    submit: "Soumettre"
+    submit: "Soumettre",
+    logging_out:"Déconnexion..."
 }
 
 export {en, fr}

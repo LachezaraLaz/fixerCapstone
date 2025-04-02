@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomAlertSuccess from "../../../components/customAlertSuccess";
+import CustomAlertError from "../../../components/customAlertError";
+import OrangeButton from "../../../components/orangeButton";
+import InputField from "../../../components/inputField";
 import axios from 'axios';
 
 import { IPAddress } from '../../../ipAddress';
 
 const ProfessionalAccountSettingsPage = () => {
     const navigation = useNavigation();
+
+    // Password criteria states
+    const [hasMinLength, setHasMinLength] = useState(false);
+    const [hasNumber, setHasNumber] = useState(false);
+    const [hasUppercase, setHasUppercase] = useState(false);
+    const [hasLowercase, setHasLowercase] = useState(false);
+    const [hasSpecialChar, setHasSpecialChar] = useState(false);
+    const isPasswordValid = hasMinLength && hasNumber && hasUppercase && hasLowercase && hasSpecialChar;
 
     // State for form data
     const [formData, setFormData] = useState({
@@ -20,9 +32,22 @@ const ProfessionalAccountSettingsPage = () => {
         confirmPassword: '',
     });
 
+    // for Alerts
+    const [successAlert, setSuccessAlert] = useState({
+        visible: false,
+        title: '',
+        message: ''
+    });
+    const [errorAlert, setErrorAlert] = useState({
+        visible: false,
+        title: '',
+        message: ''
+    });
+
     const [isEditing, setIsEditing] = useState(false);
     const [isCurrentPasswordValid, setIsCurrentPasswordValid] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [originalData, setOriginalData] = useState(null);
 
     // Fetch user profile data
     useEffect(() => {
@@ -30,7 +55,11 @@ const ProfessionalAccountSettingsPage = () => {
             try {
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
-                    Alert.alert("Error", "Authentication failed.");
+                    setErrorAlert({
+                        visible: true,
+                        title: "Error",
+                        message: error.response?.data?.error || "Authentication failed"
+                    });
                     return;
                 }
 
@@ -47,7 +76,11 @@ const ProfessionalAccountSettingsPage = () => {
                 }));
             } catch (error) {
                 console.error("Error fetching profile data:", error);
-                Alert.alert("Error", "Failed to load profile data.");
+                setErrorAlert({
+                    visible: true,
+                    title: "Error",
+                    message: "Failed to load profile data."
+                });
             } finally {
                 setLoading(false);
             }
@@ -55,6 +88,27 @@ const ProfessionalAccountSettingsPage = () => {
 
         fetchProfileData();
     }, []);
+
+    const hasFormChanged = () => {
+        if (!originalData) return false;
+
+        // For basic fields, compare directly with original data
+        const basicFieldsChanged =
+            formData.firstName !== originalData.firstName ||
+            formData.lastName !== originalData.lastName;
+
+        // For password fields, check if they're filled and valid
+        const passwordChanged =
+            isCurrentPasswordValid &&
+            formData.newPassword &&
+            formData.confirmPassword &&
+            formData.newPassword === formData.confirmPassword &&
+            isPasswordValid; // Add password validation check here
+
+        return basicFieldsChanged || passwordChanged;
+    };
+
+
 
     // Handle input changes
     const handleInputChange = (field, value) => {
@@ -65,7 +119,11 @@ const ProfessionalAccountSettingsPage = () => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
-                Alert.alert("Error", "Authentication failed.");
+                setErrorAlert({
+                    visible: true,
+                    title: "Error",
+                    message: error.response?.data?.error || "Authentication failed."
+                });
                 return;
             }
 
@@ -77,31 +135,81 @@ const ProfessionalAccountSettingsPage = () => {
 
             if (response.status === 200) {
                 setIsCurrentPasswordValid(true);
-                Alert.alert("Success", "Current password validated. You can now set a new password.");
+                setSuccessAlert({
+                    visible: true,
+                    title: "Success",
+                    message: "Current password validated. You can now set a new password.."
+                });
             }
         } catch (error) {
             setIsCurrentPasswordValid(false);
             if (error.response) {
-                Alert.alert("Error", error.response.data?.error || "Incorrect password.");
+                setErrorAlert({
+                    visible: true,
+                    title: "Error",
+                    message: error.response?.data?.error || "Incorrect password."
+                });
             } else if (error.request) {
-                Alert.alert("Error", "Network error. Please check your connection and try again.");
+                setErrorAlert({
+                    visible: true,
+                    title: "Error",
+                    message: error.response?.data?.error || "Network error. Please check your connection and try again."
+                });
             } else {
-                Alert.alert("Error", "Unexpected error occurred.");
+                setErrorAlert({
+                    visible: true,
+                    title: "Error",
+                    message: error.response?.data?.error || "Unexpected error occurred."
+                });
             }
         }
     };
 
+    // Function to validate password strength
+    const validatePassword = (password) => {
+        setHasMinLength(password.length >= 8);
+        setHasNumber(/\d/.test(password));
+        setHasUppercase(/[A-Z]/.test(password));
+        setHasLowercase(/[a-z]/.test(password));
+        setHasSpecialChar(/[\W_]/.test(password)); // Special characters include anything that's not a letter or number
+    };
+
+// Use useEffect to validate password whenever it changes
+    useEffect(() => {
+        if (formData.newPassword) {
+            validatePassword(formData.newPassword);
+        }
+    }, [formData.newPassword]);
+
     // Save Changes API Call
     const handleSaveChanges = async () => {
         if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-            Alert.alert('Error', 'New passwords do not match.');
+            setErrorAlert({
+                visible: true,
+                title: "Error",
+                message: "New passwords do not match."
+            });
+            return;
+        }
+
+        //new check for password complexity
+        if (formData.newPassword && !isPasswordValid) {
+            setErrorAlert({
+                visible: true,
+                title: "Error",
+                message: "Password does not meet the required criteria."
+            });
             return;
         }
 
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
-                Alert.alert("Error", "Authentication failed.");
+                setErrorAlert({
+                    visible: true,
+                    title: "Error",
+                    message: "Authentication failed"
+                });
                 return;
             }
 
@@ -131,16 +239,51 @@ const ProfessionalAccountSettingsPage = () => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
             } else if (!isCurrentPasswordValid && formData.newPassword) {
-                Alert.alert("Error", "Please validate your current password before updating.");
+                setErrorAlert({
+                    visible: true,
+                    title: "Error",
+                    message: error.response?.data?.error || "Please validate your current password before updating"
+                });
                 return;
             }
-
-            Alert.alert("Success", "Your changes have been saved.");
+            setSuccessAlert({
+                visible: true,
+                title: "Success",
+                message: "Your changes have been saved."
+            });
             setIsEditing(false);
         } catch (error) {
             console.error("Update error:", error);
-            Alert.alert("Error", error.response?.data?.error || "Failed to update profile.");
+            setErrorAlert({
+                visible: true,
+                title: "Error",
+                message: error.response?.data?.error || "Failed to update profile."
+            });
         }
+    };
+
+    const handleEditToggle = () => {
+        if (!isEditing) {
+            // Entering edit mode - save current data as original
+            setOriginalData({...formData});
+        } else {
+            // Exiting edit mode - reset password fields and validation state
+            setFormData(prevState => ({
+                ...prevState,
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            }));
+            setIsCurrentPasswordValid(false);
+
+            // Reset password criteria
+            setHasMinLength(false);
+            setHasNumber(false);
+            setHasUppercase(false);
+            setHasLowercase(false);
+            setHasSpecialChar(false);
+        }
+        setIsEditing(!isEditing);
     };
 
     return (
@@ -148,53 +291,64 @@ const ProfessionalAccountSettingsPage = () => {
             {/* Custom Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={28} color="#333" />
+                    <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
 
-                <Text style={styles.headerTitle}>Account Settings</Text>
+                <Text style={styles.headerTitle}>Edit Profile</Text>
 
                 {/* Edit Button */}
-                <TouchableOpacity onPress={() => setIsEditing(!isEditing)}>
+                <TouchableOpacity onPress={handleEditToggle}>
                     <MaterialIcons name="edit" size={24} color={isEditing ? 'gray' : 'black'} />
                 </TouchableOpacity>
             </View>
 
-            <ScrollView contentContainerStyle={styles.container}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={{ flex: 1 }}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+                >
+                    <ScrollView contentContainerStyle={styles.container}>
                 {loading ? <Text>Loading...</Text> : (
                     <>
                         <View style={styles.formGroup}>
                             <Text style={styles.label}>First Name</Text>
-                            <TextInput
-                                style={[styles.input, !isEditing && styles.disabledInput]}
+                            <InputField
                                 value={formData.firstName}
                                 onChangeText={(text) => handleInputChange('firstName', text)}
-                                editable={isEditing}
+                                disabled={!isEditing}
+                                showFloatingLabel={false}
                             />
                         </View>
 
                         <View style={styles.formGroup}>
                             <Text style={styles.label}>Last Name</Text>
-                            <TextInput
+                            <InputField
                                 style={[styles.input, !isEditing && styles.disabledInput]}
                                 value={formData.lastName}
                                 onChangeText={(text) => handleInputChange('lastName', text)}
-                                editable={isEditing}
+                                disabled={!isEditing}
+                                showFloatingLabel={false}
                             />
                         </View>
 
                         <View style={styles.formGroup}>
                             <Text style={styles.label}>Current Password</Text>
-                            <TextInput
+                            <InputField
                                 style={styles.input}
                                 secureTextEntry
                                 value={formData.currentPassword}
                                 onChangeText={(text) => handleInputChange('currentPassword', text)}
-                                editable={isEditing}
+                                disabled={!isEditing}
+                                showFloatingLabel={false}
                             />
                             {isEditing && (
-                                <TouchableOpacity onPress={validateCurrentPassword} style={styles.validateButton}>
-                                    <Text style={styles.validateButtonText}>Validate</Text>
-                                </TouchableOpacity>
+                                <OrangeButton
+                                    title="Validate"
+                                    onPress={validateCurrentPassword}
+                                    testID="validate-password-button"
+                                    style={{marginTop: 10}}
+                                />
                             )}
                         </View>
 
@@ -202,20 +356,45 @@ const ProfessionalAccountSettingsPage = () => {
                             <>
                                 <View style={styles.formGroup}>
                                     <Text style={styles.label}>New Password</Text>
-                                    <TextInput
+                                    <InputField
                                         style={styles.input}
                                         secureTextEntry
                                         value={formData.newPassword}
                                         onChangeText={(text) => handleInputChange('newPassword', text)}
+                                        disabled={!isEditing}
+                                        showFloatingLabel={false}
+                                        isValid={isPasswordValid && formData.newPassword.length > 0}
+                                        isError={!isPasswordValid && formData.newPassword.length > 0}
                                     />
+                                    {formData.newPassword.length > 0 && (
+                                        <View style={styles.passwordCriteriaContainer}>
+                                            <Text style={[styles.criteriaText, hasMinLength && styles.criteriaMet]}>
+                                                {hasMinLength ? '✓' : '•'} At least 8 characters
+                                            </Text>
+                                            <Text style={[styles.criteriaText, hasNumber && styles.criteriaMet]}>
+                                                {hasNumber ? '✓' : '•'} At least one number
+                                            </Text>
+                                            <Text style={[styles.criteriaText, hasUppercase && styles.criteriaMet]}>
+                                                {hasUppercase ? '✓' : '•'} At least one uppercase letter
+                                            </Text>
+                                            <Text style={[styles.criteriaText, hasLowercase && styles.criteriaMet]}>
+                                                {hasLowercase ? '✓' : '•'} At least one lowercase letter
+                                            </Text>
+                                            <Text style={[styles.criteriaText, hasSpecialChar && styles.criteriaMet]}>
+                                                {hasSpecialChar ? '✓' : '•'} At least one special character
+                                            </Text>
+                                        </View>
+                                    )}
                                 </View>
                                 <View style={styles.formGroup}>
                                     <Text style={styles.label}>Confirm Password</Text>
-                                    <TextInput
+                                    <InputField
                                         style={styles.input}
                                         secureTextEntry
                                         value={formData.confirmPassword}
                                         onChangeText={(text) => handleInputChange('confirmPassword', text)}
+                                        showFloatingLabel={false}
+                                        disabled={!isEditing}
                                     />
                                     {formData.newPassword && formData.confirmPassword && (
                                         <Text style={{
@@ -232,13 +411,34 @@ const ProfessionalAccountSettingsPage = () => {
                         )}
 
                         {isEditing && (
-                            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-                                <Text style={styles.saveButtonText}>Save Changes</Text>
-                            </TouchableOpacity>
+                            <OrangeButton
+                                title="Save Changes"
+                                onPress={handleSaveChanges}
+                                testID="save-changes-button"
+                                style={{
+                                    marginTop: 20,
+                                    opacity: hasFormChanged() ? 1 : 0.5,
+                                }}
+                                disabled={!hasFormChanged()}
+                            />
                         )}
                     </>
                 )}
-            </ScrollView>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+            <CustomAlertSuccess
+                visible={successAlert.visible}
+                title={successAlert.title}
+                message={successAlert.message}
+                onClose={() => setSuccessAlert({ ...successAlert, visible: false })}
+            />
+            <CustomAlertError
+                visible={errorAlert.visible}
+                title={errorAlert.title}
+                message={errorAlert.message}
+                onClose={() => setErrorAlert({ ...errorAlert, visible: false })}
+            />
         </SafeAreaView>
     );
 };
@@ -334,6 +534,16 @@ const styles = StyleSheet.create({
     validInput: {
         borderColor: 'green',
     },
+    passwordCriteriaContainer: {
+        marginBottom: 15,
+    },
+    criteriaText: {
+        color: 'gray',
+        fontSize: 14,
+    },
+    criteriaMet: {
+        color: 'green',
+    }
 });
 
 export default ProfessionalAccountSettingsPage;

@@ -9,7 +9,7 @@ const languageStyle = StyleSheet.create({
         padding: 10,
         borderRadius: 5,            // optional for styling
         zIndex: 1000,               // optional to make sure it's on top
-        backgroundColor: '#ff8c00', // Orange background
+        backgroundColor: colors.orange.normal, // Orange background
         paddingVertical: 8,
         paddingHorizontal: 12,
         elevation: 5, // For Android shadow

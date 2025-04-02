@@ -120,8 +120,10 @@ export default function App() {
                                         <Stack.Screen name="NotificationDetail" component={NotificationDetail} options={{ headerShown: false }} />
                                         <Stack.Screen name="OldNotifications" component={OldNotifications} options={{ headerShown: false }}/>
                                         <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
-                                        <Stack.Screen name="ProfessionalAccountSettingsPage" component={ProfessionalAccountSettingsPage}/>
-                                        <Stack.Screen name="SettingsPage" component={SettingsPage} />
+                                        <Stack.Screen name="ProfessionalAccountSettingsPage" component={ProfessionalAccountSettingsPage} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="SettingsPage" options={{ headerShown: false }}>
+                                            {props => <SettingsPage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                        </Stack.Screen>
                                         <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>
                                         <Stack.Screen name="ChatScreen" component={ChatScreen}/>
                                         {/* Add BankingInfoPage here */}

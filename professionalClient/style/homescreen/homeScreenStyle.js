@@ -264,7 +264,7 @@ export const styles = StyleSheet.create({
         paddingVertical: 8, // Reduced padding
         paddingHorizontal: 12, // Reduced padding
         borderRadius: 8,
-        alignItems: 'center',
+         alignItems: 'center',
         justifyContent: 'center', // Center button text
         minWidth: 120, // Ensure button has a minimum width
     },

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../../style/profilePage/profilePageStyle';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import SettingsButton from "../../../components/settingsButton";
 import { Platform } from 'react-native';
 
@@ -22,40 +22,72 @@ const ProfilePage = () => {
     const navigation = useNavigation();
     const [paymentMethod, setPaymentMethod] = useState(null);
 
-    useEffect(() => {
-        /**
-         * Fetches the professional profile data from the server.
-         *
-         * This function retrieves the authentication token from AsyncStorage and uses it to make
-         * an authenticated GET request to the professional profile endpoint. If the token is found,
-         * it sets the professional data state with the response data. If no token is found, it logs
-         * an error message. Any errors during the fetch process are caught and logged.
-         *
-         * @async
-         * @function fetchProfileData
-         * @returns {Promise<void>} A promise that resolves when the profile data has been fetched and the state has been updated.
-         */
-        const fetchProfileData = async () => {
-            try {
-                const token = await AsyncStorage.getItem('token');
+    const isMounted = useRef(true);
+    const initialLoadComplete = useRef(false);
 
-                if (token) {
-                    const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/profile`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    setProfessional(response.data);
-                } else {
-                    console.error('No token found');
+    const smallTransparentText = {
+        fontSize: 14,
+        color: 'rgba(0, 0, 0, 0.6)', // 60% opacity black
+        marginTop: 3,
+    };
+
+    useEffect(() => {
+        isMounted.current = true;
+        if (!initialLoadComplete.current) {
+            fetchProfileData(true);
+        }
+
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    // Silent refresh when coming back to the screen
+    useFocusEffect(
+        React.useCallback(() => {
+            // Only do a silent refresh if we already loaded initial data
+            if (initialLoadComplete.current && professional) {
+                fetchProfileData(false);
+            }
+        }, [professional])
+    );
+
+    const fetchProfileData = async (isInitialLoad) => {
+        if (!isMounted.current) return;
+
+        // Only show loading indicator on initial load
+        if (isInitialLoad) {
+            setLoading(true);
+        }
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                console.error('No token found');
+                if (isMounted.current && isInitialLoad) {
+                    setLoading(false);
                 }
-            } catch (error) {
-                console.error('Error fetching profile data:', error);
-            } finally {
+                return;
+            }
+
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/profile`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (isMounted.current) {
+                setProfessional(response.data);
+                if (isInitialLoad) {
+                    setLoading(false);
+                    initialLoadComplete.current = true;
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching profile data:', error);
+            if (isMounted.current && isInitialLoad) {
                 setLoading(false);
             }
-        };
-
-        fetchProfileData();
-    }, []);
+        }
+    };
 
     /**
      * Fetches the reviews for the professional from the server.
@@ -182,7 +214,7 @@ const ProfilePage = () => {
     };
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 150 }} showsVerticalScrollIndicator={false}>
             <View style={styles.globalFont}>
                 <View style={styles.customHeader}>
                     <Text style={styles.headerLogo}>Fixr</Text>
@@ -214,24 +246,28 @@ const ProfilePage = () => {
                         </TouchableOpacity>
                     </View>
                     <Text style={styles.nameText}>{professional.firstName} {professional.lastName}</Text>
+                    <Text style={smallTransparentText}>{professional.email}</Text>
 
                     <View style={styles.ratingContainer}>
                         {renderStars(professional.totalRating || 0)}
-                        <Text style={styles.reviewCountText}> ({professional.totalRating} )</Text>
+                        <Text style={styles.reviewCountText}> ({professional.totalRating})</Text>
                     </View>
                 </View>
 
-                <View style={styles.descriptionContainer}>
-                    <Text style={styles.sectionTitle}>Description</Text>
-                    <Text style={styles.descriptionText}>
-                        {professional.description || "No description provided."}
-                    </Text>
-                </View>
+
+                {/*<View style={styles.descriptionContainer}>*/}
+                {/*    <Text style={styles.sectionTitle}>Description</Text>*/}
+                {/*    <Text style={styles.descriptionText}>*/}
+                {/*        {professional.description || "No description provided."}*/}
+                {/*    </Text>*/}
+                {/*</View>*/}
 
                 <View style={styles.reviewsContainer}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.sectionTitle}>Rating & Reviews</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})}>
+                        <TouchableOpacity 
+                        // onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})} 
+                        >
                             <Text style={styles.reviewCountLink}> ({reviews.length})</Text>
                         </TouchableOpacity>
                     </View>
@@ -275,10 +311,10 @@ const ProfilePage = () => {
                     )}
                 </View>
 
-                <View style={styles.emailContainer}>
-                    <Text style={styles.sectionTitle}>Email Address</Text>
-                    <Text style={styles.emailText}>{professional.email}</Text>
-                </View>
+                {/*<View style={styles.emailContainer}>*/}
+                {/*    <Text style={styles.sectionTitle}>Email Address</Text>*/}
+                {/*    <Text style={styles.emailText}>{professional.email}</Text>*/}
+                {/*</View>*/}
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Payment Method</Text>
@@ -296,12 +332,12 @@ const ProfilePage = () => {
                     </View>
                 </View>
 
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Language</Text>
-                    <View style={styles.inputBox}>
-                        <Text>English</Text>
-                    </View>
-                </View>
+                {/*<View style={styles.sectionContainer}>*/}
+                {/*    <Text style={styles.sectionTitle}>Language</Text>*/}
+                {/*    <View style={styles.inputBox}>*/}
+                {/*        <Text>English</Text>*/}
+                {/*    </View>*/}
+                {/*</View>*/}
 
                 <View style={styles.certificatesContainer}>
                     <Text style={styles.sectionTitle}>Certificates</Text>

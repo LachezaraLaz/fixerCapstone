@@ -49,6 +49,8 @@ const getJobById = async (req, res) => {
 
 // DELETE /issue/:id route to update job status (Reopen job)
 const updateIssueStatus = async (req, res) => {
+    console.log("Request Params:", req.params);
+    console.log("Request Query:", req.query);
     const jobId = req.params.id;
     const status = req.query.status;
     console.log(`Updating job status with ID: ${jobId} to ${status}`);
@@ -91,12 +93,13 @@ const updateIssueStatus = async (req, res) => {
         } else {
             // For other status updates, just update the existing job
             const updatedJob = await updateJobStatus(jobId, status);
-
+            console.log("Result of updateJobStatus:", updatedJob);
             if (!updatedJob) {
-                logger.error('updateIssueStatus: Job noy found', error);
+                logger.error('updateIssueStatus: Job not found when trying to update status');
                 return res.status(404).json({ message: 'Job not found' });
             }
-            logger.error(`Job status updated to ${status}`);
+
+            console.log(`Job status updated to ${status}`);
             res.status(200).json({ message: `Job status updated to ${status}`, job: jobDTO(updatedJob) });
         }
     } catch (error) {

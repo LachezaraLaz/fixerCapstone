@@ -16,6 +16,11 @@ const createIssueModel = new mongoose.Schema({
     firstName: { type: String },
     lastName: { type: String },
     timeline: { type: String },
+    acceptedQuoteId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Quotes', // References the Quotes collection
+        default: null
+    },
 }, {
     collection: 'jobs'
 });

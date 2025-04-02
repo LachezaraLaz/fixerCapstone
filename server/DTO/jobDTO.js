@@ -13,6 +13,7 @@ const jobDTO = (job) => ({
     comment: job.comment,
     professionalEmail: job.professionalEmail,
     timeline: job.timeline,
+    acceptedQuoteId: job.acceptedQuoteId
 });
 
 module.exports = { jobDTO };

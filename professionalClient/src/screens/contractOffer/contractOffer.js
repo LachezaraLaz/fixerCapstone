@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Platform, KeyboardAvoidingView} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView, Alert, Platform, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback} from 'react-native';
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from '../../../style/contractOffer/contractOfferStyle';
@@ -69,7 +69,7 @@ export default function ContractOffer({ route, navigation }) {
                 title: "Error",
                 message: error.response?.data?.message || "Unable to fetch user address.",
             });
-            setCustomAlertVisible(true);
+            setErrorAlertVisible(true);
         }
     };
 
@@ -310,106 +310,107 @@ export default function ContractOffer({ route, navigation }) {
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Submit a Quote</Text>
                 </View>
+                
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <ScrollView
+                        style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff' }}
+                        contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <View style={styles.containerTitle}>
+                            <Text style={styles.title}>{issue.title}</Text>
+                        </View>
 
-                <ScrollView style={{ flexGrow: 1, padding: 20, backgroundColor: '#ffffff'}}
-                            contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
-                            keyboardShouldPersistTaps="handled"
-                >
+                        <Text style={styles.label}>Job Description*</Text>
+                        <InputField
+                            style={[
+                                styles.inputContainer,
+                                { height: 150, textAlignVertical: 'top' },
+                                jobDescriptionError && { borderColor: 'red', borderWidth: 1 }
+                            ]}
+                            placeholder="Describe your service"
+                            value={jobDescription}
+                            onChangeText={(text) => {
+                                setJobDescription(text);
+                                setJobDescriptionError(false);
+                            }}
+                            multiline
+                        />
 
-                <View style={styles.containerTitle}>
-                    <Text style={styles.title}>{issue.title}</Text>
-                </View>
+                        <Text style={styles.label}>Tools-Materials*</Text>
+                        <InputField
+                            style={[
+                                styles.inputContainer,
+                                { height: 150, textAlignVertical: 'top' },
+                                toolsMaterialsError && { borderColor: 'red', borderWidth: 1 }
+                            ]}
+                            placeholder="Enter Here"
+                            value={toolsMaterials}
+                            onChangeText={(text) => {
+                                setToolsMaterials(text);
+                                setToolsMaterialsError(false);
+                            }}
+                            multiline
+                        />
 
-                <Text style={styles.label}>Job Description*</Text>
-                <InputField
-                    style={[
-                        styles.inputContainer,
-                        { height: 150, textAlignVertical: 'top' },
-                        jobDescriptionError && { borderColor: 'red', borderWidth: 1 }
-                    ]}
-                    placeholder="Describe your service"
-                    value={jobDescription}
-                    onChangeText={(text) => {
-                        setJobDescription(text);
-                        setJobDescriptionError(false);
+                        <Text style={styles.label}>Terms and Conditions*</Text>
+                        <InputField
+                            style={[
+                                styles.inputContainer,
+                                { height: 150, textAlignVertical: 'top' },
+                                termsConditionsError && { borderColor: 'red', borderWidth: 1 }
+                            ]}
+                            placeholder="Enter Here"
+                            value={termsConditions}
+                            onChangeText={(text) => {
+                                setTermsConditions(text);
+                                setTermsConditionsError(false);
+                            }}
+                            multiline
+                        />
+
+                        <Text style={styles.labelPrice}>Pricing $ (Hourly Rate)*</Text>
+                        <InputField
+                            placeholder="50"
+                            value={price}
+                            keyboardType="numeric"
+                            onChangeText={(text) => {
+                                setPrice(text);
+                                setPriceError(false);
+                            }}
+                            style={[
+                                styles.input,
+                                { height: 40 },
+                                priceError && { borderColor: 'red', borderWidth: 1 }
+                            ]}
+                        />
+
+                        <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
+                            <Text style={styles.submitButtonText}>Submit Quote</Text>
+                        </TouchableOpacity>
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+
+                {/* Custom Success Alert */}
+                <CustomAlertSuccess
+                    visible={successAlertVisible}
+                    title={successAlertContent.title}
+                    message={successAlertContent.message}
+                    onClose={() => {
+                        setSuccessAlertVisible(false);
+                        navigation.goBack(); // Redirect after success
                     }}
-                    multiline
                 />
 
-                <Text style={styles.label}>Tools-Materials*</Text>
-                <InputField
-                    style={[
-                        styles.inputContainer,
-                        { height: 150, textAlignVertical: 'top' },
-                        toolsMaterialsError && { borderColor: 'red', borderWidth: 1 }
-                    ]}
-                    placeholder="Enter Here"
-                    value={toolsMaterials}
-                    onChangeText={(text) => {
-                        setToolsMaterials(text);
-                        setToolsMaterialsError(false);
-                    }}
-                    multiline
+                {/* Custom Error Alert */}
+                <CustomAlertError
+                    visible={errorAlertVisible}
+                    title={errorAlertContent.title}
+                    message={errorAlertContent.message}
+                    buttons={errorAlertContent.buttons}
+                    onClose={() => setErrorAlertVisible(false)}
                 />
-
-                <Text style={styles.label}>Terms and Conditions*</Text>
-                <InputField
-                    style={[
-                        styles.inputContainer,
-                        { height: 150, textAlignVertical: 'top' },
-                        termsConditionsError && { borderColor: 'red', borderWidth: 1 }
-                    ]}
-                    placeholder="Enter Here"
-                    value={termsConditions}
-                    onChangeText={(text) => {
-                        setTermsConditions(text);
-                        setTermsConditionsError(false);
-                    }}
-                    multiline
-                />
-
-                <Text style={styles.labelPrice}>Pricing $ (Hourly Rate)*</Text>
-                <InputField
-                    placeholder="50"
-                    value={price}
-                    keyboardType="numeric"
-                    onChangeText={(text) => {
-                        setPrice(text);
-                        setPriceError(false);
-                    }}
-                    style={[
-                        styles.input,
-                        { height: 40 },
-                        priceError && { borderColor: 'red', borderWidth: 1 }
-                    ]}
-                />
-
-                <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
-                    <Text style={styles.submitButtonText}>Submit Quote</Text>
-                </TouchableOpacity>
-            </ScrollView>
-
-            {/* Custom Success Alert */}
-            <CustomAlertSuccess
-                visible={successAlertVisible}
-                title={successAlertContent.title}
-                message={successAlertContent.message}
-                onClose={() => {
-                    setSuccessAlertVisible(false);
-                    navigation.goBack(); // Redirect after success
-                }}
-            />
-
-            {/* Custom Error Alert */}
-            <CustomAlertError
-                visible={errorAlertVisible}
-                title={errorAlertContent.title}
-                message={errorAlertContent.message}
-                buttons={errorAlertContent.buttons}
-                onClose={() => setErrorAlertVisible(false)}
-            />
             </View>
         </KeyboardAvoidingView>
     );
 }
-

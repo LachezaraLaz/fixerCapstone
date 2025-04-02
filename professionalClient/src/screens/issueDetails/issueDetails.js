@@ -25,6 +25,7 @@ import { useCallback } from "react";
 const IssueDetails = () => {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [processing, setProcessing] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const route = useRoute();
     const navigation = useNavigation();
@@ -103,9 +104,6 @@ const IssueDetails = () => {
                 return;
             }
 
-            const newStatus = 'Completed';
-
-            // Show a confirmation popup before proceeding
             Alert.alert(
                 'Mark job as Complete',
                 'You are about to mark this job as complete which is irreversible.\n\nContinue only if you have ' +
@@ -119,31 +117,66 @@ const IssueDetails = () => {
                         text: `Yes`,
                         onPress: async () => {
                             try {
-                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/updateStatus/${job.id}?status=${newStatus}`,
-                                    {headers: {Authorization: `Bearer ${token}`}}
+                                setProcessing(true);
+                                setLoading(false);
+                                // First update job status to "Completed"
+                                const response = await axios.delete(
+                                    `https://fixercapstone-production.up.railway.app/issue/updateStatus/${job.id}`,
+                                    {
+                                        params: { status: 'Completed' },
+                                        headers: { Authorization: `Bearer ${token}` }
+                                    }
                                 );
 
-                                if (response.status === 200) {
-                                    Alert.alert('Job marked as Complete successfully');
+                                // Deduct payment
+                                const deductResponse = await axios.post(
+                                    `https://fixercapstone-production.up.railway.app/payment/deduct-cut/${job.id}`,
+                                    {
+                                        jobId: job._id,
+                                        verifyStatus: false // Optional flag to bypass status check
+                                    },
+                                    { headers: { Authorization: `Bearer ${token}` } }
+                                );
+
+                                if (deductResponse.data.status === 'success') {
+                                    Alert.alert(
+                                        'Success',
+                                        'Job completed and fee deducted successfully!\n' +
+                                        `Deducted fee: $${(deductResponse.data.data.amounts.platformFee)/100}`
+                                    );
                                     navigation.navigate("MyJobs");
                                 } else {
-                                    Alert.alert('Failed to mark the job as complete');
+                                    Alert.alert('Error', deductResponse.data.data || 'Fee deduction failed');
                                 }
                             } catch (error) {
-                                console.error(`Error updating job status to ${newStatus}:`, error);
-                                Alert.alert('An error occurred while trying to mark the job as complete');
+                                console.error('Completion error:', {
+                                    message: error.message,
+                                    response: error.response?.data,
+                                });
+
+                                // Enhanced error messages
+                                if (error.response?.status === 400) {
+                                    if (error.response.data.data.includes('bank account')) {
+                                        Alert.alert('Error', 'Please link your bank account in settings');
+                                    } else {
+                                        Alert.alert('Error', 'This job cannot be completed yet - no accepted quote');
+                                    }
+                                } else if (error.response?.status === 404) {
+                                    Alert.alert('Error', 'Job or payment information not found');
+                                } else {
+                                    Alert.alert('Error', 'Failed to complete job. Please try again.');
+                                }
+                            } finally {
+                                setProcessing(false);
+                                setLoading(false);
                             }
                         }
                     }
                 ]
             );
-
         } catch (error) {
-            console.error('Error handling job status:', error);
-            Alert.alert('An unexpected error occurred.');
-        } finally {
-            setLoading(false);
-            setRefreshing(false);
+            console.error('Outer error:', error);
+            Alert.alert('Error', 'An unexpected error occurred');
         }
     };
 
@@ -246,9 +279,10 @@ const IssueDetails = () => {
                 {job.status.toLowerCase() === "in progress" ? (
                     <>
                         <OrangeButton
-                            title="Mark Complete"
-                            variant="normal"
+                            title={processing ? "Processing..." : "Mark Complete"}
+                            variant={processing ? "disabled" : "normal"}
                             onPress={() => markJobComplete(job, currentStatus)}
+                            disabled={processing || loading}
                         />
                     </>
                 ) : null}

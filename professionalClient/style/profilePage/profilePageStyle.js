@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
     },
 
     sectionTitle: {
-        fontSize: 25,
+        fontSize: 16,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 6,
@@ -183,7 +183,7 @@ export const styles = StyleSheet.create({
 
 
     reviewCountLink: {
-        fontSize: 23,
+        fontSize: 16,
         fontWeight: 'bold',
         color: '#F28500',
         marginLeft: 5,

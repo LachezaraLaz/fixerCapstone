@@ -4,9 +4,15 @@ const colors = {
         lightHover: '#fdedd9',
         lightActive: '#fbd9b0',
 
-        normal: '#f28500',
+        // normal: '#f28500',
+        // normalHover: '#da7800',
+        // normalActive: '#c26a00',
+        
+        // normal: '#f28500',
+        normal: '#FFA500',
         normalHover: '#da7800',
-        normalActive: '#c26a00',
+        // normalActive: '#c26a00',
+        normalActive: '#d97400',
 
         dark: '#b66400',
         darkHover: '#915000',

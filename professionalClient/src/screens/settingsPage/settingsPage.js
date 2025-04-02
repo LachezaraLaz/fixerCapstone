@@ -225,19 +225,34 @@ const styles = {
         fontSize: 18,
         color: '#333',
     },
+    // logoutContainer: {
+    //     marginTop: 30,
+    //     alignItems: 'center',
+    // },
+    // logoutButton: {
+    //     backgroundColor: '#d9534f',
+    //     paddingVertical: 12,
+    //     paddingHorizontal: 20,
+    //     borderRadius: 8,
+    // },
+    // logoutText: {
+    //     fontSize: 18,
+    //     color: '#fff',
+    // },
     logoutContainer: {
-        marginTop: 30,
-        alignItems: 'center',
+        marginTop: 10,
+        paddingHorizontal: 16,
     },
     logoutButton: {
-        backgroundColor: '#d9534f',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
+        backgroundColor: '#ffdddd',
+        padding: 12,
         borderRadius: 8,
+        alignItems: 'center',
     },
     logoutText: {
-        fontSize: 18,
-        color: '#fff',
+        fontSize: 16,
+        color: '#d9534f',
+        fontWeight: 'bold',
     },
     footer: {
         marginTop: 20,

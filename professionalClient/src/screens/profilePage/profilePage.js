@@ -250,7 +250,7 @@ const ProfilePage = () => {
 
                     <View style={styles.ratingContainer}>
                         {renderStars(professional.totalRating || 0)}
-                        <Text style={styles.reviewCountText}> ({professional.totalRating} )</Text>
+                        <Text style={styles.reviewCountText}> ({professional.totalRating})</Text>
                     </View>
                 </View>
 
@@ -265,7 +265,9 @@ const ProfilePage = () => {
                 <View style={styles.reviewsContainer}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.sectionTitle}>Rating & Reviews</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})}>
+                        <TouchableOpacity 
+                        // onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})} 
+                        >
                             <Text style={styles.reviewCountLink}> ({reviews.length})</Text>
                         </TouchableOpacity>
                     </View>

@@ -205,7 +205,19 @@ const en = {
         address_not_valid: "Please enter a valid address",
         user_already_exists: "User already exists",
     },
-    signup_successful: "Account created successfully. An email was sent to verify your email."
+    signup_successful: "Account created successfully. An email was sent to verify your email.",
+    privacy_policy:'Privacy Policy',
+    privacy_policy_coming_soon:"Our privacy policy document will be available soon.",
+    terms_conditions_coming_soon:"Our terms and conditions document will be available soon.",
+    password_min_length:"At least 8 characters",
+    password_number:"At least one number",
+    password_uppercase:"At least one uppercase letter",
+    password_lowercase:"At least one lowercase letter",
+    password_special_char:"At least one special character",
+    password_fails_criteria:"Password does not meet the required criteria.",
+    report: "Report a Professional",
+    submit: "Submit",
+    logging_out:"Logging out..."
 }
 
 const fr = {
@@ -415,7 +427,19 @@ const fr = {
         address_not_valid: "Veuillez entrer une adresse valide",
         user_already_exists: "L'utilisateur existe déjà",
     },
-    signup_successful: "Compte créé avec succès. Un courriel a été envoyé pour vérifier votre adresse."
+    signup_successful: "Compte créé avec succès. Un courriel a été envoyé pour vérifier votre adresse.",
+    privacy_policy:'Politique de confidentialité',
+    privacy_policy_coming_soon:"Notre document sur la politique de confidentialité sera bientôt disponible.",
+    terms_conditions_coming_soon:"Notre document sur les conditions générales d'utilisation sera bientôt disponible.",
+    password_min_length: "Au moins 8 caractères",
+    password_number:"Au moins un chiffre",
+    password_uppercase: "Au moins une lettre majuscule",
+    password_lowercase:"Au moins une lettre minuscule",
+    password_special_char:"Au moins un caractère spécial",
+    password_fails_criteria:"Le mot de passe ne répond pas aux critères requis.",
+    report: "Rapport un professionnel",
+    submit: "Soumettre",
+    logging_out:"Déconnexion..."
 }
 
 export {en, fr}

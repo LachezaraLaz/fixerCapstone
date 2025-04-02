@@ -32,6 +32,7 @@ import { StripeProvider } from '@stripe/stripe-react-native';
 import issueDetails from "./src/screens/issueDetails/issueDetails";
 import ChatScreen from "./src/screens/chat/chatScreens";
 import { Text } from "react-native";
+import OldNotifications from "./src/screens/oldNotifications/oldNotifications";
 
 const Stack = createStackNavigator();
 
@@ -109,14 +110,15 @@ export default function App() {
                                             component={ProfilePage}
                                             options={{ headerShown: false }}  // This hides the default navigation header
                                         />
-                                        <Stack.Screen name="ContractOffer" component={ContractOffer} />
+                                        <Stack.Screen name="ContractOffer" component={ContractOffer} options={{ headerShown: false }} />
                                         <Stack.Screen name="FilterIssue" component={FilterIssuePage} options={{ headerShown: false }}/>
                                         <Stack.Screen name="MyJobs" component={MyJobsPage} />
                                         <Stack.Screen name="CredentialFormPage" component={CredentialFormPage} />
                                         <Stack.Screen name="UploadID" component={UploadID} />
                                         <Stack.Screen name="ThankYouPage" component={ThankYouPage} options={{ headerShown: false }} />
                                         <Stack.Screen name="NotificationPage" component={NotificationPage} options={{ headerShown: false }}/>
-                                        <Stack.Screen name="NotificationDetail" component={NotificationDetail}/>
+                                        <Stack.Screen name="NotificationDetail" component={NotificationDetail} options={{ headerShown: false }} />
+                                        <Stack.Screen name="OldNotifications" component={OldNotifications} options={{ headerShown: false }}/>
                                         <Stack.Screen name="ReviewsPage" component={ReviewsPage} />
                                         <Stack.Screen name="ProfessionalAccountSettingsPage" component={ProfessionalAccountSettingsPage}/>
                                         <Stack.Screen name="SettingsPage" component={SettingsPage} />
@@ -139,7 +141,7 @@ export default function App() {
                                         {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                     </Stack.Screen>
                                     <Stack.Screen name="SignUpPage" component={SignUpPage} options={{ headerShown: false }}/>
-                                    <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                    <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} options={{ headerShown: false }} />
                                     <Stack.Screen name="EnterPin" component={EnterPin} />
                                     <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
                                 </>

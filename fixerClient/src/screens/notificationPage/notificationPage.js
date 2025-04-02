@@ -58,47 +58,47 @@ const NotificationPage = () => {
         }
     };
 
-    /**
-     * Fetches more notifications from the server and updates the state.
-     * 
-     * This function will fetch additional notifications from the server if not currently loading and if there are more notifications to fetch.
-     * It retrieves the token from AsyncStorage and makes a GET request to the notification history endpoint.
-     * If new notifications are received, they are added to the existing notifications state.
-     * If no more notifications are available, it updates the state to indicate that there are no more notifications.
-     * 
-     * @async
-     * @function fetchMoreNotifications
-     * @returns {Promise<void>} A promise that resolves when the notifications have been fetched and the state has been updated.
-     */
-    const fetchMoreNotifications = async () => {
-        if (loading || !hasMore) return;
-
-        setLoading(true);
-        const token = await AsyncStorage.getItem('token');
-        try {
-            const response = await axios.get('https://fixercapstone-production.up.railway.app/notification/history', {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { page, limit: 5 }, // Fetch 5 notifications at a time
-            });
-
-            if (Array.isArray(response.data) && response.data.length > 0) {
-                const newNotifications = response.data.filter(
-                    (newNotification) => !notifications.some((notif) => notif._id === newNotification._id)
-                );
-                const merged = [...notifications, ...newNotifications];
-                const sorted = sortNotifications(merged);
-                setNotifications(sorted);
-                setPage((prevPage) => prevPage + 1);
-            } else {
-                setHasMore(false); // No more notifications
-            }
-        } catch (error) {
-            console.error('Error fetching more notifications:', error.message);
-            setHasMore(false);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // /**
+    //  * Fetches more notifications from the server and updates the state.
+    //  *
+    //  * This function will fetch additional notifications from the server if not currently loading and if there are more notifications to fetch.
+    //  * It retrieves the token from AsyncStorage and makes a GET request to the notification history endpoint.
+    //  * If new notifications are received, they are added to the existing notifications state.
+    //  * If no more notifications are available, it updates the state to indicate that there are no more notifications.
+    //  *
+    //  * @async
+    //  * @function fetchMoreNotifications
+    //  * @returns {Promise<void>} A promise that resolves when the notifications have been fetched and the state has been updated.
+    //  */
+    // const fetchMoreNotifications = async () => {
+    //     if (loading || !hasMore) return;
+    //
+    //     setLoading(true);
+    //     const token = await AsyncStorage.getItem('token');
+    //     try {
+    //         const response = await axios.get('https://fixercapstone-production.up.railway.app/notification/history', {
+    //             headers: { Authorization: `Bearer ${token}` },
+    //             params: { page, limit: 5 }, // Fetch 5 notifications at a time
+    //         });
+    //
+    //         if (Array.isArray(response.data) && response.data.length > 0) {
+    //             const newNotifications = response.data.filter(
+    //                 (newNotification) => !notifications.some((notif) => notif._id === newNotification._id)
+    //             );
+    //             const merged = [...notifications, ...newNotifications];
+    //             const sorted = sortNotifications(merged);
+    //             setNotifications(sorted);
+    //             setPage((prevPage) => prevPage + 1);
+    //         } else {
+    //             setHasMore(false); // No more notifications
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching more notifications:', error.message);
+    //         setHasMore(false);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     /**
      * Toggles the read status of a notification.
@@ -123,6 +123,8 @@ const NotificationPage = () => {
                         ? { ...notification, isRead: !isRead }
                         : notification
                 );
+                fetchNotifications();
+
                 return sortNotifications(updated);
             });
         } catch (error) {
@@ -142,6 +144,22 @@ const NotificationPage = () => {
             return 0; // If both unread or both read, leave as-is
         });
     };
+
+    // Old notifications
+    const notifTimeLimit = 4 * 24 * 60 * 60 * 1000;     // 4 days
+    const now = new Date();
+
+    // New list
+    const currentNotifications = notifications.filter((n) => {
+        const isOlderThanFiveDays = (now - new Date(n.createdAt)) > notifTimeLimit;
+        return !(n.isRead && isOlderThanFiveDays);
+    });
+
+    // Old List
+    const oldNotifications = notifications.filter((n) => {
+        const isOlderThanFiveDays = (now - new Date(n.createdAt)) > notifTimeLimit;
+        return n.isRead && isOlderThanFiveDays;
+    });
 
     /**
      * Renders a notification item.
@@ -174,7 +192,7 @@ const NotificationPage = () => {
     }
 
 
-
+    // Correct notifications depending on the language selected
     const correctNotification = (item) => {
         const message = item.message;
         let start = '';
@@ -202,42 +220,47 @@ const NotificationPage = () => {
 
         return [start, title, end]
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.containerHeader}>
-            {/*    <>*/}
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={28} color="orange" />
-                    </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
+                </TouchableOpacity>
 
-                    <Text style={styles.title}>Notifications</Text>
-            {/*    </>*/}
+                <Text style={styles.title}>Notifications</Text>
             </View>
-            {notifications.length === 0 ? (
+
+            {currentNotifications.length === 0 ? (
                 <Text style={styles.noNotifications}>{i18n.t('no_notifications_available')}</Text>
             ) : (
                 <>
-                <FlatList
-                    data={notifications}
-                    style={styles.list}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderNotification}
-                />
-                {hasMore ? (
-                    <OrangeButton
-                        style={{marginTop: 0}}
-                        title={loading ? `${i18n.t('loading')}` : `${i18n.t('load_more')}`}
-                        onPress={fetchMoreNotifications}
-                        disabled={loading}
+                    <FlatList
+                        data={currentNotifications}
+                        style={styles.list}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderNotification}
                     />
-                    ) : (
+                    {/*{hasMore ? (*/}
+                    {/*    <OrangeButton*/}
+                    {/*        style={{marginTop: 0}}*/}
+                    {/*        title={loading ? `${i18n.t('loading')}` : `${i18n.t('load_more')}`}*/}
+                    {/*        onPress={fetchMoreNotifications}*/}
+                    {/*        disabled={loading}*/}
+                    {/*    />*/}
+                    {/*) : (*/}
+                    {/*    <OrangeButton*/}
+                    {/*        style={{marginTop: 0}}*/}
+                    {/*        title={i18n.t('no_more_notifications')}*/}
+                    {/*        disabled={true}*/}
+                    {/*    />*/}
+                    {/*    )*/}
+                    {/*}*/}
                     <OrangeButton
-                        style={{marginTop: 0}}
-                        title={i18n.t('no_more_notifications')}
-                        disabled={true}
+                        title={i18n.t('view_old_notifications')}
+                        onPress={() => navigation.navigate('OldNotifications', { oldNotifications })}
+                        style={{ marginVertical: 0 }}
                     />
-                    )
-                }
                 </>
             )}
         </View>
@@ -247,7 +270,7 @@ const NotificationPage = () => {
 const styles = StyleSheet.create({
     container: { 
         flex: 1, 
-        padding: 20, 
+        padding: 20,
         backgroundColor: '#fff' 
     },
     containerHeader: {
@@ -270,7 +293,6 @@ const styles = StyleSheet.create({
     },
     list: {
         marginTop: 10,
-        marginBottom: 40,
     },
     notificationContainer: {
         borderRadius: 12,
@@ -311,32 +333,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20
     },
-    loadMoreButton: {
-        position: 'absolute',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        bottom: 10,
-        backgroundColor: '#007BFF',
-        borderRadius: 5,
-        marginTop: 20,
-        alignItems: 'center',
-        alignSelf: 'center',
-        elevation: 2,
-    },
-    loadMoreText: { 
-        color: 'white', 
-        fontSize: 16 
-    },
-    noMoreNotifications: {
-        position: 'absolute',
-        fontSize: 16,
-        bottom: 10,
-        color: 'gray',
-        textAlign: 'center',
-        alignSelf: 'center',
-        marginTop: 20,
-    },
-
 });
 
 export default NotificationPage;

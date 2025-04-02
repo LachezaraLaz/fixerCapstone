@@ -80,7 +80,9 @@ export default function NavBar({ setIsLoggedIn }) {
             </Tab.Screen>
             <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
             <Tab.Screen name="Chat" component={ChatScreens} />
-            <Tab.Screen name="Profile" component={ProfilePage} />
+            <Tab.Screen name="Profile">
+                {props => <ProfilePage {...props} setIsLoggedIn={setIsLoggedIn} />}
+            </Tab.Screen>
         </Tab.Navigator>
     );
 }

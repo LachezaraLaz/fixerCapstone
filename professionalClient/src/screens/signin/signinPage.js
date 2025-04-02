@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import InputField  from '../../../components/inputField';
 import PasswordField from '../../../components/passwordField';
+import CustomAlertError from "../../../components/customAlertError";
 
 /**
  * @module professionalClient
@@ -18,6 +19,10 @@ export default function SignInPage({ setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
+
+    //For custom alerts
+    const [customAlertVisible, setCustomAlertVisible] = useState(false);
+    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
 
     /**
      * Handles the sign-in process for a professional user.
@@ -32,7 +37,11 @@ export default function SignInPage({ setIsLoggedIn }) {
      */
     const handleSignIn = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Both fields are required');
+            setCustomAlertContent({
+                title: 'Error',
+                message: 'Both fields are required',
+            });
+            setCustomAlertVisible(true);
             return;
         }
 
@@ -64,11 +73,23 @@ export default function SignInPage({ setIsLoggedIn }) {
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {
-                Alert.alert("Error", error.response.data.statusText || 'Wrong email or password');
+                setCustomAlertContent({
+                    title: 'Error',
+                    message: 'Wrong email or password.',
+                });
+                setCustomAlertVisible(true);
             } else if(error.response.status === 403) {
-                Alert.alert('Please verify your email before logging in.');
+                setCustomAlertContent({
+                    title: 'Error',
+                    message: 'Please verify your email before logging in.',
+                });
+                setCustomAlertVisible(true);
             } else {
-                Alert.alert("Error", 'An unexpected error occurred');
+                setCustomAlertContent({
+                    title: 'Error',
+                    message: 'An unexpected error occurred.',
+                });
+                setCustomAlertVisible(true);
             }
         }
     };
@@ -77,8 +98,7 @@ export default function SignInPage({ setIsLoggedIn }) {
         <View style={styles.container}>
             <Text style={styles.title}>Sign In</Text>
             <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={28} color="#1E90FF" />
-                <Text style={styles.backText}>Back</Text>
+                <Ionicons name="arrow-back" size={28} color="orange" />
             </TouchableOpacity>
 
             {/* Email Field */}
@@ -117,6 +137,14 @@ export default function SignInPage({ setIsLoggedIn }) {
             <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordPage')}>
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
+
+            <CustomAlertError
+                visible={customAlertVisible}
+                title={customAlertContent.title}
+                message={customAlertContent.message}
+                onClose={() => setCustomAlertVisible(false)}
+            />
+
         </View>
     );
 }

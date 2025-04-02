@@ -51,7 +51,7 @@ export default function SignInPage() {
         <div style={{ fontFamily: "'Poppins', sans-serif" }}>
             {/* Header */}
             <header style={styles.header}>
-                <h1 style={styles.headerText}>Fixer Admin</h1>
+                <h1 style={styles.headerText}>Fixr Admin</h1>
             </header>
         <div style={styles.container}>
             <h1 style={styles.title}>Sign In</h1>

@@ -15,7 +15,7 @@ function App() {
                 <Route path="/verification-status" element={<VerificationStatus />} />
                 <Route path="/verify-email" element={<VerifyEmailPage />} />
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                <Route path="/" element={<Navigate to="/signup" replace />} />
+                <Route path="/" element={<Navigate to="/signin" replace />} />
             </Routes>
         </Router>
     );

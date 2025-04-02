@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet, Keyboard} from 'react-native';
 import HomeScreen from '../src/screens/homeScreen/homeScreen';
 import MyJobsProfessional from '../src/screens/myJobs/myJobs';
 import ChatScreens from './screens/chat/chatScreens';
@@ -16,6 +16,23 @@ export default function NavBar({ setIsLoggedIn }) {
         Chat: 'Chat',
         Profile: 'Profile',
     };
+
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+            setKeyboardVisible(true);
+        });
+
+        const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+            setKeyboardVisible(false);
+        });
+
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
 
     return (
         <Tab.Navigator
@@ -45,7 +62,7 @@ export default function NavBar({ setIsLoggedIn }) {
                 tabBarShowLabel: false,
                 tabBarActiveTintColor: 'orange',  // Active icon color
                 tabBarInactiveTintColor: 'gray',  // Inactive icon color
-                tabBarStyle: {
+                tabBarStyle: isKeyboardVisible ? { display: 'none' } : {
                     backgroundColor: 'white',
                     borderTopLeftRadius: 20,
                     borderTopRightRadius: 20,

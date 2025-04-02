@@ -154,21 +154,21 @@ export default function SignUpPage({ navigation }) {
     const formatPostalCode = (text) => {
         // Remove all non-alphanumeric characters
         let formattedText = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-    
+
         // Limit to 6 characters (A1B2C3) before formatting
         formattedText = formattedText.slice(0, 6);
-    
+
         // Insert space after the first 3 characters if enough characters exist
         if (formattedText.length > 3) {
             formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
         }
-    
+
         // Limit final result to 7 characters (A1B 2C3)
         formattedText = formattedText.slice(0, 7);
-    
+
         setPostalCode(formattedText);
     };
-    
+
 
     // Check if email and password are valid to show name and address fields
     const checkEmailAndPassword = () => {
@@ -250,7 +250,6 @@ export default function SignUpPage({ navigation }) {
             });
             setCustomAlertVisible(true);
             //Alert.alert('Error', 'Please verify your address');
-            return;
         } else {
             try {
                 const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/register`, {
@@ -407,19 +406,19 @@ export default function SignUpPage({ navigation }) {
                 {password.length > 0 && (
                     <View style={styles.passwordCriteriaContainer}>
                         <Text style={[styles.criteriaText, hasMinLength && styles.criteriaMet]}>
-                            {hasMinLength ? '✓' : '•'} At least 8 characters
+                            {hasMinLength ? '✓' : '•'} {i18n.t('password_min_length')}
                         </Text>
                         <Text style={[styles.criteriaText, hasNumber && styles.criteriaMet]}>
-                            {hasNumber ? '✓' : '•'} At least one number
+                            {hasNumber ? '✓' : '•'} {i18n.t('password_number')}
                         </Text>
                         <Text style={[styles.criteriaText, hasUppercase && styles.criteriaMet]}>
-                            {hasUppercase ? '✓' : '•'} At least one uppercase letter
+                            {hasUppercase ? '✓' : '•'} {i18n.t('password_uppercase')}
                         </Text>
                         <Text style={[styles.criteriaText, hasLowercase && styles.criteriaMet]}>
-                            {hasLowercase ? '✓' : '•'} At least one lowercase letter
+                            {hasLowercase ? '✓' : '•'} {i18n.t('password_lowercase')}
                         </Text>
                         <Text style={[styles.criteriaText, hasSpecialChar && styles.criteriaMet]}>
-                            {hasSpecialChar ? '✓' : '•'} At least one special character
+                            {hasSpecialChar ? '✓' : '•'} {i18n.t('password_special_char')}
                         </Text>
                     </View>
                 )}
@@ -489,7 +488,7 @@ export default function SignUpPage({ navigation }) {
                         <OrangeButton title={i18n.t('verify_address')} onPress={handleVerifyAddress} variant="normal" />
 
                         {isAddressValid && (
-                                <Text style={styles.text}>{i18n.t('valid_address_entered')}</Text>
+                            <Text style={styles.text}>{i18n.t('valid_address_entered')}</Text>
                         )}
 
                         {coordinates && (

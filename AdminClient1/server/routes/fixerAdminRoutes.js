@@ -4,7 +4,7 @@ const { verifyAdminEmailPost } = require("../controller/adminVerification");
 const { loginAdmin } = require("../controller/adminLogin");
 const { changePassword } = require("../controller/changePassword");
 const { authMiddleware } = require("../middleware/authMiddleware");
-const { getClients } = require("../controller/clientController");
+const { getClients, banUser} = require("../controller/clientController");
 const { getJobs } = require("../controller/jobController");
 const { getQuotes } = require("../controller/quoteController");
 
@@ -31,6 +31,8 @@ adminRouter.get("/jobs", authMiddleware, getJobs);
 
 // Fetching quotes route
 adminRouter.get("/quotes", authMiddleware, getQuotes);
+// Ban/Unban User Route
+adminRouter.patch("/clients/ban/:userId", authMiddleware, banUser)
 
 
 

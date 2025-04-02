@@ -285,6 +285,7 @@ export default function AdminDashboard() {
                     }))
                 ].sort((a, b) => b.date - a.date).slice(0, 5);
 
+
                 return (
                     <div style={styles.tabContent}>
                         <h2 style={styles.tabTitle}>Dashboard Overview</h2>
@@ -1000,6 +1001,41 @@ export default function AdminDashboard() {
         }
     };
 
+    const toggleBan = async (userId, newBanStatus) => {
+        try {
+            const token = localStorage.getItem("authToken"); // Get token from storage
+            if (!token) {
+                alert("You must be logged in to perform this action.");
+                return;
+            }
+
+            console.log(`Attempting to ban user: ${userId} with status: ${newBanStatus}`);
+
+            const response = await fetch(`/api/admin/clients/ban/${userId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` // Send token
+                },
+                body: JSON.stringify({ banned: newBanStatus }),
+            });
+
+            const data = await response.json();
+            console.log("Response from server:", data);
+
+            if (response.ok) {
+                alert(`User has been ${newBanStatus ? "banned" : "unbanned"}`);
+                window.location.reload();
+            } else {
+                alert(`Failed to update ban status: ${data.message}`);
+            }
+        } catch (error) {
+            console.error("Error updating ban status:", error);
+        }
+    };
+
+
+
     return (
         <div style={{ fontFamily: "'Poppins', sans-serif" }}>
             {/* Header */}
@@ -1120,6 +1156,38 @@ export default function AdminDashboard() {
                                     <p><strong>Payment Setup:</strong> {selectedEntry.paymentSetup ? "Yes" : "No"}</p>
                                     <p><strong>Stripe Account ID:</strong> {selectedEntry.stripeAccountId ?? "Not connected"}</p>
                                     <p><strong>Banking Info Added:</strong> {selectedEntry.bankingInfoAdded ? "Yes" : "No"}</p>
+                                    <button
+                                        style={selectedEntry.banned ? styles.greenButton : styles.button}
+                                        onMouseEnter={(e) =>
+                                            Object.assign(
+                                                e.target.style,
+                                                selectedEntry.banned ? styles.greenButtonHover : styles.buttonHover
+                                            )
+                                        }
+                                        onMouseLeave={(e) =>
+                                            Object.assign(
+                                                e.target.style,
+                                                selectedEntry.banned ? styles.greenButton : styles.button
+                                            )
+                                        }
+                                        onMouseDown={(e) =>
+                                            Object.assign(
+                                                e.target.style,
+                                                selectedEntry.banned ? styles.greenButtonActive : styles.buttonActive
+                                            )
+                                        }
+                                        onMouseUp={(e) =>
+                                            Object.assign(
+                                                e.target.style,
+                                                selectedEntry.banned ? styles.greenButtonHover : styles.buttonHover
+                                            )
+                                        }
+                                        onClick={() => toggleBan(selectedEntry._id, !selectedEntry.banned)}
+                                    >
+                                        {selectedEntry.banned ? "Unban" : "Ban"}
+                                    </button>
+
+
                                 </>
                             )}
 
@@ -1531,5 +1599,48 @@ const styles = {
         margin: "0",
         fontSize: "14px",
     },
+    button: {
+        padding: "12px 24px",
+        fontSize: "16px",
+        fontWeight: "bold",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        color: "#fff",
+        background: "linear-gradient(135deg, #ff4d4d, #c40000)",
+        boxShadow: "0 4px 10px rgba(255, 77, 77, 0.4)",
+    },
+    buttonHover: {
+        background: "linear-gradient(135deg, #ff1a1a, #900000)",
+        boxShadow: "0 6px 14px rgba(255, 26, 26, 0.5)",
+        transform: "scale(1.05)"
+    },
+    buttonActive: {
+        transform: "scale(0.98)",
+        boxShadow: "0 2px 6px rgba(255, 0, 0, 0.6)"
+    },
+    greenButton: {
+        padding: "12px 24px",
+        fontSize: "16px",
+        fontWeight: "bold",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        color: "#fff",
+        background: "linear-gradient(135deg, #28a745, #218838)",
+        boxShadow: "0 4px 10px rgba(40, 167, 69, 0.4)",
+    },
+    greenButtonHover: {
+        background: "linear-gradient(135deg, #218838, #1e7e34)",
+        boxShadow: "0 6px 14px rgba(40, 167, 69, 0.5)",
+        transform: "scale(1.05)",
+    },
+    greenButtonActive: {
+        transform: "scale(0.98)",
+        boxShadow: "0 2px 6px rgba(40, 167, 69, 0.6)",
+    },
+    
 
 };

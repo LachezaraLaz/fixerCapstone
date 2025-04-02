@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert, Modal } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert, Modal, Animated, ActivityIndicator} from 'react-native';
+import { useRoute} from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LanguageContext } from "../../../context/LanguageContext";
@@ -38,11 +38,23 @@ export default function SettingsPage({ setIsLoggedIn, navigation }) {
     const [infoMessage, setInfoMessage] = useState('');
     const [infoTitle, setInfoTitle] = useState('');
 
+    // Logout animation
+    const [loggingOut, setLoggingOut] = useState(false);
+    const fadeAnim = useState(new Animated.Value(0))[0];
+
     const { chatClient } = useChatContext();
 
     const showFeatureUnavailableAlert = (featureName) => {
         setInfoTitle(i18n.t('coming_soon'));
-        setInfoMessage(i18n.t('appearance_feature_message'))
+
+        if (featureName === "Appearance") {
+            setInfoMessage(i18n.t('appearance_feature_message'));
+        } else if (featureName === "Privacy Policy") {
+            setInfoMessage(i18n.t('privacy_policy_coming_soon'));
+        } else if (featureName === "Terms & Conditions") {
+            setInfoMessage(i18n.t('terms_conditions_coming_soon'));
+        }
+
         setInfoAlertVisible(true);
     };
 
@@ -66,6 +78,17 @@ export default function SettingsPage({ setIsLoggedIn, navigation }) {
 
     const handleLogout = async () => {
         try {
+            // Start the logout process
+            setLoggingOut(true);
+
+            // Fade in animation
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 400,
+                useNativeDriver: true,
+            }).start();
+
+            // Perform logout operations
             if (chatClient) {
                 await chatClient.disconnectUser();
             }
@@ -75,13 +98,26 @@ export default function SettingsPage({ setIsLoggedIn, navigation }) {
             await AsyncStorage.removeItem('userId');
             await AsyncStorage.removeItem('userName');
 
-            setIsLoggedIn(false);
+            // Delay for smooth transition
+            setTimeout(() => {
+                // Fade out before completing logout
+                Animated.timing(fadeAnim, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true,
+                }).start(() => {
+                    // Finally set logged out state
+                    setIsLoggedIn(false);
+                });
+            }, 800); // Delay for 800ms to show the message
+
         } catch (error) {
-          console.error("Error logging out: ", error);
-          Alert.alert(i18n.t('error'), i18n.t('an_error_occurred_while_logging_out'));
+            console.error("Error logging out: ", error);
+            setLoggingOut(false); // Reset state if error
+            Alert.alert(i18n.t('error'), i18n.t('an_error_occurred_while_logging_out'));
         }
-      };
-      
+    };
+
 
     /**
      * Handles language change and shows success message
@@ -116,12 +152,12 @@ export default function SettingsPage({ setIsLoggedIn, navigation }) {
 
     const handleBack = () => {
         if (navigation.canGoBack()) {
-          navigation.goBack();
+            navigation.goBack();
         } else {
-          navigation.navigate('ProfilePage'); // fallback
+            navigation.navigate('ProfilePage'); // fallback
         }
-      };
-      
+    };
+
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -149,6 +185,10 @@ export default function SettingsPage({ setIsLoggedIn, navigation }) {
                 <TouchableOpacity style={styles.option} onPress={showLanguageSelection}>
                     <Text style={styles.optionText}>{i18n.t('language')}</Text>
                     <Text style={styles.optionValue}>{locale === 'en' ? 'English' : 'Français'}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Privacy Policy")}>
+                    <Text style={styles.optionText}>{i18n.t('privacy_policy')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.option} onPress={() => showFeatureUnavailableAlert("Terms & Conditions")}>
@@ -229,6 +269,28 @@ export default function SettingsPage({ setIsLoggedIn, navigation }) {
                 message={infoMessage}
                 onClose={() => setInfoAlertVisible(false)}
             />
+
+            {loggingOut && (
+                <Animated.View
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        opacity: fadeAnim,
+                        zIndex: 1000,
+                    }}
+                >
+                    <ActivityIndicator size="large" color="#f28500" />
+                    <Text style={{marginTop: 20, fontSize: 18, fontWeight: 'bold'}}>
+                        {i18n.t('logging_out')}
+                    </Text>
+                </Animated.View>
+            )}
 
         </SafeAreaView>
     );
@@ -373,3 +435,4 @@ const styles = {
         fontSize: 14,
     },
 };
+

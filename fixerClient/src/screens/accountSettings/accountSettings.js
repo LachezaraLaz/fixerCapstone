@@ -15,6 +15,14 @@ import CustomAlertError from '../../../components/customAlertError'
 const AccountSettingsPage = () => {
     const navigation = useNavigation();
 
+    // Password criteria states
+    const [hasMinLength, setHasMinLength] = useState(false);
+    const [hasNumber, setHasNumber] = useState(false);
+    const [hasUppercase, setHasUppercase] = useState(false);
+    const [hasLowercase, setHasLowercase] = useState(false);
+    const [hasSpecialChar, setHasSpecialChar] = useState(false);
+    const isPasswordValid = hasMinLength && hasNumber && hasUppercase && hasLowercase && hasSpecialChar;
+
     // State for form data
     const [formData, setFormData] = useState({
         firstName: '',
@@ -98,6 +106,22 @@ const AccountSettingsPage = () => {
 
         fetchProfileData();
     }, []);
+
+    // Function to validate password strength
+    const validatePassword = (password) => {
+        setHasMinLength(password.length >= 8);
+        setHasNumber(/\d/.test(password));
+        setHasUppercase(/[A-Z]/.test(password));
+        setHasLowercase(/[a-z]/.test(password));
+        setHasSpecialChar(/[\W_]/.test(password)); // Special characters include anything that's not a letter or number
+    };
+
+// Use useEffect to validate password whenever it changes
+    useEffect(() => {
+        if (formData.newPassword) {
+            validatePassword(formData.newPassword);
+        }
+    }, [formData.newPassword]);
 
     // Handle input changes
     const handleInputChange = (field, value) => {
@@ -232,6 +256,16 @@ const AccountSettingsPage = () => {
                 visible: true,
                 title: i18n.t('error'),
                 message: i18n.t('new_passwords_match_error')
+            });
+            return;
+        }
+
+        //new check for password complexity
+        if (formData.newPassword && !isPasswordValid) {
+            setErrorAlert({
+                visible: true,
+                title: i18n.t('error'),
+                message: i18n.t('password_fails_criteria')
             });
             return;
         }
@@ -375,9 +409,26 @@ const AccountSettingsPage = () => {
         if (!isEditing) {
             // Entering edit mode - save current data as original
             setOriginalData({...formData});
+        } else {
+            // Exiting edit mode - reset password fields and validation state
+            setFormData(prevState => ({
+                ...prevState,
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            }));
+            setIsCurrentPasswordValid(false);
+
+            // Reset password criteria
+            setHasMinLength(false);
+            setHasNumber(false);
+            setHasUppercase(false);
+            setHasLowercase(false);
+            setHasSpecialChar(false);
         }
         setIsEditing(!isEditing);
-    };
+    }
+
 
     const hasFormChanged = () => {
         if (!originalData) return false;
@@ -396,7 +447,8 @@ const AccountSettingsPage = () => {
             isCurrentPasswordValid &&
             formData.newPassword &&
             formData.confirmPassword &&
-            formData.newPassword === formData.confirmPassword;
+            formData.newPassword === formData.confirmPassword &&
+            isPasswordValid; // Add password validation check here
 
         return basicFieldsChanged || passwordChanged;
     };
@@ -430,171 +482,194 @@ const AccountSettingsPage = () => {
                     style={{ flex: 1 }}
                     keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
                 >
-            <ScrollView contentContainerStyle={styles.container}>
-                {loading ? <Text>Loading...</Text> : (
-                    <>
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>{i18n.t('first_name')}</Text>
-                            <InputField
-                                value={formData.firstName}
-                                onChangeText={(text) => handleInputChange('firstName', text)}
-                                disabled={!isEditing}
-                                showFloatingLabel={false}
-                            />
-                        </View>
-
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>{i18n.t('last_name')}</Text>
-                            <InputField
-                                value={formData.lastName}
-                                onChangeText={(text) => handleInputChange('lastName', text)}
-                                disabled={!isEditing}
-                                showFloatingLabel={false}
-                            />
-                        </View>
-
-                        {/* Address Fields with Visual Indicators */}
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>{i18n.t('street')}</Text>
-                            {/* <View style={styles.inputContainer}> */}
-                                <InputField
-                                    value={formData.street}
-                                    onChangeText={(text) => handleInputChange('street', text)}
-                                    disabled={!isEditing}
-                                    isValid={addressValidated}
-                                    showFloatingLabel={false}
-                                />
-                                {addressValidated && (
-                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
-                                )}
-                            {/* </View> */}
-                        </View>
-
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>{i18n.t('postal_code')}</Text>
-                            {/* <View style={styles.inputContainer}> */}
-                                <InputField
-                                    value={formData.postalCode}
-                                    onChangeText={(text) => handleInputChange('postalCode', text)}
-                                    disabled={!isEditing}
-                                    isValid={addressValidated}
-                                    showFloatingLabel={false}
-                                />
-                                {addressValidated && (
-                                    <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
-                                )}
-                            {/* </View> */}
-                        </View>
-{/*This part of the code is currently commented out since the app will only be used for Quebec and Canada. Kept for future expansion to other territories.*/}
-                        {/*<View style={styles.formGroup}>*/}
-                        {/*    <Text style={styles.label}>Province/State</Text>*/}
-                        {/*    <View style={styles.inputContainer}>*/}
-                        {/*        <TextInput*/}
-                        {/*            style={[*/}
-                        {/*                styles.inputWithIcon,*/}
-                        {/*                !isEditing && styles.disabledInput,*/}
-                        {/*                addressValidated && styles.validInput*/}
-                        {/*            ]}*/}
-                        {/*            value={formData.provinceOrState}*/}
-                        {/*            onChangeText={(text) => handleInputChange('provinceOrState', text)}*/}
-                        {/*            editable={isEditing}*/}
-                        {/*        />*/}
-                        {/*        {addressValidated && (*/}
-                        {/*            <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />*/}
-                        {/*        )}*/}
-                        {/*    </View>*/}
-                        {/*</View>*/}
-
-                        {/*<View style={styles.formGroup}>*/}
-                        {/*    <Text style={styles.label}>Country</Text>*/}
-                        {/*    <View style={styles.inputContainer}>*/}
-                        {/*        <TextInput*/}
-                        {/*            style={[*/}
-                        {/*                styles.inputWithIcon,*/}
-                        {/*                !isEditing && styles.disabledInput,*/}
-                        {/*                addressValidated && styles.validInput*/}
-                        {/*            ]}*/}
-                        {/*            value={formData.country}*/}
-                        {/*            onChangeText={(text) => handleInputChange('country', text)}*/}
-                        {/*            editable={isEditing}*/}
-                        {/*        />*/}
-                        {/*        {addressValidated && (*/}
-                        {/*            <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />*/}
-                        {/*        )}*/}
-                        {/*    </View>*/}
-                        {/*</View>*/}
-
-                        {/* Address Verification Button */}
-                        {isEditing && <AddressVerificationButton />}
-
-                        <View style={styles.formGroup}>
-                            <Text style={styles.label}>{i18n.t('current_password')}</Text>
-                            <InputField
-                                value={formData.currentPassword}
-                                onChangeText={(text) => handleInputChange('currentPassword', text)}
-                                disabled={!isEditing}
-                                secureTextEntry={true}
-                            />
-                            {isEditing && (
-                                <OrangeButton
-                                    title={i18n.t('validate')}
-                                    onPress={validateCurrentPassword}
-                                    testID="validate-password-button"
-                                    style={{marginTop: 10}}
-                                />
-                            )}
-                        </View>
-
-                        {isCurrentPasswordValid && (
+                    <ScrollView contentContainerStyle={styles.container}>
+                        {loading ? <Text>Loading...</Text> : (
                             <>
                                 <View style={styles.formGroup}>
-                                    <Text style={styles.label}>{i18n.t('new_password')}</Text>
+                                    <Text style={styles.label}>{i18n.t('first_name')}</Text>
                                     <InputField
-                                        value={formData.newPassword}
-                                        onChangeText={(text) => handleInputChange('newPassword', text)}
-                                        secureTextEntry={true}
+                                        value={formData.firstName}
+                                        onChangeText={(text) => handleInputChange('firstName', text)}
+                                        disabled={!isEditing}
+                                        showFloatingLabel={false}
                                     />
                                 </View>
+
                                 <View style={styles.formGroup}>
-                                    <Text style={styles.label}>{i18n.t('confirm_password')}</Text>
+                                    <Text style={styles.label}>{i18n.t('last_name')}</Text>
                                     <InputField
-                                        value={formData.confirmPassword}
-                                        onChangeText={(text) => handleInputChange('confirmPassword', text)}
-                                        secureTextEntry={true}
-                                        isValid={formData.newPassword && formData.confirmPassword &&
-                                            formData.newPassword === formData.confirmPassword}
-                                        isError={formData.newPassword && formData.confirmPassword &&
-                                            formData.newPassword !== formData.confirmPassword}
+                                        value={formData.lastName}
+                                        onChangeText={(text) => handleInputChange('lastName', text)}
+                                        disabled={!isEditing}
+                                        showFloatingLabel={false}
                                     />
-                                    {formData.newPassword && formData.confirmPassword && (
-                                        <Text style={{
-                                            color: formData.newPassword === formData.confirmPassword ? 'green' : 'red',
-                                            marginTop: 5
-                                        }}>
-                                            {formData.newPassword === formData.confirmPassword
-                                                ? i18n.t('new_passwords_match')
-                                                : i18n.t('new_passwords_mismatch')}
-                                        </Text>
+                                </View>
+
+                                {/* Address Fields with Visual Indicators */}
+                                <View style={styles.formGroup}>
+                                    <Text style={styles.label}>{i18n.t('street')}</Text>
+                                    {/* <View style={styles.inputContainer}> */}
+                                    <InputField
+                                        value={formData.street}
+                                        onChangeText={(text) => handleInputChange('street', text)}
+                                        disabled={!isEditing}
+                                        isValid={addressValidated}
+                                        showFloatingLabel={false}
+                                    />
+                                    {addressValidated && (
+                                        <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
+                                    )}
+                                    {/* </View> */}
+                                </View>
+
+                                <View style={styles.formGroup}>
+                                    <Text style={styles.label}>{i18n.t('postal_code')}</Text>
+                                    {/* <View style={styles.inputContainer}> */}
+                                    <InputField
+                                        value={formData.postalCode}
+                                        onChangeText={(text) => handleInputChange('postalCode', text)}
+                                        disabled={!isEditing}
+                                        isValid={addressValidated}
+                                        showFloatingLabel={false}
+                                    />
+                                    {addressValidated && (
+                                        <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />
+                                    )}
+                                    {/* </View> */}
+                                </View>
+                                {/*This part of the code is currently commented out since the app will only be used for Quebec and Canada. Kept for future expansion to other territories.*/}
+                                {/*<View style={styles.formGroup}>*/}
+                                {/*    <Text style={styles.label}>Province/State</Text>*/}
+                                {/*    <View style={styles.inputContainer}>*/}
+                                {/*        <TextInput*/}
+                                {/*            style={[*/}
+                                {/*                styles.inputWithIcon,*/}
+                                {/*                !isEditing && styles.disabledInput,*/}
+                                {/*                addressValidated && styles.validInput*/}
+                                {/*            ]}*/}
+                                {/*            value={formData.provinceOrState}*/}
+                                {/*            onChangeText={(text) => handleInputChange('provinceOrState', text)}*/}
+                                {/*            editable={isEditing}*/}
+                                {/*        />*/}
+                                {/*        {addressValidated && (*/}
+                                {/*            <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />*/}
+                                {/*        )}*/}
+                                {/*    </View>*/}
+                                {/*</View>*/}
+
+                                {/*<View style={styles.formGroup}>*/}
+                                {/*    <Text style={styles.label}>Country</Text>*/}
+                                {/*    <View style={styles.inputContainer}>*/}
+                                {/*        <TextInput*/}
+                                {/*            style={[*/}
+                                {/*                styles.inputWithIcon,*/}
+                                {/*                !isEditing && styles.disabledInput,*/}
+                                {/*                addressValidated && styles.validInput*/}
+                                {/*            ]}*/}
+                                {/*            value={formData.country}*/}
+                                {/*            onChangeText={(text) => handleInputChange('country', text)}*/}
+                                {/*            editable={isEditing}*/}
+                                {/*        />*/}
+                                {/*        {addressValidated && (*/}
+                                {/*            <Ionicons name="checkmark-circle" size={24} color="green" style={styles.inputIcon} />*/}
+                                {/*        )}*/}
+                                {/*    </View>*/}
+                                {/*</View>*/}
+
+                                {/* Address Verification Button */}
+                                {isEditing && <AddressVerificationButton />}
+
+                                <View style={styles.formGroup}>
+                                    <Text style={styles.label}>{i18n.t('current_password')}</Text>
+                                    <InputField
+                                        value={formData.currentPassword}
+                                        onChangeText={(text) => handleInputChange('currentPassword', text)}
+                                        disabled={!isEditing}
+                                        secureTextEntry={true}
+                                    />
+                                    {isEditing && (
+                                        <OrangeButton
+                                            title={i18n.t('validate')}
+                                            onPress={validateCurrentPassword}
+                                            testID="validate-password-button"
+                                            style={{marginTop: 10}}
+                                        />
                                     )}
                                 </View>
+
+                                {isCurrentPasswordValid && (
+                                    <>
+                                        <View style={styles.formGroup}>
+                                            <Text style={styles.label}>{i18n.t('new_password')}</Text>
+                                            <InputField
+                                                style={styles.input}
+                                                secureTextEntry
+                                                value={formData.newPassword}
+                                                onChangeText={(text) => handleInputChange('newPassword', text)}
+                                                showFloatingLabel={false}
+                                                isValid={isPasswordValid && formData.newPassword.length > 0}
+                                                isError={!isPasswordValid && formData.newPassword.length > 0}
+                                            />
+                                            {formData.newPassword.length > 0 && (
+                                                <View style={styles.passwordCriteriaContainer}>
+                                                    <Text style={[styles.criteriaText, hasMinLength && styles.criteriaMet]}>
+                                                        {hasMinLength ? '✓' : '•'} {i18n.t('password_min_length')}
+                                                    </Text>
+                                                    <Text style={[styles.criteriaText, hasNumber && styles.criteriaMet]}>
+                                                        {hasNumber ? '✓' : '•'} {i18n.t('password_number')}
+                                                    </Text>
+                                                    <Text style={[styles.criteriaText, hasUppercase && styles.criteriaMet]}>
+                                                        {hasUppercase ? '✓' : '•'} {i18n.t('password_uppercase')}
+                                                    </Text>
+                                                    <Text style={[styles.criteriaText, hasLowercase && styles.criteriaMet]}>
+                                                        {hasLowercase ? '✓' : '•'} {i18n.t('password_lowercase')}
+                                                    </Text>
+                                                    <Text style={[styles.criteriaText, hasSpecialChar && styles.criteriaMet]}>
+                                                        {hasSpecialChar ? '✓' : '•'} {i18n.t('password_special_char')}
+                                                    </Text>
+                                                </View>
+                                            )}
+                                        </View>
+                                        <View style={styles.formGroup}>
+                                            <Text style={styles.label}>{i18n.t('confirm_password')}</Text>
+                                            <InputField
+                                                value={formData.confirmPassword}
+                                                onChangeText={(text) => handleInputChange('confirmPassword', text)}
+                                                secureTextEntry={true}
+                                                isValid={formData.newPassword && formData.confirmPassword &&
+                                                    formData.newPassword === formData.confirmPassword}
+                                                isError={formData.newPassword && formData.confirmPassword &&
+                                                    formData.newPassword !== formData.confirmPassword}
+                                            />
+                                            {formData.newPassword && formData.confirmPassword && (
+                                                <Text style={{
+                                                    color: formData.newPassword === formData.confirmPassword ? 'green' : 'red',
+                                                    marginTop: 5
+                                                }}>
+                                                    {formData.newPassword === formData.confirmPassword
+                                                        ? i18n.t('new_passwords_match')
+                                                        : i18n.t('new_passwords_mismatch')}
+                                                </Text>
+                                            )}
+                                        </View>
+                                    </>
+                                )}
+
+                                {isEditing && (
+                                    <OrangeButton
+                                        title={i18n.t('save_changes')}
+                                        onPress={handleSaveChanges}
+                                        testID="save-changes-button"
+                                        style={{
+                                            marginTop: 20,
+                                            opacity: hasFormChanged() ? 1 : 0.5,
+                                        }}
+                                        disabled={!hasFormChanged()}
+                                    />
+                                )}
                             </>
                         )}
-
-                        {isEditing && (
-                            <OrangeButton
-                                title={i18n.t('save_changes')}
-                                onPress={handleSaveChanges}
-                                testID="save-changes-button"
-                                style={{
-                                    marginTop: 20,
-                                    opacity: hasFormChanged() ? 1 : 0.5,
-                            }}
-                                disabled={!hasFormChanged()}
-                            />
-                        )}
-                    </>
-                )}
-            </ScrollView>
+                    </ScrollView>
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
 
@@ -704,6 +779,16 @@ const styles = StyleSheet.create({
     },
     validInput: {
         borderColor: 'green',
+    },
+    passwordCriteriaContainer: {
+        marginBottom: 15,
+    },
+    criteriaText: {
+        color: 'gray',
+        fontSize: 14,
+    },
+    criteriaMet: {
+        color: 'green',
     },
 });
 

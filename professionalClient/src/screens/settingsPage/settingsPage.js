@@ -41,6 +41,22 @@ export default function SettingsPage({ setIsLoggedIn, navigation }) {
         setInfoAlertVisible(true);
     };
 
+    /**
+     * Handles the user logout process.
+     *
+     * This function performs the following steps:
+     * 1. Disconnects the user from the chat client if it exists.
+     * 2. Removes the user's token, stream token, user ID, and user name from AsyncStorage.
+     * 3. Displays an alert indicating the user has been logged out successfully.
+     * 4. Sets the `isLoggedIn` state to false.
+     *
+     * If an error occurs during the logout process, it logs the error to the console
+     * and displays an alert indicating that an error occurred.
+     *
+     * @async
+     * @function handleLogout
+     * @returns {Promise<void>} A promise that resolves when the logout process is complete.
+     */
     const handleLogout = async () => {
         try {
             // Start the logout process

@@ -214,36 +214,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         };
     }, [navigation]);
 
-
-    /**
-     * Handles the user logout process.
-     *
-     * This function performs the following steps:
-     * 1. Disconnects the user from the chat client if it exists.
-     * 2. Removes the user's token, stream token, user ID, and user name from AsyncStorage.
-     * 3. Displays an alert indicating the user has been logged out successfully.
-     * 4. Sets the `isLoggedIn` state to false.
-     *
-     * If an error occurs during the logout process, it logs the error to the console
-     * and displays an alert indicating that an error occurred.
-     *
-     * @async
-     * @function handleLogout
-     * @returns {Promise<void>} A promise that resolves when the logout process is complete.
-     */
-    const handleLogout = async () => {
-        try {
-            if (chatClient) await chatClient.disconnectUser();
-            await AsyncStorage.multiRemove(['token', 'streamToken', 'userId', 'userName']);
-            // Alert.alert('Logged out', 'You have been logged out successfully');
-            setIsLoggedIn(false);
-        } catch (error) {
-            console.error("Error logging out: ", error);
-            Alert.alert('Error', 'An error occurred while logging out');
-        }
-    };
-
-
     /**
      * Filters issues based on selected work types, distance range, minimum rating, and timeline.
      *
@@ -706,12 +676,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     ))}
                 </View>
 
-                {/* Logout Button */}
-                <View style={styles.logoutContainer}>
-                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                        <Text style={styles.logoutText}>Logout</Text>
-                    </TouchableOpacity>
-                </View>
             </Animated.ScrollView>
             {selectedMarker && (
                 <Animated.View

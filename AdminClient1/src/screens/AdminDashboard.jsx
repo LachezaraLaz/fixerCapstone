@@ -1157,15 +1157,37 @@ export default function AdminDashboard() {
                                     <p><strong>Stripe Account ID:</strong> {selectedEntry.stripeAccountId ?? "Not connected"}</p>
                                     <p><strong>Banking Info Added:</strong> {selectedEntry.bankingInfoAdded ? "Yes" : "No"}</p>
                                     <button
-                                        style={styles.button}
-                                        onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
-                                        onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
-                                        onMouseDown={(e) => Object.assign(e.target.style, styles.buttonActive)}
-                                        onMouseUp={(e) => Object.assign(e.target.style, styles.buttonHover)}
+                                        style={selectedEntry.banned ? styles.greenButton : styles.button}
+                                        onMouseEnter={(e) =>
+                                            Object.assign(
+                                                e.target.style,
+                                                selectedEntry.banned ? styles.greenButtonHover : styles.buttonHover
+                                            )
+                                        }
+                                        onMouseLeave={(e) =>
+                                            Object.assign(
+                                                e.target.style,
+                                                selectedEntry.banned ? styles.greenButton : styles.button
+                                            )
+                                        }
+                                        onMouseDown={(e) =>
+                                            Object.assign(
+                                                e.target.style,
+                                                selectedEntry.banned ? styles.greenButtonActive : styles.buttonActive
+                                            )
+                                        }
+                                        onMouseUp={(e) =>
+                                            Object.assign(
+                                                e.target.style,
+                                                selectedEntry.banned ? styles.greenButtonHover : styles.buttonHover
+                                            )
+                                        }
                                         onClick={() => toggleBan(selectedEntry._id, !selectedEntry.banned)}
                                     >
                                         {selectedEntry.banned ? "Unban" : "Ban"}
                                     </button>
+
+
                                 </>
                             )}
 
@@ -1597,6 +1619,28 @@ const styles = {
     buttonActive: {
         transform: "scale(0.98)",
         boxShadow: "0 2px 6px rgba(255, 0, 0, 0.6)"
-    }
+    },
+    greenButton: {
+        padding: "12px 24px",
+        fontSize: "16px",
+        fontWeight: "bold",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        color: "#fff",
+        background: "linear-gradient(135deg, #28a745, #218838)",
+        boxShadow: "0 4px 10px rgba(40, 167, 69, 0.4)",
+    },
+    greenButtonHover: {
+        background: "linear-gradient(135deg, #218838, #1e7e34)",
+        boxShadow: "0 6px 14px rgba(40, 167, 69, 0.5)",
+        transform: "scale(1.05)",
+    },
+    greenButtonActive: {
+        transform: "scale(0.98)",
+        boxShadow: "0 2px 6px rgba(40, 167, 69, 0.6)",
+    },
+    
 
 };

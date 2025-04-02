@@ -6,32 +6,56 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFF',
     },
-    headerContainer: {
+    // headerContainer: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     justifyContent: 'space-between',
+    //     paddingHorizontal: 16,
+    //     paddingVertical: 12,
+    //     backgroundColor: '#fff',
+    // },
+
+    // backButton: {
+    //     width: 40,
+    //     height: 40,
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    // },
+
+    // headerCenter: {
+    //     flex: 1,
+    //     alignItems: 'center',
+    // },
+
+    header: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingTop: 20,
+        paddingBottom: 12,
         backgroundColor: '#fff',
+        borderBottomWidth: 0,
+        borderBottomColor: '#ddd',
     },
-
     backButton: {
-        width: 40,
-        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
     },
-
-    headerCenter: {
-        flex: 1,
-        alignItems: 'center',
-    },
-
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'black',
+        color: '#333',
+        textAlign: 'center',
+        flex: 1,
+        marginLeft: -28, // offset for back button if needed
     },
+
+    // headerTitle: {
+    //     fontSize: 18,
+    //     fontWeight: 'bold',
+    //     color: 'black',
+    // },
 
     /* Requests Section */
     requestsHeader: {

@@ -40,12 +40,24 @@ export default function AllCategories({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
+
+            {/* <View style={styles.header}>
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={20} color="black" />
+                    <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
-                <Text style={styles.title}>Categories</Text>
-                <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
+                <View style={styles.headerTitle}>
+                    <Text style={styles.title}>Categories</Text>
+                </View> */}
+                {/* <NotificationButton onPress={() => navigation.navigate('NotificationPage')} /> */}
+            {/* </View> */}
+            {/* Custom Header */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
+                </TouchableOpacity>
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={styles.headerTitle}>Categories</Text>
+                </View>
             </View>
 
             <FlatList

@@ -157,15 +157,25 @@ export default function OffersPage() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
             {/* header */}
-            <View style={styles.headerContainer}>
+            {/* <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
                 <View style={styles.headerCenter}>
                     <Text style={styles.headerTitle}>{i18n.t('offer_page_title')}</Text>
+                </View> */}
+                {/* <NotificationButton onPress={() => navigation.navigate('NotificationPage')} /> */}
+            {/* </View> */}
+
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange" />
+                </TouchableOpacity>
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={styles.headerTitle}>{i18n.t('offer_page_title')}</Text>
                 </View>
-                <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
             </View>
+            
 
 
             <ScrollView style={styles.requestsContainer}>

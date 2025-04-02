@@ -291,7 +291,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
                 {/* Requests Section */}
                 <View style={styles.requestsHeader}>
-                    <Text style={styles.requestsTitle}>{i18n.t('requests')}</Text>
+                    <Text style={styles.requestsTitle}>{i18n.t('offer_page_title')}</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('OffersPage')}>
                         <Text style={styles.viewAllText}>{i18n.t('view_all')}</Text>
                     </TouchableOpacity>

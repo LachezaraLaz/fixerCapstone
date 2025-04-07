@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 5003; // Change the port if needed
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URL)
-    .then(() => console.log("Connected to MongoDB from AdminClient1"))
+    .then(() => console.log("Connected to MongoDB from Administrator"))
     .catch(err => console.error("MongoDB connection error:", err));
 
 const server = app.listen(PORT, () => {

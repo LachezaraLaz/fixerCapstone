@@ -5,6 +5,7 @@ import { Chat } from "stream-chat-expo";
 import { useChatContext } from "./chatContext";
 import ChatListPage from "./chatListPage";
 import ChatPage from "./chatPage";
+import {ActivityIndicator, View} from "react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -12,7 +13,9 @@ export default function ChatScreens() {
     const { chatClient } = useChatContext();
 
     if (!chatClient) {
-        return null;
+        return <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="large" color="orange" />
+        </View>;
     }
 
     return (

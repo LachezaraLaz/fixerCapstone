@@ -8,6 +8,7 @@ server/node_modules/
 # Testing coverage files
 fixerClient/coverage/
 professionalClient/coverage/
+Administrator/coverage/
 
 # Logs
 

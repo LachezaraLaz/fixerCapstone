@@ -1,8 +1,3 @@
-// import { TextEncoder, TextDecoder } from "util";
-// global.TextEncoder = TextEncoder;
-// global.TextDecoder = TextDecoder;
-
-// SignInPage.test.jsx
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import SignInPage from "../SignInPage";

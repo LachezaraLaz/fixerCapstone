@@ -1,345 +1,282 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import CreateIssue from '../createIssue';
-import { Alert } from 'react-native';
+import { LanguageContext } from '../../../../context/LanguageContext';
+import { I18n } from 'i18n-js';
+import { en, fr } from '../../../../localization';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode';
-import * as ImagePicker from 'expo-image-picker';
 
-jest.mock('expo-image-picker', () => ({
-    MediaTypeOptions: {
-        Images: 'Images',
-    },
-    requestMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
-    launchImageLibraryAsync: jest.fn(() =>
-        Promise.resolve({
-            canceled: false,
-            assets: [{ uri: 'test-image-uri' }],
-        })
-    ),
-}));
+// code to run only this file through the terminal:
+// npm run test ./src/screens/createIssue/__tests__/createIssue.test.js
+// or
+// npm run test-coverage ./src/screens/createIssue/__tests__/createIssue.test.js
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
-    getItem: jest.fn(),
-}));
-jest.mock('jwt-decode', () => jest.fn());
+// Mock external libs
 jest.mock('axios');
-jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(),
+}));
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: () => null,
+}));
+jest.mock('expo-image-picker', () => ({
+  requestMediaLibraryPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
+  launchImageLibraryAsync: jest.fn().mockResolvedValue({ canceled: true }),
+}));
+jest.mock('jwt-decode', () => ({
+    jwtDecode: () => ({ email: 'user@example.com' }),
+}));
 
-describe('CreateIssue Component', () => {
-    let mockNavigation;
+// Mock alert components
+jest.mock('../../../../components/customAlertError', () => {
+    const React = require('react');
+    const { Text } = require('react-native');
+    return {
+      __esModule: true,
+      default: ({ visible, title, message }) =>
+        visible ? (
+          <Text>{`${title}: ${message}`}</Text>
+        ) : null,
+    };
+});
+
+jest.mock('../../../../components/customAlertSuccess', () => {
+  const React = require('react');
+  const { Text } = require('react-native');
+  return {
+    __esModule: true,
+    default: ({ visible, title, message }) =>
+      visible ? <Text>{title}: {message}</Text> : null,
+  };
+});
+
+// Mock ProfessionalSelector to allow input
+jest.mock('../../../../components/searchAndSelectTagField', () => {
+    const React = require('react');
+    const { View, TextInput } = require('react-native');
+    return ({ selectedProfessionals, setSelectedProfessionals }) => (
+      <View>
+        <TextInput
+          placeholder="Type a professional (e.g. Plumber)"
+          value={selectedProfessionals[0] || ''}
+          onChangeText={(text) => setSelectedProfessionals([text])}
+        />
+      </View>
+    );
+});
+
+// Mock DropdownField
+jest.mock('../../../../components/dropdownField', () => {
+    const React = require('react');
+    const { View, Text, TouchableOpacity } = require('react-native');
+    return ({ setValue }) => (
+      <TouchableOpacity onPress={() => setValue('low-priority')}>
+        <Text>Select Timeline</Text>
+      </TouchableOpacity>
+    );
+ });
+  
+const mockNavigation = {
+    goBack: jest.fn(),
+};
+  
+
+// Utility render function with context
+const renderWithContext = (component) => {
+    return render(
+      <LanguageContext.Provider value={{ locale: 'en', setLocale: jest.fn() }}>
+        {component}
+      </LanguageContext.Provider>
+    );
+};
+
+const i18n = new I18n({ en, fr });
+i18n.locale = 'en';
+
+describe('CreateIssue', () => {
+    const mockNavigation = { goBack: jest.fn() };
+
     beforeEach(() => {
         jest.clearAllMocks();
-
-        mockNavigation = { goBack: jest.fn() };
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        jwtDecode.mockReturnValue({ email: 'user@example.com' });
-
-        // Default ImagePicker mocks
-        ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValue({ granted: true });
-        ImagePicker.launchImageLibraryAsync.mockResolvedValue({
-            canceled: false,
-            assets: [{ uri: 'test-image-uri' }],
-        });
+        AsyncStorage.getItem.mockResolvedValue('mock-token');
     });
 
-    const setup = () => {
-        return render(<CreateIssue navigation={mockNavigation} />);
-    };
+    test('renders essential input fields', () => {
+        const { getAllByText, getByPlaceholderText } = renderWithContext(<CreateIssue navigation={mockNavigation} />);
+        expect(getAllByText(i18n.t('create_job')).length).toBeGreaterThanOrEqual(1);
+        expect(getByPlaceholderText(i18n.t('title'))).toBeTruthy();
+        expect(getByPlaceholderText(i18n.t('describe_your_service'))).toBeTruthy();
+    });
 
-    test('displays an alert if fields are empty', async () => {
-        const { getByTestId } = render(<CreateIssue />);
-        const postButton = getByTestId('post-job-button');
+    test('shows address error on address verification failure', async () => {
+        axios.post.mockRejectedValueOnce(new Error('Verification Failed'));
 
-        fireEvent.press(postButton);
+        const { getByText, getByPlaceholderText } = renderWithContext(<CreateIssue navigation={mockNavigation} />);
+        
+        // Switch to custom location
+        fireEvent.press(getByText(i18n.t('enter_new_address')));
 
-        expect(Alert.alert).toHaveBeenCalledWith(
-            "Some fields are empty. Please complete everything for the professional to give you the most informed quote!"
+        fireEvent.changeText(getByPlaceholderText(i18n.t('street_address')), '123 Maple St');
+        fireEvent.changeText(getByPlaceholderText(i18n.t('postal_code')), 'A1B2C3');
+        fireEvent.press(getByText(i18n.t('verify_address')));
+
+        await waitFor(() => {
+            expect(getByText('Address Error: Could not verify the address. Please double-check your info.')).toBeTruthy();
+        });      
+    });
+
+    test('navigates back when back button is pressed', () => {
+        const { getByTestId } = renderWithContext(<CreateIssue navigation={mockNavigation} />);
+        fireEvent.press(getByTestId('back-button'));
+        expect(mockNavigation.goBack).toHaveBeenCalled();
+    });
+
+    test('fills all required fields and enables submit', async () => {
+        const { getByPlaceholderText, getByText, getByTestId } = renderWithContext(
+          <CreateIssue navigation={mockNavigation} />
         );
-    });
-
-    test('shows an alert if description is too short', async () => {
-        const { getByPlaceholderText, getByTestId } = setup();
-
-        fireEvent.changeText(getByPlaceholderText('Describe your service'), 'Too short');
-        fireEvent.press(getByTestId('post-job-button'));
-
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith(
-                'Invalid Description',
-                'Some fields are empty. Please complete everything for the professional to give you the most informed quote!'
-            );
+      
+        // Fill title
+        fireEvent.changeText(getByPlaceholderText('Title'), 'Leaky faucet');
+      
+        // Fill description
+        fireEvent.changeText(getByPlaceholderText('Describe your service'), 'Fix leaking kitchen faucet');
+      
+        // Select professional
+        fireEvent.changeText(getByPlaceholderText('Type a professional (e.g. Plumber)'), 'Plumber');
+      
+        // Select timeline
+        fireEvent.press(getByText('Select Timeline'));
+      
+        // Enter new location
+        fireEvent.press(getByText('Enter New Location'));
+        fireEvent.changeText(getByPlaceholderText('Street Address'), '123 Maple St');
+        fireEvent.changeText(getByPlaceholderText('Postal Code'), 'A1B 2C3');
+      
+        // Mock valid address result
+        const axios = require('axios');
+        axios.post.mockResolvedValueOnce({
+          data: {
+            coordinates: { latitude: 45, longitude: -75 },
+            isAddressValid: true,
+          },
         });
-    });
-
-    test('shows an alert if location is too short', async () => {
-        const { getByPlaceholderText, getByTestId } = setup();
-
-        fireEvent.changeText(getByPlaceholderText('Describe your service'), 'Valid Description');
-        fireEvent.changeText(getByPlaceholderText('Enter Location'), '123');
-        fireEvent.press(getByTestId('post-job-button'));
-
+      
+        // Press "Verify Address"
+        fireEvent.press(getByText('Verify Address'));
+      
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith(
-                'Invalid Location',
-                'Please provide a valid location with at least 5 characters.'
-            );
+          expect(getByText('✅ Valid Address entered')).toBeTruthy();
         });
+      
+        // Submit should now be enabled
+        const submitButton = getByTestId('post-job-button');
+        expect(submitButton.props.accessibilityState?.disabled).toBe(false);
     });
 
-    test('shows an alert if timeline is not selected', async () => {
-        const { getByPlaceholderText, getByTestId } = setup();
-
-        fireEvent.changeText(getByPlaceholderText('Describe your service'), 'Valid Description');
-        fireEvent.changeText(getByPlaceholderText('Enter Location'), 'Valid Location');
-        fireEvent.press(getByTestId('post-job-button'));
-
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith(
-                'Invalid Timeline',
-                'Please select an urgency timeline.'
-            );
-        });
-    });
-
-    test('shows an alert for unsupported image formats', async () => {
-        ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
+    test('should allow picking an image and display it', async () => {
+        const mockImageUri = 'file://some/fake/image.jpg';
+    
+        // Mock successful image selection
+        const mockLaunchImageLibraryAsync = require('expo-image-picker').launchImageLibraryAsync;
+        mockLaunchImageLibraryAsync.mockResolvedValueOnce({
             canceled: false,
-            assets: [{ uri: 'invalid-image.bmp' }], // Unsupported format
+            assets: [{ uri: mockImageUri }]
         });
+    
+        const { getByText, getAllByText } = renderWithContext(<CreateIssue navigation={{ goBack: jest.fn() }} />);
 
-        const { getByText } = setup();
-
-        fireEvent.press(getByText('Take from your gallery'));
-
+        // Tap "Take from your gallery"
+        await act(async () => {
+            fireEvent.press(getByText('Take from your gallery'));
+        });
+    
+        // Wait for image preview to appear
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith(
-                'Invalid Image',
-                'Only JPEG and PNG images are supported.'
-            );
+            expect(getAllByText('✖')[0]).toBeTruthy(); // Remove button
         });
     });
 
-    test('posts an issue successfully', async () => {
-        // Mock necessary dependencies
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        jwtDecode.mockReturnValue({ email: 'user@example.com' });
-        axios.post.mockResolvedValueOnce({ status: 201 });
-
-        // Render the CreateIssue component
-        const { getByPlaceholderText, getByText, getByTestId } = render(<CreateIssue />);
-
-        // Fill the title input
-        fireEvent.changeText(getByPlaceholderText('Title'), 'Test Issue');
-
-        // Select "Plumber" for Professional Needed
-        fireEvent.press(getByText('Plumber'));
-
-        // Select "Other" to enable the "Describe the issue..." input
-        fireEvent.press(getByText('Other'));
-
-        // Wait for the "Describe the issue..." input to appear
-        await waitFor(() => expect(getByPlaceholderText('Describe the issue...')).toBeTruthy());
-
-        // Fill the description input
-        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'A test issue description.');
-
-        // Press the "Post Job" button
-        fireEvent.press(getByTestId('post-job-button'));
-
-        // Wait for the axios.post call
-        await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
-
-        // Verify success alert
-        expect(Alert.alert).toHaveBeenCalledWith('Job posted successfully');
+    test('should remove the selected image when ✖ button is pressed', async () => {
+        const mockImageUri = 'file://some/fake/image.jpg';
+      
+        // Mock successful image selection
+        const mockLaunchImageLibraryAsync = require('expo-image-picker').launchImageLibraryAsync;
+        mockLaunchImageLibraryAsync.mockResolvedValueOnce({
+          canceled: false,
+          assets: [{ uri: mockImageUri }]
+        });
+      
+        const { getByText, queryByText, getAllByText } = renderWithContext(<CreateIssue navigation={{ goBack: jest.fn() }} />);
+      
+        // Trigger image selection
+        await act(async () => {
+          fireEvent.press(getByText('Take from your gallery'));
+        });
+      
+        // Expect remove button to be visible
+        await waitFor(() => {
+          expect(getAllByText('✖')[0]).toBeTruthy();
+        });
+      
+        // Tap remove button (✖)
+        await act(async () => {
+          fireEvent.press(getAllByText('✖')[0]);
+        });
+      
+        // Confirm image preview is gone (✖ button should not be in the DOM anymore)
+        await waitFor(() => {
+          expect(queryByText('✖')).toBeNull();
+        });
     });
 
-    test('renders and allows input for "Describe the issue..."', async () => {
-        // Mock necessary dependencies
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        jwtDecode.mockReturnValue({ email: 'user@example.com' });
-
-        const { getByPlaceholderText, getByText } = render(<CreateIssue />);
-
-        // Fill the title input
-        fireEvent.changeText(getByPlaceholderText('Title'), 'Test Issue');
-
-        // Select "Plumber" for Professional Needed
-        fireEvent.press(getByText('Plumber'));
-
-        // Select "Other" to enable the "Describe the issue..." input
-        fireEvent.press(getByText('Other'));
-
-        // Wait for the "Describe the issue..." input to appear
-        await waitFor(() => expect(getByPlaceholderText('Describe the issue...')).toBeTruthy());
-
-        // Fill the description input
-        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'Test description');
-
-        // Assert the input value
-        expect(getByPlaceholderText('Describe the issue...').props.value).toBe('Test description');
-    });
-
-
-    test('shows an error alert if post fails', async () => {
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        jwtDecode.mockReturnValue({ email: 'user@example.com' });
-        axios.post.mockRejectedValueOnce(new Error('Network error'));
-
-        const { getByPlaceholderText, getByText, getByTestId } = render(<CreateIssue />);
-
-        // Fill the title field
-        fireEvent.changeText(getByPlaceholderText('Title'), 'Test Issue');
-
-        // Select "Plumber" for Professional Needed
-        fireEvent.press(getByText('Plumber'));
-
-        // Select "Other" to enable the description input
-        fireEvent.press(getByText('Other'));
-
-        // Wait for the "Describe the issue..." input to appear
-        await waitFor(() => expect(getByPlaceholderText('Describe the issue...')).toBeTruthy());
-
-        // Fill the description field
-        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'Test description');
-
-        // Trigger the "Post Job" button
-        fireEvent.press(getByTestId('post-job-button'));
-
-        // Wait for the error alert to appear
-        await waitFor(() =>
-            expect(Alert.alert).toHaveBeenCalledWith('An error occurred. Please try again.')
+    test('displays success alert after successful job posting', async () => {
+        const mockSuccessResponse = {
+          status: 201,
+          data: {},
+        };
+      
+        // Mock verifyAddress and postIssue
+        axios.post
+          .mockResolvedValueOnce({
+            data: {
+              coordinates: { latitude: 45, longitude: -75 },
+              isAddressValid: true,
+            },
+          }) // verifyAddress
+          .mockResolvedValueOnce(mockSuccessResponse); // postIssue
+      
+        const { getByText, getByPlaceholderText, getByTestId } = renderWithContext(
+          <CreateIssue navigation={mockNavigation} />
         );
-    });
-
-    test('shows alert if the user denies media library permissions', async () => {
-        // Force permission to be denied
-        ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ granted: false });
-
-        const { getByText } = setup();
-
-        fireEvent.press(getByText('Upload Image'));
-
+      
+        // Fill out the form
+        fireEvent.changeText(getByPlaceholderText('Title'), 'Fix sink');
+        fireEvent.changeText(getByPlaceholderText('Describe your service'), 'Leaking under kitchen sink');
+        fireEvent.changeText(getByPlaceholderText('Type a professional (e.g. Plumber)'), 'Plumber');
+        fireEvent.press(getByText('Select Timeline'));
+      
+        // Switch to "Enter New Location" and fill in address
+        fireEvent.press(getByText('Enter New Location'));
+        fireEvent.changeText(getByPlaceholderText('Street Address'), '123 Maple St');
+        fireEvent.changeText(getByPlaceholderText('Postal Code'), 'A1B 2C3');
+      
+        // Verify address
+        fireEvent.press(getByText('Verify Address'));
+      
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Permission to access images is required!');
+          expect(getByText('✅ Valid Address entered')).toBeTruthy();
         });
-
-        // Make sure we never call launchImageLibraryAsync
-        expect(ImagePicker.launchImageLibraryAsync).not.toHaveBeenCalled();
-    });
-
-    test('does not set image if user cancels image picker', async () => {
-        ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
-            canceled: true, // user canceled
-        });
-
-        const { getByText } = setup();
-
-        fireEvent.press(getByText('Upload Image'));
-
-        await waitFor(() => {
-            // Should not show any error or set the image.
-            expect(Alert.alert).not.toHaveBeenCalled();
-        });
-    });
-
-    test('renders and allows input for "Describe the issue..."', async () => {
-        const { getByPlaceholderText, getByText } = setup();
-
-        fireEvent.changeText(getByPlaceholderText('Title'), 'Test Issue');
-
-        // Fill in fields
-        fireEvent.press(getByText('Plumber'));
-        fireEvent.press(getByText('Other'));
-        await waitFor(() => expect(getByPlaceholderText('Describe the issue...')).toBeTruthy());
-
-        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'Test description');
-        expect(getByPlaceholderText('Describe the issue...').props.value).toBe('Test description');
-    });
-
-    test('shows an error alert if post fails', async () => {
-        axios.post.mockRejectedValueOnce(new Error('Network error'));
-
-        const { getByPlaceholderText, getByText, getByTestId } = setup();
-
-        fireEvent.changeText(getByPlaceholderText('Title'), 'Test Issue');
-        fireEvent.press(getByText('Plumber'));
-        fireEvent.press(getByText('Other'));
-        await waitFor(() => expect(getByPlaceholderText('Describe the issue...')).toBeTruthy());
-
-        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'Test description');
+      
+        // Submit job
         fireEvent.press(getByTestId('post-job-button'));
-
+      
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('An error occurred. Please try again.');
+          expect(getByText(`${i18n.t('job_posted_successfully')}: ${i18n.t('your_job_has_been_posted')}`)).toBeTruthy();
         });
     });
-
-    test('handles no token scenario (jwtDecode throws), hitting the catch block', async () => {
-        // Force no token found
-        AsyncStorage.getItem.mockResolvedValueOnce(null);
-
-        const { getByPlaceholderText, getByText, getByTestId } = setup();
-
-        fireEvent.changeText(getByPlaceholderText('Title'), 'Test Issue');
-        fireEvent.press(getByText('Plumber'));
-        fireEvent.press(getByText('Other'));
-
-        await waitFor(() => expect(getByPlaceholderText('Describe the issue...')).toBeTruthy());
-        fireEvent.changeText(getByPlaceholderText('Describe the issue...'), 'Some description');
-
-        fireEvent.press(getByTestId('post-job-button'));
-
-        await waitFor(() => {
-            // We expect "An error occurred. Please try again." from catch block
-            expect(Alert.alert).toHaveBeenCalledWith('An error occurred. Please try again.');
-        });
-    });
-
-    describe('Coverage for sub-issue onPress handlers', () => {
-        let mockNavigation;
-
-        beforeEach(() => {
-            jest.clearAllMocks();
-            mockNavigation = { goBack: jest.fn() };
-        });
-
-        function setup() {
-            // Provide any default props, token, etc. you might need
-            return render(<CreateIssue navigation={mockNavigation} />);
-        }
-
-        test('selects "Electrician" and sub-issues: Flickering Lights, Dead Outlets, Faulty Switch, Other', async () => {
-            const { getByText, queryByPlaceholderText } = setup();
-
-            // Press to set professionalNeeded='electrician'
-            fireEvent.press(getByText('Electrician'));
-
-            // Press Flickering Lights
-            fireEvent.press(getByText('Flickering Lights'));
-            // Press Dead Outlets
-            fireEvent.press(getByText('Dead Outlets'));
-            // Press Faulty Switch
-            fireEvent.press(getByText('Faulty Switch'));
-
-            // Finally press "Other" (which sets other=true & clears description)
-            fireEvent.press(getByText('Other'));
-
-            await waitFor(() =>
-                expect(queryByPlaceholderText('Describe the issue...')).toBeTruthy()
-            );
-        });
-
-        test('selects "Plumber" and sub-issues: Dripping Faucets, Clogged Drains, Leaky Pipes', () => {
-            const { getByText } = setup();
-
-            // Press to set professionalNeeded='plumber'
-            fireEvent.press(getByText('Plumber'));
-
-            fireEvent.press(getByText('Dripping Faucets'));
-            fireEvent.press(getByText('Clogged Drains'));
-            fireEvent.press(getByText('Leaky Pipes'));
-        });
-    });
+      
+      
+    
 });

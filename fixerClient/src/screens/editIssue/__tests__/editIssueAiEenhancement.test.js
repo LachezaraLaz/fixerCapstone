@@ -7,6 +7,11 @@ import { en, fr } from '../../../../localization';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// code to run only this file through the terminal:
+// npm run test ./src/screens/editIssueAiEnhancement/__tests__/editIssueAiEnhancement.test.js
+// or
+// npm run test-coverage ./src/screens/editIssueAiEnhancement/__tests__/editIssueAiEnhancement.test.js
+
 // Mocks
 jest.mock('axios');
 jest.mock('@react-native-async-storage/async-storage', () => ({ getItem: jest.fn() }));

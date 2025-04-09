@@ -9,7 +9,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { Alert } from 'react-native'; // correct import!
 
-
 // code to run only this file through the terminal:
 // npm run test ./src/screens/homeScreen/__tests__/homeScreen.test.js
 // or

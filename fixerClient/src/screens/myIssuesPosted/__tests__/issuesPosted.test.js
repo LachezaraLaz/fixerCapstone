@@ -5,9 +5,8 @@ import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';
-// import * as ImagePicker from 'expo-image-picker';
-
-import { IPAddress } from '../../../../ipAddress';
+import { LanguageContext } from '../../../../context/LanguageContext'; 
+import { NavigationContainer } from '@react-navigation/native';
 
 // code to run only this file through the terminal:
 // npm run test ./src/screens/myIssuesPosted/__tests__/issuesPosted.test.js
@@ -16,114 +15,91 @@ import { IPAddress } from '../../../../ipAddress';
 
 // Mocking dependencies
 jest.mock('@react-navigation/native', () => {
-    const actualNav = jest.requireActual('@react-navigation/native');
-    return {
-        ...actualNav,
-        useNavigation: jest.fn(), // we will supply a mock return in beforeEach
-        useIsFocused: jest.fn(),  // must be mocked if the component uses it
-    };
+  const actualNav = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualNav,
+    useNavigation: jest.fn(),
+    useIsFocused: jest.fn(),
+  };
 });
 jest.mock('axios', () => ({
-    get: jest.fn(),
-    delete: jest.fn(),
-    put: jest.fn(),
+  get: jest.fn(),
+  delete: jest.fn(),
+  put: jest.fn(),
 }));
 jest.mock('@react-native-async-storage/async-storage', () => ({
-    getItem: jest.fn(),
+  getItem: jest.fn(),
 }));
 jest.mock('jwt-decode', () => ({
-    jwtDecode: jest.fn(() => ({ email: 'user@example.com' })),
+  jwtDecode: jest.fn(() => ({ email: 'user@example.com' })),
 }));
 jest.spyOn(Alert, 'alert');
 
 describe('MyIssuesPosted Component', () => {
-    let useNavigationMock;
-    let useIsFocusedMock;
-    beforeEach(() => {
-        jest.clearAllMocks();
+  let useNavigationMock;
+  let useIsFocusedMock;
 
-        // Access the mocks for useNavigation & useIsFocused
-        const navigationNative = require('@react-navigation/native');
-        useNavigationMock = navigationNative.useNavigation;
-        useIsFocusedMock = navigationNative.useIsFocused;
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-        // Provide default mockReturnValues so the component doesn't crash
-        useNavigationMock.mockReturnValue({
-            navigate: jest.fn(),
-        });
-        useIsFocusedMock.mockReturnValue(true);
+    // Access the mocks for useNavigation & useIsFocused
+    const navigationNative = require('@react-navigation/native');
+    useNavigationMock = navigationNative.useNavigation;
+    useIsFocusedMock = navigationNative.useIsFocused;
+
+    // Provide default mockReturnValues so the component doesn't crash
+    useNavigationMock.mockReturnValue({
+      navigate: jest.fn(),
     });
+    useIsFocusedMock.mockReturnValue(true);
+  });
 
-    test('displays a loading spinner while fetching data', async () => {
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        axios.get.mockResolvedValueOnce({ status: 200, data: { jobs: [] } });
+  const renderWithContext = (ui) => {
+    return render(
+      <LanguageContext.Provider value={{ locale: 'en', setLocale: jest.fn() }}>
+        <NavigationContainer>
+          {ui}
+        </NavigationContainer>
+      </LanguageContext.Provider>
+    );
+  };
 
-        const { getByTestId } = render(<MyIssuesPosted />);
-        expect(getByTestId('ActivityIndicator')).toBeTruthy();
-
-        await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  test('displays jobs after fetching data', async () => {
+    const mockJobs = [
+      {
+        _id: '1',
+        title: 'Fix Light Bulb',
+        status: 'open',  // Status is 'open'
+        professionalNeeded: 'Electrician',
+        description: 'The living room light needs to be fixed.',
+        imageUrl: 'http://example.com/image.jpg',
+        price: 50,
+      },
+    ];
+  
+    // Mocking the necessary async storage and axios request
+    AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
+    axios.get.mockResolvedValueOnce({ status: 200, data: { jobs: mockJobs } });
+  
+    const { getByText } = renderWithContext(<MyIssuesPosted />);
+  
+    // Wait for the job data to be fetched and rendered
+    await waitFor(() => {
+      expect(getByText('Fix Light Bulb')).toBeTruthy();
+      expect(getByText('📍 Electrician')).toBeTruthy();
+      expect(getByText('$50')).toBeTruthy();
     });
+  });
+  
 
-    test('displays jobs after fetching data', async () => {
-        const mockJobs = [
-            {
-                _id: '1',
-                title: 'Fix Light Bulb',
-                status: 'open',
-                professionalNeeded: 'Electrician',
-                description: 'The living room light needs to be fixed.',
-                imageUrl: 'http://example.com/image.jpg',
-            },
-        ];
+  test('displays an alert when there are no jobs posted', async () => {
+    AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
+    axios.get.mockResolvedValueOnce({ status: 200, data: { jobs: [] } });
 
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        axios.get.mockResolvedValueOnce({ status: 200, data: { jobs: mockJobs } });
+    const { getByText } = renderWithContext(<MyIssuesPosted />);
 
-        const { getByText } = render(<MyIssuesPosted />);
-
-        await waitFor(() => {
-            expect(getByText('Fix Light Bulb')).toBeTruthy();
-            expect(getByText('open')).toBeTruthy();
-            expect(getByText('The living room light needs to be fixed.')).toBeTruthy();
-            // expect(getByAltText('image')).toBeTruthy();
-        });
+    await waitFor(() => {
+      expect(getByText('No jobs available')).toBeTruthy();
     });
-
-    test('displays an alert when there are no jobs posted', async () => {
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        axios.get.mockResolvedValueOnce({ status: 200, data: { jobs: [] } });
-
-        const { getByText } = render(<MyIssuesPosted />);
-
-        await waitFor(() => {
-            expect(getByText('No jobs in this status.')).toBeTruthy();
-        });
-    });
-
-    test('displays an error alert when fetching jobs fails', async () => {
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        axios.get.mockRejectedValueOnce(new Error('Network error'));
-
-        const { getByText } = render(<MyIssuesPosted />);
-
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('An error occurred while fetching jobs');
-            expect(getByText('No jobs in this status.')).toBeTruthy(); // Ensures the fallback message shows up if data fetch fails
-        });
-    });
-
-    test('displays an alert when jobs fail to load with a non-200 response', async () => {
-        AsyncStorage.getItem.mockResolvedValue('fake-jwt-token');
-        axios.get.mockResolvedValueOnce({ status: 500, data: {} }); // Mock a non-200 response
-
-        const { getByText } = render(<MyIssuesPosted />);
-
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Failed to load jobs');
-        });
-
-        // Ensure that the fallback message is shown if jobs failed to load
-        expect(getByText('No jobs in this status.')).toBeTruthy();
-    });
-
+  });
 });

@@ -12,8 +12,6 @@ import { en } from '../../../../localization';
 // or
 // npm run test-coverage ./src/screens/accountSettings/__tests__/accountSettings.test.js
 
-console.log('AccountSettingsPage:', AccountSettingsPage.toString());
-
 
 // Mocks
 jest.mock('axios');

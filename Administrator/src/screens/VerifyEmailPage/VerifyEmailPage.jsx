@@ -8,13 +8,25 @@ export default function VerifyEmailPage() {
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
 
-    // Pre-fill the email field if it's passed as a query parameter
+    // // Pre-fill the email field if it's passed as a query parameter
+    // useEffect(() => {
+    //     const email = searchParams.get("email");
+    //     if (email) {
+    //         setFormData((prevData) => ({ ...prevData, email }));
+    //     }
+    // }, [searchParams]);
+
+    const emailFromQuery = searchParams.get("email");
+
     useEffect(() => {
-        const email = searchParams.get("email");
-        if (email) {
-            setFormData((prevData) => ({ ...prevData, email }));
+        if (emailFromQuery) {
+            setFormData((prevData) => {
+                if (prevData.email === emailFromQuery) return prevData;
+                return { ...prevData, email: emailFromQuery };
+            });
         }
-    }, [searchParams]);
+    }, [emailFromQuery]);
+
 
     const handleChange = (e) => {
         setFormData({

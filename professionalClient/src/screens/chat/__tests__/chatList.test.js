@@ -5,6 +5,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import ChannelListScreen from '../chatListPage';
 import { useChatContext } from '../chatContext';
 
+// code to run only this file through the terminal:
+// npm run test ./src/screens/chat/__tests__/chatList.test.js
+// or
+// npm run test-coverage ./src/screens/chat/__tests__/chatList.test.js
+
 // Override the useChatContext so we can control its returned values.
 jest.mock('../chatContext', () => ({
     useChatContext: jest.fn(),

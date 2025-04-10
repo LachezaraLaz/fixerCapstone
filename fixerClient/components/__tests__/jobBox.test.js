@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent} from '@testing-library/react-native';
-import JobBox from '../JobBox';
+import JobBox from '../jobBox';
 
 // code to run only this file through the terminal:
 // npm run test ./components/__tests__/jobBox.test.js

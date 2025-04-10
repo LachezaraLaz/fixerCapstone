@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import {
     SafeAreaView,
@@ -9,6 +9,7 @@ import {
     Alert,
     StyleSheet,
     Image,
+    ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,14 +22,19 @@ import HeroImage from '../homeScreen/HomePageIMG/HomePage_IMG1.png';
 import {LanguageContext} from "../../../context/LanguageContext";
 import {I18n} from "i18n-js";
 import {en, fr} from "../../../localization";
+import {useFocusEffect} from "@react-navigation/native";
 
 /**
  * @module fixerClient
  */
 export default function HomeScreen({ navigation, setIsLoggedIn }) {
+    const [searchQuery, setSearchQuery] = useState('');
     const { chatClient } = useChatContext();
     const [firstName, setFirstName] = useState('');
-    let [modalVisible, setModalVisible] = useState(false);
+    const [miniOffers, setMiniOffers] = useState([]);
+    const [loadingOffers, setLoadingOffers] = useState(true);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
     const {locale, setLocale}  = useContext(LanguageContext);
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
@@ -56,26 +62,112 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
         fetchUserData();
     }, []);
 
-    /**
-     * Handles the user logout process.
-     */
-    const handleLogout = async () => {
+    const refreshOffers = async () => {
         try {
-            if (chatClient) {
-                await chatClient.disconnectUser();
-            }
-            await AsyncStorage.removeItem('token');
-            await AsyncStorage.removeItem('streamToken');
-            await AsyncStorage.removeItem('userId');
-            await AsyncStorage.removeItem('userName');
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
 
-            Alert.alert(`${i18n.t('logged_out')}`, `${i18n.t('you_have_been_logged_out_successfully')}`);
-            setIsLoggedIn(false);
-        } catch (error) {
-            console.error("Error logging out: ", error);
-            Alert.alert(`${i18n.t('error')}`, `${i18n.t('an_error_occurred_while_logging_out')}`);
+            const profile = await axios.get(
+                `https://fixercapstone-production.up.railway.app/client/profile`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            const email = profile.data.email;
+
+            const resp = await axios.get(
+                `https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setMiniOffers(Array.isArray(resp.data) ? resp.data : []);
+        } catch (e) {
+            console.error('Error refreshing offers:', e);
+        } finally {
+            setLoadingOffers(false);
         }
     };
+
+    useEffect(() => {
+        refreshOffers();
+    }, []);
+
+    const handleAcceptOffer = async (offerId) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
+            const response = await axios.put(
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                { status: 'accepted' },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 200) {
+                Alert.alert(i18n.t('success'), i18n.t('offer_accepted'));
+                refreshOffers();
+            } else {
+                Alert.alert(i18n.t('error'), i18n.t('failed_to_accept_offer'));
+            }
+        } catch (error) {
+            console.error('Error accepting offer:', error);
+            Alert.alert(i18n.t('error'), i18n.t('error_accepting_offer'));
+        }
+    };
+
+    const handleRejectOffer = async (offerId) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+
+            const response = await axios.put(
+                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                { status: 'rejected' },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.status === 200) {
+                Alert.alert(i18n.t('success'), i18n.t('offer_rejected'));
+                refreshOffers();
+            } else {
+                Alert.alert(i18n.t('error'), i18n.t('failed_to_reject_offer'));
+            }
+        } catch (error) {
+            console.error('Error rejecting offer:', error);
+            Alert.alert(i18n.t('error'), i18n.t('error_rejecting_offer'));
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotificationNumber();
+        }, [])
+    );
+
+
+    /**
+     * Gets the number of unread notifications
+     * @returns {Promise<number|*>} - unread notifications
+     */
+    const fetchNotificationNumber = async () => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const readNotifications = response.data.filter(
+                (notif) => !notif.isRead
+            );
+            setUnreadCount(readNotifications.length);
+        } catch (error) {
+            console.error('Error fetching notifications:', error.message);
+            setUnreadCount(0);
+        }
+    };
+    const filteredOffers = miniOffers.filter((offer) => {
+        const name = `${offer.professionalFirstName ?? ''} ${offer.professionalLastName ?? ''}`.toLowerCase();
+        const email = offer.professionalEmail?.toLowerCase() ?? '';
+        return name.includes(searchQuery.toLowerCase()) || email.includes(searchQuery.toLowerCase());
+    });
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -87,11 +179,36 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 {/* Header */}
                 <View style={styles.customHeader}>
                     <Text style={styles.headerLogo}>Fixr</Text>
-                    <Text style={styles.headerTitle}>{i18n.t('home_screen')}</Text>
-                    <NotificationButton
-                        testID="notification-button"
-                        onPress={() => navigation.navigate('NotificationPage')}
-                    />
+                    <Text style={styles.headerTitle}>{i18n.t('home')}</Text>
+
+                    <View style={{ position: 'relative' }}>
+                        <NotificationButton
+                            testID="notification-button"
+                            onPress={() => navigation.navigate('NotificationPage')}
+                        />
+                        {unreadCount > 0 && (
+                            <View
+                                style={{
+                                    position: 'absolute',
+                                    right: -2,
+                                    top: -2,
+                                    backgroundColor: 'red',
+                                    borderRadius: 8,
+                                    width: 16,
+                                    height: 16,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Text style={{
+                                    color: 'white',
+                                    fontSize: 10,
+                                    fontWeight: 'bold' }}>
+                                    {unreadCount}
+                                </Text>
+                            </View>
+                        )}
+                    </View>
                 </View>
 
                 {/* Hero/Greeting */}
@@ -114,6 +231,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                         onSearch={() => console.log("Search button pressed")}
                         onFilter={() => console.log("Filter button pressed")}
                         filterButtonTestID="filter-button"
+                        onSearchChange={setSearchQuery}
                     />
                 </View>
 
@@ -124,7 +242,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                             onPress={() => navigation.navigate('CreateIssue')}
                             style={styles.createJobButtonInner}
                         >
-                            <Text style={styles.createJobButtonText}>{i18n.t('create_issue')}</Text>
+                            <Text style={styles.createJobButtonText}>{i18n.t('create_job')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -132,7 +250,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 {/* Categories Section */}
                 <View style={styles.categoriesHeader}>
                     <Text style={styles.categoriesTitle}>{i18n.t('categories')}</Text>
-                    <TouchableOpacity onPress={() => console.log('View All Categories')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('AllCategories')}>
                         <Text style={styles.viewAllText}>{i18n.t('view_all')}</Text>
                     </TouchableOpacity>
                 </View>
@@ -173,89 +291,97 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
 
                 {/* Requests Section */}
                 <View style={styles.requestsHeader}>
-                    <Text style={styles.requestsTitle}>{i18n.t('requests')}</Text>
-                    <TouchableOpacity onPress={() => console.log('View All Requests')}>
+                    <Text style={styles.requestsTitle}>{i18n.t('offer_page_title')}</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('OffersPage')}>
                         <Text style={styles.viewAllText}>{i18n.t('view_all')}</Text>
                     </TouchableOpacity>
                 </View>
 
-                <ScrollView style={styles.requestsContainer}>
-                    {/* Request Card #1 */}
-                    <View style={styles.requestCard}>
-                        {/* Profile Image on the Left */}
-                        <Image
-                            source={{ uri: 'https://via.placeholder.com/60' }}
-                            style={styles.requestUserImage}
-                        />
+                {loadingOffers ? (
+                    <ActivityIndicator style={{ marginTop: 20 }} />
+                ) : (
+                    <View style={{ height: 330 }}>
+                        <ScrollView style={styles.requestsContainer}>
+                            {filteredOffers.length ? filteredOffers.map((offer) => {
+                                // If the pro has no reviews, we'll show grey star & "0" rating
+                                const hasReviews = offer.professionalReviewCount > 0;
+                                const starColor = hasReviews ? "#FFA500" : "grey";
+                                const starRatingText = hasReviews
+                                    ? `${parseFloat(offer.professionalTotalRating).toFixed(1)}`
+                                    : "0";
 
-                        {/* Right-side content: Name, Rating, Address, Job, Accept/Reject Buttons */}
-                        <View style={styles.requestContent}>
-                            {/* Top Row: Name + Star Rating */}
-                            <View style={styles.requestTopRow}>
-                                <Text style={styles.requestUserName}>Shawn Obrain</Text>
-                                <View style={styles.requestRating}>
-                                    <Ionicons name="star" size={16} color="#FFA500" />
-                                    <Text style={styles.ratingText}>4.8</Text>
-                                </View>
-                            </View>
 
-                            {/* Address Row with Location Icon */}
-                            <View style={styles.requestAddressRow}>
-                                <Ionicons name="location-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
-                                <Text style={styles.requestAddress}>4517 Washington Ave</Text>
-                            </View>
+                                return (
+                                    <TouchableOpacity key={offer._id} style={styles.requestCard} onPress={() => navigation.navigate('OfferDetails', { offerId: offer._id })}>
+                                        <Image
+                                            source={{ uri: 'https://via.placeholder.com/60' }}
+                                            style={styles.requestUserImage}
+                                        />
 
-                            {/* Job Title */}
-                            <Text style={styles.requestJob}>AC Installation</Text>
+                                        <View style={styles.requestContent}>
+                                            {/* Name + Star Rating */}
+                                            <View style={styles.requestTopRow}>
+                                                <Text style={styles.requestUserName}>
+                                                    {
+                                                        // If professionalFirstName/LastName not found, fallback to email
+                                                        (offer.professionalFirstName || offer.professionalLastName)
+                                                            ? `${offer.professionalFirstName} ${offer.professionalLastName}`
+                                                            : offer.professionalEmail
+                                                    }
+                                                </Text>
+                                                <View style={styles.requestRating}>
+                                                    <Ionicons name="star" size={16} color={starColor} />
+                                                    <Text style={[styles.ratingText, { color: starColor }]}>
+                                                        {starRatingText}
+                                                    </Text>
+                                                </View>
+                                            </View>
 
-                            {/* Reject & Accept Buttons */}
-                            <View style={styles.requestButtonsRow}>
-                                <TouchableOpacity style={styles.rejectButton}>
-                                    <Text style={styles.rejectText}>{i18n.t('reject')}</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.acceptButton}>
-                                    <Text style={styles.acceptText}>{i18n.t('accept')}</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                                            {/* Price row */}
+                                            <View style={styles.requestAddressRow}>
+                                                <Ionicons name="cash-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
+                                                <Text style={styles.requestAddress}>Price: ${offer.price}</Text>
+                                            </View>
+
+                                            {/* Date row */}
+                                            <View style={styles.dateRow}>
+                                                <Ionicons name="calendar-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
+                                                <Text style={styles.date}>
+                                                    {new Date(offer.createdAt).toLocaleDateString()}
+                                                </Text>
+                                            </View>
+
+                                            {/* Status */}
+                                            <Text style={styles.requestJob}>
+                                                Status: {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
+                                            </Text>
+
+                                            {/* Accept/Reject if pending */}
+                                            {offer.status === 'pending' && (
+                                                <View style={styles.requestButtonsRow}>
+                                                    <TouchableOpacity
+                                                        style={styles.rejectButton}
+                                                        onPress={() => handleRejectOffer(offer._id)}
+                                                    >
+                                                        <Text style={styles.rejectText}>{i18n.t('reject')}</Text>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style={styles.acceptButton}
+                                                        onPress={() => handleAcceptOffer(offer._id)}
+                                                    >
+                                                        <Text style={styles.acceptText}>{i18n.t('accept')}</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            )}
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            }) : (
+                                <Text style={styles.emptyText}>{i18n.t('no_requests_available')}</Text>
+                            )}
+                        </ScrollView>
                     </View>
-
-                    {/* Request Card #2 */}
-                    <View style={styles.requestCard}>
-                        <Image
-                            source={{ uri: 'https://via.placeholder.com/60' }}
-                            style={styles.requestUserImage}
-                        />
-                        <View style={styles.requestContent}>
-                            <View style={styles.requestTopRow}>
-                                <Text style={styles.requestUserName}>Shawn Obrain</Text>
-                                <View style={styles.requestRating}>
-                                    <Ionicons name="star" size={16} color="#FFA500" />
-                                    <Text style={styles.ratingText}>4.8</Text>
-                                </View>
-                            </View>
-                            <View style={styles.requestAddressRow}>
-                                <Ionicons name="location-outline" size={16} color="#FFA500" style={{ marginRight: 4 }} />
-                                <Text style={styles.requestAddress}>4517 Washington Ave</Text>
-                            </View>
-                            <Text style={styles.requestJob}>AC Installation</Text>
-                            <View style={styles.requestButtonsRow}>
-                                <TouchableOpacity style={styles.rejectButton}>
-                                    <Text style={styles.rejectText}>Reject</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.acceptButton}>
-                                    <Text style={styles.acceptText}>Accept</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </ScrollView>
-                {/* Logout Button at Bottom */}
-                <View style={styles.logoutContainer}>
-                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                        <Text style={styles.logoutText}>{i18n.t('logout')}</Text>
-                    </TouchableOpacity>
-                </View>
+                )}
                 <View style={{ height: 40 }} />
             </ScrollView>
         </SafeAreaView>

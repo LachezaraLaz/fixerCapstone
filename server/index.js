@@ -22,12 +22,17 @@ const BadRequestError = require("./utils/errors/BadRequestError");
 const UnauthorizedError = require("./utils/errors/UnauthorizedError");
 const ForbiddenError = require("./utils/errors/ForbiddenError");
 const InternalServerError = require("./utils/errors/InternalServerError");
+const geocodeRoute = require('./routes/geoCodeRoute');
+const emailReportRouter = require('./routes/sendEmailReportRoute');
+const chatRoute = require('./routes/chatRoute');
 
 const app = express();
 const cors = require('cors');
+app.use(bodyParser.json());
 app.use(cors({
     origin: ['https://fixercapstone-production.up.railway.app'],
 }));
+
 app.use(bodyParser.json());
 
 
@@ -48,7 +53,14 @@ app.use('/notification', notificationRouter);
 app.use('/reviews', reviewRouter.reviewRouter);
 
 app.use('/users', userRouter.userRouter);
+
 app.use('/payment', paymentRoutes.paymentRouter);
+app.use('/send-email-report', emailReportRouter);
+app.use('/chat', chatRoute.chatRouter);
+
+app.use(cors()); // duplicate ?
+app.use('/api/geocode', geocodeRoute);
+
 
 // If a route is not found
 app.all('*', (req, res, next) => {

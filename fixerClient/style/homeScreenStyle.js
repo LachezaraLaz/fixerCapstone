@@ -294,5 +294,17 @@ const styles = StyleSheet.create({
         color: '#d9534f',
         fontWeight: 'bold',
     },
+
+    /* Date */
+    dateRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 6,
+    },
+    date: {
+        fontSize: 12,
+        color: '#333',
+    },
+
 });
 export default styles;

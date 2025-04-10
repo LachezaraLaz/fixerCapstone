@@ -29,6 +29,10 @@ import issueDetails from "./src/screens/issueDetails/issueDetails";
 import { LanguageProvider } from "./context/LanguageContext";
 import { Text } from "react-native";
 import { LogBox } from 'react-native';
+import OfferDetails from './src/screens/OfferDetails/OfferDetails';
+import AllCategories from './src/screens/AllCategories/AllCategories';
+import ReportPage from './src/screens/profilPage/reportPage';
+import OldNotifications from "./src/screens/oldNotifications/oldNotifications";
 
 // Suppress the specific warning
 LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
@@ -75,37 +79,44 @@ export default function App() {
                     {isLoggedIn ? (
                         <ChatProvider>
                             <Stack.Navigator initialRouteName={isLoggedIn ? "MainTabs" : "welcomePage"}>
-                                <Stack.Screen name="MainTabs">
-                                    {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                <Stack.Screen name="MainTabs" options={{ headerShown: false }}>
+                                    {props => <NavBar {...props} setIsLoggedIn={setIsLoggedIn}/>}
                                 </Stack.Screen>
 
                                 {/* Screens when user is NOT logged in */}
                                 {!isLoggedIn && (
                                     <>
                                         <Stack.Screen name="welcomePage" component={WelcomePage}/>
-                                        <Stack.Screen name="SignInPage">
+                                        <Stack.Screen name="SignInPage" options={{ headerShown: false }} >
                                             {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn}  />}
                                         </Stack.Screen>
-                                        <Stack.Screen name="SignUpPage" component={SignUpPage} />
+                                        <Stack.Screen name="SignUpPage" component={SignUpPage} options={{ headerShown: false }} />
                                     </>
                                 )}
 
                                 {/* Screens when user IS logged in */}
                                 {isLoggedIn && (
                                     <>
-                                        <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
-                                        <Stack.Screen name="ProfilePage" component={ProfilePage} options={{ headerShown: false }} />
-                                        <Stack.Screen name="CreateIssue" component={CreateIssue} />
-                                        <Stack.Screen name="SettingsPage" component={SettingsPage} />
-                                        <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} />
-                                        <Stack.Screen name="EditIssue" component={EditIssue} />
-                                        <Stack.Screen name="NotificationPage" component={NotificationPage} />
-                                        <Stack.Screen name="NotificationDetail" component={NotificationDetail} />
-                                        <Stack.Screen name="OffersPage" component={OffersPage} />
-                                        <Stack.Screen name="addReview" component={addReview} />
-                                        <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage}/>
-                                        <Stack.Screen name="IssueDetails" component={issueDetails} />
-
+                                        <Stack.Screen name="DetailsScreen" component={DetailsScreen}  />
+                                        <Stack.Screen name="ProfilePage" options={{ headerShown: false }}>
+                                            {props => <ProfilePage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                        </Stack.Screen>
+                                        <Stack.Screen name="CreateIssue" component={CreateIssue} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="SettingsPage" options={{ headerShown: false }}>
+                                            {props => <SettingsPage {...props} setIsLoggedIn={setIsLoggedIn} />}
+                                        </Stack.Screen>
+                                        <Stack.Screen name="MyIssuesPosted" component={MyIssuesPosted} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="EditIssue" component={EditIssue} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="NotificationPage" component={NotificationPage} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="NotificationDetail" component={NotificationDetail} options={{ headerShown: false }} />
+                                        <Stack.Screen name="OldNotifications" component={OldNotifications} options={{ headerShown: false }} />
+                                        <Stack.Screen name="OffersPage" component={OffersPage} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="OfferDetails" component={OfferDetails} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="AllCategories" component={AllCategories} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="addReview" component={addReview} options={{ headerShown: false }}/>
+                                        <Stack.Screen name='AccountSettingsPage' component={AccountSettingsPage} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="IssueDetails" component={issueDetails} options={{ headerShown: false }}/>
+                                        <Stack.Screen name="ReportPage" component={ReportPage} options={{ headerShown: false }}/>
                                     </>
                                 )}
                             </Stack.Navigator>
@@ -118,8 +129,8 @@ export default function App() {
                                 <Stack.Screen name="SignInPage" options={{ headerShown: false }}>
                                     {props => <SignInPage {...props} setIsLoggedIn={setIsLoggedIn} />}
                                 </Stack.Screen>
-                                <Stack.Screen name="SignUpPage" component={SignUpPage} />
-                                <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} />
+                                <Stack.Screen name="SignUpPage" component={SignUpPage} options={{headerShown:false}} />
+                                <Stack.Screen name="ForgotPasswordPage" component={ForgotPasswordPage} options={{ headerShown: false }} />
                                 <Stack.Screen name="EnterPin" component={EnterPin} />
                                 <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
                             </>

@@ -5,6 +5,11 @@ import { IPAddress } from '../../../ipAddress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+
+import InputField  from '../../../components/inputField';
+import PasswordField from '../../../components/passwordField';
+import CustomAlertError from "../../../components/customAlertError";
 
 /**
  * @module professionalClient
@@ -14,6 +19,10 @@ export default function SignInPage({ setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
+
+    //For custom alerts
+    const [customAlertVisible, setCustomAlertVisible] = useState(false);
+    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
 
     /**
      * Handles the sign-in process for a professional user.
@@ -28,7 +37,11 @@ export default function SignInPage({ setIsLoggedIn }) {
      */
     const handleSignIn = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Both fields are required');
+            setCustomAlertContent({
+                title: 'Error',
+                message: 'Both fields are required',
+            });
+            setCustomAlertVisible(true);
             return;
         }
 
@@ -47,7 +60,7 @@ export default function SignInPage({ setIsLoggedIn }) {
                  await AsyncStorage.setItem('userId', userId);
                  await AsyncStorage.setItem('userName', userName);
 
-                Alert.alert("Signed in successfully");
+                // Alert.alert("Signed in successfully");
                 setIsLoggedIn(true);
                  setTimeout(() => {
                      navigation.dispatch(
@@ -60,11 +73,23 @@ export default function SignInPage({ setIsLoggedIn }) {
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {
-                Alert.alert("Error", error.response.data.statusText || 'Wrong email or password');
+                setCustomAlertContent({
+                    title: 'Error',
+                    message: 'Wrong email or password.',
+                });
+                setCustomAlertVisible(true);
             } else if(error.response.status === 403) {
-                Alert.alert('Please verify your email before logging in.');
+                setCustomAlertContent({
+                    title: 'Error',
+                    message: 'Please verify your email before logging in.',
+                });
+                setCustomAlertVisible(true);
             } else {
-                Alert.alert("Error", 'An unexpected error occurred');
+                setCustomAlertContent({
+                    title: 'Error',
+                    message: 'An unexpected error occurred.',
+                });
+                setCustomAlertVisible(true);
             }
         }
     };
@@ -72,9 +97,12 @@ export default function SignInPage({ setIsLoggedIn }) {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Sign In</Text>
+            <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={28} color="orange" />
+            </TouchableOpacity>
 
-            <TextInput
-                style={styles.input}
+            {/* Email Field */}
+            <InputField
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
@@ -82,13 +110,21 @@ export default function SignInPage({ setIsLoggedIn }) {
                 autoCapitalize="none"
             />
 
-            <TextInput
+            {/* Password Field */}
+            <PasswordField
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={true} // Always hide password by default
+            />
+
+            {/* <TextInput
                 style={styles.input}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
-            />
+            /> */}
 
             <TouchableOpacity style={styles.button} onPress={handleSignIn} testID={'sign-in-button'}>
                 <Text style={styles.buttonText}>Sign In</Text>
@@ -101,6 +137,14 @@ export default function SignInPage({ setIsLoggedIn }) {
             <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordPage')}>
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
+
+            <CustomAlertError
+                visible={customAlertVisible}
+                title={customAlertContent.title}
+                message={customAlertContent.message}
+                onClose={() => setCustomAlertVisible(false)}
+            />
+
         </View>
     );
 }
@@ -118,6 +162,19 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
+    backButton: {
+        position: 'absolute',
+        top: 40,
+        left: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        zIndex: 1,
+    },
+    backText: {
+        marginLeft: 8,
+        fontSize: 18,
+        color: '#1E90FF',
+    },
     input: {
         height: 50,
         borderColor: '#ddd',
@@ -127,7 +184,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     button: {
-        backgroundColor: '#1E90FF',
+        backgroundColor: '#f28500',
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',

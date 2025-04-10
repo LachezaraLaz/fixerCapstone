@@ -6,7 +6,10 @@ import { ChatProvider, ChatContext, useChatContext } from '../chatContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StreamChat } from 'stream-chat';
 
-
+// code to run only this file through the terminal:
+// npm run test ./src/screens/chat/__tests__/chatContext.test.js
+// or
+// npm run test-coverage ./src/screens/chat/__tests__/chatContext.test.js
 
 // Existing mocks for AsyncStorage and StreamChat.
 jest.mock('@react-native-async-storage/async-storage', () => ({

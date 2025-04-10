@@ -11,9 +11,18 @@ const getJobsByUserEmail = async (userEmail) => {
 };
 
 // Fetch a job by its ID
+// const getJobByIdRepo = async (input) => {
+//     try {
+//         const jobId = input?.params?.jobId || input;
+//         return await Jobs.findById(jobId);
+//     } catch (error) {
+//         throw new Error('Failed to fetch job by ID');
+//     }
+// };
+
 const getJobByIdRepo = async (jobId) => {
     try {
-        return await Jobs.findById(jobId.params.jobId);
+        return await Jobs.findById(jobId);
     } catch (error) {
         throw new InternalServerError('job repo', `Failed to fetch job by ID: ${error.message}`, 500);
     }

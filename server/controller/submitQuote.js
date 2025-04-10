@@ -72,9 +72,17 @@ const submitQuote = async (req, res) => {
     try {
         logger.info('User data in submitQuote:', req.user); // Log the user data
 
-        const { clientEmail, price, issueId } = req.body;
+        const {
+            clientEmail,
+            issueTitle,
+            price,
+            issueId,
+            jobDescription,
+            toolsMaterials,
+            termsConditions,
+        } = req.body;
 
-        if (!clientEmail || !price || !issueId) {
+        if (!clientEmail || !issueTitle || !price || !issueId || !jobDescription || !toolsMaterials ) {
             throw new BadRequestError('submit quote', 'Missing required fields: clientEmail, price, and issueId.', 400);
         }
 
@@ -83,8 +91,13 @@ const submitQuote = async (req, res) => {
             throw new BadRequestError('submit quote', 'Professional email not found in token.', 400);
         }
 
+        console.log("Received issue ID from request:", issueId);
+        const convertedIssueId = new mongoose.Types.ObjectId(issueId);
+        console.log("Converted issue ID to ObjectId:", convertedIssueId);
+
         // Check if a quote already exists
-        const existingQuote = await Quotes.findOne({ issueId, professionalEmail });
+        const existingQuote = await Quotes.findOne({ issueId: convertedIssueId, professionalEmail });
+
         if (existingQuote) {
             throw new BadRequestError('submit quote', 'You have already submitted a quote for this issue.', 400);
         }
@@ -101,17 +114,22 @@ const submitQuote = async (req, res) => {
             throw new NotFoundError('submit quote', 'Issue not found.', 404);
         }
 
+        // Create a new quote with the extended attributes
         const newQuote = await Quotes.create({
             professionalEmail,
             clientEmail,
+            issueTitle,
             price,
             issueId,
+            jobDescription,
+            toolsMaterials,
+            termsConditions,
         });
 
         // Create a notification for the quote
         const notification = new Notification({
             userId: clientInfo._id,  // Use the client's ID
-            message: `Your issue titled "${issue.title}" has received a new quote.`,
+            message: `🎉 Congrats! Your issue titled "${issue.title}" has received a new quote.`,
             isRead: false
         });
         await notification.save();
@@ -192,6 +210,8 @@ const updateQuoteStatus = async (req, res, next) => {
 
         // Fetch the quote to get the associated job (issueId)
         const quote = await Quotes.findById(quoteId);
+        const profEmail = quote.professionalEmail;
+
         if (!quote) {
             throw new NotFoundError('submit quote', 'Quote not found.', 404);
         }
@@ -208,8 +228,18 @@ const updateQuoteStatus = async (req, res, next) => {
                 throw new NotFoundError('submit quote', 'Failed to update the quote.', 404);
             }
 
+            // Before updating, check if the job already has an accepted quote
+            const existingJob = await Jobs.findById(quote.issueId);
+            if (existingJob.acceptedQuoteId) {
+                return res.status(400).json({ message: 'This job already has an accepted quote' });
+            }
+
             // Update the status of the associated issue to "in progress"
-            await Jobs.findByIdAndUpdate(quote.issueId, { status: 'In progress' });
+            await Jobs.findByIdAndUpdate(quote.issueId, {
+                status: 'In progress',
+                professionalEmail: profEmail,
+                acceptedQuoteId: quoteId
+            });
             //logger.info("issue number", issueId, "has been updated to in progress because the client accepted a quote");
 
             // Automatically reject all other quotes for the same job
@@ -230,15 +260,11 @@ const updateQuoteStatus = async (req, res, next) => {
             // Notify the professional whose quote was accepted
             const notification = new Notification({
                 userId: professional._id, // Professional's ID
-                message: `Your quote for the job titled "${issue.title}" has been accepted. The job is now in progress.`,
+                message: `🎉 Congrats! Your quote for the job titled "${issue.title}" has been accepted. The job is now in progress.`,
                 isRead: false,
             });
             await notification.save();
-            logger.info("the accepted quote recieved a notification");
-
-            // initChat
-            const  clientId  = req.user.id;
-            await initChat(issue.title, clientId, professional._id.toString());
+            logger.info("the accepted quote received a notification");
 
             // Notify other professionals whose quotes were rejected
             const otherProfessionals = await Quotes.find({
@@ -251,14 +277,14 @@ const updateQuoteStatus = async (req, res, next) => {
                 if (rejectedProfessional) {
                     const rejectionNotification = new Notification({
                         userId: rejectedProfessional._id,
-                        message: `Your quote for the job titled "${issue.title}" has been rejected.`,
+                        message: `🔴 Sorry! Your quote for the job titled "${issue.title}" has been rejected.`,
                         isRead: false,
                     });
                     await rejectionNotification.save();
                 }
             }
 
-            logger.info("the rejected quotes recieved a notification");
+            logger.info("the rejected quotes received a notification");
             res.status(200).json({ message: `Quote accepted, others rejected and job updated to "in progress".`, quote: updatedQuote });
         } else if (status === 'rejected') {
             // Handle manual rejection of a quote
@@ -282,12 +308,15 @@ const updateQuoteStatus = async (req, res, next) => {
 
             const notification = new Notification({
                 userId: professional._id, // Professional's ID
-                message: `Your quote for the job titled "${issue.title}" has been rejected.`,
+                message: `🔴 Sorry! Your quote for the job titled "${issue.title}" has been rejected.`,
                 isRead: false,
             });
             await notification.save();
 
-            logger.info("a rejected quote recieved a notification for issue number", issueId);
+            logger.info(
+                "a rejected quote received a notification for issue number",
+                updatedQuote.issueId
+            );
 
             res.status(200).json({ message: `Quote rejected successfully.`, quote: updatedQuote });
         }
@@ -297,5 +326,32 @@ const updateQuoteStatus = async (req, res, next) => {
     }
 };
 
+/**
+ * Fetch all quotes for a given clientEmail
+ */
+const getQuotesByClientEmail = async (req, res) => {
+    try {
+        const { clientEmail } = req.params;
+        const quotes = await Quotes.find({ clientEmail }).lean();
 
-module.exports = { authenticateJWT, submitQuote, getQuotesByJob, updateQuoteStatus };
+        const populated = await Promise.all(quotes.map(async (quote) => {
+            const pro = await fixerClient.findOne({ email: quote.professionalEmail }).lean();
+            if (!pro) return quote;
+
+            return {
+                ...quote,
+                professionalFirstName: pro.firstName,
+                professionalLastName: pro.lastName,
+                professionalReviewCount: pro.reviewCount ?? 0,
+                professionalTotalRating: pro.totalRating ?? 0,
+            };
+        }));
+
+        return res.status(200).json(populated);
+    } catch (error) {
+        console.error('Error fetching quotes by clientEmail:', error);
+        return res.status(500).json({ error: 'Failed to fetch quotes' });
+    }
+};
+
+module.exports = { authenticateJWT, submitQuote, getQuotesByJob, updateQuoteStatus, getQuotesByClientEmail};

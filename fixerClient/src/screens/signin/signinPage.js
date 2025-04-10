@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
@@ -12,6 +12,7 @@ import { I18n } from "i18n-js";
 import LanguageModal from "../../../components/LanguageModal";
 import languageStyle from '../../../style/languageStyle';
 import { LanguageContext } from "../../../context/LanguageContext";
+import CustomAlertError from "../../../components/customAlertError";
 
 import { IPAddress } from '../../../ipAddress';
 
@@ -28,6 +29,10 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
     const i18n = new I18n({ en, fr });
     i18n.locale = locale;
 
+    //For custom alerts
+    const [customAlertVisible, setCustomAlertVisible] = useState(false);
+    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
+
     /**
      * Handles the sign-in process for a client user.
      *
@@ -41,7 +46,11 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
      */
     const handleSignIn = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Both fields are required');
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('signin_missing_field_error'),
+            });
+            setCustomAlertVisible(true);
             return;
         }
 
@@ -60,7 +69,6 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
                 await AsyncStorage.setItem('userId', userId);
                 await AsyncStorage.setItem('userName', userName);
 
-                Alert.alert(`${i18n.t('signed_in_successfully')}`);
                 setIsLoggedIn(true);
 
                 setTimeout(() => {
@@ -76,11 +84,23 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
         } catch (error) {
             console.log('Error:', error); // Add this line
             if (error.response && error.response.status === 400) {
-                Alert.alert(`${i18n.t('error')}`, error.response.data.statusText || 'Wrong email or password');
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: i18n.t('signin_wrong_input'),
+                });
+                setCustomAlertVisible(true);
             } else if (error.response && error.response.status === 403) {
-                Alert.alert(`${i18n.t('please_verify_your_email_before_logging_in')}`);
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: i18n.t('please_verify_your_email_before_logging_in'),
+                });
+                setCustomAlertVisible(true);
             } else {
-                Alert.alert(`${i18n.t('error')}`, `${i18n.t('an_unexpected_error_occurred')}`);
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: i18n.t('an_unexpected_error_occurred'),
+                });
+                setCustomAlertVisible(true);
             }
         }
     };
@@ -98,8 +118,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
             />
 
             <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={28} color="#1E90FF" />
-                <Text style={styles.backText}>{i18n.t('back')}</Text>
+                <Ionicons name="arrow-back" size={28} color="orange"/>
             </TouchableOpacity>
 
             <Text style={styles.title} testID='signInTitle'>{i18n.t('sign_in')}</Text>
@@ -122,7 +141,7 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
             />
 
             <OrangeButton title={i18n.t('sign_in')} onPress={handleSignIn} testID="sign-in-button" variant="normal" />
-           
+
             <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
                 <Text style={styles.signUpText}>{i18n.t('do_not_have_an_account')}</Text>
             </TouchableOpacity>
@@ -130,6 +149,14 @@ export default function SignInPage({ navigation, setIsLoggedIn }) {
             <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordPage')}>
                 <Text style={styles.forgotPasswordText}>{i18n.t('forgot_password')}</Text>
             </TouchableOpacity>
+
+            <CustomAlertError
+                visible={customAlertVisible}
+                title={customAlertContent.title}
+                message={customAlertContent.message}
+                onClose={() => setCustomAlertVisible(false)}
+            />
+
         </View>
     );
 }
@@ -145,7 +172,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 40,
         left: 20,
-        flexDirection: 'row', 
+        flexDirection: 'row',
         alignItems: 'center',
         zIndex: 1,
     },

@@ -9,9 +9,11 @@ const InputField = ({
     onChangeText,
     isValid,
     isError,
-    disabled = false,
-    secureTextEntry = false,
+    disabled = false, // default = false
+    secureTextEntry = false, // default = false
+    multiline = false, // default = false
     style,
+    showFloatingLabel = true, // default = true
 }) => {
     const [focused, setFocused] = useState(false);
     const animatedValue = useRef(new Animated.Value(1)).current;
@@ -59,7 +61,7 @@ const InputField = ({
                 ]}
             >
                 {/* Floating Label (Placeholder) */}
-                {value && (
+                {value && showFloatingLabel && (
                     <Text style={[styles.floatingLabel, disabled && styles.disabledText]}>
                         {placeholder}
                     </Text>
@@ -67,7 +69,8 @@ const InputField = ({
                 <TextInput
                     style={[
                         styles.input,
-                        disabled && styles.disabledInput, // Apply disabled styles
+                        disabled && styles.disabledInput,
+                        multiline && styles.multilineInput,
                     ]}
                     placeholder={value ? '' : placeholder} // Hide placeholder if value exists
                     onFocus={handleFocus}
@@ -76,6 +79,8 @@ const InputField = ({
                     onChangeText={onChangeText}
                     editable={!disabled} // Disable editing if disabled is true
                     secureTextEntry={secureTextEntry} // For password fields
+                    multiline={multiline} 
+                    numberOfLines={multiline ? 4 : 1} 
                 />
             </View>
         </Animated.View>

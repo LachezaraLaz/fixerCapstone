@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, RefreshControl, SafeAreaView } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import {useNavigation, useIsFocused, useFocusEffect} from '@react-navigation/native';
 import { styles } from '../../../style/myIssues/myIssuesStyle';
 import JobBox from '../../../components/jobBox';
 import NotificationButton from "../../../components/notificationButton";
@@ -18,13 +18,14 @@ import { IPAddress } from '../../../ipAddress';
  * @module fixerClient
  */
 
-export default function MyIssuesPosted() {
+export default function MyIssuesPosted({navigation}) {
     const [jobs, setJobs] = useState({ all: [], inProgress: [], completed: [] });
     const [loading, setLoading] = useState(true);
     const [selectedTab, setSelectedTab] = useState('inProgress');
     const [refreshing, setRefreshing] = useState(false);
-    const navigation = useNavigation();
+    // const navigation = useNavigation();
     const isFocused = useIsFocused();
+    const [unreadCount, setUnreadCount] = useState(0);
     let [modalVisible, setModalVisible] = useState(false);
     const {locale, setLocale}  = useContext(LanguageContext);
     const i18n = new I18n({ en, fr });
@@ -36,6 +37,34 @@ export default function MyIssuesPosted() {
             fetchJobsForUser();
         }
     }, [isFocused]);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotificationNumber();
+        }, [])
+    );
+
+    /**
+     * Gets the number of unread notifications
+     * @returns {Promise<number|*>} - unread notifications
+     */
+    const fetchNotificationNumber = async () => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const readNotifications = response.data.filter(
+                (notif) => !notif.isRead
+            );
+
+            setUnreadCount(readNotifications.length);
+        } catch (error) {
+            console.error('Error fetching notifications:', error.message);
+            setUnreadCount(0);
+        }
+    };
 
     /**
      * Fetches jobs for the logged-in user and updates the state with the fetched jobs.
@@ -69,10 +98,10 @@ export default function MyIssuesPosted() {
             setJobs({
                 all: response.data.jobs,
                 inProgress: response.data.jobs.filter(job =>
-                    job.status === inProgressLabel || job.status === 'Open'
+                    job.status?.toLowerCase() === 'in progress' || job.status?.toLowerCase() === 'open' || job.status === inProgressLabel
                 ),
                 completed: response.data.jobs.filter(job =>
-                    job.status === 'Completed' || job.status === 'Closed'
+                    job.status === 'Completed' || job.status === 'Closed' || job.status === 'Reopened'
                 ),
             });
 
@@ -101,10 +130,37 @@ export default function MyIssuesPosted() {
                 <Text style={styles.headerLogo}>Fixr</Text>
 
                 {/* ✅ Updated Title to "My Issues" */}
-                <Text style={styles.headerTitle}>{i18n.t('my_issues')}</Text>
+                <Text style={styles.headerTitle}>{i18n.t('my_jobs')}</Text>
 
                 {/* Notification Button */}
-                <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
+                <View style={{ position: 'relative' }}>
+                    <NotificationButton
+                        testID="notification-button"
+                        onPress={() => navigation.navigate('NotificationPage')}
+                    />
+                    {unreadCount > 0 && (
+                        <View
+                            style={{
+                                position: 'absolute',
+                                right: -2,
+                                top: -2,
+                                backgroundColor: 'red',
+                                borderRadius: 8,
+                                width: 16,
+                                height: 16,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Text style={{
+                                color: 'white',
+                                fontSize: 10,
+                                fontWeight: 'bold' }}>
+                                {unreadCount}
+                            </Text>
+                        </View>
+                    )}
+                </View>
             </View>
 
             {/* ✅ Fixed Tabs */}
@@ -132,7 +188,7 @@ export default function MyIssuesPosted() {
                 {jobs[selectedTab].length > 0 ? (
                     jobs[selectedTab].map(job => <JobBox key={job.id} job={job} navigation={navigation} />)
                 ) : (
-                    <Text style={styles.noJobsText}>`${i18n.t('jobs_available')}`</Text>
+                    <Text style={styles.noJobsText}>{i18n.t('jobs_available')}</Text>
                 )}
             </ScrollView>
         </SafeAreaView>

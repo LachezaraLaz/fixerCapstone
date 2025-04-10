@@ -13,7 +13,8 @@ const InternalServerError = require("../utils/errors/InternalServerError");
  */
 const getAllJobs = async () => {
     try {
-        const jobs = await Jobs.find();
+        // Fetch only jobs with status "open"
+        const jobs = await Jobs.find({ status: 'open' });
         return jobs;
     } catch (error) {
         throw new InternalServerError('issue repo', `Failed to fetch jobs: ${error.message}`, 500);

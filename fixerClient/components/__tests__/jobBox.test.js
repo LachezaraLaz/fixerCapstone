@@ -1,6 +1,11 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
-import JobBox from '../JobBox';
+import { render, fireEvent} from '@testing-library/react-native';
+import JobBox from '../jobBox';
+
+// code to run only this file through the terminal:
+// npm run test ./components/__tests__/jobBox.test.js
+// or
+// npm run test-coverage ./components/__tests__/jobBox.test.js
 
 describe('JobBox Component', () => {
     const mockJob = {
@@ -57,5 +62,17 @@ describe('JobBox Component', () => {
 
         expect(getByText(minimalJob.title)).toBeTruthy();
         expect(getByText(`$${minimalJob.price}`)).toBeTruthy();
+    });
+
+    it('navigates to IssueDetails on press with correct jobId', () => {
+        const mockNavigate = jest.fn();
+        const mockNavigation = { navigate: mockNavigate };
+        const jobWithId = { ...mockJob, id: 'job123' };
+      
+        const { getByText } = render(<JobBox job={jobWithId} navigation={mockNavigation} />);
+      
+        fireEvent.press(getByText(jobWithId.title)); // or wrap Touchable with a testID if preferred
+      
+        expect(mockNavigate).toHaveBeenCalledWith('IssueDetails', { jobId: 'job123' });
     });
 });

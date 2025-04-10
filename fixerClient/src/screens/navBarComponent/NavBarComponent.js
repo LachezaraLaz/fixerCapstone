@@ -37,7 +37,7 @@ export default function NavBar({ setIsLoggedIn }) {
     }, []);
 
     const labels = {
-        Home: `${i18n.t('home_screen')}`,
+        Home: `${i18n.t('home')}`,
         JobsPosted: `${i18n.t('mission')}`,
         Chat: 'Chat',
         Profile: 'Profile',
@@ -60,8 +60,9 @@ export default function NavBar({ setIsLoggedIn }) {
                     }
 
                     return (
-                        <View style={[styles.iconContainer, focused && styles.activeTab]}>
+                        <View style={[styles.iconContainer, focused && styles.activeTab]} testID={`${route.name}-icon-container`}>
                             <Ionicons
+                                testID={`${route.name}-icon`}
                                 name={focused ? iconName : `${iconName}-outline`}
                                 size={size}
                                 color={focused ? 'orange' : 'gray'}
@@ -75,12 +76,14 @@ export default function NavBar({ setIsLoggedIn }) {
                 headerShown: false,
             })}
         >
-            <Tab.Screen name="Home">
+            <Tab.Screen name="Home" testID="home-tab">
                 {props => <HomeScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
             </Tab.Screen>
-            <Tab.Screen name="JobsPosted" component={MyIssuesPosted} />
-            <Tab.Screen name="Chat" component={ChatScreens} />
-            <Tab.Screen name="Profile" component={ProfilePage} />
+            <Tab.Screen name="JobsPosted" testID="jobsPosted-tab" component={MyIssuesPosted} />
+            <Tab.Screen name="Chat" testID="chat-tab" component={ChatScreens} />
+            <Tab.Screen name="Profile" testID="profile-tab">
+                {props => <ProfilePage {...props} setIsLoggedIn={setIsLoggedIn} />}
+            </Tab.Screen>
         </Tab.Navigator>
     );
 }

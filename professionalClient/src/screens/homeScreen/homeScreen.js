@@ -1,15 +1,31 @@
 import * as React from 'react';
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, Animated, Linking } from 'react-native';
+import { 
+    View, 
+    Text, 
+    TouchableOpacity, 
+    Alert, 
+    ActivityIndicator, 
+    SafeAreaView, 
+    Animated, 
+    Linking, 
+    Dimensions
+} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
-import { styles } from '../../../style/homescreen/homeScreenStyle';
 import * as Location from 'expo-location';
+import Carousel from 'react-native-snap-carousel-v4';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useChatContext } from '../chat/chatContext';
 import { useNavigation } from '@react-navigation/native';
-import { AppState } from 'react-native';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
+
+import { useChatContext } from '../chat/chatContext';
+import IssueDetailScreen from '../issueDetailScreen/issueDetailScreen';
+import CustomAlertLocation from '../../../components/customAlertLocation';
+import NotificationButton from '../../../components/notificationButton';
+import { styles } from '../../../style/homescreen/homeScreenStyle';
+
+
 
 /**
  * @module professionalClient
@@ -41,7 +57,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const [issues, setIssues] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentLocation, setCurrentLocation] = React.useState(null);
-    const [selectedFilters, setSelectedFilters] = React.useState([]);
+    const { selectedFilters = [], distanceRange, rating, timeline } = route.params || {};
     const [typesOfWork, setTypesOfWork] = React.useState([]);
     const [bankingInfoAdded, setBankingInfoAdded] = React.useState(false); // New state for banking info status
     const scrollY = React.useRef(new Animated.Value(0)).current;
@@ -50,6 +66,14 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
     const scrollViewRef = React.useRef(null);
     const navigation = useNavigation();
     const [locationPermission, setLocationPermission] = React.useState(null);
+    const [selectedMarker, setSelectedMarker] = React.useState(null);
+    const modalTranslateY = React.useRef(new Animated.Value(500)).current; // Start off screen (500 px under screen)
+    const [errorAlertVisible, setErrorAlertVisible] = React.useState(false);
+    const [errorAlertContent, setErrorAlertContent] = React.useState({ title: '', message: '' });
+
+    const [showCarousel, setShowCarousel] = React.useState(true);
+    const [selectedIssue, setSelectedIssue] = React.useState(null);
+    const [carouselIndex, setCarouselIndex] = React.useState(0);
 
     /**
      * Fetches all issues from the server and updates the state with the fetched data.
@@ -74,7 +98,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 }))
                 .filter(issue => issue.latitude !== null && issue.longitude !== null); // Remove invalid locations
             setIssues(fixedIssues);
-
             const uniqueTypes = [...new Set(fixedIssues.map(issue => issue.professionalNeeded))];
             setTypesOfWork(uniqueTypes);
         } catch (error) {
@@ -116,11 +139,20 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
+
+    /**
+     * Requests foreground location permissions from the user and updates the permission state.
+     *
+     * @async
+     * @function checkLocationPermission
+     * @returns {Promise<string>} - The status of the location permission (e.g., 'granted', 'denied').
+     */
     const checkLocationPermission = async () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
         setLocationPermission(status);
         return status;
     };
+
 
     /**
      * Asynchronously gets the current location of the user.
@@ -155,6 +187,17 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
+
+    /**
+     * useEffect hook that runs on component mount and when navigation changes.
+     *
+     * - Fetches all issues and banking information status.
+     * - Retrieves the user's current location.
+     * - Adds listeners to update location when the screen is focused or when the app returns to the foreground.
+     * - Cleans up listeners on component unmount.
+     *
+     * @function useEffect
+     */
     React.useEffect(() => {
         fetchAllIssues();
         getCurrentLocation();
@@ -171,85 +214,126 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         };
     }, [navigation]);
 
-    React.useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            if (route.params?.selectedFilters || route.params?.distanceRange) {
-                setSelectedFilters(route.params.selectedFilters || []);
-            }
-        });
-        return unsubscribe;
-    }, [navigation, route.params?.selectedFilters, route.params?.distanceRange]);
-
     /**
-     * Handles the user logout process.
+     * Filters issues based on selected work types, distance range, minimum rating, and timeline.
      *
-     * This function performs the following steps:
-     * 1. Disconnects the user from the chat client if it exists.
-     * 2. Removes the user's token, stream token, user ID, and user name from AsyncStorage.
-     * 3. Displays an alert indicating the user has been logged out successfully.
-     * 4. Sets the `isLoggedIn` state to false.
+     * - Checks if the issue's professional type matches any selected filters.
+     * - Calculates the distance from the user's current location and filters based on range.
+     * - Filters by minimum rating and exact timeline match if specified.
      *
-     * If an error occurs during the logout process, it logs the error to the console
-     * and displays an alert indicating that an error occurred.
-     *
-     * @async
-     * @function handleLogout
-     * @returns {Promise<void>} A promise that resolves when the logout process is complete.
+     * @constant {Array} filteredIssues - The array of issues that match all active filters.
      */
-    const handleLogout = async () => {
-        try {
-            if (chatClient) await chatClient.disconnectUser();
-            await AsyncStorage.multiRemove(['token', 'streamToken', 'userId', 'userName']);
-            Alert.alert('Logged out', 'You have been logged out successfully');
-            setIsLoggedIn(false);
-        } catch (error) {
-            console.error("Error logging out: ", error);
-            Alert.alert('Error', 'An error occurred while logging out');
+    const filteredIssues = issues.filter(issue => {
+        const typeOfWork = issue.professionalNeeded || ''; // Get the professional types
+    
+        // Match if ANY selected filter appears in the professionalNeeded string
+        const matchesType =
+            selectedFilters.length === 0 ||
+            selectedFilters.some(filter => {
+                const typesArray = typeOfWork.split(',').map(t => t.trim().toLowerCase());
+                return typesArray.includes(filter.toLowerCase());
+            });
+    
+        // Distance filter
+        let matchesDistance = true;
+        if (currentLocation && distanceRange && distanceRange.length === 2) {
+            const [minDistance, maxDistance] = distanceRange;
+            const distance = calculateDistance(
+                currentLocation.latitude,
+                currentLocation.longitude,
+                issue.latitude,
+                issue.longitude
+            );
+            matchesDistance = distance >= minDistance && distance <= maxDistance;
         }
-    };
+    
+        // Rating filter
+        const matchesRating = !rating || issue.rating >= rating;
+    
+        // Timeline filter
+        const matchesTimeline = !timeline || issue.timeline === timeline;
+    
+        return matchesType && matchesDistance && matchesRating && matchesTimeline;
+    });
+
 
     /**
-     * Filters and returns a list of unique issues based on selected filters and distance range.
+     * Renders an individual item in the map carousel.
      *
-     * @function
-     * @name filteredIssues
-     * @returns {Array} - The filtered list of unique issues.
+     * - On press, sets the selected issue, animates the modal up, and centers the map on the item's location.
+     * - Displays issue title, type of professional needed, and timeline priority with appropriate styling and icons.
      *
-     * @example
-     * // Example usage:
-     * const issues = [
-     *   { _id: '1', professionalNeeded: 'plumber', latitude: 40.7128, longitude: -74.0060 },
-     *   { _id: '2', professionalNeeded: 'electrician', latitude: 34.0522, longitude: -118.2437 }
-     * ];
-     * const selectedFilters = ['plumber'];
-     * const currentLocation = { latitude: 37.7749, longitude: -122.4194 };
-     * const route = { params: { distanceRange: [0, 100] } };
-     * const result = filteredIssues(issues, selectedFilters, currentLocation, route.params.distanceRange);
-     * console.log(result);
-     *
-     * @param {Array} issues - The list of issues to filter.
-     * @param {Array} selectedFilters - The list of selected filters for professionals needed.
-     * @param {Object} currentLocation - The current location with latitude and longitude.
-     * @param {Array} route.params.distanceRange - The distance range [minDistance, maxDistance] to filter issues by.
+     * @function renderItem
+     * @param {Object} item - The issue item to render.
+     * @returns {JSX.Element} - A styled TouchableOpacity component representing the issue.
      */
-    const filteredIssues = React.useMemo(() => {
-        return issues.filter(issue => {
-            const matchesProfessional = selectedFilters.length === 0 || selectedFilters.includes(issue.professionalNeeded);
-            let matchesDistance = true;
-            if (currentLocation && route.params?.distanceRange) {
-                const [minDistance, maxDistance] = route.params.distanceRange;
-                const distance = calculateDistance(
-                    currentLocation.latitude,
-                    currentLocation.longitude,
-                    issue.latitude,
-                    issue.longitude
-                );
-                matchesDistance = distance >= minDistance && distance <= maxDistance;
-            }
-            return matchesProfessional && matchesDistance;
-        });
-    }, [issues, selectedFilters, currentLocation, route.params?.distanceRange]);
+    const renderItem = ({ item }) => (
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedIssue(item);
+            
+            modalTranslateY.setValue(500); // Start from bottom
+            
+            // Animate map to center on this item
+            mapRef.current?.animateToRegion({
+              latitude: item.latitude,
+              longitude: item.longitude,
+              latitudeDelta: 0.0122,
+              longitudeDelta: 0.0121,
+            }, 500);
+      
+            // Animate modal up (but carousel still visible until modalTranslateY === 0)
+            Animated.spring(modalTranslateY, {
+              toValue: 0,
+              friction: 8,
+              tension: 50,
+              useNativeDriver: true,
+            }).start();
+          }}
+        >
+          <View style={{
+            backgroundColor: '#fff',
+            padding: 10,
+            borderRadius: 10,
+            width: 260,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 5,
+          }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.title}</Text>
 
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+                <Ionicons name="hammer-outline" size={14} style={{ marginRight: 4 }} />
+                <Text style={{ fontSize: 14 }}>{item.professionalNeeded}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                <Ionicons name="alarm-outline" size={14} style={{ marginRight: 4 }} />
+                <Text
+                    style={{
+                    fontSize: 14,
+                    color: item.timeline === 'high-priority' ? 'red' : item.timeline ? 'orange' : 'grey'
+                    }}
+                >
+                    {item.timeline ? formatTimeline(item.timeline) : 'N/A'}
+                </Text>
+            </View>
+
+          </View>
+        </TouchableOpacity>
+    );
+      
+
+    /**
+     * Displays a loading indicator while data is being fetched or processed.
+     *
+     * - Renders a centered ActivityIndicator when `loading` is true.
+     *
+     * @condition
+     * @returns {JSX.Element|null} - A loading spinner inside a styled container, or null if not loading.
+     */
     if (loading) {
         return (
             <View style={styles.container}>
@@ -258,9 +342,17 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         );
     }
 
+    /**
+     * Interpolates the height of the map view based on scroll position.
+     *
+     * - Shrinks the map height from 350 to 150 as the user scrolls from 0 to 500.
+     * - Clamps the output to prevent values outside the specified range.
+     *
+     * @constant {Animated.AnimatedInterpolation} mapHeight - The animated height value for the map.
+     */
     const mapHeight = scrollY.interpolate({
         inputRange: [0, 500],
-        outputRange: [450, 150],
+        outputRange: [350, 150],
         extrapolate: 'clamp',
     });
 
@@ -295,14 +387,11 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      */
     const handleRecenterMap = () => {
         if (locationPermission !== 'granted') {
-            Alert.alert(
-                "Location Permission Denied",
-                "To use this feature, enable location services in settings.",
-                [
-                    { text: "Back", style: "cancel" },
-                    { text: "Go to Settings", onPress: () => Linking.openSettings() }
-                ]
-            );
+            setErrorAlertContent({
+                title: 'Location Permission Denied',
+                message: 'To use this feature, enable location services in settings.'
+            });
+            setErrorAlertVisible(true);
             return;
         }
         if (mapRef.current && currentLocation) {
@@ -315,8 +404,131 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
         }
     };
 
+    /**
+     * Handles the event when a map marker is pressed.
+     *
+     * - Rounds coordinates to group markers at the same location.
+     * - Finds and sets all jobs at the selected location.
+     * - Sets the selected issue, shows the carousel, and animates the modal and map.
+     *
+     * @function handleMarkerPress
+     * @param {Object} selected - The issue associated with the pressed marker.
+     */
+    const roundCoord = (coord) => Math.round(coord * 10000) / 10000;
+
+    const handleMarkerPress = (selected) => {
+        const lat = roundCoord(selected.latitude);
+        const lng = roundCoord(selected.longitude);
+        const key = `${lat},${lng}`;
+
+        const jobsAtSameLocation = groupedIssues.find(group => {
+            const first = group[0];
+            return roundCoord(first.latitude) === lat && roundCoord(first.longitude) === lng;
+        });
+
+        setSelectedMarker(jobsAtSameLocation || []);
+        setSelectedIssue(selected);
+        setShowCarousel(true);
+
+        modalTranslateY.setValue(500);
+        Animated.spring(modalTranslateY, {
+            toValue: 0,
+            friction: 8,
+            tension: 50,
+            useNativeDriver: true,
+        }).start();
+    
+        mapRef.current?.animateToRegion({
+            latitude: selected.latitude,
+            longitude: selected.longitude,
+            latitudeDelta: 0.0122,
+            longitudeDelta: 0.0121,
+        }, 500);
+    };
+
+
+    /**
+     * Groups jobs by proximity of their coordinates to handle overlapping map markers.
+     *
+     * - Compares latitude and longitude differences within a small threshold.
+     * - Jobs within the threshold are grouped together in the same array.
+     *
+     * @function groupJobsByLocation
+     * @param {Array} issues - The list of issues to group by location.
+     * @returns {Array[]} - An array of grouped issue arrays based on location proximity.
+     */
+    const groupJobsByLocation = (issues) => {
+        const groups = [];
+    
+        for (let issue of issues) {
+            const matchGroup = groups.find(group => {
+                const latDiff = Math.abs(group[0].latitude - issue.latitude);
+                const lngDiff = Math.abs(group[0].longitude - issue.longitude);
+                return latDiff < 0.00005 && lngDiff < 0.00005; // adjust threshold as needed
+            });
+    
+            if (matchGroup) {
+                matchGroup.push(issue);
+            } else {
+                groups.push([issue]);
+            }
+        }
+    
+        return groups;
+    };
+    
+    const groupedIssues = groupJobsByLocation(filteredIssues);
+
+
+    /**
+     * Formats a timeline string by capitalizing the first letter of each word segment.
+     *
+     * - Converts strings like "high-priority" to "High-Priority".
+     *
+     * @function formatTimeline
+     * @param {string} timeline - The timeline string to format.
+     * @returns {string|null} - The formatted timeline string or null if input is falsy.
+     */
+    const formatTimeline = (timeline) => {
+        if (!timeline) return null;
+        return timeline
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join('-');
+    };
+      
+    
+    /**
+     * Handles the closing animation of the issue detail modal.
+     *
+     * - Animates the modal sliding down off-screen.
+     * - Resets the selected marker and hides the carousel after animation completes.
+     *
+     * @function handleCloseIssueDetail
+     */
+    const handleCloseIssueDetail = () => {
+        Animated.timing(modalTranslateY, {
+            toValue: 500,  // go down (Out of screen)
+            duration: 250, // short time of closing (faster)
+            useNativeDriver: true,
+        }).start(() => {
+            setSelectedMarker(null); // close modal when animation is finished
+            setShowCarousel(false);
+        });
+    };
+
     return (
         <SafeAreaView style={styles.container}>
+            {/* Header */}
+            <View style={styles.customHeader}>
+                <Text style={styles.headerLogo}>Fixr</Text>
+                <Text style={styles.headerTitle}>Home</Text>
+                <NotificationButton
+                    testID="notification-button"
+                    onPress={() => navigation.navigate('NotificationPage')}
+                />
+            </View>
+
             {/* Notice for banking information */}
             {!bankingInfoAdded && Platform.OS !== 'ios' && (
                 <View style={styles.noticeContainer}>
@@ -333,13 +545,6 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                     </TouchableOpacity>
                 </View>
             )}
-
-
-            <View style={styles.notificationButton}>
-                <TouchableOpacity onPress={() => navigation.navigate('NotificationPage')}>
-                    <Ionicons name="notifications-outline" size={28} color="#333" />
-                </TouchableOpacity>
-            </View>
 
             <Animated.ScrollView ref={scrollViewRef} contentContainerStyle={{ paddingBottom: 100 }} scrollEventThrottle={16}>
                 {/* Map Section */}
@@ -363,14 +568,42 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             longitudeDelta: 0.0121,
                         }}
                     >
-                        {filteredIssues.map((issue) => (
-                            <Marker
-                                key={issue._id}
-                                coordinate={{ latitude: issue.latitude, longitude: issue.longitude }}
-                                title={issue.title}
-                                description={issue.description}
-                            />
-                        ))}
+                        {groupedIssues.map((group, index) => {
+                            const firstIssue = group[0]; // Use first for lat/lng and popup
+
+                            return (
+                                <Marker
+                                    key={`marker-${index}`}
+                                    coordinate={{latitude: firstIssue.latitude, longitude: firstIssue.longitude}}
+                                    onPress={() => handleMarkerPress(firstIssue)}
+                                >
+                                    <View style={{
+                                        backgroundColor: '#f28500',
+                                        paddingHorizontal: 8,
+                                        paddingVertical: 2,
+                                        borderRadius: 20,
+                                        borderWidth: 2,
+                                        borderColor: '#fff',
+                                        shadowColor: '#000',
+                                        shadowOffset: {width: 0, height: 2},
+                                        shadowOpacity: 0.3,
+                                        shadowRadius: 3,
+                                        elevation: 5,
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                    }}>
+
+                                        {group.length > 0 && (
+                                            <Text style={{
+                                                color: '#fff',
+                                                fontWeight: 'bold'
+                                            }}>{group.length}</Text>
+                                        )}
+                                    </View>
+                                </Marker>
+                            );
+                        })}
+
                     </MapView>
                     {/* Recenter Button */}
                     <View style={styles.recenterButtonWrapper}>
@@ -396,6 +629,8 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                             typesOfWork,
                             selectedFilters,
                             distanceRange: route.params?.distanceRange || [0, 50], // Pass current distance range or default
+                            rating,
+                            timeline,
                         })}
                     >
                         <Ionicons name="filter" size={24} color="#333" />
@@ -405,9 +640,9 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 {/* Issues List */}
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Issues</Text>
-                    {filteredIssues.map((issue) => (
+                    {filteredIssues.map((issue, index) => (
                         <TouchableOpacity
-                            key={issue._id}
+                            key={issue._id || `issue-${index}`}
                             style={styles.issueCard}
                             onPress={() => handleIssueClick(issue)}
                         >
@@ -415,25 +650,108 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                                 <Text style={styles.issueTitle}>{issue.title}</Text>
                                 <Text style={styles.issueDescription}>{issue.description}</Text>
                                 <View style={styles.issueRatingContainer}>
-                                    <Ionicons name="star" size={16} color="#f1c40f" />
-                                    <Text style={styles.issueRating}>{issue.rating}</Text>
-                                    <Text style={styles.issueReviews}>| {issue.comments} reviews</Text>
+                                    <Ionicons
+                                        name="star"
+                                        size={16}
+                                        color={issue.rating ? "#f1c40f" : "#ccc"} // Grey if rating is null/0
+                                    />
+                                    <Text style={[styles.issueRating, { color: issue.rating ? '#f1c40f' : '#ccc' }]}>
+                                        {issue.rating || 'No rating'}
+                                    </Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Text style={styles.issueReviews}>|</Text>
+                                        <Text
+                                        style={[
+                                            styles.issueReviews,
+                                            { color: issue.timeline === 'high-priority' ? 'red' : issue.timeline ? 'orange' : 'grey' }
+                                        ]}
+                                        >
+                                        {issue.timeline ? formatTimeline(issue.timeline) : 'N/A'}
+                                        </Text>
+                                    </View>
+
                                 </View>
-                            </View>
-                            <View style={styles.issuePriceContainer}>
-                                <Text style={styles.issuePrice}>${issue.price}</Text>
                             </View>
                         </TouchableOpacity>
                     ))}
                 </View>
 
-                {/* Logout Button */}
-                <View style={styles.logoutContainer}>
-                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                        <Text style={styles.logoutText}>Logout</Text>
-                    </TouchableOpacity>
-                </View>
             </Animated.ScrollView>
+            {selectedMarker && (
+                <Animated.View
+                    pointerEvents="box-none"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        transform: [{ translateY: modalTranslateY }],
+                        zIndex: 1000,
+                    }}>
+                    <IssueDetailScreen
+                        key={selectedIssue?.id}
+                        issue={selectedIssue}
+                        issues={selectedMarker}
+                        onClose={handleCloseIssueDetail}
+                    />
+                </Animated.View>
+            )}
+            {selectedMarker && showCarousel && (
+                <View
+                    style={{
+                        position: 'absolute',
+                        bottom: 320,
+                        left: 0,
+                        right: 0,
+                        alignItems: 'center',
+                        zIndex: 998,
+                        elevation: 10,
+                    }}
+                >
+                    <Carousel
+                        data={selectedMarker}
+                        renderItem={renderItem}
+                        sliderWidth={Dimensions.get('window').width}
+                        itemWidth={280}
+                        layout={'default'}
+                        inactiveSlideScale={0.95}
+                        inactiveSlideOpacity={0.8}
+                        loop={false}
+                        enableSnap={true}
+                        onSnapToItem={(index) => {
+                            setCarouselIndex(index);
+                            setSelectedIssue(selectedMarker[index]); // make sure modal updates too
+                        }}
+                    />
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 8 }}>
+                        {selectedMarker.map((_, index) => (
+                            <View
+                            key={`dot-${index}`}
+                            style={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: 4,
+                                marginHorizontal: 4,
+                                backgroundColor: index === carouselIndex ? '#f28500' : '#ccc',
+                            }}
+                            />
+                        ))}
+                    </View>
+                </View>
+            )}
+            <CustomAlertLocation
+                visible={errorAlertVisible}
+                title={errorAlertContent.title}
+                message={errorAlertContent.message}
+                confirmText="Go to Settings"
+                cancelText="Back"
+                onConfirm={() => {
+                    setErrorAlertVisible(false);
+                    Linking.openSettings();
+                }}
+                onClose={() => setErrorAlertVisible(false)}
+            />
         </SafeAreaView>
     );
 }

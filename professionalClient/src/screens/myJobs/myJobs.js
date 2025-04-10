@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Alert, TouchableOpacity, RefreshControl, SafeAreaView } from 'react-native';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import {useNavigation, useIsFocused, useFocusEffect} from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NotificationButton from "../../../components/notificationButton";
@@ -18,15 +18,45 @@ export default function MyJobsProfessional() {
     const [selectedTab, setSelectedTab] = useState('active');
     const [refreshing, setRefreshing] = useState(false);
     const [amountEarned, setAmountEarned] = useState(0);
+    const [unreadCount, setUnreadCount] = useState(0);
     const navigation = useNavigation();
+    const isFocused = useIsFocused();
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotificationNumber();
+        }, [])
+    );
+
+    /**
+     * Gets the number of unread notifications
+     * @returns {Promise<number|*>} - unread notifications
+     */
+    const fetchNotificationNumber = async () => {
+        const token = await AsyncStorage.getItem('token');
+        try {
+            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const readNotifications = response.data.filter(
+                (notif) => !notif.isRead
+            );
+
+            setUnreadCount(readNotifications.length);
+        } catch (error) {
+            console.error('Error fetching notifications:', error.message);
+            setUnreadCount(0);
+        }
+    };
 
     /**
      * Fetches jobs from the server and updates the state with the retrieved data.
-     * 
+     *
      * This function retrieves the user token from AsyncStorage and uses it to make an
      * authenticated request to the server to fetch job data. The response data is then
      * used to update the state with the list of jobs and the amount earned.
-     * 
+     *
      * @async
      * @function fetchJobs
      * @returns {Promise<void>} A promise that resolves when the job data has been fetched and the state has been updated.
@@ -70,8 +100,10 @@ export default function MyJobsProfessional() {
     };
 
     useEffect(() => {
-        fetchJobs();
-    }, []);
+        if (isFocused) {
+            fetchJobs();
+        }
+    }, [isFocused]);
 
     if (loading) {
         return (
@@ -84,20 +116,21 @@ export default function MyJobsProfessional() {
             </View>
         );
     }
-    
+
     /**
      * Renders a list of jobs based on the given status.
      *
      * @param {string} status - The status of the jobs to be rendered.
+     * @param navigation
      * @returns {JSX.Element} A list of JobBox components if jobs are available, otherwise a Text component indicating no jobs are available.
      */
-    const renderJobs = (status) => {
+    const renderJobs = (status, navigation) => {
         let jobList = jobs[status] || [];
 
         return jobList.length > 0 ? (
             jobList.map((job, index) => (
                 <JobBox
-                    key={job._id || index}
+                    key={job.id || index}
                     job={job}
                     navigation={navigation}
                     showStatus={selectedTab === "all"}
@@ -113,12 +146,40 @@ export default function MyJobsProfessional() {
             <View style={styles.customHeader}>
                 <Text style={styles.headerLogo}>Fixr</Text>
                 <Text style={styles.headerTitle}>My Jobs</Text>
-                <NotificationButton onPress={() => navigation.navigate('NotificationPage')} />
+
+                {/* Notification Button */}
+                <View style={{ position: 'relative' }}>
+                    <NotificationButton
+                        testID="notification-button"
+                        onPress={() => navigation.navigate('NotificationPage')}
+                    />
+                    {unreadCount > 0 && (
+                        <View
+                            style={{
+                                position: 'absolute',
+                                right: -2,
+                                top: -2,
+                                backgroundColor: 'red',
+                                borderRadius: 8,
+                                width: 16,
+                                height: 16,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Text style={{
+                                color: 'white',
+                                fontSize: 10,
+                                fontWeight: 'bold' }}>
+                                {unreadCount}
+                            </Text>
+                        </View>
+                    )}
+                </View>
             </View>
 
             <View style={styles.tabsContainer}>
                 {[
-                    { key: "all", label: "All" },
                     { key: "active", label: "In Progress" },
                     { key: "done", label: "Completed" },
                     { key: "pending", label: "Quote Sent" },
@@ -143,7 +204,7 @@ export default function MyJobsProfessional() {
                         Amount Earned: <Text style={styles.amountValue}>${amountEarned}</Text>
                     </Text>
                 </View>
-                {renderJobs(selectedTab)}
+                {renderJobs(selectedTab, navigation)}
             </ScrollView>
         </SafeAreaView>
     );

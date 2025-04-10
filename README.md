@@ -66,22 +66,22 @@ There must be <ins>2 terminals open</ins> to make the project run. The following
 Duplicate the file called ".envCopy" and rename the duplicated file to ".env". In the ".env" file, the following must be entered:
 
 ```
-MONGO_URL=mongodb+srv://fixit9337:9zEWh3F3KcdidqcP@clusterfixit.lcsgj.mongodb.net/?retryWrites=true&w=majority&appName=Clusterfixit
-JWT_SECRET=ws6UFJEgOxN7wFRe9fCB6c507ELT5Q9O
-CLOUDINARY_CLOUD_NAME=dzzjpv5yw
-CLOUDINARY_API_KEY=126996845455117
-CLOUDINARY_API_SECRET=QHzagCadTLyem0edek0l5X0aEDM
-GOOGLE_MAPS_KEY=AIzaSyBsGtM6ZfPiJ1uSg5gsX2DYacogWq_1Ksg
-EMAIL='fixit9337@gmail.com'
-PASS_RESET='gmzg blbr jvev ghlb'
-PINO_LOG_LEVEL='info'
-BETTER_STACK_TOKEN='aJkWYiLMUV6RTSeJ2H8dNiwy'
-STREAM_API_KEY=ut27s54hv26w
-STREAM_API_SECRET=wqwnt3c933uqfsgfrjf5xh37cuwzqkyj5hegvwn42mdn6gtyfvgz4pr6hmru6733
-OPENAI_API_KEY=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
-STRIPE_PUBLISHABLE_KEY=pk_test_51R2Idt4EguzjUpYJuPu476vH5Q5L7MFhTKtZlTW5YqljPd4GdahB0GtQByATLzwc9CpVS9tuQ4sWx9PKhm8qwZ9Z00X2Z9JnWQ
-STRIPE_SECRET_KEY=sk_test_51R2Idt4EguzjUpYJkWHATHWmF9NCiAidn8s4gsHtIEtzS2nUlSsYdrDCMt5ayBHy7NZGnESYqg77qchUUAfG6wC800z8KUwQ9Q
-STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxx
+MONGO_URL=
+JWT_SECRET=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+GOOGLE_MAPS_KEY=
+EMAIL=
+PASS_RESET=
+PINO_LOG_LEVEL=
+BETTER_STACK_TOKEN=
+STREAM_API_KEY=
+STREAM_API_SECRET=
+OPENAI_API_KEY=
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
 ```
 **WARNING, the ".env" file must never be pushed to main. EVER.**
 
@@ -166,9 +166,9 @@ There must be <ins>2 terminals open</ins> to make the project run. The following
 Duplicate the file called ".envCopy" and rename the duplicated file to ".env". In the ".env" file, the following must be entered:
 
 ```
-MONGO_URL=mongodb+srv://fixit9337:9zEWh3F3KcdidqcP@clusterfixit.lcsgj.mongodb.net/?retryWrites=true&w=majority&appName=Clusterfixit
-JWT_SECRET=ws6UFJEgOxN7wFRe9fCB6c507ELT5Q9O
-PASS_RESET='gmzg blbr jvev ghlb'
+MONGO_URL=
+JWT_SECRET=
+PASS_RESET=
 ```
 **WARNING, the ".env" file must never be pushed to main. EVER.**
 
@@ -214,11 +214,6 @@ PASS_RESET='gmzg blbr jvev ghlb'
     <td>Karin Sarkis</td>
     <td>40189273</td>
     <td><a href="https://github.com/KarinSarkis">KarinSarkis</a></td>
-  </tr>
-  <tr>
-    <td>Kassem El-Zoghbi</td>
-    <td>40174145</td>
-    <td>NvmKassem</td>
   </tr>
   <tr>
     <td>Lachezara Lazarova</td>

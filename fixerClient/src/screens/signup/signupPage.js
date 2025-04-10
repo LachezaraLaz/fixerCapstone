@@ -13,6 +13,8 @@ import languageStyle from '../../../style/languageStyle';
 import { LanguageContext } from "../../../context/LanguageContext";
 
 import { IPAddress } from '../../../ipAddress';
+import CustomAlertError from "../../../components/customAlertError";
+import CustomAlertSuccess from "../../../components/customAlertSuccess";
 
 /**
  * @module fixerClient
@@ -33,6 +35,12 @@ const CANADIAN_PROVINCES = [
 ];
 
 export default function SignUpPage({ navigation }) {
+    //For custom alerts
+    const [customAlertVisible, setCustomAlertVisible] = useState(false);
+    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
+    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+    const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
+
     //general fields for page
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -145,25 +153,34 @@ export default function SignUpPage({ navigation }) {
     // Format postal code as A1B 2C3
     const formatPostalCode = (text) => {
         // Remove all non-alphanumeric characters
-        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '');
+        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
 
-        // Insert a space after the first 3 characters
+        // Limit to 6 characters (A1B2C3) before formatting
+        formattedText = formattedText.slice(0, 6);
+
+        // Insert space after the first 3 characters if enough characters exist
         if (formattedText.length > 3) {
             formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
         }
 
-        // Convert to uppercase
-        formattedText = formattedText.toUpperCase();
+        // Limit final result to 7 characters (A1B 2C3)
+        formattedText = formattedText.slice(0, 7);
 
         setPostalCode(formattedText);
     };
+
 
     // Check if email and password are valid to show name and address fields
     const checkEmailAndPassword = () => {
         if (isValid && validatePasswords()) {
             setShowNameAndAddressFields(true); // Show name and address fields
         } else {
-            Alert.alert('Error', 'Please enter a valid email and matching passwords');
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('signup_form_errors.check_email_password'),
+            });
+            setCustomAlertVisible(true);
+            //Alert.alert('Error', 'Please enter a valid email and matching passwords');
         }
     }
 
@@ -182,28 +199,57 @@ export default function SignUpPage({ navigation }) {
      */
     async function handleSignUp() {
         if (!email || !password || !confirmPassword || !street || !postalCode) {
-            Alert.alert('Error', 'All fields are required');
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('signup_form_errors.all_fields_required'),
+            });
+            setCustomAlertVisible(true);
+            //Alert.alert('Error', 'All fields are required');
             return;
         }
         if (!isValid) {
-            Alert.alert('Error', 'Please enter a valid email address');
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('signup_form_errors.valid_email'),
+            });
+            setCustomAlertVisible(true);
+            //Alert.alert('Error', 'Please enter a valid email address');
             return;
         }
         if (!validatePasswords()) {
-            Alert.alert('Error', 'Password does not meet the required criteria');
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('signup_form_errors.password_criteria'),
+            });
+            setCustomAlertVisible(true);
+            //Alert.alert('Error', 'Password does not meet the required criteria');
             return;
         }
         if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match');
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('signup_form_errors.password_match'),
+            });
+            setCustomAlertVisible(true);
+            //Alert.alert('Error', 'Passwords do not match');
             return;
         }
         if (!validateName(firstName) || !validateName(lastName)) {
-            Alert.alert('Error', 'First name and last name must start with a capital letter.');
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('signup_form_errors.capital_letter'),
+            });
+            setCustomAlertVisible(true);
+            //Alert.alert('Error', 'First name and last name must start with a capital letter.');
             return;
         }
         if (!isAddressValid) {
-            Alert.alert('Error', 'Please verify your address');
-            return;
+            setCustomAlertContent({
+                title: i18n.t('error'),
+                message: i18n.t('signup_form_errors.address_not_valid'),
+            });
+            setCustomAlertVisible(true);
+            //Alert.alert('Error', 'Please verify your address');
         } else {
             try {
                 const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/register`, {
@@ -217,20 +263,45 @@ export default function SignUpPage({ navigation }) {
                     country: country
                 })
                 if (response.status !== 400) {
-                    Alert.alert("Account created successfully. An email was sent to verify your email.")
+                    setSuccessAlertContent({
+                        title: '🎉',
+                        message: i18n.t('signup_successful'),
+                    });
+                    setSuccessAlertVisible(true);
+                    //Alert.alert("Account created successfully. An email was sent to verify your email.")
                 }
             } catch (error) {
                 if (error.response) {
                     // Check if the response indicates the user already exists
                     if (error.response.status === 400) {
-                        Alert.alert("Error", "User already exists");
+                        setCustomAlertContent({
+                            title: i18n.t('error'),
+                            message: i18n.t('signup_form_errors.user_already_exists'),
+                        });
+                        setCustomAlertVisible(true);
+                        //Alert.alert("Error", "User already exists");
                     } else {
-                        Alert.alert("Error", error.response.data.message || `${i18n.t('an_unexpected_error_occurred')}`);
+                        setCustomAlertContent({
+                            title: i18n.t('error'),
+                            message: i18n.t('an_unexpected_error_occurred'),
+                        });
+                        setCustomAlertVisible(true);
+                        //Alert.alert("Error", error.response.data.message || `${i18n.t('an_unexpected_error_occurred')}`);
                     }
                 } else if (error.request) {
-                    Alert.alert("Error", "Network error");
+                    setCustomAlertContent({
+                        title: i18n.t('error'),
+                        message: i18n.t('network_error'),
+                    });
+                    setCustomAlertVisible(true);
+                    //Alert.alert("Error", "Network error");
                 } else {
-                    Alert.alert("Error", "An unexpected error occurred");
+                    setCustomAlertContent({
+                        title: i18n.t('error'),
+                        message: i18n.t('an_unexpected_error_occurred'),
+                    });
+                    setCustomAlertVisible(true);
+                    //Alert.alert("Error", "An unexpected error occurred");
                 }
             }
         }
@@ -255,9 +326,9 @@ export default function SignUpPage({ navigation }) {
                 street: street,
                 postalCode: postalCode,
             })
-            if (response.status === 'success') {
-                Alert.alert("Address verified successfully from client")
-            }
+            // if (response.status === 'success') {
+            //     Alert.alert("Address verified successfully from client")
+            // }
 
             const { isAddressValid, coordinates } = response.data;
 
@@ -266,17 +337,32 @@ export default function SignUpPage({ navigation }) {
 
         } catch (error) {
             if (error.response) {
-                Alert.alert("Error", error.response.data.message || 'An unexpected error occurred Ad.Ver.');
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: error.response.data.message || i18n.t('an_unexpected_error_occurred'),
+                });
+                setCustomAlertVisible(true);
+                //Alert.alert("Error", error.response.data.message || 'An unexpected error occurred Ad.Ver.');
             } else if (error.request) {
-                Alert.alert("Error", "Network error Ad.Ver.");
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: i18n.t('network_error'),
+                });
+                setCustomAlertVisible(true);
+                //Alert.alert("Error", "Network error Ad.Ver.");
             } else {
-                Alert.alert("Error", "An unexpected error occurred Ad.Ver.");
+                setCustomAlertContent({
+                    title: i18n.t('error'),
+                    message: i18n.t('an_unexpected_error_occurred'),
+                });
+                setCustomAlertVisible(true);
+                //Alert.alert("Error", "An unexpected error occurred Ad.Ver.");
             }
         }
     };
 
     return (
-        <ScrollView >
+        <ScrollView style={{backgroundColor: '#ffffff' }}>
             <View style={styles.container}>
                 <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
                     <Text style={languageStyle.languageButtonText}>🌍 {i18n.t('change_language')}</Text>
@@ -287,9 +373,8 @@ export default function SignUpPage({ navigation }) {
                     onClose={() => setModalVisible(false)}
                     setLocale={setLocale}
                 />
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={28} color="#1E90FF" />
-                    <Text style={styles.backText}>{i18n.t('back')}</Text>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="orange"/>
                 </TouchableOpacity>
 
                 <Text style={styles.title}>{i18n.t('sign_up')}</Text>
@@ -321,19 +406,19 @@ export default function SignUpPage({ navigation }) {
                 {password.length > 0 && (
                     <View style={styles.passwordCriteriaContainer}>
                         <Text style={[styles.criteriaText, hasMinLength && styles.criteriaMet]}>
-                            {hasMinLength ? '✓' : '•'} At least 8 characters
+                            {hasMinLength ? '✓' : '•'} {i18n.t('password_min_length')}
                         </Text>
                         <Text style={[styles.criteriaText, hasNumber && styles.criteriaMet]}>
-                            {hasNumber ? '✓' : '•'} At least one number
+                            {hasNumber ? '✓' : '•'} {i18n.t('password_number')}
                         </Text>
                         <Text style={[styles.criteriaText, hasUppercase && styles.criteriaMet]}>
-                            {hasUppercase ? '✓' : '•'} At least one uppercase letter
+                            {hasUppercase ? '✓' : '•'} {i18n.t('password_uppercase')}
                         </Text>
                         <Text style={[styles.criteriaText, hasLowercase && styles.criteriaMet]}>
-                            {hasLowercase ? '✓' : '•'} At least one lowercase letter
+                            {hasLowercase ? '✓' : '•'} {i18n.t('password_lowercase')}
                         </Text>
                         <Text style={[styles.criteriaText, hasSpecialChar && styles.criteriaMet]}>
-                            {hasSpecialChar ? '✓' : '•'} At least one special character
+                            {hasSpecialChar ? '✓' : '•'} {i18n.t('password_special_char')}
                         </Text>
                     </View>
                 )}
@@ -403,7 +488,7 @@ export default function SignUpPage({ navigation }) {
                         <OrangeButton title={i18n.t('verify_address')} onPress={handleVerifyAddress} variant="normal" />
 
                         {isAddressValid && (
-                                <Text style={styles.text}>{i18n.t('valid_address_entered')}</Text>
+                            <Text style={styles.text}>{i18n.t('valid_address_entered')}</Text>
                         )}
 
                         {coordinates && (
@@ -429,6 +514,24 @@ export default function SignUpPage({ navigation }) {
                 <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
                     <Text style={styles.signInText}>{i18n.t('already_have_an_account')}</Text>
                 </TouchableOpacity>
+
+                <CustomAlertError
+                    visible={customAlertVisible}
+                    title={customAlertContent.title}
+                    message={customAlertContent.message}
+                    onClose={() => setCustomAlertVisible(false)}
+                />
+
+                <CustomAlertSuccess
+                    visible={successAlertVisible}
+                    title={successAlertContent.title}
+                    message={successAlertContent.message}
+                    onClose={() => {
+                        setSuccessAlertVisible(false);
+                        navigation.goBack();
+                    }}
+                />
+
             </View>
         </ScrollView>
     );
@@ -441,7 +544,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#fff',
         paddingTop: 100,
-        paddingBottom: 300,
+        paddingBottom: 50,
     },
     backButton: {
         position: 'absolute',
@@ -483,28 +586,5 @@ const styles = StyleSheet.create({
         height: 200,
         marginTop: 20,
         marginBottom: 20,
-    },
-});
-
-
-
-const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-        height: 50,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        color: 'black',
-    },
-    inputAndroid: {
-        height: 50,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        color: 'black',
     },
 });

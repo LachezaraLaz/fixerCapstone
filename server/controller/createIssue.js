@@ -3,8 +3,6 @@ const { Jobs } = require('../model/createIssueModel');
 const { fixerClient } = require('../model/fixerClientModel');
 const { getCoordinatesFromAddress } = require('../services/geoCodingService');
 const { logger } = require('../utils/logger');
-const NotFoundError = require("../utils/errors/NotFoundError");
-const BadRequestError = require("../utils/errors/BadRequestError");
 
 /**
  * @module server/controller
@@ -28,8 +26,8 @@ const BadRequestError = require("../utils/errors/BadRequestError");
  * 
  * @throws {Error} - Throws an error if the issue creation fails.
  */
-const createIssue = async (req, res, next) => {
-    const { title, description, professionalNeeded, email, status = 'open' } = req.body;
+const createIssue = async (req, res) => {
+    const { title, description, professionalNeeded, email, status = 'open',timeline, address } = req.body;
     let imageUrl = null;
 
     if (!title || !description || !professionalNeeded) {
@@ -46,7 +44,7 @@ const createIssue = async (req, res, next) => {
             throw new NotFoundError('create issue', 'Client information not found', 404);
         }
 
-        const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
+        // const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
         const { latitude, longitude } = await getCoordinatesFromAddress(address);
 
         const newIssue = await Jobs.create({
@@ -57,13 +55,16 @@ const createIssue = async (req, res, next) => {
             userEmail: email,
             status,
             latitude,
-            longitude
+            longitude,
+            firstName: clientInfo.firstName,
+            lastName: clientInfo.lastName,
+            timeline,
         });
 
         // Create a notification for the issue creator
         const notification = new Notification({
             userId: clientInfo._id,  // Use the client's ID
-            message: `Your issue titled "${title}" has been created successfully.`,
+            message: `🎉 Congrats! Your issue titled "${title}" has been created successfully.`,
             isRead: false
         });
         await notification.save();

@@ -25,10 +25,11 @@ import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
 
-const IssueDetails = () => {
+// const IssueDetails = ({route}) => {
+export default function IssueDetails({ route }) {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
-    const route = useRoute();
+    // const route = useRoute();
     const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
     const {jobId} = route.params;
@@ -65,7 +66,7 @@ const IssueDetails = () => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#ff6600"/>
+                <ActivityIndicator testID="ActivityIndicator" size="large" color="#ff6600"/>
             </View>
         );
     }
@@ -103,7 +104,7 @@ const IssueDetails = () => {
     const currentStatus = job.status?.toLowerCase() || "pending";
     const statusStyle = statusColors[currentStatus] || statusColors["pending"];
 
-    const deleteReopenIssue = async (job, currentStatus) => {
+    const updateIssueStatus = async (job, currentStatus) => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
@@ -116,24 +117,26 @@ const IssueDetails = () => {
 
             // Show a confirmation popup before proceeding
             Alert.alert(
-                `Confirm ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`, // Capitalize first letter
-                `Are you sure you want to ${actionText} this issue?`,
+                i18n.t(`${actionText.toLowerCase()}`), // Use dynamic translation for the title
+                `${i18n.t('are_you_sure')} ${i18n.t(`${actionText.toLowerCase()}`)} ${i18n.t('this_issue')}${
+                    newStatus === 'Open' ? ' ' + i18n.t('modify_issue_text') : ''
+                }`,
                 [
                     {
                         text: `${i18n.t('cancel')}`,
                         style: "cancel"
                     },
                     {
-                        text: `Yes`,
+                        text: `${i18n.t('yes')}`,
                         onPress: async () => {
                             try {
-                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/delete/${job.id}?status=${newStatus}`,
+                                const response = await axios.delete(`https://fixercapstone-production.up.railway.app/issue/updateStatus/${job.id}?status=${newStatus}`,
                                     {headers: {Authorization: `Bearer ${token}`}}
                                 );
 
-                                if (response.status === 200) {
-                                    Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Closed' : 'Reopened'} successfully`);
-                                    navigation.navigate("MyIssuesPosted");
+                                if (response.status === 200 || response.status === 201) {
+                                    Alert.alert(`Job ${newStatus === 'Closed By Client' ? 'Deleted' : 'Reopened'} successfully`);
+                                    navigation.navigate("JobsPosted");
                                 } else {
                                     Alert.alert(`Failed to ${actionText} the job`);
                                 }
@@ -166,7 +169,7 @@ const IssueDetails = () => {
             <ScrollView style={styles.container} contentContainerStyle={{paddingBottom: 50}}
                         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
                 <View style={styles.customHeader}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <TouchableOpacity testID="back-button" onPress={() => navigation.goBack()} style={styles.backButton}>
                         <Ionicons name="arrow-back" size={28} color="orange"/>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Issue Details</Text>
@@ -206,8 +209,8 @@ const IssueDetails = () => {
                 {job.imageUrl && job.imageUrl !== 'https://via.placeholder.com/150' && job.imageUrl !== null ? (
                     <View style={styles.imageGrid}>
                         <Text style={styles.detailLabel}>Attached Images</Text>
-                        <TouchableOpacity onPress={() => setModalVisible(true)}>
-                            <Image source={{uri: job.imageUrl}} style={styles.jobImage}/>
+                        <TouchableOpacity onPress={() => setModalVisible(true)} testID="image-touch">
+                            <Image source={{uri: job.imageUrl}} style={styles.jobImage} accessibilityRole="image"/>
                         </TouchableOpacity>
                     </View>
                 ) : (
@@ -216,9 +219,9 @@ const IssueDetails = () => {
                         <Text style={styles.detailValue}>{i18n.t('no_image_attached')}</Text>
                     </View>
                 )}
-                <Modal visible={modalVisible} transparent={true} animationType="fade">
+                <Modal visible={modalVisible} testID="image-modal" transparent={true} animationType="fade">
                     <View style={styles.modalContainer}>
-                        <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalVisible(false)}>
+                        <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalVisible(false)} testID="modal-close-button">
                             <Ionicons name="close" size={30} color="white"/>
                         </TouchableOpacity>
                         <Image source={{uri: job.imageUrl}} style={styles.fullImage}/>
@@ -256,13 +259,13 @@ const IssueDetails = () => {
                 {job.status.toLowerCase() === "completed" || job.status.toLowerCase() === "closed" ? (
                     <>
                         <OrangeButton
-                            title="Add Review"
+                            title={i18n.t('add_modify_review')}
                             onPress={() => navigation.navigate("addReview", {jobId})}
                             variant="normal"
                         />
                         <OrangeButton
                             title="Reopen Issue"
-                            onPress={() => deleteReopenIssue(job, job.status)}
+                            onPress={() => updateIssueStatus(job, job.status)}
                         />
                     </>
                 ) : job.status.toLowerCase() === "open" || job.status.toLowerCase() === "pending" ? (
@@ -273,14 +276,16 @@ const IssueDetails = () => {
                         />
                         <OrangeButton
                             title={i18n.t('delete_issue')}
-                            onPress={() => deleteReopenIssue(job, job.status)}
+                            onPress={() => updateIssueStatus(job, job.status)}
                         />
                     </>
+                ) : job.status.toLowerCase() === "in progress" ? (
+                        <>
+                            <Text style={styles.detailSubLabel}>{i18n.t('jobInProgressComment')} </Text>
+                        </>
                 ) : null}
 
             </ScrollView>
         </SafeAreaView>
     );
 };
-
-export default IssueDetails;

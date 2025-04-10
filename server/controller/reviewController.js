@@ -76,7 +76,9 @@ exports.addReview = async (req, res, next) => {
         professional.totalRating = Math.round(
             ((professional.totalRating * professional.reviewCount) + rating) / (professional.reviewCount + 1) * 10
         ) / 10;
-        professional.reviewCount += 1;
+        if (!job.rating) {
+            professional.reviewCount += 1;
+        }
         await professional.save();
 
         logger.info('Review added successfully!');

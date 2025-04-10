@@ -46,9 +46,28 @@ jest.mock('react-native/Libraries/Alert/Alert', () => ({
     alert: jest.fn(),
 }));
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
-    multiRemove: jest.fn(),
-}));
+jest.mock('@react-native-async-storage/async-storage', () => {
+    let store = {
+        userId: 'dummy-user-id',
+        token : 'dummy-jwt',
+    };
+
+    const mockAsyncStorage = {
+        getItem:    jest.fn(key   => Promise.resolve(store[key] ?? null)),
+        setItem:    jest.fn((k,v) => { store[k] = v; return Promise.resolve(); }),
+        removeItem: jest.fn(key   => { delete store[key]; return Promise.resolve(); }),
+        multiRemove: jest.fn(keys => { keys.forEach(k => delete store[k]); return Promise.resolve(); }),
+
+        // handy helper so tests can reset state
+        __reset: () => { store = {}; },
+    };
+
+    module.exports = {
+        __esModule: true,   // makes `import AsyncStorage from …` work
+        default: mockAsyncStorage,
+    };
+});
+
 
 jest.mock('@react-navigation/native', () => ({
     useNavigation: jest.fn(),
@@ -79,20 +98,6 @@ describe('HomeScreen', () => {
     });
 
     beforeEach(() => jest.clearAllMocks());
-
-    it('handles logout correctly', async () => {
-        const { getByText } = render(<HomeScreen route={{ params: {} }} setIsLoggedIn={mockSetIsLoggedIn} />);
-
-        await waitFor(() => expect(getByText('Logout')).toBeTruthy());
-
-        // Simulate clicking logout
-        await act(async () => {
-            fireEvent.press(getByText('Logout'));
-        });
-
-        // Check that `setIsLoggedIn(false)` is called on successful logout
-        expect(mockSetIsLoggedIn).toHaveBeenCalledWith(false);
-    });
 
     it('fetches issues and renders them', async () => {
         const { getByText } = render(<HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />);
@@ -128,14 +133,6 @@ describe('HomeScreen', () => {
 
         // Restore console.error after the test finishes
         console.error.mockRestore();
-    });
-
-
-    it('handles logout correctly', async () => {
-        const { getByText } = render(<HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />);
-        await waitFor(() => fireEvent.press(getByText('Logout')));
-
-        expect(mockSetIsLoggedIn).toHaveBeenCalledWith(false);
     });
 
     it('recenters map if location permission granted', async () => {
@@ -183,41 +180,26 @@ describe('HomeScreen', () => {
         await waitFor(() => expect(mockGetCurrentPositionAsync).toHaveBeenCalledTimes(2));
     });
 
-    it('shows alert if location permission is not granted on recenter button press', async () => {
+    it('shows CustomAlertLocation and opens settings when location permission is denied', async () => {
         Location.requestForegroundPermissionsAsync.mockResolvedValue({ status: 'denied' });
 
-        const alertSpy = jest.spyOn(Alert, 'alert');
-
-        const { getByTestId, queryByTestId } = render(
+        const { getByTestId, queryByTestId, getByText } = render(
             <HomeScreen route={mockRoute} setIsLoggedIn={mockSetIsLoggedIn} />
         );
 
-        // Ensure loading finishes first
         await waitFor(() => expect(queryByTestId('loading-indicator')).toBeNull());
 
-        // Press on recenter button
         await act(async () => {
             fireEvent.press(getByTestId('recenterButton'));
         });
 
-        // Check alert is shown correctly
-        expect(alertSpy).toHaveBeenCalledWith(
-            "Location Permission Denied",
-            "To use this feature, enable location services in settings.",
-            [
-                { text: "Back", style: "cancel" },
-                { text: "Go to Settings", onPress: expect.any(Function) }
-            ]
-        );
+        expect(getByText('Location Permission Denied')).toBeTruthy();
+        expect(
+            getByText('To use this feature, enable location services in settings.')
+        ).toBeTruthy();
 
-        // Simulate pressing by clicking on 'Go to Settings' button on the alert
-        const alertButtons = alertSpy.mock.calls[0][2];
-        act(() => {
-            alertButtons[1].onPress();
-        });
+        fireEvent.press(getByText('Go to Settings'));
 
-        // Check if Linking.openSettings() is called
         expect(Linking.openSettings).toHaveBeenCalled();
     });
-
 });

@@ -2,6 +2,11 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import CardComponent from '../CardComponent';
 
+// code to run only this file through the terminal:
+// npm run test ./src/screens/cardComponent/__tests__/cardComponent.test.js
+// or
+// npm run test-coverage ./src/screens/cardComponent/__tests__/cardComponent.test.js
+
 describe('CardComponent', () => {
     const defaultProps = {
         title: 'Test Task',

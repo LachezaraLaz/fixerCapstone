@@ -24,7 +24,7 @@ beforeEach(() => {
 // Test suite
 describe('SignUpPage Tests', () => {
     test('shows "All fields are required" alert when fields are empty', async () => {
-        const { getByTestId } = render(<SignUpPage />);
+        const { getByTestId, getByText } = render(<SignUpPage />);
 
         // Find the sign-up button and press it
         const signUpButton = getByTestId('sign-up-button');
@@ -32,12 +32,15 @@ describe('SignUpPage Tests', () => {
 
         // Wait for the alert to be called
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Error', 'All fields are required');
+            expect(getByText('Error')).toBeTruthy();
+            expect(getByText('All fields are required')).toBeTruthy();
+
+            // expect(Alert.alert).toHaveBeenCalledWith('Error', 'All fields are required');
         });
     });
 
     test('shows "Passwords do not match" alert when passwords do not match', async () => {
-        const { getByPlaceholderText, getByTestId } = render(<SignUpPage />);
+        const { getByPlaceholderText, getByTestId, getByText } = render(<SignUpPage />);
 
         fireEvent.changeText(getByPlaceholderText('Email'), 'test@example.com');
         fireEvent.changeText(getByPlaceholderText('First Name'), 'John');
@@ -52,13 +55,15 @@ describe('SignUpPage Tests', () => {
         fireEvent.press(signUpButton);
 
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Passwords do not match');
+            expect(getByText('Error')).toBeTruthy();
+            expect(getByText('Passwords do not match')).toBeTruthy();
+            // expect(Alert.alert).toHaveBeenCalledWith('Error', 'Passwords do not match');
         });
     });
 
     test('successfully creates an account', async () => {
         const mockNavigation = { navigate: jest.fn() };
-        const { getByPlaceholderText, getByTestId } = render(<SignUpPage navigation={mockNavigation} />);
+        const { getByPlaceholderText, getByTestId, getByText } = render(<SignUpPage navigation={mockNavigation} />);
 
         // Simulate user input
         fireEvent.changeText(getByPlaceholderText('Email'), 'user@example.com');
@@ -68,8 +73,8 @@ describe('SignUpPage Tests', () => {
         //fireEvent.changeText(getByPlaceholderText('Postal Code'), '90210');
         //fireEvent.changeText(getByPlaceholderText('Province or State'), 'CA');
         //fireEvent.changeText(getByPlaceholderText('Country'), 'USA');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'Password123!');
+        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'Password123!');
 
         // Simulate button press
         const signUpButton = getByTestId('sign-up-button');
@@ -77,13 +82,15 @@ describe('SignUpPage Tests', () => {
 
         // Assertions
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith("Account created successfully. An email was sent to verify your email.");
+            expect(getByText("Account created successfully")).toBeTruthy();
+            expect(getByText("An email was sent to verify your email.")).toBeTruthy();
+            // expect(Alert.alert).toHaveBeenCalledWith("Account created successfully. An email was sent to verify your email.");
         });
     });
 
     test('displays "Account already exists" alert when email is already in use', async () => {
         const mockNavigation = { navigate: jest.fn() };
-        const { getByPlaceholderText, getByTestId } = render(<SignUpPage navigation={mockNavigation} />);
+        const { getByPlaceholderText, getByTestId, getByText } = render(<SignUpPage navigation={mockNavigation} />);
 
         // Set up axios to mock a response for an existing email
         axios.post.mockRejectedValueOnce({
@@ -97,8 +104,8 @@ describe('SignUpPage Tests', () => {
         fireEvent.changeText(getByPlaceholderText('Email'), 'existing@example.com');
         fireEvent.changeText(getByPlaceholderText('First Name'), 'Jane');
         fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'Password123!');
+        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'Password123!');
         //fireEvent.changeText(getByPlaceholderText('House number and Street'), '4321 Pine Street');
         //fireEvent.changeText(getByPlaceholderText('Postal Code'), '30004');
         //fireEvent.changeText(getByPlaceholderText('Province or State'), 'GA');
@@ -114,23 +121,25 @@ describe('SignUpPage Tests', () => {
                 email: 'existing@example.com',
                 firstName: 'Jane',
                 lastName: 'Doe',
-                password: 'password123'
+                password: 'Password123!'
             });
-            expect(Alert.alert).toHaveBeenCalledWith("Error", "Account already exists");
+            expect(getByText("Error")).toBeTruthy();
+            expect(getByText("An account with this email already exists")).toBeTruthy();
+            // expect(Alert.alert).toHaveBeenCalledWith("Error", "Account already exists");
         });
     });
 
     test('displays a network error alert when no response is received', async () => {
         axios.post.mockRejectedValueOnce({ request: {} });
 
-        const { getByPlaceholderText, getByTestId } = render(<SignUpPage />);
+        const { getByPlaceholderText, getByTestId, getByText } = render(<SignUpPage />);
 
         // Simulate user input
         fireEvent.changeText(getByPlaceholderText('Email'), 'networkerror@example.com');
         fireEvent.changeText(getByPlaceholderText('First Name'), 'Network');
         fireEvent.changeText(getByPlaceholderText('Last Name'), 'Error');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'Password123!');
+        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'Password123!');
 
         // Attempt to sign up
         const signUpButton = getByTestId('sign-up-button');
@@ -138,21 +147,23 @@ describe('SignUpPage Tests', () => {
 
         // Assertions
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith("Error", "Network error");
+            expect(getByText("Error")).toBeTruthy();
+            expect(getByText("Network error")).toBeTruthy();
+            // expect(Alert.alert).toHaveBeenCalledWith("Error", "Network error");
         });
     });
 
     test('displays an unexpected error alert when no request or response exists', async () => {
         axios.post.mockRejectedValueOnce({});
 
-        const { getByPlaceholderText, getByTestId } = render(<SignUpPage />);
+        const { getByPlaceholderText, getByTestId, getByText } = render(<SignUpPage />);
 
         // Simulate user input
         fireEvent.changeText(getByPlaceholderText('Email'), 'unexpectederror@example.com');
         fireEvent.changeText(getByPlaceholderText('First Name'), 'Unexpected');
         fireEvent.changeText(getByPlaceholderText('Last Name'), 'Error');
-        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
-        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'password123');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'Password123!');
+        fireEvent.changeText(getByPlaceholderText('Confirm Password'), 'Password123!');
 
         // Attempt to sign up
         const signUpButton = getByTestId('sign-up-button');
@@ -160,7 +171,9 @@ describe('SignUpPage Tests', () => {
 
         // Assertions
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith("Error", "An unexpected error occurred");
+            expect(getByText("Error")).toBeTruthy();
+            expect(getByText("An unexpected error occurred")).toBeTruthy();
+            // expect(Alert.alert).toHaveBeenCalledWith("Error", "An unexpected error occurred");
         });
     });
 

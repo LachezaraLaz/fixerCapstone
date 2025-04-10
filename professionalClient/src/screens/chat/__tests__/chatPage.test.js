@@ -6,6 +6,11 @@ import ChatPage from '../chatPage';
 import { useChatContext } from '../chatContext';
 import { NavigationContainer } from '@react-navigation/native';
 
+// code to run only this file through the terminal:
+// npm run test ./src/screens/chat/__tests__/chatPage.test.js
+// or
+// npm run test-coverage ./src/screens/chat/__tests__/chatPage.test.js
+
 // Mocking necessary contexts and libraries
 jest.mock('../chatContext', () => ({
     useChatContext: jest.fn()
@@ -24,10 +29,12 @@ describe('ChatPage Tests', () => {
         jest.clearAllMocks();
     });
 
-    it('renders message list and input when channel is selected', () => {
+    test('renders message list and input when channel is selected', () => {
         useChatContext.mockImplementation(() => ({
-            channel: { id: 'channel1', name: 'General' }
+            channel: { id: 'channel1', name: 'General' },
+            user: { name: 'Test User' }  // ✅ Add this
         }));
+
 
         const { getByText } = render(
             <NavigationContainer>
@@ -39,7 +46,7 @@ describe('ChatPage Tests', () => {
         expect(getByText('MessageInput')).toBeTruthy();
     });
 
-    it('displays no channel selected when no channel is present', () => {
+    test('displays no channel selected when no channel is present', () => {
         useChatContext.mockImplementation(() => ({
             channel: null
         }));

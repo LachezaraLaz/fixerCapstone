@@ -40,10 +40,12 @@
     "@testing-library/dom": "^10.4.0",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
+    "emailjs": "^4.0.3",
     "expo": "~52.0.30",
     "expo-constants": "~17.0.4",
     "expo-image-manipulator": "~13.0.6",
     "expo-image-picker": "~16.0.5",
+    "expo-linear-gradient": "^14.0.2",
     "expo-localization": "^16.0.1",
     "expo-location": "~18.0.5",
     "expo-status-bar": "~2.0.1",
@@ -87,8 +89,10 @@
   },
   "jest": {
     "moduleNameMapper": {
-      ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "identity-obj-proxy"
+      ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "identity-obj-proxy",
+      "^@expo/vector-icons$": "src/__mocks__/@expo/vector-icons.js"
     },
+    "setupFiles": ["<rootDir>/jest.setup.js"],
     "collectCoverageFrom": [],
     "coverageThreshold": {
       "global": {
@@ -100,7 +104,7 @@
     },
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(expo-image-picker|@testing-library/dom|expo-modules-core|@react-native|react-native-maps|react-native|react-native-vector-icons|react-native-dropdown-picker)/)"
+      "node_modules/(?!(expo-localization|expo-constants|expo-image-picker|@testing-library/dom|expo-modules-core|@react-native|react-native-maps|react-native|react-native-vector-icons|react-native-dropdown-picker)/)"
     ],
     "reporters": [
       "default",

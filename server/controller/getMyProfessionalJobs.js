@@ -54,7 +54,6 @@ const authenticateJWT = (req, res, next) => {
  * @param {Object} req.user - The user object from the JWT.
  * @param {string} req.user.email - The email of the professional.
  * @param {Object} res - The response object.
- * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves to void.
  *
  * @description This function fetches all quotes associated with the professional's email,
@@ -67,7 +66,13 @@ const getMyProfessionalJobs = async (req, res, next) => {
     const professionalEmail = req.user.email; // Retrieve professional's email from JWT
 
     try {
-        const quotes = await Quotes.find({ professionalEmail }).populate('issueId')
+        // Find quotes and only populate non-deleted jobs
+        const quotes = await Quotes.find({ professionalEmail })
+            .populate({
+                path: 'issueId',
+                match: { _id: { $exists: true } } // Only populate if job exists
+            });
+
         let amountEarned = 0;
 
 
@@ -79,29 +84,37 @@ const getMyProfessionalJobs = async (req, res, next) => {
             amountEarned: 0,
         };
 
-        quotes.forEach((quote) => {
+        // Filter out quotes with null issueId (deleted jobs)
+        const validQuotes = quotes.filter(quote => quote.issueId !== null);
+
+        validQuotes.forEach((quote) => {
+            // Additional null check as safety net
+            if (!quote.issueId) return;
+
             const jobDetails = {
-                title: quote.issueId?.title || 'No title',
-                description: quote.issueId?.description || 'No description',
-                professionalNeeded: quote.issueId?.professionalNeeded || "No Professional",
+                id: quote.issueId._id,
+                title: quote.issueId.title || 'No title',
+                description: quote.issueId.description || 'No description',
+                professionalNeeded: quote.issueId.professionalNeeded || "No Professional",
                 price: quote.price,
                 status: quote.status,
-                rating: quote.issueId?.rating || 'N/A',
-                imageUrl: quote.issueId?.imageUrl || 'https://via.placeholder.com/100',
+                rating: quote.issueId.rating || 'N/A',
+                imageUrl: quote.issueId.imageUrl || 'https://via.placeholder.com/100',
             };
 
-            if (quote.status === 'accepted') {
+            if (quote.status.toLowerCase() === 'accepted' && quote.issueId.status.toLowerCase() === 'in progress') {
                 jobsByStatus.active.push(jobDetails);
                 jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'pending') {
+            } else if (quote.status.toLowerCase() === 'pending' && quote.issueId.status.toLowerCase() === 'open') {
                 jobsByStatus.pending.push(jobDetails);
                 jobsByStatus.all.push(jobDetails);
-            } else if (quote.status === 'done') {
+            } else if (quote.status.toLowerCase() === 'done' || (quote.status.toLowerCase() === 'accepted' && quote.issueId.status.toLowerCase() === 'completed')) {
                 jobsByStatus.done.push(jobDetails);
                 jobsByStatus.all.push(jobDetails);
                 amountEarned += quote.price;
             }
         });
+
         jobsByStatus.amountEarned = amountEarned;
         res.status(200).json(jobsByStatus);
     } catch (error) {

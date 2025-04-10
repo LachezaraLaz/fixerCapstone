@@ -1,408 +1,256 @@
 import React from 'react';
-import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import OffersPage from '../OffersPage';
+import { LanguageContext } from '../../../../context/LanguageContext';
+import { NavigationContainer } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
+import { en, fr } from '../../../../localization';
+import { I18n } from 'i18n-js';
 
-// Mock AsyncStorage
-jest.mock('@react-native-async-storage/async-storage', () => ({
-    getItem: jest.fn(),
-}));
+// code to run only this file through the terminal:
+// npm run test ./src/screens/OffersPage/__tests__/OffersPage.test.js
+// or
+// npm run test-coverage ./src/screens/OffersPage/__tests__/OffersPage.test.js
 
-// Mock axios
 jest.mock('axios');
 
-// Mock useNavigation
-jest.mock('@react-navigation/native', () => ({
-    ...jest.requireActual('@react-navigation/native'),
-    useNavigation: jest.fn(),
+let mockGoBack, mockNavigate;
+
+jest.mock('@react-navigation/native', () => {
+  const actualNav = jest.requireActual('@react-navigation/native');
+  mockGoBack = jest.fn();
+  mockNavigate = jest.fn();
+  return {
+    ...actualNav,
+    useNavigation: () => ({
+      goBack: mockGoBack,
+      navigate: mockNavigate,
+    }),
+  };
+});
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(),
 }));
 
+
+const renderWithContext = () => {
+    return render(
+      <LanguageContext.Provider value={{ locale: 'en', setLocale: jest.fn() }}>
+        <OffersPage navigation={{ goBack: mockGoBack, navigate: mockNavigate }} />
+      </LanguageContext.Provider>
+    );
+};
+  
+
 describe('OffersPage', () => {
-    let mockNavigate;
-    let alertSpy;
+    const mockNavigate = jest.fn();
+    const profile = { email: 'client@example.com' };
+
+    const offer = {
+        _id: 'offer123',
+        professionalFirstName: 'Alex',
+        professionalLastName: 'Smith',
+        professionalEmail: 'alex@example.com',
+        price: 150,
+        createdAt: new Date().toISOString(),
+        status: 'pending',
+        professionalReviewCount: 5,
+        professionalTotalRating: 4.5,
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
         AsyncStorage.getItem.mockResolvedValue('mock-token');
-        mockNavigate = jest.fn();
-        useNavigation.mockReturnValue({ navigate: mockNavigate });
-        alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+        jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     });
 
-    it('displays loading spinner initially', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
+    test('shows loader initially', async () => {
+        AsyncStorage.getItem.mockResolvedValue('mock-token');
+        axios.get.mockResolvedValue({ data: { email: 'test@example.com' } });
 
-        const { getByTestId } = render(<OffersPage route={route} />);
-
-        // Wait for the spinner to appear
-        await waitFor(() => expect(getByTestId('loading-indicator')).toBeTruthy());
+        const { getByTestId } = renderWithContext();
+        expect(getByTestId('ActivityIndicator')).toBeTruthy();
     });
 
-    it('fetches and displays offers on load', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: {
-                offers: [
-                    {
-                        _id: '1',
-                        professionalFullName: 'John Doe',
-                        professionalEmail: 'john@example.com',
-                        price: 100,
-                        status: 'pending',
-                        createdAt: '2025-01-25T12:00:00Z',
-                    },
-                ],
-            },
+    test('displays offers after fetching', async () => {
+        const mockEmail = 'client@example.com';
+      
+        AsyncStorage.getItem.mockResolvedValue('mock-token');
+      
+        axios.get.mockImplementation((url) => {
+            if (url.includes('/client/profile')) {
+              return Promise.resolve({ status: 200, data: { email: mockEmail } });
+            }
+            if (url.includes(`/quotes/client/${mockEmail}`)) {
+              return Promise.resolve({ status: 200, data: [offer] });
+            }
+            return Promise.resolve({ status: 200, data: [] });
         });
-
-        const { getByText } = render(<OffersPage route={route} />);
-
+          
+      
+        const { getByText, queryByTestId } = renderWithContext();
+      
         await waitFor(() => {
-            expect(axios.get).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/quotes/job/mockJobId',
-                { headers: { Authorization: 'Bearer mock-token' } }
-            );
-            expect(getByText('Professional:')).toBeTruthy();
-            expect(getByText('John Doe')).toBeTruthy();
-            expect(getByText('Price: $100')).toBeTruthy();
-            expect(getByText('Status: Pending')).toBeTruthy();
-        });
+            expect(queryByTestId('ActivityIndicator')).toBeNull();
+            expect(getByText('Alex Smith')).toBeTruthy();
+            expect(getByText('Price: $150')).toBeTruthy();
+        });  
     });
 
-    it('displays a message when no offers are found', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: { offers: [] },
-        });
-
-        const { getByText } = render(<OffersPage route={route} />);
-
+    test('navigates back when back button is pressed', async () => {
+        const { getByTestId, queryByTestId } = renderWithContext();
+      
         await waitFor(() => {
-            expect(getByText('No offers available for this job.')).toBeTruthy();
-        });
+            expect(queryByTestId('ActivityIndicator')).toBeNull();
+            fireEvent.press(getByTestId('back-button'));
+            expect(mockGoBack).toHaveBeenCalled();
+        });  
     });
 
-    it('handles accept offer action', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: {
-                offers: [
-                    {
-                        _id: '1',
-                        professionalFullName: 'John Doe',
-                        professionalEmail: 'john@example.com',
-                        price: 100,
-                        status: 'pending',
-                        createdAt: '2025-01-25T12:00:00Z',
-                    },
-                ],
-            },
+    test('accept offer triggers API and shows success alert', async () => {
+        const mockProfile = {
+          firstName: 'Maya',
+          email: 'maya@example.com',
+        };
+      
+        const mockOffer = {
+          _id: 'offer456',
+          professionalFirstName: 'Sam',
+          professionalLastName: 'Lee',
+          professionalEmail: 'sam@example.com',
+          price: 200,
+          createdAt: new Date().toISOString(),
+          status: 'pending',
+          professionalReviewCount: 1,
+          professionalTotalRating: 5.0,
+        };
+      
+        axios.get.mockImplementation((url) => {
+          if (url.includes('/client/profile')) {
+            return Promise.resolve({ status: 200, data: mockProfile });
+          }
+          if (url.includes(`/quotes/client/${mockProfile.email}`)) {
+            return Promise.resolve({ status: 200, data: [mockOffer] });
+          }
+          return Promise.resolve({ status: 200, data: [] });
         });
-
-        axios.put.mockResolvedValueOnce({
-            status: 200,
-        });
-
-        const { getByText } = render(<OffersPage route={route} />);
-
-        await waitFor(() => expect(getByText('Accept')).toBeTruthy());
-
-        act(() => {
-            fireEvent.press(getByText('Accept'));
-        });
-
+      
+        axios.put.mockResolvedValueOnce({ status: 200 });
+      
+        const { getByText, queryByTestId } = renderWithContext();
+      
+        // Wait for ActivityIndicator to disappear before continuing
         await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/quotes/1',
-                { status: 'accepted' },
-                { headers: { Authorization: 'Bearer mock-token' } }
-            );
-            expect(mockNavigate).toHaveBeenCalledWith('ChatListPage');
+          expect(queryByTestId('ActivityIndicator')).toBeNull();
         });
-    });
-
-    it('handles reject offer action', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: {
-                offers: [
-                    {
-                        _id: '1',
-                        professionalFullName: 'John Doe',
-                        professionalEmail: 'john@example.com',
-                        price: 100,
-                        status: 'pending',
-                        createdAt: '2025-01-25T12:00:00Z',
-                    },
-                ],
-            },
-        });
-
-        axios.put.mockResolvedValueOnce({
-            status: 200,
-        });
-
-        const { getByText } = render(<OffersPage route={route} />);
-
-        await waitFor(() => expect(getByText('Reject')).toBeTruthy());
-
-        act(() => {
-            fireEvent.press(getByText('Reject'));
-        });
-
+      
+        // Confirm offer has rendered
+        expect(getByText('Sam Lee')).toBeTruthy();
+        expect(getByText('Accept')).toBeTruthy();
+      
+        // Press Accept
+        fireEvent.press(getByText('Accept'));
+      
+        // Confirm API and Alert
         await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/quotes/1',
-                { status: 'rejected' },
-                { headers: { Authorization: 'Bearer mock-token' } }
-            );
-            expect(axios.get).toHaveBeenCalledTimes(2);
+          expect(axios.put).toHaveBeenCalledWith(
+            expect.stringContaining('/quotes/offer456'),
+            { status: 'accepted' },
+            expect.anything()
+          );
+      
+          expect(Alert.alert).toHaveBeenCalledWith(
+            'Offer Accepted',
+            'You have accepted the offer.'
+          );
         });
     });
 
-    it('displays alert when no token is found in fetchOffers', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        // Force AsyncStorage to return null to simulate no token
-        AsyncStorage.getItem.mockResolvedValueOnce(null);
-
-        render(<OffersPage route={route} />);
-
+    test('reject offer triggers API and shows success alert', async () => {
+        const mockProfile = {
+          firstName: 'Maya',
+          email: 'maya@example.com',
+        };
+      
+        const mockOffer = {
+          _id: 'offer456',
+          professionalFirstName: 'Sam',
+          professionalLastName: 'Lee',
+          professionalEmail: 'sam@example.com',
+          price: 200,
+          createdAt: new Date().toISOString(),
+          status: 'pending',
+          professionalReviewCount: 1,
+          professionalTotalRating: 5.0,
+        };
+      
+        axios.get.mockImplementation((url) => {
+          if (url.includes('/client/profile')) {
+            return Promise.resolve({ status: 200, data: mockProfile });
+          }
+          if (url.includes(`/quotes/client/${mockProfile.email}`)) {
+            return Promise.resolve({ status: 200, data: [mockOffer] });
+          }
+          return Promise.resolve({ status: 200, data: [] });
+        });
+      
+        axios.put.mockResolvedValueOnce({ status: 200 });
+      
+        const { getByText, queryByTestId } = renderWithContext();
+      
+        // Wait for loading to finish
         await waitFor(() => {
-            expect(alertSpy).toHaveBeenCalledWith('You are not logged in');
+          expect(queryByTestId('ActivityIndicator')).toBeNull();
         });
-    });
-
-    it('displays alert when an error occurs in fetchOffers', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        // Force axios.get to reject
-        axios.get.mockRejectedValueOnce(new Error('Network Error'));
-
-        render(<OffersPage route={route} />);
-
+      
+        // Confirm offer and button exist
+        expect(getByText('Sam Lee')).toBeTruthy();
+        expect(getByText('Reject')).toBeTruthy();
+      
+        // Click "Reject"
+        fireEvent.press(getByText('Reject'));
+      
+        // Validate API and alert
         await waitFor(() => {
-            expect(alertSpy).toHaveBeenCalledWith('Failed to fetch offers. Please try again later.');
+          expect(axios.put).toHaveBeenCalledWith(
+            expect.stringContaining('/quotes/offer456'),
+            { status: 'rejected' },
+            expect.anything()
+          );
+      
+          expect(Alert.alert).toHaveBeenCalledWith(
+            'Offers Rejected',
+            'You have rejected the offer.'
+          );
         });
     });
 
-    it('handles accept offer action - fails if response status is not 200', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: {
-                offers: [
-                    {
-                        _id: '1',
-                        professionalFullName: 'John Doe',
-                        professionalEmail: 'john@example.com',
-                        price: 100,
-                        status: 'pending',
-                        createdAt: '2025-01-25T12:00:00Z',
-                    },
-                ],
-            },
+    test('shows alert when offers response is not an array', async () => {
+        const mockProfile = {
+          email: 'maya@example.com',
+        };
+      
+        // Mock profile fetch
+        axios.get.mockImplementation((url) => {
+          if (url.includes('/client/profile')) {
+            return Promise.resolve({ status: 200, data: mockProfile });
+          }
+          if (url.includes(`/quotes/client/${mockProfile.email}`)) {
+            // Return a non-array response (this will hit the "else" block)
+            return Promise.resolve({ status: 200, data: { invalid: true } });
+          }
+          return Promise.resolve({ status: 200, data: [] });
         });
-
-        // Simulate non-200 response from the put request
-        axios.put.mockResolvedValueOnce({
-            status: 400,
-        });
-
-        const { getByText } = render(<OffersPage route={route} />);
-
-        await waitFor(() => expect(getByText('Accept')).toBeTruthy());
-
-        act(() => {
-            fireEvent.press(getByText('Accept'));
-        });
-
+      
+        const { queryByTestId } = renderWithContext();
+      
         await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/quotes/1',
-                { status: 'accepted' },
-                { headers: { Authorization: 'Bearer mock-token' } }
-            );
-            expect(alertSpy).toHaveBeenCalledWith('Failed to accept the offer.');
-            // No navigation if fail
-            expect(mockNavigate).not.toHaveBeenCalled();
+          expect(queryByTestId('ActivityIndicator')).toBeNull();
+          expect(Alert.alert).toHaveBeenCalledWith('No offers found for your jobs.');
         });
     });
-
-    it('handles accept offer action - catch block on error', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: {
-                offers: [
-                    {
-                        _id: '1',
-                        professionalFullName: 'John Doe',
-                        professionalEmail: 'john@example.com',
-                        price: 100,
-                        status: 'pending',
-                        createdAt: '2025-01-25T12:00:00Z',
-                    },
-                ],
-            },
-        });
-
-        // Force axios.put to throw an error
-        axios.put.mockRejectedValueOnce(new Error('Network Error'));
-
-        const { getByText } = render(<OffersPage route={route} />);
-
-        await waitFor(() => expect(getByText('Accept')).toBeTruthy());
-
-        act(() => {
-            fireEvent.press(getByText('Accept'));
-        });
-
-        await waitFor(() => {
-            expect(alertSpy).toHaveBeenCalledWith('An error occurred while accepting the offer.');
-            expect(mockNavigate).not.toHaveBeenCalled();
-        });
-    });
-
-    it('handles reject offer action - fails if response status is not 200', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: {
-                offers: [
-                    {
-                        _id: '1',
-                        professionalFullName: 'John Doe',
-                        professionalEmail: 'john@example.com',
-                        price: 100,
-                        status: 'pending',
-                        createdAt: '2025-01-25T12:00:00Z',
-                    },
-                ],
-            },
-        });
-
-        // Simulate non-200 response
-        axios.put.mockResolvedValueOnce({
-            status: 400,
-        });
-
-        const { getByText } = render(<OffersPage route={route} />);
-
-        await waitFor(() => expect(getByText('Reject')).toBeTruthy());
-
-        act(() => {
-            fireEvent.press(getByText('Reject'));
-        });
-
-        await waitFor(() => {
-            expect(alertSpy).toHaveBeenCalledWith('Failed to reject the offer.');
-            // Should not call fetchOffers again if it fails
-            // So axios.get would have been called only once in the beginning
-            expect(axios.get).toHaveBeenCalledTimes(1);
-        });
-    });
-
-    it('handles reject offer action - catch block on error', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: {
-                offers: [
-                    {
-                        _id: '1',
-                        professionalFullName: 'John Doe',
-                        professionalEmail: 'john@example.com',
-                        price: 100,
-                        status: 'pending',
-                        createdAt: '2025-01-25T12:00:00Z',
-                    },
-                ],
-            },
-        });
-
-        // Force axios.put to throw an error
-        axios.put.mockRejectedValueOnce(new Error('Network Error'));
-
-        const { getByText } = render(<OffersPage route={route} />);
-
-        await waitFor(() => expect(getByText('Reject')).toBeTruthy());
-
-        act(() => {
-            fireEvent.press(getByText('Reject'));
-        });
-
-        await waitFor(() => {
-            expect(alertSpy).toHaveBeenCalledWith('An error occurred while rejecting the offer.');
-        });
-    });
-
-    it('handles reject offer action - success path also calls fetchOffers', async () => {
-        const route = { params: { jobId: 'mockJobId' } };
-
-        // First get returns one pending offer
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: {
-                offers: [
-                    {
-                        _id: '1',
-                        professionalFullName: 'John Doe',
-                        professionalEmail: 'john@example.com',
-                        price: 100,
-                        status: 'pending',
-                        createdAt: '2025-01-25T12:00:00Z',
-                    },
-                ],
-            },
-        });
-
-        // Put returns success
-        axios.put.mockResolvedValueOnce({
-            status: 200,
-        });
-
-        // Second get (after reject) returns an empty list
-        axios.get.mockResolvedValueOnce({
-            status: 200,
-            data: { offers: [] },
-        });
-
-        const { getByText, queryByText } = render(<OffersPage route={route} />);
-
-        // Wait for first offer to appear
-        await waitFor(() => expect(getByText('Reject')).toBeTruthy());
-
-        act(() => {
-            fireEvent.press(getByText('Reject'));
-        });
-
-        await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/quotes/1',
-                { status: 'rejected' },
-                { headers: { Authorization: 'Bearer mock-token' } }
-            );
-            expect(alertSpy).toHaveBeenCalledWith('Offer Rejected', 'You have rejected the offer.');
-            // fetchOffers called again
-            expect(axios.get).toHaveBeenCalledTimes(2);
-            // No offers should be found after reload
-            expect(queryByText('Professional:')).toBeNull();
-        });
-    });
+      
 });

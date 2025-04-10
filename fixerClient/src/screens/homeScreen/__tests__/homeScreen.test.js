@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import HomeScreen from '../HomeScreen';
+import HomeScreen from '../homeScreen';
 import { LanguageContext } from '../../../../context/LanguageContext';
 import { en, fr } from '../../../../localization';
 import { I18n } from 'i18n-js';

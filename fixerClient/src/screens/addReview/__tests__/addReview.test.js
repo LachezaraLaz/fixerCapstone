@@ -30,8 +30,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
       removeItem: jest.fn(),
       clear: jest.fn(),
     },
-  }));
-  
+}));
 
 jest.mock('../../../../components/inputField', () => {
   const React = require('react');

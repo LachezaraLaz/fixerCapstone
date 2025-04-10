@@ -216,11 +216,6 @@ PASS_RESET='gmzg blbr jvev ghlb'
     <td><a href="https://github.com/KarinSarkis">KarinSarkis</a></td>
   </tr>
   <tr>
-    <td>Kassem El-Zoghbi</td>
-    <td>40174145</td>
-    <td>NvmKassem</td>
-  </tr>
-  <tr>
     <td>Lachezara Lazarova</td>
     <td>40211033</td>
     <td><a href="https://github.com/LachezaraLaz">LachezaraLaz</a></td>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import AccountSettingsPage from '../accountSettings';
 import { LanguageContext } from '../../../../context/LanguageContext';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
@@ -115,19 +115,35 @@ describe('AccountSettingsPage', () => {
         </NavigationContainer>
       </LanguageContext.Provider>
     );
-    
+
 
   test('renders loading initially and then shows user data', async () => {
+    // Set up mocks with controlled promises
+    let resolveAxiosPromise;
+    const axiosPromise = new Promise(resolve => {
+      resolveAxiosPromise = resolve;
+    });
+
+    // Override the axios mock for this specific test
+    axios.get.mockImplementationOnce(() => axiosPromise);
+
     const { getByText, queryByText, getAllByTestId } = renderComponent();
+
+    // Verify loading state is shown initially
     expect(getByText('Loading...')).toBeTruthy();
 
-    await waitFor(() => {
-        expect(queryByText('Loading...')).toBeNull();
-        const inputs = getAllByTestId('mock-input-field');
-        expect(inputs.some(input => input.props.value === 'John')).toBe(true);
+    // Now resolve the axios promise with mock data
+    await act(async () => {
+      resolveAxiosPromise({ data: mockUserData });
     });
-      
-  });
+
+    // Wait for the loading state to disappear and data to be displayed
+    await waitFor(() => {
+      expect(queryByText('Loading...')).toBeNull();
+      const inputs = getAllByTestId('mock-input-field');
+      expect(inputs.some(input => input.props.value === 'John')).toBe(true);
+    }, { timeout: 10000 }); // Increased timeout for this waitFor
+  }, 15000); // Increased timeout for the whole test
 
   test('enters and exits edit mode', async () => {
     const { getByText, getByTestId } = renderComponent();

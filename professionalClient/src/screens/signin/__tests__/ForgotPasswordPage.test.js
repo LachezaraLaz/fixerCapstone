@@ -50,8 +50,12 @@ describe('ForgotPasswordPage Component', () => {
         fireEvent.press(button);
 
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Email field is required');
+            expect(getByText('Error')).toBeTruthy();
+            expect(getByText('Email field is required')).toBeTruthy();
         });
+        // await waitFor(() => {
+        //     expect(Alert.alert).toHaveBeenCalledWith('Error', 'Email field is required');
+        // });
     });
 
     test('displays success alert and shows Enter PIN button when email is valid', async () => {
@@ -63,8 +67,13 @@ describe('ForgotPasswordPage Component', () => {
         fireEvent.press(getByText('Send Reset PIN'));
 
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Success', 'Check your email for a PIN to reset your password');
+            expect(getByText('Success')).toBeTruthy();
+            expect(getByText('Check your email for a PIN to reset your password')).toBeTruthy();
         });
+
+        // await waitFor(() => {
+        //     expect(Alert.alert).toHaveBeenCalledWith('Success', 'Check your email for a PIN to reset your password');
+        // });
 
         expect(getByText('Enter PIN')).toBeTruthy();
     });
@@ -80,8 +89,12 @@ describe('ForgotPasswordPage Component', () => {
         fireEvent.press(getByText('Send Reset PIN'));
 
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Invalid email address');
+            expect(getByText('Error')).toBeTruthy();
+            expect(getByText('Failed to send reset PIN')).toBeTruthy();
         });
+        // await waitFor(() => {
+        //     expect(Alert.alert).toHaveBeenCalledWith('Error', 'Invalid email address');
+        // });
     });
 
     test('navigates to EnterPinPage when Enter PIN is pressed', async () => {
@@ -91,10 +104,14 @@ describe('ForgotPasswordPage Component', () => {
     
         fireEvent.changeText(getByPlaceholderText('Enter your email'), 'test@example.com');
         fireEvent.press(getByText('Send Reset PIN'));
-    
+
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Success', 'Check your email for a PIN to reset your password');
+            expect(getByText('Success')).toBeTruthy();
+            expect(getByText('Check your email for a PIN to reset your password')).toBeTruthy();
         });
+        // await waitFor(() => {
+        //     expect(Alert.alert).toHaveBeenCalledWith('Success', 'Check your email for a PIN to reset your password');
+        // });
     
         const enterPinButton = getByText('Enter PIN');
         fireEvent.press(enterPinButton);

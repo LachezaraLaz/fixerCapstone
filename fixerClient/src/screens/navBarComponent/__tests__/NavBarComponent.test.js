@@ -11,15 +11,6 @@ import axios from 'axios';
 // or
 // npm run test-coverage ./src/screens/navBarComponent/__tests__/navBarComponent.test.js
 
-// jest.mock('@react-navigation/bottom-tabs', () => {
-//     return {
-//         createBottomTabNavigator: () => ({
-//             Navigator: ({ children }) => <>{children}</>,
-//             Screen: ({ children }) => <>{children}</>
-//         }),
-//     };
-// });
-
 jest.mock('axios');
 axios.get.mockResolvedValue({ data: [] }); // Fake success response
 
@@ -37,6 +28,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
       clear: jest.fn(),
     },
 }));
+
 describe('NavBar', () => {
     const setIsLoggedIn = jest.fn();
     const setLocale = jest.fn();

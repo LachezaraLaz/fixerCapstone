@@ -163,7 +163,7 @@ export default function SettingsPage({ setIsLoggedIn, navigation }) {
         <SafeAreaView style={styles.safeArea}>
             {/* Custom Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+                <TouchableOpacity testID="settings-back-button" onPress={handleBack} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
 

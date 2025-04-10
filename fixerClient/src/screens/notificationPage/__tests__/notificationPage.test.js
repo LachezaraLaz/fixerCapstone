@@ -275,8 +275,4 @@ describe('NotificationPage', () => {
       
         consoleSpy.mockRestore();
     });
-      
-      
-  
-  
 });

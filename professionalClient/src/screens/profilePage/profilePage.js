@@ -116,8 +116,10 @@ const ProfilePage = () => {
     };
 
     useEffect(() => {
-        fetchReviews();
-    }, []);
+        if (professional && professional.email) {
+            fetchReviews();
+        }
+    }, [professional]);
 
     /**
      * Fetches the banking info status from the server.
@@ -241,7 +243,7 @@ const ProfilePage = () => {
                 <View style={styles.profileContainer}>
                     <View style={styles.imageWrapper}>
                         <Image source={{ uri: professional.idImageUrl || 'https://via.placeholder.com/50' }} style={styles.profileImage} />
-                        <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
+                        <TouchableOpacity testID="edit-button" onPress={handleEditPress} style={styles.editButton}>
                             <MaterialIcons name="edit" size={20} color="white" />
                         </TouchableOpacity>
                     </View>
@@ -266,7 +268,7 @@ const ProfilePage = () => {
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.sectionTitle}>Rating & Reviews</Text>
                         <TouchableOpacity 
-                        // onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})} 
+                        // onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})}
                         >
                             <Text style={styles.reviewCountLink}> ({reviews.length})</Text>
                         </TouchableOpacity>

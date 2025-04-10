@@ -8,6 +8,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
 import { IPAddress } from '../../../../ipAddress';
+import {getByText} from "@testing-library/dom";
 
 // code to run only this file through the terminal:
 // npm run test ./src/screens/signin/__tests__/signin.test.js
@@ -46,7 +47,7 @@ describe('signIn Component', () => {
     test('displays an error alert when sign in fields are empty', async () => {
         const setIsLoggedIn = jest.fn();
         const mockNavigation = { navigate: jest.fn() };
-        const { getByTestId } = render(
+        const { getByTestId, getByText } = render(
             <NavigationContainer>
                 <SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />
             </NavigationContainer>
@@ -56,8 +57,12 @@ describe('signIn Component', () => {
         fireEvent.press(signInButton);
 
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Both fields are required');
+            expect(getByText('Error')).toBeTruthy();
+            expect(getByText('Both fields are required')).toBeTruthy();
         });
+        // await waitFor(() => {
+        //     expect(Alert.alert).toHaveBeenCalledWith('Error', 'Both fields are required');
+        // });
 
         expect(setIsLoggedIn).not.toHaveBeenCalled();
         expect(mockNavigation.navigate).not.toHaveBeenCalled();
@@ -109,7 +114,16 @@ describe('signIn Component', () => {
             expect(AsyncStorage.setItem).toHaveBeenCalledWith('streamToken', 'fake-stream-token');
             expect(AsyncStorage.setItem).toHaveBeenCalledWith('userId', 'fakeUserId');
             expect(AsyncStorage.setItem).toHaveBeenCalledWith('userName', 'fakeUserName');
-            expect(Alert.alert).toHaveBeenCalledWith('Signed in successfully');
+
+            expect(setIsLoggedIn).toHaveBeenCalledWith(true);
+            expect(mockDispatch).toHaveBeenCalledWith(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: 'MainTabs' }],
+                })
+            );
+            // expect(Alert.alert).toHaveBeenCalledWith('Signed in successfully');
+
             expect(setIsLoggedIn).toHaveBeenCalledWith(true);
         });
 
@@ -140,7 +154,7 @@ describe('signIn Component', () => {
             }
         });
 
-        const { getByTestId, getByPlaceholderText } = render(
+        const { getByTestId, getByPlaceholderText, getByText } = render(
             <NavigationContainer>
                 <SignInPage navigation={mockNavigation} setIsLoggedIn={setIsLoggedIn} />
             </NavigationContainer>
@@ -158,7 +172,10 @@ describe('signIn Component', () => {
                 email: 'nonexistent@example.com',
                 password: 'password123'
             });
-            expect(Alert.alert).toHaveBeenCalledWith("Error", 'Wrong email or password');
+
+            expect(getByText('Error')).toBeTruthy();
+            expect(getByText('Wrong email or password.')).toBeTruthy();
+            // expect(Alert.alert).toHaveBeenCalledWith("Error", 'Wrong email or password');
         });
 
         // Ensuring no navigation or login state changes occurred

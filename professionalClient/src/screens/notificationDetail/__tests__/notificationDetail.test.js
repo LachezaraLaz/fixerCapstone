@@ -1,28 +1,46 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import NotificationDetail from '../notificationDetail'; 
+import NotificationDetail from '../notificationDetail';
+import { NavigationContainer } from '@react-navigation/native';
 
-// code to run only this file through the terminal:
-// npm run test ./src/screens/notificationDetail/__tests__/notificationDetail.test.js
-// or
-// npm run test-coverage ./src/screens/notificationDetail/__tests__/notificationDetail.test.js
+// Mock the navigation
+jest.mock('@react-navigation/native', () => {
+    const actualNav = jest.requireActual('@react-navigation/native');
+    return {
+        ...actualNav,
+        useNavigation: () => ({
+            goBack: jest.fn(),
+        }),
+    };
+});
 
 describe('NotificationDetail Component', () => {
     const mockRoute = {
         params: {
-        notification: {
-            title: 'Test Notification',
-            message: 'This is a test notification message.',
-            createdAt: '2025-01-25T12:00:00Z',
-        },
+            notification: {
+                title: 'Test Notification',
+                message: 'This is a test notification message.',
+                createdAt: '2025-01-25T12:00:00Z',
+            },
         },
     };
 
-    test('renders notification details correctly', () => {
-        const { getByText } = render(<NotificationDetail route={mockRoute} />);
+    const renderComponent = () => {
+        return render(
+            <NavigationContainer>
+                <NotificationDetail route={mockRoute} />
+            </NavigationContainer>
+        );
+    };
 
-        expect(getByText('Test Notification')).toBeTruthy(); // Title
+    test('renders notification details correctly', () => {
+        const { getByText } = renderComponent();
+
+        expect(getByText('Notification Details')).toBeTruthy(); // Header title
         expect(getByText('This is a test notification message.')).toBeTruthy(); // Message
-        expect(getByText('1/25/2025, 12:00:00 PM')).toBeTruthy(); // Date in localized format
+
+        // Check date format - note this might vary based on locale
+        const dateText = new Date(mockRoute.params.notification.createdAt).toLocaleString();
+        expect(getByText(dateText)).toBeTruthy();
     });
 });

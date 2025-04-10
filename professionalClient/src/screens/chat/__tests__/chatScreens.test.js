@@ -6,6 +6,11 @@ import { Text } from 'react-native';
 import ChatScreens from '../chatScreens';
 import { ChatContext } from '../chatContext';
 
+// code to run only this file through the terminal:
+// npm run test ./src/screens/chat/__tests__/chatScreens.test.js
+// or
+// npm run test-coverage ./src/screens/chat/__tests__/chatScreens.test.js
+
 // If needed, mock the screens that are used by the navigator.
 jest.mock('../chatListPage', () => {
     const React = require('react');

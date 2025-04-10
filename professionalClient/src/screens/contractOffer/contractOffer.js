@@ -323,6 +323,7 @@ export default function ContractOffer({ route, navigation }) {
 
                         <Text style={styles.label}>Job Description*</Text>
                         <InputField
+                            testID="jobDescription-input"
                             style={[
                                 styles.inputContainer,
                                 { height: 150, textAlignVertical: 'top' },
@@ -339,6 +340,7 @@ export default function ContractOffer({ route, navigation }) {
 
                         <Text style={styles.label}>Tools-Materials*</Text>
                         <InputField
+                            testID="toolsMaterials-input"
                             style={[
                                 styles.inputContainer,
                                 { height: 150, textAlignVertical: 'top' },
@@ -355,6 +357,7 @@ export default function ContractOffer({ route, navigation }) {
 
                         <Text style={styles.label}>Terms and Conditions*</Text>
                         <InputField
+                            testID="termsConditions-input"
                             style={[
                                 styles.inputContainer,
                                 { height: 150, textAlignVertical: 'top' },
@@ -371,6 +374,7 @@ export default function ContractOffer({ route, navigation }) {
 
                         <Text style={styles.labelPrice}>Pricing $ (Hourly Rate)*</Text>
                         <InputField
+                            testID="price-input"
                             placeholder="50"
                             value={price}
                             keyboardType="numeric"
@@ -384,6 +388,7 @@ export default function ContractOffer({ route, navigation }) {
                                 priceError && { borderColor: 'red', borderWidth: 1 }
                             ]}
                         />
+
 
                         <TouchableOpacity onPress={submitQuote} style={styles.submitButton}>
                             <Text style={styles.submitButtonText}>Submit Quote</Text>

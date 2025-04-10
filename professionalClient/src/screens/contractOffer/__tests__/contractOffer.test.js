@@ -71,6 +71,7 @@ describe('ContractOffer Component', () => {
             professionalNeeded: 'Electrician',
             userEmail: 'testuser@example.com',
             _id: '12345',
+            id: '12345',
             latitude: '40.7128',
             longitude: '-74.0060',
             imageUrl: 'https://example.com/image.jpg',
@@ -220,102 +221,105 @@ describe('ContractOffer Component', () => {
 
 
 
-//   test('shows error alert if user profile fetch fails', async () => {
-//     axios.get.mockRejectedValueOnce({
-//       response: {
-//         data: { message: 'User not found.' },
-//       },
-//     });
+    test('shows error alert if user profile fetch fails', async () => {
+        axios.get.mockRejectedValueOnce({
+            response: {
+                data: { message: 'User not found.' },
+            },
+        });
 
-//     const alertMock = jest.spyOn(global, 'alert').mockImplementation(() => {});
+        render(<ContractOffer route={mockRoute} navigation={mockNavigation} />);
 
-//     render(<ContractOffer route={mockRoute} navigation={mockNavigation} />);
-
-//     await waitFor(() => {
-//       expect(alertMock).toHaveBeenCalledWith('Error', 'User not found.');
-//     });
-
-//     alertMock.mockRestore();
-//   });
-
-    // test('handles quote submission successfully and shows alert', async () => {
-    //     axios.post.mockResolvedValueOnce({ status: 201 });
-    //
-    //     const { getByTestId, getByText } = render(
-    //         <ContractOffer route={mockRoute} navigation={mockNavigation} />
-    //     );
-    //
-    //     fireEvent.changeText(getByTestId('jobDescription-input'), 'Test job');
-    //     fireEvent.changeText(getByTestId('toolsMaterials-input'), 'Tools');
-    //     fireEvent.changeText(getByTestId('termsConditions-input'), 'Terms');
-    //     fireEvent.changeText(getByTestId('price-input'), '150');
-    //
-    //     fireEvent.press(getByText('Submit Quote'));
-    //
-    //     await waitFor(() => {
-    //         const calls = mockCustomAlertSuccess.mock.calls;
-    //         const match = calls.find(
-    //             ([props]) =>
-    //                 props.visible === true &&
-    //                 props.title === 'Success' &&
-    //                 props.message === 'Quote submitted successfully!'
-    //         );
-    //         expect(match).toBeDefined();
-    //     });
-    // });
+        await waitFor(() => {
+            expect(mockCustomAlertError).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    title: 'Error',
+                    message: 'User not found.',
+                    visible: true
+                })
+            );
+        });
+    });
 
 
-    // test('shows error if quote submission fails', async () => {
-    //     axios.post.mockRejectedValueOnce({
-    //         response: { status: 400 },
-    //     });
-    //
-    //     const { getByTestId, getByText } = render(
-    //         <ContractOffer route={mockRoute} navigation={mockNavigation} />
-    //     );
-    //
-    //     fireEvent.changeText(getByTestId('jobDescription-input'), 'Test job');
-    //     fireEvent.changeText(getByTestId('toolsMaterials-input'), 'Tools');
-    //     fireEvent.changeText(getByTestId('termsConditions-input'), 'Terms');
-    //     fireEvent.changeText(getByTestId('price-input'), '150');
-    //
-    //     fireEvent.press(getByText('Submit Quote'));
-    //
-    //     // Use waitFor to check if a matching call ever happens
-    //     await waitFor(() => {
-    //         const calls = mockCustomAlertError.mock.calls;
-    //         const found = calls.some(
-    //             ([props]) =>
-    //                 props.visible === true &&
-    //                 props.title === 'Error' &&
-    //                 props.message === 'You have already submitted a quote for this issue.'
-    //         );
-    //         expect(found).toBe(true);
-    //     });
-    // });
+    test('handles quote submission successfully and shows alert', async () => {
+        axios.get.mockResolvedValueOnce({
+            status: 200,
+            data: {
+                street: '123 Test St',
+                postalCode: '12345',
+                provinceOrState: 'Test State',
+                country: 'Test Country',
+            },
+        });
 
-//
-//     test('shows an alert if price is not provided when submitting a quote', async () => {
-//     const { getByText } = render(
-//         <ContractOffer route={mockRoute} navigation={mockNavigation} />
-//     );
-//
-//     // Mock the Alert.alert behavior
-//     const alertMock = jest.spyOn(Alert, 'alert');
-//
-//     const submitButton = getByText('Submit');
-//     fireEvent.press(submitButton);
-//
-//     // Assert that Alert.alert was called with the correct arguments
-//     await waitFor(() => {
-//         expect(alertMock).toHaveBeenCalledWith(
-//         'Error',
-//         'Please enter a price before submitting the quote.'
-//         );
-//     });
-//
-//     // Restore the mock
-//     alertMock.mockRestore();
-//     });
+        axios.post.mockResolvedValueOnce({ status: 201 });
+
+        const { getByTestId, getByText } = render(
+            <ContractOffer route={mockRoute} navigation={mockNavigation} />
+        );
+
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalled();
+        });
+
+        fireEvent.changeText(getByTestId('jobDescription-input'), 'Test job');
+        fireEvent.changeText(getByTestId('toolsMaterials-input'), 'Tools');
+        fireEvent.changeText(getByTestId('termsConditions-input'), 'Terms');
+        fireEvent.changeText(getByTestId('price-input'), '150');
+
+        fireEvent.press(getByText('Submit Quote'));
+
+        await waitFor(() => {
+            const calls = mockCustomAlertSuccess.mock.calls;
+            const match = calls.find(
+                ([props]) =>
+                    props.visible === true &&
+                    props.title === 'Success' &&
+                    props.message === 'Quote submitted successfully!'
+            );
+
+            expect(match).toBeDefined();
+
+            // 🔁 Manually trigger onClose callback
+            if (match && match[0].onClose) {
+                match[0].onClose(); // simulate pressing "OK"
+            }
+        });
+
+        expect(mockNavigation.goBack).toHaveBeenCalled();
+    });
+
+
+
+
+    test('shows error if quote submission fails', async () => {
+        axios.post.mockRejectedValueOnce({
+            response: { status: 400 },
+        });
+
+        const { getByTestId, getByText } = render(
+            <ContractOffer route={mockRoute} navigation={mockNavigation} />
+        );
+
+        fireEvent.changeText(getByTestId('jobDescription-input'), 'Test job');
+        fireEvent.changeText(getByTestId('toolsMaterials-input'), 'Tools');
+        fireEvent.changeText(getByTestId('termsConditions-input'), 'Terms');
+        fireEvent.changeText(getByTestId('price-input'), '150');
+
+        fireEvent.press(getByText('Submit Quote'));
+
+        // Use waitFor to check if a matching call ever happens
+        await waitFor(() => {
+            const calls = mockCustomAlertError.mock.calls;
+            const found = calls.some(
+                ([props]) =>
+                    props.visible === true &&
+                    props.title === 'Error' &&
+                    props.message === 'You have already submitted a quote for this issue.'
+            );
+            expect(found).toBe(true);
+        });
+    });
 
 });

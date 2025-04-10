@@ -171,7 +171,7 @@ export default function ContractOffer({ route, navigation }) {
         }
 
         // Ensures that selectedIssue has necessary details
-        if (!selectedIssue || !selectedIssue.userEmail || !selectedIssue.id) {
+        if (!selectedIssue || !selectedIssue.userEmail || !(selectedIssue.id || selectedIssue._id)) {
             setErrorAlertContent({
                 title: 'Error',
                 message: 'Unable to retrieve complete issue details. Please try again.',

@@ -92,6 +92,7 @@
       ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "identity-obj-proxy",
       "^@expo/vector-icons$": "src/__mocks__/@expo/vector-icons.js"
     },
+    "setupFiles": ["<rootDir>/jest.setup.js"],
     "collectCoverageFrom": [],
     "coverageThreshold": {
       "global": {
@@ -103,7 +104,7 @@
     },
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(expo-image-picker|@testing-library/dom|expo-modules-core|@react-native|react-native-maps|react-native|react-native-vector-icons|react-native-dropdown-picker)/)"
+      "node_modules/(?!(expo-localization|expo-constants|expo-image-picker|@testing-library/dom|expo-modules-core|@react-native|react-native-maps|react-native|react-native-vector-icons|react-native-dropdown-picker)/)"
     ],
     "reporters": [
       "default",

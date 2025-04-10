@@ -18,12 +18,12 @@ import { IPAddress } from '../../../ipAddress';
  * @module fixerClient
  */
 
-export default function MyIssuesPosted() {
+export default function MyIssuesPosted({navigation}) {
     const [jobs, setJobs] = useState({ all: [], inProgress: [], completed: [] });
     const [loading, setLoading] = useState(true);
     const [selectedTab, setSelectedTab] = useState('inProgress');
     const [refreshing, setRefreshing] = useState(false);
-    const navigation = useNavigation();
+    // const navigation = useNavigation();
     const isFocused = useIsFocused();
     const [unreadCount, setUnreadCount] = useState(0);
     let [modalVisible, setModalVisible] = useState(false);
@@ -188,7 +188,7 @@ export default function MyIssuesPosted() {
                 {jobs[selectedTab].length > 0 ? (
                     jobs[selectedTab].map(job => <JobBox key={job.id} job={job} navigation={navigation} />)
                 ) : (
-                    <Text style={styles.noJobsText}>`${i18n.t('jobs_available')}`</Text>
+                    <Text style={styles.noJobsText}>{i18n.t('jobs_available')}</Text>
                 )}
             </ScrollView>
         </SafeAreaView>

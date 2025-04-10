@@ -5,6 +5,14 @@ import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';
+import { LanguageContext } from '../../../../context/LanguageContext';
+import { I18n } from 'i18n-js';
+import { en, fr } from '../../../../localization';
+
+// code to run only this file through the terminal:
+// npm run test ./src/screens/createIssue/__tests__/createIssueAiEnhancement.test.js
+// or
+// npm run test-coverage ./src/screens/createIssue/__tests__/createIssueAiEnhancement.test.js
 
 // Mock Image Picker (not needed for AI tests but prevents errors)
 jest.mock('expo-image-picker', () => ({
@@ -21,6 +29,19 @@ jest.mock('jwt-decode', () => jest.fn());
 jest.mock('axios');
 jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
+// Mock alert components
+jest.mock('../../../../components/customAlertError', () => {
+    const React = require('react');
+    const { Text } = require('react-native');
+    return {
+      __esModule: true,
+      default: ({ visible, title, message }) =>
+        visible ? (
+          <Text>{`${title}: ${message}`}</Text>
+        ) : null,
+    };
+});
+
 describe('CreateIssue Component - AI Enhancement', () => {
     let mockNavigation;
 
@@ -32,7 +53,16 @@ describe('CreateIssue Component - AI Enhancement', () => {
         jwtDecode.mockReturnValue({ email: 'user@example.com' });
     });
 
-    const setup = () => render(<CreateIssue navigation={mockNavigation} />);
+    const setup = () => {
+        const i18n = new I18n({ en, fr });
+        i18n.locale = 'en'; // default language
+      
+        return render(
+          <LanguageContext.Provider value={{ locale: 'en', setLocale: jest.fn() }}>
+            <CreateIssue navigation={mockNavigation} />
+          </LanguageContext.Provider>
+        );
+    };
 
     test('calls AI endpoint and shows suggestion on success', async () => {
         const mockImprovedText = "Improved job description text.";
@@ -69,61 +99,57 @@ describe('CreateIssue Component - AI Enhancement', () => {
 
     test('displays error alert if AI returns 400 Invalid Category', async () => {
         axios.post.mockRejectedValueOnce({
-            response: {
-                status: 400,
-                data: { error: 'Invalid job category. Please provide a home service or blue-collar job description.' },
-            },
+          response: {
+            status: 400,
+            data: { error: 'Invalid job category. Please provide a home service or blue-collar job description.' },
+          },
         });
-
-        const { getByText, getByPlaceholderText } = setup();
+      
+        const { getByText, getByPlaceholderText, queryByText } = setup();
         const descriptionInput = getByPlaceholderText('Describe your service');
-
+      
         await act(async () => {
-            fireEvent.changeText(descriptionInput, 'Write me a Hello world in python');
+          fireEvent.changeText(descriptionInput, 'Write me a Hello world in python');
         });
-
+      
         const aiButton = getByText('AI');
-
+      
         await act(async () => {
-            fireEvent.press(aiButton);
+          fireEvent.press(aiButton);
         });
-
+      
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith(
-                'Invalid Job Category',
-                'Invalid job category. Please provide a home service or blue-collar job description.'
-            );
+          expect(getByText('Invalid Job Category: Invalid job category. Please provide a home service or blue-collar job description.')).toBeTruthy();
         });
     });
+      
 
     test('displays generic error if AI call fails with status != 400', async () => {
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-        // 1. Mock API failing with network error
+    
+        // Mock API failure
         axios.post.mockRejectedValueOnce(new Error('Network error'));
-
+    
         const { getByText, getByPlaceholderText } = setup();
         const descriptionInput = getByPlaceholderText('Describe your service');
-
-        // 2. Enter text
+    
+        // Enter text
         await act(async () => {
             fireEvent.changeText(descriptionInput, 'Electric job needed.');
         });
-
+    
         const aiButton = getByText('AI');
         await act(async () => {
             fireEvent.press(aiButton);
         });
-
+    
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith(
-                'Error',
-                'Could not enhance your description. Please try again.'
-            );
+            expect(getByText('Error: Could not enhance your description. Please try again.')).toBeTruthy();
         });
-
+    
         consoleErrorSpy.mockRestore();
     });
+    
 
     test('rejecting the suggestion keeps original description', async () => {
         const mockImprovedText = "Better text from AI";

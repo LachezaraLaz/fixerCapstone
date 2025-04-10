@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import {Ionicons} from "@expo/vector-icons";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LanguageContext} from "../../../context/LanguageContext";
 import {I18n} from "i18n-js";
 import {en, fr} from "../../../localization";

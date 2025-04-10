@@ -25,10 +25,11 @@ import {en, fr} from '../../../localization'
 import { I18n } from "i18n-js";
 import { LanguageContext } from "../../../context/LanguageContext";
 
-const IssueDetails = () => {
+// const IssueDetails = ({route}) => {
+export default function IssueDetails({ route }) {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
-    const route = useRoute();
+    // const route = useRoute();
     const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
     const {jobId} = route.params;
@@ -65,7 +66,7 @@ const IssueDetails = () => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#ff6600"/>
+                <ActivityIndicator testID="ActivityIndicator" size="large" color="#ff6600"/>
             </View>
         );
     }
@@ -168,7 +169,7 @@ const IssueDetails = () => {
             <ScrollView style={styles.container} contentContainerStyle={{paddingBottom: 50}}
                         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
                 <View style={styles.customHeader}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <TouchableOpacity testID="back-button" onPress={() => navigation.goBack()} style={styles.backButton}>
                         <Ionicons name="arrow-back" size={28} color="orange"/>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Issue Details</Text>
@@ -208,8 +209,8 @@ const IssueDetails = () => {
                 {job.imageUrl && job.imageUrl !== 'https://via.placeholder.com/150' && job.imageUrl !== null ? (
                     <View style={styles.imageGrid}>
                         <Text style={styles.detailLabel}>Attached Images</Text>
-                        <TouchableOpacity onPress={() => setModalVisible(true)}>
-                            <Image source={{uri: job.imageUrl}} style={styles.jobImage}/>
+                        <TouchableOpacity onPress={() => setModalVisible(true)} testID="image-touch">
+                            <Image source={{uri: job.imageUrl}} style={styles.jobImage} accessibilityRole="image"/>
                         </TouchableOpacity>
                     </View>
                 ) : (
@@ -218,9 +219,9 @@ const IssueDetails = () => {
                         <Text style={styles.detailValue}>{i18n.t('no_image_attached')}</Text>
                     </View>
                 )}
-                <Modal visible={modalVisible} transparent={true} animationType="fade">
+                <Modal visible={modalVisible} testID="image-modal" transparent={true} animationType="fade">
                     <View style={styles.modalContainer}>
-                        <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalVisible(false)}>
+                        <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalVisible(false)} testID="modal-close-button">
                             <Ionicons name="close" size={30} color="white"/>
                         </TouchableOpacity>
                         <Image source={{uri: job.imageUrl}} style={styles.fullImage}/>
@@ -288,5 +289,3 @@ const IssueDetails = () => {
         </SafeAreaView>
     );
 };
-
-export default IssueDetails;

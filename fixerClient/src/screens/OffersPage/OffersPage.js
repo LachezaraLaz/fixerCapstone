@@ -23,11 +23,11 @@ import { LanguageContext } from "../../../context/LanguageContext";
 import { I18n } from "i18n-js";
 import { en, fr } from "../../../localization";
 
-export default function OffersPage() {
+export default function OffersPage({navigation}) {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [clientEmail, setClientEmail] = useState(null);
-    const navigation = useNavigation();
+    // const navigation = useNavigation();
 
 
     //For translation
@@ -149,7 +149,7 @@ export default function OffersPage() {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator testID="ActivityIndicator" size="large" color="#0000ff" />
             </View>
         );
     }
@@ -168,7 +168,7 @@ export default function OffersPage() {
             {/* </View> */}
 
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <TouchableOpacity testID="back-button" onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
                 <View style={{ flex: 1, alignItems: 'center' }}>

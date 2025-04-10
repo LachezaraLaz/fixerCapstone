@@ -1,109 +1,172 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { Alert } from 'react-native';
-import axios from 'axios';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ForgotPasswordPage from '../ForgotPasswordPage';
-import EnterPinPage from '../EnterPinPage';
-import SignInPage from '../signinPage';
+import { LanguageContext } from '../../../../context/LanguageContext';
+import axios from 'axios';
+import { Alert, Text, View, TouchableOpacity } from 'react-native';
 
 // code to run only this file through the terminal:
 // npm run test ./src/screens/signin/__tests__/ForgotPasswordPage.test.js
 // or
 // npm run test-coverage ./src/screens/signin/__tests__/ForgotPasswordPage.test.js
 
+jest.mock('axios');
 jest.mock('@react-native-async-storage/async-storage', () => ({
-    getItem: jest.fn(),
-    setItem: jest.fn(),
-    removeItem: jest.fn(),
-    clear: jest.fn(),
+    __esModule: true,
+    default: {
+      setItem: jest.fn(),
+      getItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+    },
 }));
 
-jest.spyOn(Alert, 'alert');
+// Mock modal
+jest.mock('../../../../components/LanguageModal', () => {
+  const React = require('react');
+  const { View, Text, TouchableOpacity } = require('react-native');
 
-jest.mock('axios');
-
-const Stack = createNativeStackNavigator();
-
-const renderWithNavigation = () => {
-    return render(
-        <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage} />
-                <Stack.Screen name="EnterPin" component={EnterPinPage} />
-                <Stack.Screen name="SignInPage" component={SignInPage} />
-            </Stack.Navigator>
-        </NavigationContainer>
+  return ({ visible, onClose }) => {
+    if (!visible) return null;
+    return (
+      <View>
+        <Text>Select Language</Text>
+        <TouchableOpacity testID="close-modal" onPress={onClose}>
+          <Text>Close</Text>
+        </TouchableOpacity>
+      </View>
     );
-};
+  };
+});
 
-describe('ForgotPasswordPage Component', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+// Mock alert components
+jest.mock('../../../../components/customAlertError', () => {
+  const React = require('react');
+  const { View, Text, TouchableOpacity } = require('react-native');
+
+  return ({ visible, title, message, onClose }) => {
+    if (!visible) return null;
+    return (
+      <View>
+        <Text>{title}</Text>
+        <Text>{message}</Text>
+        <TouchableOpacity onPress={onClose}><Text>Close Error</Text></TouchableOpacity>
+      </View>
+    );
+  };
+});
+
+jest.mock('../../../../components/customAlertSuccess', () => {
+  const React = require('react');
+  const { View, Text, TouchableOpacity } = require('react-native');
+
+  return ({ visible, title, message, onClose }) => {
+    if (!visible) return null;
+    return (
+      <View>
+        <Text>{title}</Text>
+        <Text>{message}</Text>
+        <TouchableOpacity onPress={onClose}><Text>Close Success</Text></TouchableOpacity>
+      </View>
+    );
+  };
+});
+
+const mockNavigate = jest.fn();
+const mockGoBack = jest.fn();
+
+const renderWithContext = () =>
+  render(
+    <LanguageContext.Provider value={{ locale: 'en', setLocale: jest.fn() }}>
+      <ForgotPasswordPage navigation={{ navigate: mockNavigate, goBack: mockGoBack }} />
+    </LanguageContext.Provider>
+  );
+
+describe('ForgotPasswordPage', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('navigates back when back button is pressed', () => {
+    const { getByTestId } = renderWithContext();
+    fireEvent.press(getByTestId('back-button'));
+    expect(mockGoBack).toHaveBeenCalled();
+  });
+
+  test('shows language modal and closes it', async () => {
+    const { getByText, getByTestId, queryByText } = renderWithContext();
+
+    fireEvent.press(getByText(/change language/i));
+    expect(getByText('Select Language')).toBeTruthy();
+
+    fireEvent.press(getByTestId('close-modal'));
+    await waitFor(() => {
+      expect(queryByText('Select Language')).toBeNull();
+    });
+  });
+
+  test('shows error alert when email is empty', async () => {
+    const { getByText } = renderWithContext();
+    fireEvent.press(getByText('Send Reset PIN'));
+
+    await waitFor(() => {
+      expect(getByText('Error')).toBeTruthy();
+      expect(getByText('The email field is required.')).toBeTruthy();
+    });
+  });
+
+  test('shows success alert and Enter PIN button when email is valid', async () => {
+    axios.post.mockResolvedValueOnce({ status: 200 });
+
+    const { getByText, getByPlaceholderText } = renderWithContext();
+
+    fireEvent.changeText(getByPlaceholderText(/email/i), 'test@example.com');
+    fireEvent.press(getByText('Send Reset PIN'));
+
+    await waitFor(() => {
+      expect(getByText('Success')).toBeTruthy();
+      expect(getByText('Please check your email for a PIN to reset your password')).toBeTruthy();
     });
 
-    test('displays an error alert when email is not provided', async () => {
-        const { getByText } = renderWithNavigation();
+    // Simulate pressing the success alert close button
+    fireEvent.press(getByText('Close Success'));
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('EnterPin', { email: 'test@example.com' });
+    });
+  });
 
-        const button = getByText('Send Reset PIN');
-        fireEvent.press(button);
+  test('navigates to SignInPage when button is pressed', () => {
+    const { getByText } = renderWithContext();
+    fireEvent.press(getByText('Sign In'));
+    expect(mockNavigate).toHaveBeenCalledWith('SignInPage');
+  });
 
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Email field is required');
-        });
+  test('shows error alert if axios fails with response', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { data: { error: true } }
     });
 
-    test('displays success alert and shows Enter PIN button when email is valid', async () => {
-        axios.post.mockResolvedValueOnce({ status: 200 });
+    const { getByText, getByPlaceholderText } = renderWithContext();
 
-        const { getByPlaceholderText, getByText } = renderWithNavigation();
+    fireEvent.changeText(getByPlaceholderText(/email/i), 'fail@example.com');
+    fireEvent.press(getByText('Send Reset PIN'));
 
-        fireEvent.changeText(getByPlaceholderText('Enter your email'), 'test@example.com');
-        fireEvent.press(getByText('Send Reset PIN'));
-
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Success', 'Check your email for a PIN to reset your password');
-        });
-
-        expect(getByText('Enter PIN')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText('Error')).toBeTruthy();
+      expect(getByText('Could not find your account')).toBeTruthy();
     });
+  });
 
-    test('displays error alert when email is invalid or request fails', async () => {
-        axios.post.mockRejectedValueOnce({
-            response: { data: { error: 'Invalid email address' } },
-        });
+  test('shows error alert if axios fails without response', async () => {
+    axios.post.mockRejectedValueOnce(new Error('Network error'));
 
-        const { getByPlaceholderText, getByText } = renderWithNavigation();
+    const { getByText, getByPlaceholderText } = renderWithContext();
 
-        fireEvent.changeText(getByPlaceholderText('Enter your email'), 'invalid@example.com');
-        fireEvent.press(getByText('Send Reset PIN'));
+    fireEvent.changeText(getByPlaceholderText(/email/i), 'fail@example.com');
+    fireEvent.press(getByText('Send Reset PIN'));
 
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Error', 'Invalid email address');
-        });
+    await waitFor(() => {
+      expect(getByText('An unexpected error occurred')).toBeTruthy();
     });
-
-    test('navigates to EnterPinPage when Enter PIN is pressed', async () => {
-        axios.post.mockResolvedValueOnce({ status: 200 });
-    
-        const { getByPlaceholderText, getByText, queryByText } = renderWithNavigation();
-    
-        fireEvent.changeText(getByPlaceholderText('Enter your email'), 'test@example.com');
-        fireEvent.press(getByText('Send Reset PIN'));
-    
-        await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Success', 'Check your email for a PIN to reset your password');
-        });
-    
-        const enterPinButton = getByText('Enter PIN');
-        fireEvent.press(enterPinButton);
-    
-        await waitFor(() => {
-            // Verify that the "Enter PIN" screen is visible
-            expect(queryByText('Enter PIN')).toBeTruthy();
-            // Verify the previous screen content is no longer visible
-            expect(queryByText('Forgot Password')).toBeNull();
-        });
-    });
+  });
 });

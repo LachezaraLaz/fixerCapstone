@@ -64,7 +64,7 @@ export default function OfferDetails({ route, navigation }) {
         }
     };
 
-    if (loading) return <ActivityIndicator style={styles.loader} size="large" />;
+    if (loading) return <ActivityIndicator testID="ActivityIndicator" style={styles.loader} size="large" />;
     if (!quote) return <Text style={styles.emptyText}>No offer found.</Text>;
 
     return (

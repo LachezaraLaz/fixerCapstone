@@ -6,6 +6,11 @@ import axios from 'axios';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// code to run only this file through the terminal:
+// npm run test ./src/screens/issueDetails/__tests__/issueDetails.test.js
+// or
+// npm run test-coverage ./src/screens/issueDetails/__tests__/issueDetails.test.js
+
 // ----- Mock React Navigation -----
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 jest.mock('@react-navigation/native', () => {
@@ -34,8 +39,15 @@ jest.mock('react-native/Libraries/Alert/Alert', () => ({
     alert: jest.fn(),
 }));
 
+//async storage
 jest.mock('@react-native-async-storage/async-storage', () => ({
-    getItem: jest.fn(),
+    __esModule: true,
+    default: {
+        setItem: jest.fn(),
+        getItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+    },
 }));
 
 // Silence console.error to avoid polluting test logs when we test error paths
@@ -159,4 +171,143 @@ describe('IssueDetails', () => {
         // Now it should fetch again
         expect(axios.get).toHaveBeenCalledTimes(2);
     });
+
+    test('completes the job and shows success alert', async () => {
+        axios.get.mockResolvedValueOnce({
+            data: {
+                id: 123,
+                _id: 123,
+                title: 'Test Job',
+                status: 'In Progress',
+                createdAt: new Date().toISOString(),
+                imageUrl: null,
+                latitude: 0,
+                longitude: 0,
+            }
+        });
+
+        AsyncStorage.getItem.mockResolvedValueOnce('mock-token');
+
+        axios.delete.mockResolvedValueOnce({ status: 200 });
+        axios.post.mockResolvedValueOnce({
+            data: {
+                status: 'success',
+                data: { amounts: { platformFee: 500 } }
+            }
+        });
+
+        const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation((title, message, buttons) => {
+            if (title === 'Mark job as Complete' && Array.isArray(buttons)) {
+                const yesBtn = buttons.find(b => b.text === 'Yes');
+                if (yesBtn && typeof yesBtn.onPress === 'function') {
+                    yesBtn.onPress();
+                }
+            }
+        });
+
+        const { getByText } = render(<IssueDetails />);
+        await waitFor(() => expect(getByText('Mark Complete')).toBeTruthy());
+
+        fireEvent.press(getByText('Mark Complete'));
+
+        await waitFor(() => {
+            // Now the *second* alert should fire with success
+            expect(alertSpy).toHaveBeenCalledWith(
+                'Success',
+                expect.stringContaining('fee deducted successfully!')
+            );
+            expect(mockNavigate).toHaveBeenCalledWith('MyJobs');
+        });
+    });
+
+    test('shows alert if token is missing when completing job', async () => {
+        axios.get.mockResolvedValueOnce({
+            data: { id: 123, title: 'Job', status: 'In Progress' }
+        });
+
+        AsyncStorage.getItem.mockResolvedValueOnce(null); // no token
+
+        const alertSpy = jest.spyOn(Alert, 'alert');
+
+        const { getByText } = render(<IssueDetails />);
+        await waitFor(() => expect(getByText('Mark Complete')).toBeTruthy());
+
+        fireEvent.press(getByText('Mark Complete'));
+
+        await waitFor(() => {
+            expect(alertSpy).toHaveBeenCalledWith('You are not logged in');
+        });
+    });
+
+    test('handles 400 error with no accepted quote', async () => {
+        axios.get.mockResolvedValueOnce({
+            data: { id: 123, _id: 123, title: 'Job', status: 'In Progress' }
+        });
+
+        AsyncStorage.getItem.mockResolvedValueOnce('mock-token');
+
+        axios.delete.mockResolvedValueOnce({ status: 200 });
+
+        axios.post.mockRejectedValueOnce({
+            response: {
+                status: 400,
+                data: { data: 'no accepted quote' }
+            }
+        });
+
+        const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation((title, message, buttons) => {
+            // Simulate button press only for confirmation alert
+            if (title === 'Mark job as Complete' && Array.isArray(buttons)) {
+                const yesBtn = buttons.find(b => b.text === 'Yes');
+                if (yesBtn && typeof yesBtn.onPress === 'function') {
+                    yesBtn.onPress();
+                }
+            }
+        });
+
+        const { getByText } = render(<IssueDetails />);
+        await waitFor(() => expect(getByText('Mark Complete')).toBeTruthy());
+
+        fireEvent.press(getByText('Mark Complete'));
+
+        await waitFor(() => {
+            expect(alertSpy).toHaveBeenCalledWith('Error', 'This job cannot be completed yet - no accepted quote');
+        });
+    });
+
+    test('shows placeholder text when no image is attached', async () => {
+        axios.get.mockResolvedValueOnce({
+            data: {
+                id: 123,
+                title: 'Job',
+                status: 'In Progress',
+                imageUrl: null
+            }
+        });
+
+        const { getByText } = render(<IssueDetails />);
+        await waitFor(() => {
+            expect(getByText('No image attached yet')).toBeTruthy();
+        });
+    });
+
+    test('renders review section when rating and comment exist', async () => {
+        axios.get.mockResolvedValueOnce({
+            data: {
+                id: 123,
+                title: 'Job',
+                status: 'Completed',
+                rating: 5,
+                comment: 'Great job!',
+            }
+        });
+
+        const { getByText } = render(<IssueDetails />);
+        await waitFor(() => {
+            expect(getByText('Review')).toBeTruthy();
+            expect(getByText('5 Stars')).toBeTruthy();
+            expect(getByText('Great job!')).toBeTruthy();
+        });
+    });
+
 });

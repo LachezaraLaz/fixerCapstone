@@ -224,7 +224,7 @@ const NotificationPage = () => {
     return (
         <View style={styles.container}>
             <View style={styles.containerHeader}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <TouchableOpacity  testID="go-back-button" onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="orange" />
                 </TouchableOpacity>
 

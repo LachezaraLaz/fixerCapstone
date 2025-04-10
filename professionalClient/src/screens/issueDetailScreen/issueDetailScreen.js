@@ -345,7 +345,10 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
                             onRequestClose={() => setModalVisible(false)}
                         >
                             <View style={styles.modalBackground}>
-                                <TouchableOpacity style={styles.modalCloseIcon} onPress={() => setModalVisible(false)}>
+                                <TouchableOpacity
+                                    testID="image-modal-close"
+                                    style={styles.modalCloseIcon}
+                                    onPress={() => setModalVisible(false)}>
                                     <Ionicons name="close-circle" size={35} color="#fff" />
                                 </TouchableOpacity>
                                 <Image

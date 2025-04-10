@@ -1,90 +1,124 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ProfilePage from '../profilePage';
-import { Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { LanguageContext } from '../../../../context/LanguageContext';
 
-jest.mock('@expo/vector-icons', () => {
-    const MockIonicons = (props) => `Ionicons-${props.name}`;
-    const MockMaterialIcons = (props) => `MaterialIcons-${props.name}`;
-    return {
-        Ionicons: MockIonicons,
-        MaterialIcons: MockMaterialIcons,
-    };
-});
+// code to run only this file through the terminal:
+// npm run test ./src/screens/profilPage/__tests__/profilePage.test.js
+// or
+// npm run test-coverage ./src/screens/profilPage/__tests__/profilePage.test.js
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
-    getItem: jest.fn(),
+// Mocks
+const mockNavigate = jest.fn();
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => ({
+    navigate: mockNavigate,
+  }),
+  useFocusEffect: (cb) => cb(),
 }));
 
 jest.mock('axios');
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(() => Promise.resolve('mock-token')),
+}));
 
-jest.mock('@react-navigation/native', () => {
-    const actualNav = jest.requireActual('@react-navigation/native');
-    return {
-        ...actualNav,
-        useNavigation: jest.fn(),
-    };
-});
+const mockClient = {
+  firstName: 'Jane',
+  lastName: 'Doe',
+  email: 'jane@example.com',
+  idImageUrl: 'https://via.placeholder.com/150',
+  street: '123 Main St',
+  provinceOrState: 'Ontario',
+  country: 'Canada',
+  postalCode: 'A1A 1A1',
+};
 
-jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+const renderWithContext = () =>
+  render(
+    <LanguageContext.Provider value={{ locale: 'en', setLocale: jest.fn(), changeLanguage: jest.fn() }}>
+      <ProfilePage navigation={{ navigate: mockNavigate }} setIsLoggedIn={jest.fn()} />
+    </LanguageContext.Provider>
+  );
 
-describe('ProfilePage Component', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+describe('ProfilePage', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('shows loading state initially', () => {
+    const { getByText } = renderWithContext();
+    expect(getByText('Loading...')).toBeTruthy();
+  });
+
+  test('displays client information after loading', async () => {
+    axios.get.mockResolvedValueOnce({ data: mockClient });
+
+    const { getByText, queryByText } = renderWithContext();
+
+    await waitFor(() => {
+      expect(queryByText('Loading...')).toBeNull();
+      expect(getByText('Jane Doe')).toBeTruthy();
+      expect(getByText('jane@example.com')).toBeTruthy();
+      expect(getByText('123 Main St, Ontario, Canada, A1A 1A1')).toBeTruthy();
     });
+  });
 
-    const mockClientData = {
-        email: 'testuser@example.com',
-        profilePicture: { uri: 'https://via.placeholder.com/100' },
-    };
+  test('navigates to SettingsPage when settings button is pressed', async () => {
+    axios.get.mockResolvedValueOnce({ data: mockClient });
+  
+    const { getByTestId } = renderWithContext();
+  
+    const settingsButton = await waitFor(() => getByTestId('settings-button'));
+  
+    fireEvent.press(settingsButton);
+  
+    expect(mockNavigate).toHaveBeenCalledWith('SettingsPage');
+  });
+  
+  test('navigates to ReportPage when report button is pressed', async () => {
+    axios.get.mockResolvedValueOnce({ data: mockClient });
 
-    test('displays loading state initially', async () => {
-        AsyncStorage.getItem.mockResolvedValue('fake-token');
-        axios.get.mockImplementation(() => new Promise(() => {})); // Simulate pending request
+    const { getByText } = renderWithContext();
 
-        const { getByText } = render(<ProfilePage />);
-        expect(getByText('Loading...')).toBeTruthy();
+    await waitFor(() => {
+      const reportBtn = getByText('Report a Professional');
+      fireEvent.press(reportBtn);
+      expect(mockNavigate).toHaveBeenCalledWith('ReportPage');
     });
+  });
 
-    test('displays profile data after successful fetch', async () => {
-        AsyncStorage.getItem.mockResolvedValue('fake-token');
-        axios.get.mockResolvedValueOnce({ data: mockClientData });
+  test('shows error if client is null after fetch', async () => {
+    axios.get.mockResolvedValueOnce({ data: null });
 
-        const { getByText, getByRole } = render(<ProfilePage />);
+    const { getByText } = renderWithContext();
 
-        await waitFor(() => expect(getByText('testuser@example.com')).toBeTruthy());
+    await waitFor(() => {
+      expect(getByText('Error loading profile.')).toBeTruthy();
     });
+  });
 
-    test('displays error message if profile data cannot be fetched', async () => {
-        AsyncStorage.getItem.mockResolvedValue('fake-token');
-        axios.get.mockRejectedValueOnce(new Error('Network error'));
-
-        const { getByText } = render(<ProfilePage />);
-
-        await waitFor(() => expect(getByText('Error loading profile.')).toBeTruthy());
+  test('displays error if no token is found in AsyncStorage', async () => {
+    const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    AsyncStorage.getItem.mockResolvedValueOnce(null); // No token
+    axios.get.mockClear(); // No call should be made
+  
+    const { getByText, queryByText } = render(
+      <LanguageContext.Provider value={{ locale: 'en', setLocale: jest.fn(), changeLanguage: jest.fn() }}>
+        <ProfilePage navigation={{ navigate: jest.fn() }} setIsLoggedIn={jest.fn()} />
+      </LanguageContext.Provider>
+    );
+  
+    await waitFor(() => {
+      expect(queryByText('Loading...')).toBeNull();
+      expect(getByText('Error loading profile.')).toBeTruthy();
+      expect(mockConsoleError).toHaveBeenCalledWith('No token found');
     });
-
-    test('triggers alert when edit button is pressed', async () => {
-        const mockNavigate = jest.fn();
-        useNavigation.mockReturnValue({
-            navigate: mockNavigate,
-        });
-
-        AsyncStorage.getItem.mockResolvedValue('fake-token');
-        axios.get.mockResolvedValueOnce({ data: mockClientData });
-
-        const { getByText, getByLabelText } = render(<ProfilePage />);
-
-        // Wait for the profile data to load
-        await waitFor(() => expect(getByText('testuser@example.com')).toBeTruthy());
-
-        // Press the edit button using accessibilityLabel
-        fireEvent.press(getByLabelText('settings button'));
-
-        // Verify the alert is triggered
-        expect(mockNavigate).toHaveBeenCalledWith('SettingsPage');
-    });
+  
+    mockConsoleError.mockRestore();
+  });
+  
+  
+  
 });

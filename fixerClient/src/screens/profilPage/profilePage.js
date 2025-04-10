@@ -95,7 +95,7 @@ const ProfilePage = ({navigation, setIsLoggedIn}) => {
 
     useEffect(() => {
         if (value !== locale) {
-            changeLanguage(value); // ✅ persist + update
+            changeLanguage(value); // persist + update
         }
     }, [value]);
 
@@ -141,7 +141,7 @@ const ProfilePage = ({navigation, setIsLoggedIn}) => {
                 <View style={styles.customHeader}>
                     <Text style={styles.headerLogo}>Fixr</Text>
                     <Text style={styles.headerTitle}>{i18n.t('profile')}</Text>
-                    <SettingsButton onPress={() => navigation.navigate('SettingsPage')} />
+                    <SettingsButton testID="settings-button" onPress={() => navigation.navigate('SettingsPage')} />
                 </View>
 
                 <View style={styles.profileContainer}>

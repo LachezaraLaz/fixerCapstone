@@ -10,23 +10,24 @@
 Documentation: [jsDocs link](https://lachezaralaz.github.io/fixerCapstone/)
 
 # Releases
-## Release 1:
-Video:
-https://drive.google.com/file/d/1WhXXtFP5O8dtVwtxiwycaVndRdlPdeiS/view?usp=drive_link
 
-Top 5 files:  
-- [fixerClient/src/screens/createIssue/createIssue.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/createIssue/createIssue.js)
-- [fixerClient/src/NavBarComponent.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/NavBarComponent.js)
-- [professionalClient/src/homeScreen.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/homeScreen.js)
-- [professionalClient/src/screens/signin/signinPage.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/signin/signinPage.js)
-- [fixerClient/src/screens/editIssue/editIssue.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/editIssue/editIssue.js)
+## Release 3:
+Video:
+https://drive.google.com/file/d/19oNpWNbrMzOCoSmShA_uS10g1tNjcrYH/view?usp=sharing
+
+Top 5 files:
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/server/controller/authenticate.js 
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/server/repository/issueRepository.js
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/server/utils/geoCoding.js
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/server/routes/createIssueRoute.js
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/fixerClient/context/LanguageContext.js
 
 Top 5 testing files:
-- [fixerClient/src/screens/createIssue/__tests__/createIssue.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/createIssue/__tests__/createIssue.test.js)
-- [fixerClient/src/screens/signup/__tests__/signup.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/signup/__tests__/signup.test.js)
-- [fixerClient/src/screens/editIssue/__tests__/editIssue.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/editIssue/__tests__/editIssue.test.js)
-- [professionalClient/src/screens/map-view/__tests__/homeScreen.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/map-view/__tests__/homeScreen.test.js)
-- [professionalClient/src/screens/signin/__tests__/signin.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/signin/__tests__/signin.test.js)
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/fixerClient/src/screens/homeScreen/__tests__/homeScreen.test.js
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/fixerClient/src/screens/cardComponent/__tests__/CardComponent.test.js
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/professionalClient/src/screens/homeScreen/__tests__/homeScreen.test.js
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/professionalClient/src/screens/filterIssuePage/__tests__/filterIssuePage.test.js
+- https://github.com/LachezaraLaz/fixerCapstone/blob/main/fixerClient/src/screens/navBarComponent/__tests__/NavBarComponent.test.js
 
 ## Release 2:
 Video:
@@ -45,6 +46,24 @@ Top 5 testing files:
 - [commit/b312ea2b1b43327be5018323acc030e6437d00de](https://github.com/LachezaraLaz/fixerCapstone/commit/b312ea2b1b43327be5018323acc030e6437d00de)
 - [fixerClient/src/NavBarComponent.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/sdk52_update/fixerClient/src/NavBarComponent.test.js)
 - [professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/sdk52_update/professionalClient/src/screens/contractOffer/__tests__/contractOffer.test.js)
+  
+## Release 1:
+Video:
+https://drive.google.com/file/d/1WhXXtFP5O8dtVwtxiwycaVndRdlPdeiS/view?usp=drive_link
+
+Top 5 files:  
+- [fixerClient/src/screens/createIssue/createIssue.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/createIssue/createIssue.js)
+- [fixerClient/src/NavBarComponent.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/NavBarComponent.js)
+- [professionalClient/src/homeScreen.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/homeScreen.js)
+- [professionalClient/src/screens/signin/signinPage.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/signin/signinPage.js)
+- [fixerClient/src/screens/editIssue/editIssue.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/editIssue/editIssue.js)
+
+Top 5 testing files:
+- [fixerClient/src/screens/createIssue/__tests__/createIssue.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/createIssue/__tests__/createIssue.test.js)
+- [fixerClient/src/screens/signup/__tests__/signup.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/signup/__tests__/signup.test.js)
+- [fixerClient/src/screens/editIssue/__tests__/editIssue.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/fixerClient/src/screens/editIssue/__tests__/editIssue.test.js)
+- [professionalClient/src/screens/map-view/__tests__/homeScreen.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/map-view/__tests__/homeScreen.test.js)
+- [professionalClient/src/screens/signin/__tests__/signin.test.js](https://github.com/LachezaraLaz/fixerCapstone/blob/050047e2e06fd3093f63c77b8b594be7aba24c32/professionalClient/src/screens/signin/__tests__/signin.test.js)
 
 # Project Title
 A mobile app for small contracts from professionals

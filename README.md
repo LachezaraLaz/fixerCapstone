@@ -13,7 +13,7 @@ Documentation: [jsDocs link](https://lachezaralaz.github.io/fixerCapstone/)
 
 ## Release 3:
 Video:
-https://drive.google.com/file/d/19oNpWNbrMzOCoSmShA_uS10g1tNjcrYH/view?usp=sharing
+https://drive.google.com/file/d/1EflGZ8Cm4nyUwX_1aTnHWa__Tnmf9Y63/view?usp=sharing
 
 Top 5 files:
 - https://github.com/LachezaraLaz/fixerCapstone/blob/main/server/controller/authenticate.js 

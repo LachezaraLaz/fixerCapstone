@@ -9,6 +9,8 @@
 
 Documentation: [jsDocs link](https://lachezaralaz.github.io/fixerCapstone/)
 
+User Manual: [Fixr User Manual](https://github.com/LachezaraLaz/fixerCapstone/wiki/User-Manual)
+
 # Releases
 
 ## Release 3:

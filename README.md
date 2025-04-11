@@ -159,7 +159,7 @@ This will start the project and output a QR code. Scan this QR code with your ph
 
 **Congrats! You have Fixer Open!**
 
-## Getting Started
+## Getting Started (Admin Dashboard)
 
 There must be <ins>2 terminals open</ins> to make the project run. The following steps are meant to open the project wanted <br/>
 ### Step 1:
@@ -171,7 +171,29 @@ JWT_SECRET=
 PASS_RESET=
 ```
 **WARNING, the ".env" file must never be pushed to main. EVER.**
+<br/><br/>
 
+Admin side:
+```
+cd Administrator
+```
+<br/>
+
+<br/><br/>
+
+Server side:
+```
+cd server
+```
+<br/>
+
+<br/><br/>
+
+Server side:
+```
+cd node index.js
+```
+<br/>
 <br/><br/>
 
 ## Core Features

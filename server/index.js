@@ -23,9 +23,6 @@ const chatRoute = require('./routes/chatRoute');
 const app = express();
 const cors = require('cors');
 app.use(bodyParser.json());
-app.use(cors({
-    origin: ['https://fixercapstone-production.up.railway.app'],
-}));
 
 app.use(bodyParser.json());
 

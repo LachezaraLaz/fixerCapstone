@@ -11,6 +11,7 @@ professionalClient/coverage/
 Administrator/coverage/
 
 # Logs
+*/.env
 
 # Environment variables
 

@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
-const { Quotes } = require('../model/quoteModel');
+const { Quotes } = require('../model/quoteModel');  // Adjust the path if needed
+const {logger} = require("../utils/logger");
+const ForbiddenError = require("../utils/errors/ForbiddenError");
+const UnauthorizedError = require("../utils/errors/UnauthorizedError");
+const InternalServerError = require("../utils/errors/InternalServerError");
 
 /**
  * @module server/controller
@@ -20,27 +24,28 @@ const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
 
     if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return next(new UnauthorizedError('professional jobs','No authorization header provided', 401));
     }
 
     const token = authorizationHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return next(new UnauthorizedError('professional jobs','No token found in header', 401));
     }
 
-    console.log('Token received:', token);  // Log the token
+    logger.info('Token received:', token);  // Log the token
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return res.status(403).json({ message: 'Forbidden' });
+            return next(new ForbiddenError('professional jobs', 'Invalid or expired token', 403));
         }
 
-        console.log('User data from token:', user);  // Log user data
+        logger.info('User data from token:', user);  // Log user data
         req.user = user;
         next();
     });
 };
+
 
 /**
  * Retrieves the professional's jobs based on their email from the JWT.
@@ -57,8 +62,8 @@ const authenticateJWT = (req, res, next) => {
  *
  * @throws {Error} - If an error occurs while fetching the jobs, a 500 status code and an error message are sent.
  */
-const getMyProfessionalJobs = async (req, res) => {
-    const professionalEmail = req.user.email;
+const getMyProfessionalJobs = async (req, res, next) => {
+    const professionalEmail = req.user.email; // Retrieve professional's email from JWT
 
     try {
         // Find quotes and only populate non-deleted jobs
@@ -69,6 +74,8 @@ const getMyProfessionalJobs = async (req, res) => {
             });
 
         let amountEarned = 0;
+
+
         const jobsByStatus = {
             all: [],
             done: [],
@@ -111,11 +118,8 @@ const getMyProfessionalJobs = async (req, res) => {
         jobsByStatus.amountEarned = amountEarned;
         res.status(200).json(jobsByStatus);
     } catch (error) {
-        console.error('Error fetching professional jobs:', error);
-        res.status(500).json({
-            error: 'An error occurred while fetching jobs.',
-            details: error.message
-        });
+        logger.error('Error fetching professional jobs:', error);
+        next(new InternalServerError('professional jobs','An error occurred while fetching jobs.', 500));
     }
 };
 

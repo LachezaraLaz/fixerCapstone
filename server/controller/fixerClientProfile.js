@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT verification
 const fixerClientObject = require('../model/fixerClientModel'); // Mongoose model for professional
+const UnauthorizedError = require("../utils/errors/UnauthorizedError");
+const ForbiddenError = require("../utils/errors/ForbiddenError");
+const NotFoundError = require("../utils/errors/NotFoundError");
+const {logger} = require("../utils/logger");
 
 /**
  * @module server/controller
@@ -13,7 +17,7 @@ const fixerClientObject = require('../model/fixerClientModel'); // Mongoose mode
  * @param {string} req.headers.authorization - Authorization header containing the JWT token.
  * @param {Object} res - Express response object.
  * @param {Function} next - Express next middleware function.
- * 
+ *
  * @returns {Object} - Returns a 401 status with a message 'Unauthorized' if no token is provided or if the token is invalid.
  *                     Returns a 403 status with a message 'Forbidden' if the token verification fails.
  *                     Proceeds to the next middleware or route handler if the token is valid.
@@ -22,18 +26,18 @@ const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;  // Get authorization header
 
     if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized' });  // No token provided
+        return next(new UnauthorizedError('client profile', 'Missing auth header', 401))  // No token provided
     }
 
     const token = authorizationHeader.split(' ')[1];  // Extract token from Authorization header
 
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });  // No token
+        return next(new UnauthorizedError('client profile', 'Missing auth token', 401))  // No token
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return res.status(403).json({ message: 'Forbidden' });  // Token invalid
+            return next(new ForbiddenError('client profile', 'Token invalid', 403)); // Token invalid
         }
         req.user = user;  // Attach user details from the token to the request
         next();  // Proceed to the next middleware or route handler
@@ -47,29 +51,30 @@ const authenticateJWT = (req, res, next) => {
  * @param {Object} req.user - The user object containing the user ID.
  * @param {string} req.user.id - The ID of the user.
  * @param {Object} res - The response object.
- * @returns {Promise<void>} - A promise that resolves to void.
+ * @param {Function} next - Express next middleware function.
+ * * @returns {Promise<void>} - A promise that resolves to void.
  *
  * @throws {Error} - If there is an error fetching the client data.
  */
-const profile = async (req, res) => {
+const profile = async (req, res, next) => {
     try {
         // Find the professional by their user ID from the JWT token
         const client = await fixerClientObject.fixerClient.findById(req.user.id);
 
         if (!client) {
-            return res.status(404).json({ message: 'Client not found' });
+            throw new NotFoundError('client profile','Client not found', 404);
         }
 
         // Respond with professional's data
         res.json(client);
     } catch (error) {
-        console.error('Error fetching client data:', error);
-        res.status(500).json({ message: 'Server error' });
+        logger.error('Error fetching client data:', error);
+        next(error); // custom error handler
     }
 };
 
 
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
     try {
         // Get token from request header
         const token = req.headers.authorization?.split(' ')[1];

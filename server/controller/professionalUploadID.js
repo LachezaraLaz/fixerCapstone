@@ -1,4 +1,8 @@
 const fixerClientObject = require('../model/professionalClientModel');
+const {logger} = require("../utils/logger");
+const BadRequestError = require("../utils/errors/BadRequestError");
+const InternalServerError = require("../utils/errors/InternalServerError");
+const NotFoundError = require("../utils/errors/NotFoundError");
 
 /**
  * @module server/controller
@@ -15,21 +19,22 @@ const fixerClientObject = require('../model/professionalClientModel');
  * @param {Object} req.user - The user object.
  * @param {string} req.user.id - The ID of the user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves to void.
  */
-const professionalUploadID = async (req, res) => {
-    console.log('Received request for ID upload:', req.body);
+const professionalUploadID = async (req, res, next) => {
+    logger.info('Received request for ID upload:', req.body);
 
     // Check if the file was uploaded successfully to Cloudinary
     if (!req.file || !req.file.path) {
-        console.error('File not uploaded or missing path');
-        return res.status(400).json({ message: 'No file uploaded or file path is missing' });
+        logger.error('File not uploaded or missing path');
+        return next(new BadRequestError('pro ID', 'No file uploaded or file path is missing', 400));
     }
 
     try {
         // Log the Cloudinary URL of the uploaded image
         const cloudinaryUrl = req.file.path;  // This is the Cloudinary URL
-        console.log('File uploaded to Cloudinary:', cloudinaryUrl);
+        logger.info('File uploaded to Cloudinary:', cloudinaryUrl);
 
         // Update the user's record with the Cloudinary image URL and set formComplete to true
         const user = await fixerClientObject.fixerClient.findByIdAndUpdate(
@@ -39,13 +44,13 @@ const professionalUploadID = async (req, res) => {
         );
 
         if (!user) {
-            return res.status(404).json({ message: 'Professional not found' });
+            throw new NotFoundError('pro ID', 'Professional not found', 404);
         }
 
         res.json({ message: 'ID image uploaded successfully and form is now complete', user });
     } catch (error) {
-        console.error('Error updating user with ID image:', error);
-        res.status(500).json({ message: 'Server error', error });
+        logger.error('Error updating user with ID image:', error);
+        next(new InternalServerError('pro ID', `Server error: ${error.message}`, 500));
     }
 };
 

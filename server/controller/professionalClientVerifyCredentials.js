@@ -1,4 +1,7 @@
 const fixerClientObject = require('../model/professionalClientModel');
+const NotFoundError = require("../utils/errors/NotFoundError");
+const InternalServerError = require("../utils/errors/InternalServerError");
+const {logger} = require("../utils/logger");
 
 /**
  * @module server/controller
@@ -13,9 +16,10 @@ const fixerClientObject = require('../model/professionalClientModel');
  * @param {Object} req.user - The authenticated user object.
  * @param {string} req.user.id - The ID of the authenticated user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
-const verifyCredentials = async (req, res) => {
+const verifyCredentials = async (req, res, next) => {
     try {
         // Extract the tradeLicense from the request body
         const { tradeLicense } = req.body;
@@ -28,13 +32,13 @@ const verifyCredentials = async (req, res) => {
         );
 
         if (!professional) {
-            return res.status(404).json({ message: 'Professional not found' });
+            throw new NotFoundError('pro credentials', 'Professional not found', 404);
         }
 
         res.json({ message: 'Trade license submitted successfully', professional });
     } catch (error) {
-        console.error('Error verifying trade license:', error);
-        res.status(500).json({ message: 'Server error' });
+        logger.error('Error verifying trade license:', error);
+        next(new InternalServerError('pro credentials', `Server error: ${error.message}`, 500));
     }
 };
 

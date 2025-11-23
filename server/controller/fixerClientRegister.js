@@ -4,6 +4,8 @@ const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 const UserRepository = require('../repository/userRepository');
 const { RegisterUserDto } = require('../DTO/userDto');
+const BadRequestError = require("../utils/errors/BadRequestError");
+const {logger} = require("../utils/logger");
 
 /**
  * @module server/controller
@@ -137,15 +139,19 @@ async function sendVerificationEmail(user, token) {
  * @param {Object} req - The request object.
  * @param {Object} req.body - The body of the request containing user details.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the user is registered.
  *
  * @throws {Error} - If user creation fails.
  */
-const registerUser = async (req, res) => {
+const registerUser = async (req, res, next) => {
     const userDto = new RegisterUserDto(req.body);
     const existedUser = await UserRepository.findByEmail(userDto.email);
 
-    if (existedUser) return res.status(400).send({ statusText: 'User already exists' });
+    if (existedUser) {
+        throw new BadRequestError('client register', 'User already exists', 400);
+    }
+
 
     userDto.password = await bcrypt.hash(userDto.password, 12);
     userDto.approved = false;
@@ -161,8 +167,8 @@ const registerUser = async (req, res) => {
 
         res.send({ status: 'success', data: 'Account created successfully. Check your email to verify your account.' });
     } catch (error) {
-        console.error(error);
-        res.status(500).send({ status: 'error', data: 'User creation failed' });
+        logger.error(error);
+        next(error); // custom error handler
     }
 };
 

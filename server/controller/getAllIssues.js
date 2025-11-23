@@ -1,5 +1,6 @@
 const { getAllJobs } = require('../repository/issueRepository');
 const { issueDTO } = require('../DTO/issueDTO');
+const InternalServerError = require("../utils/errors/InternalServerError");
 
 /**
  * @module server/controller
@@ -13,17 +14,18 @@ const { issueDTO } = require('../DTO/issueDTO');
  * 
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the response is sent.
  * @throws {Error} - If there is an error fetching the jobs, a 500 status code is sent with an error message.
  */
-const getAllIssues = async (req, res) => {
+const getAllIssues = async (req, res, next) => {
     try {
         const jobs = await getAllJobs();
         const formattedJobs = jobs.map(job => issueDTO(job));
 
         res.status(200).json({ jobs: formattedJobs });
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch jobs', error: error.message });
+        next(new InternalServerError('all issues', `Failed to fetch jobs: ${error.message}`, 500));
     }
 };
 

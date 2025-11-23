@@ -6,6 +6,9 @@ const { stripe } = require('../utils/stripeConfig');
 const ProfessionalPayment = require('../model/professionalPaymentModel');
 const ProfessionalDTO = require('../DTO/professionalDTO');
 const professionalRepository = require('../repository/professionalRepository');
+const BadRequestError = require("../utils/errors/BadRequestError");
+const InternalServerError = require("../utils/errors/InternalServerError");
+const {logger} = require("../utils/logger");
 
 /**
  * @module server/controller
@@ -19,23 +22,24 @@ dotenv.config();
  * @param {Object} req - The request object.
  * @param {Object} req.body - The body of the request containing user data.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the user is registered.
  *
  * @throws {Error} - Throws an error if user creation fails.
  */
-const registerUser = async (req, res) => {
-    const professionalData = ProfessionalDTO.fromRequestBody(req.body);
-
-    // Check if user already exists in MongoDB
-    const existedUser = await professionalRepository.findProfessionalByEmail(professionalData.email);
-    if (existedUser) {
-        return res.status(400).send({ statusText: 'Account already exists' });
-    }
-
-    // Hash password using the repository function
-    professionalData.password = await professionalRepository.hashPassword(professionalData.password);
-
+const registerUser = async (req, res, next) => {
     try {
+        const professionalData = ProfessionalDTO.fromRequestBody(req.body);
+
+        // Check if user already exists
+        const existedUser = await professionalRepository.findProfessionalByEmail(professionalData.email);
+        if (existedUser) {
+            throw new BadRequestError('pro register', 'Account already exists', 400);
+        }
+
+        // Hash password
+        professionalData.password = await professionalRepository.hashPassword(professionalData.password);
+
         // Check if a Stripe Customer record already exists
         const customers = await stripe.customers.list({
             email: professionalData.email,
@@ -81,8 +85,8 @@ const registerUser = async (req, res) => {
 
         res.send({ status: 'success', data: 'Account created successfully. Please check your email to verify your account.' });
     } catch (e) {
-        console.error(e);
-        res.status(500).send({ status: 'error', data: 'User creation failed' });
+        logger.error(e);
+        next(new InternalServerError('pro register', `User creation failed: ${e.message}`, 500));
     }
 };
 

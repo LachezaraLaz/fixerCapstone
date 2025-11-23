@@ -1,5 +1,8 @@
 const axios = require('axios');
 require('dotenv').config();
+const {logger} = require("../utils/logger");
+const InternalServerError = require("../utils/errors/InternalServerError");
+const BadRequestError = require("../utils/errors/BadRequestError");
 
 /**
  * @module server/services
@@ -29,17 +32,17 @@ const getCoordinatesFromAddress = async (address) => {
             const { lat, lng } = response.data.results[0].geometry.location;
             return { latitude: lat, longitude: lng };
         } else {
-            throw new Error('Failed to fetch coordinates');
+            throw new BadRequestError('Geocoding service', 'Failed to fetch coordinates. The address may be invalid or not found.', 400);
         }
     } catch (error) {
         if (error.response) {
-            console.error('Geocoding request failed:', error.response.data);
+            logger.error('Geocoding request failed:', error.response.data);
         } else if (error.request) {
-            console.error('No response received:', error.request);
+            logger.error('No response received:', error.request);
         } else {
-            console.error('Request error:', error.message);
+            logger.error('Request error:', error.message);
         }
-        throw error;
+        throw new InternalServerError('Geocoding service', `Error fetching coordinates: ${error.message}`, 500);
     }
 };
 

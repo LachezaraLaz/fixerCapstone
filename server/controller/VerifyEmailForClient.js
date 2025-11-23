@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { fixerClient } = require('../model/fixerClientModel');  // Updated model import
 const dotenv = require('dotenv');
+const BadRequestError = require("../utils/errors/BadRequestError");
+const NotFoundError = require("../utils/errors/NotFoundError");
+const {logger} = require("../utils/logger");
 
 /**
  * @module server/controller
@@ -161,22 +164,24 @@ function generateResponsePage(title, message, success) {
  * @param {Object} req.query - The query parameters of the request.
  * @param {string} req.query.token - The verification token.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the email verification process is complete.
  */
-async function verifyEmail(req, res) {
-    const { token } = req.query;
-
-    if (!token) {
-        return res.send(generateResponsePage('Verification Failed', 'No verification token provided.', false));
-    }
-
+async function verifyEmail(req, res, next) {
     try {
+        const { token } = req.query;  // Extract token from the query params
+
+        if (!token) {
+            throw new BadRequestError('client email verification', 'No verification token provided.', 400);
+        }
+
+        // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.userId;
 
         const user = await fixerClient.findById(userId);
         if (!user) {
-            return res.send(generateResponsePage('Verification Failed', 'Account not found.', false));
+            throw new NotFoundError('client email verification', 'Account not found.', 404);
         }
 
         if (user.verified) {
@@ -184,17 +189,17 @@ async function verifyEmail(req, res) {
         }
 
         if (user.verificationToken !== token) {
-            return res.send(generateResponsePage('Verification Failed', 'Invalid or expired token.', false));
+            throw new BadRequestError('client email verification', 'Invalid or expired token.', 400);
         }
 
         user.verified = true;
-        user.verificationToken = undefined;
+        user.verificationToken = undefined;  // Clear the token once it's verified
         await user.save();
 
         res.send(generateResponsePage('Verification Successful', 'Your email has been successfully verified! You can now log in using the app.', true));
     } catch (error) {
-        console.error(error);
-        res.send(generateResponsePage('Verification Failed', 'Invalid or expired token.', false));
+        logger.error(error);
+        next(new BadRequestError('client email verification', 'Invalid or expired token.', 400));
     }
 }
 

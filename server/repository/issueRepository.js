@@ -1,4 +1,5 @@
 const { Jobs } = require('../model/createIssueModel');
+const InternalServerError = require("../utils/errors/InternalServerError");
 
 /**
  * @module server/repository
@@ -16,7 +17,7 @@ const getAllJobs = async () => {
         const jobs = await Jobs.find({ status: 'open' });
         return jobs;
     } catch (error) {
-        throw new Error('Error fetching open jobs: ' + error.message);
+        throw new InternalServerError('issue repo', `Failed to fetch jobs: ${error.message}`, 500);
     }
 };
 

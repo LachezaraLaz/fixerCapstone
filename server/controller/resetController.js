@@ -2,6 +2,10 @@ const fixerClientObject = require('../model/professionalClientModel');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const moment = require('moment'); // Import Moment.js
+const {logger} = require("../utils/logger");
+const NotFoundError = require("../utils/errors/NotFoundError");
+const InternalServerError = require("../utils/errors/InternalServerError");
+const UnauthorizedError = require("../utils/errors/UnauthorizedError");
 
 /**
  * @module server/controller
@@ -44,22 +48,22 @@ function generatePin() {
  * @param {Object} req.body - The body of the request.
  * @param {string} req.body.email - The email address of the user requesting a password reset.
  * @param {Object} res - The response object.
- * 
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the function completes.
  * 
  * @throws {Error} - Throws an error if the user is not found, or if there is a failure in updating the user or sending the email.
  */
-async function forgotPassword(req, res) {
-    const user = await fixerClientObject.fixerClient.findOne({ email: req.body.email });
-
-    if (!user) {
-        return res.status(404).json({ error: 'Could not find your account'});
-    }
-
-    const pin = generatePin();
-    const expiresIn = moment().add(5, 'minutes').toISOString(); // Set expiration to 5 minutes from now
-
+async function forgotPassword(req, res, next) {
     try {
+        const user = await fixerClientObject.fixerClient.findOne({ email: req.body.email });
+
+        if (!user) {
+            throw new NotFoundError('reset', 'Could not find your account', 404);
+        }
+
+        const pin = generatePin();
+        const expiresIn = moment().add(5, 'minutes').toISOString(); // Set expiration to 5 minutes from now
+
         // Store the PIN and its expiration time
         await fixerClientObject.fixerClient.updateOne(
             { _id: user._id },
@@ -81,8 +85,8 @@ async function forgotPassword(req, res) {
         await transporter.sendMail(mailOptions);
         res.json({ message: 'Password reset PIN sent' });
     } catch (err) {
-        console.error('Failed to update user or send email:', err);
-        res.status(500).json({ error: 'Failed to update user or send password reset email' });
+        logger.error('Failed to update user or send email:', err);
+        next(new InternalServerError('reset', 'Failed to update user or send password reset email', 500));
     }
 }
 
@@ -136,10 +140,11 @@ async function updatePassword(req, res) {
  * @param {string} req.body.email - The email of the user.
  * @param {string} req.body.pin - The password reset PIN.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the validation is complete.
  */
-async function validatePin(req, res) {
-    console.log('Received validatePin request:', req.body); // Log the incoming request
+async function validatePin(req, res, next) {
+    logger.info('Received validatePin request:', req.body); // Log the incoming request
 
     const { email, pin } = req.body; // Change passwordResetPin to pin
 
@@ -151,15 +156,15 @@ async function validatePin(req, res) {
         });
 
         if (!user) {
-            console.log('User not found or PIN expired for email:', email);
-            return res.status(401).json({ error: 'Invalid or expired PIN' });
+            logger.info('User not found or PIN expired for email:', email);
+            throw new UnauthorizedError('reset', 'Invalid or expired PIN', 401);
         }
 
-        console.log('PIN validated successfully for email:', email);
+        logger.info('PIN validated successfully for email:', email);
         res.status(200).json({ message: 'PIN is valid' });
     } catch (error) {
-        console.error('Error validating PIN:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        logger.error('Error validating PIN:', error);
+        next(new InternalServerError('reset', 'Internal server error while validating PIN', 500));
     }
 }
 
@@ -171,16 +176,17 @@ async function validatePin(req, res) {
  * @param {string} req.body.email - The email of the user requesting the password reset.
  * @param {string} req.body.newPassword - The new password to set for the user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the password reset process is complete.
  */
-async function resetPassword(req, res) {
+async function resetPassword(req, res, next) {
     const { email, newPassword } = req.body;
 
     try {
         const user = await fixerClientObject.fixerClient.findOne({ email });
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            throw new NotFoundError('reset', 'User not found', 404);
         }
 
         // Hash the new password before saving
@@ -208,8 +214,8 @@ async function resetPassword(req, res) {
         await transporter.sendMail(mailOptions);
         res.json({ message: 'Password reset successful' });
     } catch (err) {
-        console.error('Error during password reset:', err);
-        res.status(500).json({ error: 'An error occurred during the password reset process' });
+        logger.error('Error during password reset:', err);
+        next(new InternalServerError('reset', 'An error occurred during the password reset process', 500));
     }
 }
 

@@ -1,5 +1,8 @@
 const NotificationRepository = require('../repository/notificationRepository');
 const NotificationDto = require('../DTO/notificationDto.js');
+const {logger} = require("../utils/logger");
+const InternalServerError = require("../utils/errors/InternalServerError");
+const NotFoundError = require("../utils/errors/NotFoundError");
 
 /**
  * @module server/controller
@@ -12,15 +15,16 @@ const NotificationDto = require('../DTO/notificationDto.js');
  * @param {Object} req.user - The authenticated user object.
  * @param {string} req.user.id - The ID of the authenticated user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the notifications are fetched and sent in the response.
  */
-const getNotifications = async (req, res) => {
+const getNotifications = async (req, res, next) => {
     try {
         const notifications = await NotificationRepository.getNotificationsByUserId(req.user.id);
         res.json(notifications.map(notification => new NotificationDto(notification)));
     } catch (error) {
-        console.error('Error fetching notifications:', error);
-        res.status(500).json({ message: 'Failed to fetch notifications' });
+        logger.error('Error fetching notifications:', error);
+        next(new InternalServerError('notifications', 'Failed to fetch notifications', 500));
     }
 };
 
@@ -34,9 +38,10 @@ const getNotifications = async (req, res) => {
  * @param {Object} req.user - The authenticated user object.
  * @param {string} req.user.id - The ID of the authenticated user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the response is sent.
  */
-const getNotificationHistory = async (req, res) => {
+const getNotificationHistory = async (req, res, next) => {
     const { page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
 
@@ -49,8 +54,8 @@ const getNotificationHistory = async (req, res) => {
 
         res.status(200).json(notifications.map(notification => new NotificationDto(notification)));
     } catch (error) {
-        console.error('Error fetching notifications history:', error);
-        res.status(500).json({ message: 'Failed to fetch notifications history' });
+        logger.error('Error fetching notifications history:', error);
+        next(new InternalServerError('notifications', 'Failed to fetch notifications history', 500));
     }
 };
 
@@ -61,20 +66,21 @@ const getNotificationHistory = async (req, res) => {
  * @param {Object} req.params - The request parameters.
  * @param {string} req.params.id - The ID of the notification to mark as read.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
-const markAsRead = async (req, res) => {
+const markAsRead = async (req, res, next) => {
     try {
         const notification = await NotificationRepository.markNotificationAsRead(req.params.id);
 
         if (!notification) {
-            return res.status(404).json({ message: 'Notification not found' });
+            throw new NotFoundError('notifications', 'Notification not found', 404);
         }
 
         res.json({ message: 'Notification marked as read', notification: new NotificationDto(notification) });
     } catch (error) {
-        console.error('Error marking notification as read:', error);
-        res.status(500).json({ message: 'Failed to mark notification as read' });
+        logger.error('Error marking notification as read:', error);
+        next(new InternalServerError('notifications', 'Failed to mark notification as read', 500));
     }
 };
 
@@ -86,17 +92,18 @@ const markAsRead = async (req, res) => {
  * @param {string} req.body.userId - The ID of the user to notify.
  * @param {string} req.body.message - The notification message.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the notification is created.
  */
-const createNotification = async (req, res) => {
+const createNotification = async (req, res, next) => {
     try {
         const { userId, message } = req.body;
         const notification = await NotificationRepository.createNotification(userId, message);
 
         res.status(201).json({ message: 'Notification created', notification: new NotificationDto(notification) });
     } catch (error) {
-        console.error('Error creating notification:', error);
-        res.status(500).json({ message: 'Failed to create notification' });
+        logger.error('Error creating notification:', error);
+        next(new InternalServerError('notifications', 'Failed to create notification', 500));
     }
 };
 
@@ -107,15 +114,16 @@ const createNotification = async (req, res) => {
  * @param {Object} req.user - The authenticated user object.
  * @param {string} req.user.id - The ID of the authenticated user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the count is fetched and the response is sent.
  */
-const getUnreadNotificationCount = async (req, res) => {
+const getUnreadNotificationCount = async (req, res, next) => {
     try {
         const count = await NotificationRepository.countUnreadNotifications(req.user.id);
         res.status(200).json({ unreadCount: count });
     } catch (error) {
-        console.error('Error counting unread notifications:', error);
-        res.status(500).json({ message: 'Failed to fetch unread notification count' });
+        logger.error('Error counting unread notifications:', error);
+        next(new InternalServerError('notifications', 'Failed to fetch unread notification count', 500));
     }
 };
 

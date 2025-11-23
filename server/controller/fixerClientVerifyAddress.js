@@ -1,5 +1,7 @@
 const express = require("express");
 const axios = require('axios');
+const {logger} = require("../utils/logger");
+const BadRequestError = require("../utils/errors/BadRequestError");
 
 /**
  * @module server/controller
@@ -9,7 +11,6 @@ const app = express();
 app.use(express.json());
 
 const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY;
-let coordinates;
 
 /**
  * Verifies an address using the Google Address Validation API.
@@ -19,12 +20,17 @@ let coordinates;
  * @param {string} req.body.street - The street address to verify.
  * @param {string} req.body.postalCode - The postal code of the address to verify.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves when the address verification is complete.
  */
-const verifyAddress = async (req, res) => {
-    const { street, postalCode } = req.body;
-
+const verifyAddress = async (req, res, next) => {
     try {
+        const { street, postalCode } = req.body;
+
+        if (!street || !postalCode) {
+            throw new BadRequestError('address verification', 'Street and postal code are required.', 400);
+        }
+
         const response = await axios.post(
             `https://addressvalidation.googleapis.com/v1:validateAddress?key=${GOOGLE_API_KEY}`,
             {
@@ -34,60 +40,26 @@ const verifyAddress = async (req, res) => {
                 },
             }
         );
+        console.log(response.data)
 
         if (response.data.result.verdict.addressComplete === true) {
-            // Extract complete address information
-            const completeAddress = {};
+            //Get coordinates for the verified address
+            const fullAddress = `${street}, ${postalCode}`;
+            const coordinates = await getCoordinates(fullAddress);
 
-            // First try to get postal address components
-            if (response.data.result.address.postalAddress) {
-                const postalAddress = response.data.result.address.postalAddress;
-                if (postalAddress.postalCode) {
-                    completeAddress.postalCode = postalAddress.postalCode;
-                }
-                if (postalAddress.administrativeArea) {
-                    completeAddress.provinceOrState = postalAddress.administrativeArea;
-                }
-                if (postalAddress.regionCode) {
-                    completeAddress.country = postalAddress.regionCode === 'CA' ? 'Canada' :
-                        postalAddress.regionCode === 'US' ? 'United States' :
-                            postalAddress.regionCode;
-                }
+            if (!coordinates) {
+                throw new BadRequestError('address verification', 'Geocoding failed for the given address.', 400);
             }
 
-            // Try to extract postal code from formatted address as fallback
-            if (!completeAddress.postalCode && response.data.result.address.formattedAddress) {
-                const formattedAddress = response.data.result.address.formattedAddress;
-                // Canadian postal code regex
-                const canadianPostalRegex = /[A-Z]\d[A-Z]\s?\d[A-Z]\d/;
-                // US ZIP code regex
-                const usZipRegex = /\b\d{5}(?:-\d{4})?\b/;
-
-                let match = formattedAddress.match(canadianPostalRegex);
-                if (!match) match = formattedAddress.match(usZipRegex);
-
-                if (match) {
-                    completeAddress.postalCode = match[0];
-                }
-            }
-
-            // Get coordinates for the verified address
-            const fullAddress = `${street}, ${postalCode || completeAddress.postalCode || ''}`;
-            await getCoordinates(fullAddress);
-
-            res.send({
-                status: 'success',
-                data: 'Address verified successfully from server',
+            res.send({ status: 'success', data: 'Address verified successfully from server',
                 isAddressValid: true,
-                coordinates: coordinates,
-                completeAddress: completeAddress // Send the complete address back
-            });
+                coordinates: coordinates});
         } else {
-            res.send({ status: 'error', data: 'address verification failed from server 1' });
+            throw new BadRequestError('address verification', 'Address verification failed from server 1.', 400);
         }
     } catch (err) {
-        console.error(err);
-        res.send({ status: 'error', data: 'address verification failed from server 2' });
+        logger.error(err);
+        next(err);
     }
 };
 
@@ -106,16 +78,16 @@ const getCoordinates = async (fullAddress) => {
 
         if (geoResponse.data.results.length > 0) {
             const location = geoResponse.data.results[0].geometry.location;
-            coordinates = {
+            return {
                 latitude: location.lat,
                 longitude: location.lng,
             };
         } else {
-            coordinates = null;
+            return null;
         }
     } catch (err) {
-        console.error('Geocoding API Error:', err.response?.data || err.message);
-        coordinates = null;
+        logger.error('Geocoding API Error:', err.response?.data || err.message);
+        return null;
     }
 };
 

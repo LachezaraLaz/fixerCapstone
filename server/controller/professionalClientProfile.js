@@ -1,5 +1,10 @@
-const jwt = require('jsonwebtoken');
-const fixerClientObject = require('../model/professionalClientModel');
+const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT verification
+const fixerClientObject = require('../model/professionalClientModel'); // Mongoose model for professional
+const UnauthorizedError = require("../utils/errors/UnauthorizedError");
+const ForbiddenError = require("../utils/errors/ForbiddenError");
+const NotFoundError = require("../utils/errors/NotFoundError");
+const InternalServerError = require("../utils/errors/InternalServerError");
+const {logger} = require("../utils/logger");
 const { stripeConfig } = require("../utils/stripeConfig");
 const professionalPaymentSchema = require("../model/professionalPaymentModel");
 const mongoose = require('mongoose'); // Import mongoose
@@ -22,17 +27,17 @@ const mongoose = require('mongoose'); // Import mongoose
 const authenticateJWT = (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
-        return res.status(401).json({ message: 'Unauthorized - No token provided' });
+        return next(new UnauthorizedError('pro profile', 'Authorization header missing', 401));  // No token provided
     }
 
     const token = authorizationHeader.split(' ')[1];
     if (!token) {
-        return res.status(401).json({ message: 'Unauthorized - Token missing' });
+        return next(new UnauthorizedError('pro profile', 'Missing token', 401));  // No token
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return res.status(403).json({ message: 'Forbidden - Invalid token' });
+            return next(new ForbiddenError('pro profile', 'Invalid token', 403));  // Token invalid
         }
 
         console.log("Decoded JWT Payload:", user); // Log the decoded token
@@ -48,9 +53,10 @@ const authenticateJWT = (req, res, next) => {
  * @param {Object} req.user - The user object containing the user ID.
  * @param {string} req.user.id - The ID of the user.
  * @param {Object} res - The response object.
+ * @param {Function} next - Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves to void.
  */
-const profile = async (req, res) => {
+const profile = async (req, res, next) => {
     try {
         console.log("JWT Payload (req.user):", req.user); // Log the JWT payload
 
@@ -58,14 +64,14 @@ const profile = async (req, res) => {
         const professional = await fixerClientObject.fixerClient.findById(new mongoose.Types.ObjectId(req.user.id));
 
         if (!professional) {
-            return res.status(404).json({ message: 'Professional not found' });
+            throw new NotFoundError('pro profile', 'Professional not found', 404);
         }
 
         // Respond with professional's data
         res.json(professional);
     } catch (error) {
-        console.error('Error fetching professional data:', error);
-        res.status(500).json({ message: 'Server error' });
+        logger.error('Error fetching professional data:', error);
+        next(new InternalServerError('pro profile', 'Server error while fetching professional data', 500));
     }
 };
 

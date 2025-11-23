@@ -1,5 +1,5 @@
 // routes/notificationRoute.js
-const express = require('express');
+import express from "express"
 const { getNotifications, markAsRead, createNotification, getNotificationHistory } = require('../controller/notification');
 const { authenticateJWT } = require('../controller/authenticate');
 
@@ -17,4 +17,4 @@ notificationRouter.patch('/:id/read', authenticateJWT, markAsRead);
 // Route to create a new notification (this could be triggered by an event)
 notificationRouter.post('/send', authenticateJWT, createNotification);
 
-module.exports = notificationRouter;
+export default notificationRouter

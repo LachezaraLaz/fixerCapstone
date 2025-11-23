@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');  // Make sure this is required to use JWT verification
-const fixerClientObject = require('../model/fixerClientModel'); // Mongoose model for professional
+import jwt from 'jsonwebtoken'
+import {fixerClient, IFIxerClient} from '../model/fixerClient';
 
 /**
  * @module server/controller

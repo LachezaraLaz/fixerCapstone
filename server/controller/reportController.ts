@@ -1,6 +1,14 @@
-const fixerClientObject = require('../model/professionalClientModel');
-const nodemailer = require('nodemailer');
-const moment = require('moment'); // Import Moment.js
+import { Request, Response } from "express";
+import nodemailer from "nodemailer";
+
+import { professionalClient } from "../model/professionalClient";
+
+interface Issue {
+  issue: string;
+  date?: string;
+  description?: string;
+  professionalName?: string;
+}
 
 /**
  * @module server/controller
@@ -17,11 +25,11 @@ const moment = require('moment'); // Import Moment.js
  * @property {string} auth.pass - The password for the email account, retrieved from environment variables.
  */
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'fixit9337@gmail.com',
-        pass: process.env.PASS_RESET,
-    },
+  service: "gmail",
+  auth: {
+    user: "fixit9337@gmail.com",
+    pass: process.env.PASS_RESET,
+  },
 });
 
 /**
@@ -39,36 +47,36 @@ const transporter = nodemailer.createTransport({
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - A promise that resolves when the report is sent.
  */
-async function sendEmailReport(req, res) {
-    const { description, date, issue, professionalName } = req.body;
+async function sendEmailReport(req: Request<{}, {}, Issue>, res: Response) {
+  const { description, date, issue, professionalName } = req.body;
 
-    // Validation: Ensure all required fields are provided
-    if (!description || !date || !professionalName) {
-        return res.status(400).json({ error: 'All fields are required' });
-    }
+  // Validation: Ensure all required fields are provided
+  if (!description || !date || !professionalName) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
 
-    try {
-        // Send email to admin or professional
-        const mailOptions = {
-            from: 'fixit9337@gmail.com',
-            to: 'fixit9337@gmail.com',  // You can replace this with the professional's email or a recipient list
-            subject: `New Issue Report: ${issue}`,
-            html: `
+  try {
+    // Send email to admin or professional
+    const mailOptions = {
+      from: "fixit9337@gmail.com",
+      to: "fixit9337@gmail.com", // You can replace this with the professional's email or a recipient list
+      subject: `New Issue Report: ${issue}`,
+      html: `
                 <p>A new issue report has been submitted.</p>
                 <p><strong>Issue:</strong> ${issue}</p>
                 <p><strong>Description:</strong> ${description}</p>
                 <p><strong>Date:</strong> ${date}</p>
                 <p><strong>Professional:</strong> ${professionalName}</p>
             `,
-        };
+    };
 
-        // Send the email
-        await transporter.sendMail(mailOptions);
-        res.json({ message: 'Report sent successfully' });
-    } catch (err) {
-        console.error('Error sending report email:', err);
-        res.status(500).json({ error: 'Error sending report email' });
-    }
+    // Send the email
+    await transporter.sendMail(mailOptions);
+    res.json({ message: "Report sent successfully" });
+  } catch (err) {
+    console.error("Error sending report email:", err);
+    res.status(500).json({ error: "Error sending report email" });
+  }
 }
 
 /**
@@ -82,22 +90,24 @@ async function sendEmailReport(req, res) {
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - A promise that resolves if the issue is valid.
  */
-async function validateIssue(req, res) {
-    const { issue } = req.body;
+async function validateIssue(req: Request<{}, {}, Issue>, res: Response) {
+  const { issue } = req.body;
 
-    try {
-        const existingIssue = await fixerClientObject.fixerClient.findOne({ _id: issue });
+  try {
+    const existingIssue = await professionalClient.findOne({
+      _id: issue,
+    });
 
-        if (!existingIssue) {
-            return res.status(404).json({ error: 'Invalid issue ID' });
-        }
-
-        // If the issue exists, return success
-        res.status(200).json({ message: 'Issue is valid' });
-    } catch (err) {
-        console.error('Error validating issue:', err);
-        res.status(500).json({ error: 'Error validating issue' });
+    if (!existingIssue) {
+      return res.status(404).json({ error: "Invalid issue ID" });
     }
+
+    // If the issue exists, return success
+    res.status(200).json({ message: "Issue is valid" });
+  } catch (err) {
+    console.error("Error validating issue:", err);
+    res.status(500).json({ error: "Error validating issue" });
+  }
 }
 
-module.exports = { sendEmailReport, validateIssue };
+export { sendEmailReport, validateIssue };

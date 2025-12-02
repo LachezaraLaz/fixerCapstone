@@ -1,15 +1,17 @@
 import express from "express";
 
-const { registerUser } = require("../controller/professionalClientRegister");
+import { registerUser } from "../controller/professionalClientRegister";
+
 const { signinUser } = require("../controller/professionalClientSignIn");
-const {
+
+import {
   profile,
   authenticateJWT,
-  addBankingInfo,
-  getBankingInfoStatus,
   getPaymentMethod,
   updateProfessionalProfile,
-} = require("../controller/professionalClientProfile");
+  getBankingInfoStatus,
+  addCreditCard,
+} from "../controller/professionalClientProfile";
 const {
   verifyCredentials,
 } = require("../controller/professionalClientVerifyCredentials");
@@ -65,7 +67,7 @@ professionalRouter.get("/:email/reviews", getReviewsByProfessionalEmail);
 
 // professionalRouter.post('/linkSquareAccount', authenticateJWT, linkProfessionalAccount);
 
-professionalRouter.post("/add-banking-info", authenticateJWT, addBankingInfo);
+professionalRouter.post("/add-banking-info", authenticateJWT, addCreditCard);
 
 professionalRouter.get(
   "/banking-info-status",

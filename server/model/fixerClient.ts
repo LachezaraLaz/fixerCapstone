@@ -12,6 +12,7 @@ interface IFixerClient extends Document {
   passwordResetExpires?: Date;
   passwordResetToken?: string;
   postalCode?: string;
+  profession?: string;
   provinceOrState?: string;
   street?: string;
   verificationToken?: string;
@@ -31,13 +32,14 @@ const fixerClientModel = new mongoose.Schema<IFixerClient>(
     passwordResetExpires: Date,
     passwordResetToken: String,
     postalCode: String,
+    profession: String,
     provinceOrState: String,
     street: String,
     verificationToken: String,
     verified: { type: Boolean, default: false },
   },
   {
-    collection: "fixerClientInfo",
+    collection: "FixerClientInfo",
   }
 );
 

@@ -57,12 +57,12 @@ const professionalClientSchema = new mongoose.Schema<IProfessionalClient>(
     verificationToken: String,
   },
   {
-    collection: "fixerClientInfo",
+    collection: "FixerClientInfo",
   }
 );
 
 const professionalClient = mongoose.model<IProfessionalClient>(
-  "fixerClientInfo",
+  "FixerClientInfo",
   professionalClientSchema
 );
 

@@ -15,7 +15,7 @@ const redactPaths: string[] = ["email", "password", "token"].concat(
   process.env.JWT_SECRET ? [process.env.JWT_SECRET] : []
 );
 
-const logger = pino(
+export const logger = pino(
   {
     customLevels: { server: 80, emergency: 100 },
     level: currentLogLevel,
@@ -35,10 +35,8 @@ const logger = pino(
  *
  * @param {string} level - The new log level to be set.
  */
-const setLogLevel = (level: Level) => {
+export const setLogLevel = (level: Level) => {
   logger.level = level;
   currentLogLevel = level;
   logger.info(`Log level changed to ${level}`);
 };
-
-export { logger, setLogLevel };

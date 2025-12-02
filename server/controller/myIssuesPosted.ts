@@ -5,7 +5,7 @@ const {
 } = require("../repository/jobRepository");
 const { jobDTO } = require("../DTO/jobDTO");
 
-import { Jobs } from "../model/job";
+import { Job } from "../model/job";
 import { logger } from "../utils/logger";
 
 // GET /issue/user/:email route to fetch jobs for a specific user
@@ -41,7 +41,7 @@ const getJobById = async (req, res) => {
   }
 
   try {
-    const job = await Jobs.findById(jobId);
+    const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
@@ -67,7 +67,7 @@ const updateIssueStatus = async (req, res) => {
 
   try {
     // Fetch the existing job to clone
-    const existingJob = await Jobs.findById(jobId);
+    const existingJob = await Job.findById(jobId);
 
     if (!existingJob) {
       logger.error("Job not found", error);
@@ -92,17 +92,15 @@ const updateIssueStatus = async (req, res) => {
       };
 
       // Create the new cloned job
-      const clonedJob = await Jobs.create(clonedJobData);
+      const clonedJob = await Job.create(clonedJobData);
       console.log("cloned job ", clonedJob);
       logger.info(`Cloned job created with ID: ${clonedJob._id}`);
       await updateJobStatus(jobId, "Reopened");
 
-      res
-        .status(201)
-        .json({
-          message: "Job cloned and reopened successfully",
-          job: jobDTO(clonedJob),
-        });
+      res.status(201).json({
+        message: "Job cloned and reopened successfully",
+        job: jobDTO(clonedJob),
+      });
     } else {
       // For other status updates, just update the existing job
       const updatedJob = await updateJobStatus(jobId, status);
@@ -115,12 +113,10 @@ const updateIssueStatus = async (req, res) => {
       }
 
       console.log(`Job status updated to ${status}`);
-      res
-        .status(200)
-        .json({
-          message: `Job status updated to ${status}`,
-          job: jobDTO(updatedJob),
-        });
+      res.status(200).json({
+        message: `Job status updated to ${status}`,
+        job: jobDTO(updatedJob),
+      });
     }
   } catch (error) {
     console.error("Error updating job status:", error);
@@ -185,7 +181,7 @@ const updateJob = async (req, res) => {
       longitude: longitude || existingJob.longitude,
     };
 
-    const updatedJob = await Jobs.findByIdAndUpdate(jobId, updatedJobData, {
+    const updatedJob = await Job.findByIdAndUpdate(jobId, updatedJobData, {
       new: true,
       runValidators: true,
     });

@@ -19,7 +19,7 @@ const notificationSchema = new mongoose.Schema<INotification>(
     },
   },
   {
-    collection: "notifications",
+    collection: "Notification",
   }
 );
 

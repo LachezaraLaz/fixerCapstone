@@ -1,22 +1,38 @@
-const jwt = require('jsonwebtoken');
-const { fixerClient } = require('../model/professionalClientModel');
-const dotenv = require('dotenv');
-
 /**
  * @module server/controller
  */
 
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import { Request, Response } from "express";
+
+import { professionalClient } from "../model/professionalClient";
+
+interface VerifyEmailRequest extends Request {
+  query: {
+    token: string;
+  };
+}
+
+interface DecodedToken extends jwt.JwtPayload {
+  userId: string;
+}
+
 dotenv.config();
 
-function generateResponsePage(title, message, success) {
-    const color = success ? '#FF6B00' : '#FF3333';
-    const iconHTML = success
-        ? `<div class="checkmark-wrapper">
+function generateResponsePage(
+  title: string,
+  message: string,
+  success: boolean
+) {
+  const color = success ? "#FF6B00" : "#FF3333";
+  const iconHTML = success
+    ? `<div class="checkmark-wrapper">
                 <div class="checkmark-circle"></div>
            </div>`
-        : `<div class="error-icon">✖</div>`;
+    : `<div class="error-icon">✖</div>`;
 
-    return `
+  return `
     <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -137,7 +153,7 @@ function generateResponsePage(title, message, success) {
         }
 
         .btn:hover {
-            background-color: ${success ? '#e85e00' : '#cc0000'};
+            background-color: ${success ? "#e85e00" : "#cc0000"};
         }
 
     </style>
@@ -162,44 +178,78 @@ function generateResponsePage(title, message, success) {
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - A promise that resolves when the email verification process is complete.
  */
-async function verifyEmail(req, res) {
-    const { token } = req.query;  // Extract token from the query params
+export async function verifyEmail(req: VerifyEmailRequest, res: Response) {
+  const { token } = req.query; // Extract token from the query params
 
-    if (!token) {
-        return res.send(generateResponsePage('Verification Failed', 'No verification token provided.', false));
+  if (!token) {
+    return res.send(
+      generateResponsePage(
+        "Verification Failed",
+        "No verification token provided.",
+        false
+      )
+    );
+  }
+
+  try {
+    // Verify the token
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in environment variables");
     }
 
-    try {
-        // Verify the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decoded.userId;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as DecodedToken;
+    const userId = decoded.userId;
 
-        // Find the user by ID
-        const user = await fixerClient.findById(userId);
-        if (!user) {
-            return res.send(generateResponsePage('Verification Failed', 'Account not found.', false));
-        }
-
-        // If the user is already verified, return a message
-        if (user.verified) {
-            return res.send(generateResponsePage('Already Verified', 'Your email is already verified. You can log in now.', true));
-        }
-
-        // If the token doesn't match or has expired, return an error
-        if (user.verificationToken !== token) {
-            return res.send(generateResponsePage('Verification Failed', 'Invalid or expired token.', false));
-        }
-
-        // Mark the user as verified
-        user.verified = true;
-        user.verificationToken = undefined;  // Clear the token once it's verified
-        await user.save();
-
-        res.send(generateResponsePage('Verification Successful', 'Your email has been successfully verified! You can now log in using the app.', true));
-    } catch (error) {
-        console.error(error);
-        res.send(generateResponsePage('Verification Failed', 'Invalid or expired token.', false));
+    // Find the user by ID
+    const user = await professionalClient.findById(userId);
+    if (!user) {
+      return res.send(
+        generateResponsePage("Verification Failed", "Account not found.", false)
+      );
     }
+
+    // If the user is already verified, return a message
+    if (user.verified) {
+      return res.send(
+        generateResponsePage(
+          "Already Verified",
+          "Your email is already verified. You can log in now.",
+          true
+        )
+      );
+    }
+
+    // If the token doesn't match or has expired, return an error
+    if (user.verificationToken !== token) {
+      return res.send(
+        generateResponsePage(
+          "Verification Failed",
+          "Invalid or expired token.",
+          false
+        )
+      );
+    }
+
+    // Mark the user as verified
+    user.verified = true;
+    user.verificationToken = undefined; // Clear the token once it's verified
+    await user.save();
+
+    res.send(
+      generateResponsePage(
+        "Verification Successful",
+        "Your email has been successfully verified! You can now log in using the app.",
+        true
+      )
+    );
+  } catch (error) {
+    console.error(error);
+    res.send(
+      generateResponsePage(
+        "Verification Failed",
+        "Invalid or expired token.",
+        false
+      )
+    );
+  }
 }
-
-module.exports = { verifyEmail };

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { Notification } from "../model/notification";
-import { Jobs } from "../model/job";
+import { Job } from "../model/job";
 
 import { fixerClient } from "../model/fixerClient";
 import { getCoordinatesFromAddress } from "../services/geoCodingService";
@@ -60,7 +60,7 @@ const createIssue = async (req: Request, res: Response) => {
     // const address = `${clientInfo.street}, ${clientInfo.postalCode}, ${clientInfo.provinceOrState}, ${clientInfo.country}`;
     const { latitude, longitude } = await getCoordinatesFromAddress(address);
 
-    const newIssue = await Jobs.create({
+    const newIssue = await Job.create({
       title,
       description,
       professionalNeeded,

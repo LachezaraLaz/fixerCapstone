@@ -2,7 +2,7 @@
 import express, { Request, Response } from "express";
 
 import { initChat } from "../controller/initChat";
-import fixerClient from "../model/fixerClient";
+import { fixerClient } from "../model/fixerClient";
 
 interface InitChatRequestBody {
   issueTitle: string;

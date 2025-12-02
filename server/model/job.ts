@@ -1,5 +1,11 @@
 import mongoose, { Document } from "mongoose";
 
+export enum JobStatus {
+  COMPLETED = "completed",
+  IN_PROGRESS = "in progress",
+  OPEN = "open",
+}
+
 interface IJob extends Document {
   acceptedQuoteId?: mongoose.Schema.Types.ObjectId | null;
   comment?: string;
@@ -23,7 +29,7 @@ const job = new mongoose.Schema<IJob>(
   {
     acceptedQuoteId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Quotes",
+      ref: "Quote",
       default: null,
     },
     comment: { type: String },
@@ -37,16 +43,16 @@ const job = new mongoose.Schema<IJob>(
     professionalEmail: { type: String },
     professionalNeeded: { type: String, required: true },
     rating: { type: Number, min: 1, max: 5 },
-    status: { type: String, default: "open" }, // e.g., open, in-progress, closed
+    status: { type: String, default: JobStatus.OPEN }, //TODO: enum for status
     timeline: { type: String },
     title: { type: String, required: true },
     userEmail: { type: String, required: true },
   },
   {
-    collection: "jobs",
+    collection: "Job",
   }
 );
 
-const Jobs = mongoose.model<IJob>("Jobs", job);
+const Job = mongoose.model<IJob>("Job", job);
 
-export { Jobs, IJob };
+export { Job, IJob };

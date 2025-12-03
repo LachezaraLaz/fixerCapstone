@@ -18,3 +18,5 @@ Administrator/coverage/
 
 # Temporary files
 
+.env
+

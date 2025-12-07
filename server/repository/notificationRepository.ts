@@ -19,7 +19,7 @@ export class NotificationRepository {
    * @returns {Promise<Array>} A promise that resolves to an array of notifications.
    * @memberof module:server/repository
    */
-  async getNotificationsByUserId(userId: string): Promise<INotification[]> {
+  static async getNotificationsByUserId(userId: string): Promise<INotification[]> {
     return await Notification.find({ userId }).sort({ createdAt: -1 });
   }
 
@@ -32,7 +32,7 @@ export class NotificationRepository {
    * @returns {Promise<Array>} A promise that resolves to an array of notification history records.
    * @memberof module:server/repository
    */
-  async getNotificationHistoryByUserId(
+  static async getNotificationHistoryByUserId(
     userId: string,
     skip: number,
     limit: number
@@ -50,7 +50,7 @@ export class NotificationRepository {
    * @returns {Promise<Object>} The updated notification object.
    * @memberof module:server/repository
    */
-  async markNotificationAsRead(id: string): Promise<INotification | null> {
+  static async markNotificationAsRead(id: string): Promise<INotification | null> {
     return await Notification.findByIdAndUpdate(
       id,
       { isRead: true },
@@ -66,7 +66,7 @@ export class NotificationRepository {
    * @returns {Promise<Object>} A promise that resolves to the created notification object.
    * @memberof module:server/repository
    */
-  async createNotification(
+  static async createNotification(
     userId: string,
     message: string
   ): Promise<INotification> {
@@ -85,7 +85,7 @@ export class NotificationRepository {
    * @returns {Promise<Object|null>} A promise that resolves to the deleted notification object, or null if no notification was found.
    * @memberof module:server/repository
    */
-  async deleteNotification(id: string): Promise<INotification | null> {
+  static async deleteNotification(id: string): Promise<INotification | null> {
     return await Notification.findByIdAndDelete(id);
   }
 
@@ -96,7 +96,7 @@ export class NotificationRepository {
    * @returns {Promise<number>} A promise that resolves to the number of unread notifications.
    * @memberof module:server/repository
    */
-  async countUnreadNotifications(userId: string): Promise<number> {
+  static async countUnreadNotifications(userId: string): Promise<number> {
     return await Notification.countDocuments({ userId, isRead: false });
   }
 }

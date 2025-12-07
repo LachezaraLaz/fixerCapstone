@@ -1,15 +1,21 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const dotenv = require('dotenv');
-const UserRepository = require('../repository/userRepository');
-const { RegisterUserDto } = require('../DTO/userDto');
 
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import nodemailer from 'nodemailer'
+import {Response, Request} from "express"
+ 
+import { UserRepository } from "../repository/userRepository"
+import { IRegisterUserDto, RegisterUserDto } from "../DTO/userDto" 
+import { IFixerClient } from '../model/fixerClient'
 /**
  * @module server/controller
  */
 
-dotenv.config();
+
+interface RegisterUserRequest extends Request{
+    body:IRegisterUserDto
+}
+
 
 /**
  * Sends a verification email to the user with a verification token.
@@ -19,7 +25,7 @@ dotenv.config();
  * @param {string} token - The verification token to be included in the email.
  * @returns {Promise<void>} A promise that resolves when the email is sent.
  */
-async function sendVerificationEmail(user, token) {
+async function sendVerificationEmail(user:IFixerClient, token:string) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: { user: 'fixit9337@gmail.com', pass: process.env.PASS_RESET },
@@ -141,7 +147,7 @@ async function sendVerificationEmail(user, token) {
  *
  * @throws {Error} - If user creation fails.
  */
-const registerUser = async (req, res) => {
+export const registerUser = async (req: RegisterUserRequest, res: Response) => {
     const userDto = new RegisterUserDto(req.body);
     const existedUser = await UserRepository.findByEmail(userDto.email);
 
@@ -153,10 +159,16 @@ const registerUser = async (req, res) => {
     userDto.verified = false;
 
     try {
+
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET is not defined in environment variables');
+        }
+
+     
         const newUser = await UserRepository.createUser(userDto);
         const verificationToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        await UserRepository.updateUser(newUser._id, { verificationToken });
+        await UserRepository.updateUser(newUser._id.toString(), { verificationToken });
         await sendVerificationEmail(newUser, verificationToken);
 
         res.send({ status: 'success', data: 'Account created successfully. Check your email to verify your account.' });
@@ -166,4 +178,4 @@ const registerUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUser };
+

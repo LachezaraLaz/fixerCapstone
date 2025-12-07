@@ -1,9 +1,9 @@
-import { IJob, Jobs } from "../model/job";
+import { IJob, Job } from "../model/job";
 
 // Fetch jobs for a specific user by email
 const getJobsByUserEmail = async (userEmail: string) => {
   try {
-    return await Jobs.find({ userEmail });
+    return await Job.find({ userEmail });
   } catch (error) {
     throw new Error("Failed to fetch jobs for user");
   }
@@ -21,7 +21,7 @@ const getJobsByUserEmail = async (userEmail: string) => {
 
 const getJobByIdRepo = async (jobId: string) => {
   try {
-    return await Jobs.findById(jobId);
+    return await Job.findById(jobId);
   } catch (error) {
     throw new Error("Failed to fetch job by ID");
   }
@@ -30,7 +30,7 @@ const getJobByIdRepo = async (jobId: string) => {
 // Update job status (Reopen job)
 const updateJobStatus = async (jobId: string, status: string) => {
   try {
-    return await Jobs.findByIdAndUpdate(jobId, { status }, { new: true });
+    return await Job.findByIdAndUpdate(jobId, { status }, { new: true });
   } catch (error) {
     throw new Error("Failed to update job status");
   }
@@ -39,7 +39,7 @@ const updateJobStatus = async (jobId: string, status: string) => {
 // Update job details
 const updateJob = async (jobId: string, updateData: IJob) => {
   try {
-    return await Jobs.findByIdAndUpdate(jobId, updateData, {
+    return await Job.findByIdAndUpdate(jobId, updateData, {
       new: true,
       runValidators: true,
     });
@@ -48,7 +48,7 @@ const updateJob = async (jobId: string, updateData: IJob) => {
   }
 };
 
-module.exports = {
+export {
   getJobsByUserEmail,
   getJobByIdRepo,
   updateJobStatus,

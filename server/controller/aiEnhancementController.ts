@@ -1,6 +1,14 @@
-const { enhanceIssueDescription } = require('../services/aiEnhancementService');
+import { Request, Response } from "express";
 
-const aiEnhancementController = async (req, res) => {
+import { enhanceIssueDescription } from "../services/aiEnhancementService";
+
+interface AIEnhancementRequest extends Request{
+    body:{
+        description:string
+    }
+}
+
+export const aiEnhancementController = async (req: AIEnhancementRequest, res: Response) => {
     try {
         const { description } = req.body;
 
@@ -8,9 +16,11 @@ const aiEnhancementController = async (req, res) => {
             return res.status(400).json({ error: "Description must be at least 10 characters long." });
         }
         const result = await enhanceIssueDescription(description);
+
         if (result.error) {
             return res.status(400).json({ error: result.error });
         }
+
         res.status(200).json({ improvedDescription: result.improvedDescription });
 
     } catch (error) {
@@ -19,4 +29,3 @@ const aiEnhancementController = async (req, res) => {
     }
 };
 
-module.exports = { aiEnhancementController };

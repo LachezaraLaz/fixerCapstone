@@ -1,15 +1,25 @@
-const express = require("express");
-const axios = require('axios');
 
 /**
  * @module server/controller
  */
 
-const app = express();
-app.use(express.json());
+import axios from "axios";
+import { Request, Response } from "express";
 
-const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY;
-let coordinates;
+interface VerifyAddressRequest extends Request{
+    body:{
+        street: string,
+        postalCode: string
+    }
+}
+
+interface CompleteAdress{
+    postalCode?: string,
+    provinceOrState?: string,
+    country?: string
+}
+
+const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY || '';
 
 /**
  * Verifies an address using the Google Address Validation API.
@@ -21,7 +31,7 @@ let coordinates;
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - A promise that resolves when the address verification is complete.
  */
-const verifyAddress = async (req, res) => {
+export const verifyAddress = async (req: VerifyAddressRequest, res: Response) => {
     const { street, postalCode } = req.body;
 
     try {
@@ -37,7 +47,7 @@ const verifyAddress = async (req, res) => {
 
         if (response.data.result.verdict.addressComplete === true) {
             // Extract complete address information
-            const completeAddress = {};
+            const completeAddress: CompleteAdress = {};
 
             // First try to get postal address components
             if (response.data.result.address.postalAddress) {
@@ -73,7 +83,7 @@ const verifyAddress = async (req, res) => {
 
             // Get coordinates for the verified address
             const fullAddress = `${street}, ${postalCode || completeAddress.postalCode || ''}`;
-            await getCoordinates(fullAddress);
+            const coordinates = await getCoordinates(fullAddress);
 
             res.send({
                 status: 'success',
@@ -98,7 +108,7 @@ const verifyAddress = async (req, res) => {
  * @returns {Promise<void>} A promise that resolves when the coordinates have been fetched and stored.
  * @throws Will log an error message if the Geocoding API request fails.
  */
-const getCoordinates = async (fullAddress) => {
+const getCoordinates = async (fullAddress:string) => {
     try {
         const geoResponse = await axios.get(
             `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(fullAddress)}&key=${GOOGLE_API_KEY}`
@@ -106,17 +116,18 @@ const getCoordinates = async (fullAddress) => {
 
         if (geoResponse.data.results.length > 0) {
             const location = geoResponse.data.results[0].geometry.location;
-            coordinates = {
+
+            return {
                 latitude: location.lat,
                 longitude: location.lng,
             };
         } else {
-            coordinates = null;
+            return null;
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('Geocoding API Error:', err.response?.data || err.message);
-        coordinates = null;
+        return null;
     }
 };
 
-module.exports = { verifyAddress };
+

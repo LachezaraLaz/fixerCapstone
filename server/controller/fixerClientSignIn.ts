@@ -1,13 +1,24 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { serverClient } = require('../services/streamClient');
-const UserRepository = require('../repository/userRepository');
-const {AuthResponseDto}  = require('../DTO/userDto');
-const { logger } = require("../utils/logger");
-
 /**
  * @module server/controller
  */
+
+import bcrypt from 'bcrypt';
+import { Request, Response } from "express";
+import jwt from 'jsonwebtoken';
+
+import { AuthResponseDto } from '../DTO/userDto';
+import { UserRepository } from '../repository/userRepository';
+import serverClient from "../services/streamClient";
+import { logger } from '../utils/logger';
+
+interface SignInUserRequest extends Request{
+    body: {
+        email:string,
+        password:string
+    }
+}
+
+
 
 /**
  * Signs in a user with the provided email and password.
@@ -19,17 +30,22 @@ const { logger } = require("../utils/logger");
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - Sends a response with the authentication token and user details.
  */
-const signinUser = async (req, res) => {
-    console.log(AuthResponseDto);  // Should NOT be undefined
-    logger.info(AuthResponseDto);  // Should NOT be undefined
+export const signinUser = async (req: SignInUserRequest, res:Response) => {
     const { email, password } = req.body;
+
     const user = await UserRepository.findByEmail(email);
 
-    if (!user || user.accountType !== 'client') return res.status(400).send({ statusText: 'User not found' });
+    if (!user || user.accountType !== 'client' || !user.password) return res.status(400).send({ statusText: 'User not found' });
+
     if (!user.verified) return res.status(403).send({ statusText: 'Account not verified yet' });
 
     const validPassword = await bcrypt.compare(password, user.password);
+
     if (!validPassword) return res.status(400).send({ statusText: 'Invalid password' });
+
+    if(!process.env.JWT_SECRET){
+        throw new Error('JWT_SECRET is not defined in environment variables');
+    }
 
     const token = jwt.sign({
         id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName,
@@ -39,9 +55,12 @@ const signinUser = async (req, res) => {
     await serverClient.upsertUser({ id: user._id.toString(), role: 'user', name: `${user.firstName} ${user.lastName}` });
 
     const streamToken = serverClient.createToken(user._id.toString());
+    
     logger.emergency(token);
 
-    res.send(new AuthResponseDto(user, token, streamToken));
+    const authResponse = new AuthResponseDto({user, token, streamToken});
+
+    res.send({ status: 'success', data: authResponse });
 };
 
-module.exports = { signinUser };
+

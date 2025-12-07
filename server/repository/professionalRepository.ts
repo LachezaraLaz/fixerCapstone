@@ -24,7 +24,7 @@ export class ProfessionalRepository {
    * @returns {Promise<Object|null>} A promise that resolves to the professional object if found, or null if not found.
    * @memberof module:server/repository
    */
-  async findProfessionalByEmail(email: string) {
+  static async findProfessionalByEmail(email: string) {
     return await fixerClient.findOne({ email });
   }
 
@@ -39,7 +39,7 @@ export class ProfessionalRepository {
    * @returns {Promise<Object>} The created professional object.
    * @memberof module:server/repository
    */
-  async createProfessional(
+  static async createProfessional(
     userData: Partial<IFixerClient>
   ): Promise<IFixerClient> {
     return await fixerClient.create({ ...userData });
@@ -52,7 +52,7 @@ export class ProfessionalRepository {
    * @returns {Promise<Object>} A promise that resolves to the saved user object.
    * @memberof module:server/repository
    */
-  async saveProfessional(user: IFixerClient) {
+  static async saveProfessional(user: IFixerClient) {
     return await user.save();
   }
 
@@ -64,7 +64,7 @@ export class ProfessionalRepository {
    * @returns {Promise<boolean>} - A promise that resolves to true if the passwords match, otherwise false.
    * @memberof module:server/repository
    */
-  async comparePassword(inputPassword: string, storedPassword: string) {
+  static async comparePassword(inputPassword: string, storedPassword: string) {
     return await bcrypt.compare(inputPassword, storedPassword);
   }
 
@@ -75,7 +75,7 @@ export class ProfessionalRepository {
    * @returns {Promise<string>} - A promise that resolves to the hashed password.
    * @memberof module:server/repository
    */
-  async hashPassword(password: string) {
+  static async hashPassword(password: string) {
     return await bcrypt.hash(password, 12);
   }
 
@@ -86,7 +86,7 @@ export class ProfessionalRepository {
    * @returns {string} The generated JWT.
    * @memberof module:server/repository
    */
-  generateToken(payload: jwt.JwtPayload) {
+  static generateToken(payload: jwt.JwtPayload) {
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not defined");
     }
@@ -101,7 +101,7 @@ export class ProfessionalRepository {
    * @returns {string} - The generated JWT token.
    * @memberof module:server/repository
    */
-  generateVerificationToken(userId: string) {
+  static generateVerificationToken(userId: string) {
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not defined");
     }
@@ -118,7 +118,7 @@ export class ProfessionalRepository {
    * @returns {Promise<void>} - A promise that resolves when the email has been sent.
    * @memberof module:server/repository
    */
-  async sendVerificationEmail(user: IFixerClient, token: string) {
+  static async sendVerificationEmail(user: IFixerClient, token: string) {
     if (!process.env.EMAIL || !process.env.PASS_RESET) {
       throw new Error("Email credentials are not defined");
     }
@@ -153,7 +153,7 @@ export class ProfessionalRepository {
    * @returns {Promise<void>} - A promise that resolves when the user is upserted.
    * @memberof module:server/repository
    */
-  async upsertStreamUser(user: IFixerClient) {
+  static async upsertStreamUser(user: IFixerClient) {
     await serverClient.upsertUser({
       id: user._id.toString(),
       role: "user",
@@ -168,7 +168,7 @@ export class ProfessionalRepository {
    * @returns {string} The generated stream token.
    * @memberof module:server/repository
    */
-  createStreamToken(userId: string) {
+  static createStreamToken(userId: string) {
     return serverClient.createToken(userId.toString());
   }
 }

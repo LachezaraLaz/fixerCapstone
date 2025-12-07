@@ -1,5 +1,8 @@
+import { IJob } from "../model/job";
+//TODO look if we want to have a class approach like userDTO
+
 // Issue DTO to format the response
-const issueDTO = (job) => ({
+export const issueDTO = (job: IJob) => ({
     id: job._id,
     title: job.title,
     description: job.description,
@@ -17,4 +20,4 @@ const issueDTO = (job) => ({
     lastName: job.lastName,
 });
 
-module.exports = { issueDTO };
+

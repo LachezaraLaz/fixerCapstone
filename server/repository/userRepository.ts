@@ -1,4 +1,5 @@
-import { fixerClient, IFixerClient } from "../model/fixerClient";
+import { IRegisterUserDto } from "../DTO/userDto";
+import { fixerClient } from "../model/fixerClient";
 
 /**
  * @module server/repository
@@ -8,7 +9,7 @@ import { fixerClient, IFixerClient } from "../model/fixerClient";
  * A class representing a repository for users.
  * @class UserRepository
  */
-class UserRepository {
+export class UserRepository {
   /**
    * Finds a user by their email address.
    *
@@ -16,7 +17,7 @@ class UserRepository {
    * @returns {Promise<Object|null>} A promise that resolves to the user object if found, or null if not found.
    * @memberof module:server/repository
    */
-  async findByEmail(email: string) {
+ static async findByEmail(email: string) {
     return await fixerClient.findOne({ email });
   }
 
@@ -27,7 +28,7 @@ class UserRepository {
    * @returns {Promise<Object>} A promise that resolves to the user object if found, or null if not found.
    * @memberof module:server/repository
    */
-  async findById(userId: string) {
+  static async findById(userId: string) {
     return await fixerClient.findById(userId);
   }
 
@@ -41,7 +42,7 @@ class UserRepository {
    * @returns {Promise<Object>} A promise that resolves to the created user object.
    * @memberof module:server/repository
    */
-  async createUser(userData: IFixerClient) {
+  static async createUser(userData: IRegisterUserDto) {
     return await fixerClient.create(userData);
   }
 
@@ -53,11 +54,11 @@ class UserRepository {
    * @returns {Promise<Object>} The updated user object.
    * @memberof module:server/repository
    */
-  async updateUser(userId: string, updateData: Partial<IFixerClient>) {
+  static async updateUser(userId: string, updateData: Partial<IRegisterUserDto>) {
     return await fixerClient.findByIdAndUpdate(userId, updateData, {
       new: true,
     });
   }
 }
 
-module.exports = new UserRepository();
+

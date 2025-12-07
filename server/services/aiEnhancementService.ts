@@ -1,7 +1,12 @@
-const axios = require('axios');
+import axios from "axios"
 
-async function enhanceIssueDescription(userDescription) {
+enum OpenAICategory{
+    INVALID_CATEGORY = "INVALID CATEGORY"
+}
+
+export async function enhanceIssueDescription(userDescription:string):Promise<{improvedDescription?:string, error?:string}> {
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    
     const url = 'https://api.openai.com/v1/chat/completions';
 
     try {
@@ -39,7 +44,7 @@ async function enhanceIssueDescription(userDescription) {
         const aiMessage = response.data.choices[0].message.content.trim();
 
         // Check if GPT says "INVALID CATEGORY"
-        if (aiMessage === "INVALID CATEGORY") {
+        if (aiMessage === OpenAICategory.INVALID_CATEGORY) {
             return { error: "Invalid job category. Please provide a home service or blue-collar job description." };
         }
 
@@ -50,4 +55,4 @@ async function enhanceIssueDescription(userDescription) {
     }
 }
 
-module.exports = { enhanceIssueDescription };
+

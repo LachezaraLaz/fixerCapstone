@@ -22,11 +22,10 @@ dotenv.config();
  * @throws {Error} - Throws an error if user creation fails.
  */
 export const registerUser = async (req: Request, res: Response) => {
-  const professionalRepository = new ProfessionalRepository();
   const professionalData = ProfessionalDTO.fromRequestBody(req.body);
 
   // Check if user already exists in MongoDB
-  const existedUser = await professionalRepository.findProfessionalByEmail(
+  const existedUser = await ProfessionalRepository.findProfessionalByEmail(
     professionalData.email || ""
   );
   if (existedUser) {
@@ -34,7 +33,7 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 
   // Hash password using the repository function
-  professionalData.password = await professionalRepository.hashPassword(
+  professionalData.password = await ProfessionalRepository.hashPassword(
     professionalData.password || ""
   );
 
@@ -68,7 +67,7 @@ export const registerUser = async (req: Request, res: Response) => {
     }
 
     // Create the new user using the repository function
-    const newUser = await professionalRepository.createProfessional(
+    const newUser = await ProfessionalRepository.createProfessional(
       professionalData
     );
 
@@ -79,16 +78,16 @@ export const registerUser = async (req: Request, res: Response) => {
     });
 
     // Generate the verification token using the repository
-    const verificationToken = professionalRepository.generateVerificationToken(
+    const verificationToken = ProfessionalRepository.generateVerificationToken(
       newUser._id.toString()
     );
 
     // Save the verification token to the user's record
     newUser.verificationToken = verificationToken;
-    await professionalRepository.saveProfessional(newUser);
+    await ProfessionalRepository.saveProfessional(newUser);
 
     // Send verification email using the repository function
-    await professionalRepository.sendVerificationEmail(
+    await ProfessionalRepository.sendVerificationEmail(
       newUser,
       verificationToken
     );

@@ -2,7 +2,6 @@
  * @module server/controller
  */
 
-import dotenv from "dotenv";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -16,8 +15,7 @@ interface EmailVerificationPayload {
   userId: string;
 }
 
-dotenv.config();
-
+// TODO: check if can re-use the same function from verifyEmailForPro
 function generateResponsePage(
   title: string,
   message: string,

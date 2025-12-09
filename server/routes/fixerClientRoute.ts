@@ -1,13 +1,15 @@
 import express from "express";
-const { registerUser } = require("../controller/fixerClientRegister");
-const { verifyAddress } = require("../controller/fixerClientVerifyAddress");
-const { signinUser } = require("../controller/fixerClientSignIn");
-const {
+
+import {
+  authenticateJWT,
   profile,
   updateProfile,
-  authenticateJWT,
-} = require("../controller/fixerClientProfile");
-const { verifyEmail } = require("../controller/VerifyEmailForClient");
+} from "../controller/fixerClientProfile";
+import { registerUser } from "../controller/fixerClientRegister";
+import { signinUser } from "../controller/fixerClientSignIn";
+import { verifyAddress } from "../controller/fixerClientVerifyAddress";
+import { verifyEmail } from "../controller/VerifyEmailForClient";
+
 const fixerClientRouter = express.Router();
 
 // Register user route

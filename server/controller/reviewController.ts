@@ -50,7 +50,7 @@ export const getReviewsByProfessionalEmail = async (
   }
 };
 
-exports.addReview = async (req: AddReviewRequeest, res: Response) => {
+export const addReview = async (req: AddReviewRequeest, res: Response) => {
   const { jobId, rating, comment } = req.body;
 
   if (!jobId || !rating || !comment) {

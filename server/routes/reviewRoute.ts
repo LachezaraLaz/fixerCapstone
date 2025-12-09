@@ -1,5 +1,6 @@
 import express from "express";
-const { addReview } = require("../controller/reviewController"); // Import the addReview controller
+
+import { addReview } from "../controller/reviewController";
 
 const reviewRouter = express.Router();
 

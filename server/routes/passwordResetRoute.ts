@@ -1,12 +1,14 @@
 import express from "express";
-const resetPasswordRouter = express.Router();
-const {
+
+import {
   forgotPassword,
   resetPassword,
-  validatePin,
   updatePassword,
   validateCurrentPassword,
-} = require("../controller/resetController");
+  validatePin,
+} from "../controller/resetController";
+
+const resetPasswordRouter = express.Router();
 
 // Route to request password reset
 resetPasswordRouter.post("/requestPasswordReset", forgotPassword);

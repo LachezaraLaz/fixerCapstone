@@ -17,7 +17,7 @@ export class UserRepository {
    * @returns {Promise<Object|null>} A promise that resolves to the user object if found, or null if not found.
    * @memberof module:server/repository
    */
- static async findByEmail(email: string) {
+  static async findByEmail(email: string) {
     return await fixerClient.findOne({ email });
   }
 
@@ -54,11 +54,12 @@ export class UserRepository {
    * @returns {Promise<Object>} The updated user object.
    * @memberof module:server/repository
    */
-  static async updateUser(userId: string, updateData: Partial<IRegisterUserDto>) {
+  static async updateUser(
+    userId: string,
+    updateData: Partial<IRegisterUserDto>
+  ) {
     return await fixerClient.findByIdAndUpdate(userId, updateData, {
       new: true,
     });
   }
 }
-
-

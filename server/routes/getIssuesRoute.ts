@@ -1,6 +1,8 @@
 // routes/issueRoute.js
 import express from "express";
-const { getAllIssues } = require("../controller/getAllIssues"); // Import the controller
+
+import { getAllIssues } from "../controller/getAllIssues";
+
 const issueRouter = express.Router();
 
 // Route to fetch all issues

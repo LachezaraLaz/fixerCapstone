@@ -28,7 +28,7 @@ import { logger } from "../utils/logger";
  *
  * @throws {Error} - Throws an error if the issue creation fails.
  */
-const createIssue = async (req: Request, res: Response) => {
+export const createIssue = async (req: Request, res: Response) => {
   const {
     title,
     description,
@@ -95,5 +95,3 @@ const createIssue = async (req: Request, res: Response) => {
       .json({ message: "Failed to create issue", error: error.message });
   }
 };
-
-module.exports = { createIssue };

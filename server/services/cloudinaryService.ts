@@ -2,7 +2,7 @@
  * @module server/services
  */
 
-import { v2 as cloudinary, UploadApiOptions } from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from "multer";
 
@@ -38,7 +38,7 @@ export const storage = (folder: string) =>
  * @param {string} folder - The folder where the files will be uploaded.
  * @returns {Function} - A multer middleware configured with the specified storage.
  */
-const upload = (folder: string) => multer({ storage: storage(folder) });
+export const upload = (folder: string) => multer({ storage: storage(folder) });
 
 /**
  * Uploads an image to Cloudinary.

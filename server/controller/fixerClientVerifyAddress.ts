@@ -1,4 +1,3 @@
-
 /**
  * @module server/controller
  */
@@ -6,20 +5,20 @@
 import axios from "axios";
 import { Request, Response } from "express";
 
-interface VerifyAddressRequest extends Request{
-    body:{
-        street: string,
-        postalCode: string
-    }
+interface VerifyAddressRequest extends Request {
+  body: {
+    street: string;
+    postalCode: string;
+  };
 }
 
-interface CompleteAdress{
-    postalCode?: string,
-    provinceOrState?: string,
-    country?: string
+interface CompleteAdress {
+  postalCode?: string;
+  provinceOrState?: string;
+  country?: string;
 }
 
-const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY || '';
+const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY || "";
 
 /**
  * Verifies an address using the Google Address Validation API.
@@ -31,74 +30,91 @@ const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_KEY || '';
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - A promise that resolves when the address verification is complete.
  */
-export const verifyAddress = async (req: VerifyAddressRequest, res: Response) => {
-    const { street, postalCode } = req.body;
+export const verifyAddress = async (
+  req: VerifyAddressRequest,
+  res: Response
+) => {
+  const { street, postalCode } = req.body;
 
-    try {
-        const response = await axios.post(
-            `https://addressvalidation.googleapis.com/v1:validateAddress?key=${GOOGLE_API_KEY}`,
-            {
-                address: {
-                    addressLines: [street],
-                    postalCode: postalCode,
-                },
-            }
-        );
+  try {
+    const response = await axios.post(
+      `https://addressvalidation.googleapis.com/v1:validateAddress?key=${GOOGLE_API_KEY}`,
+      {
+        address: {
+          addressLines: [street],
+          postalCode: postalCode,
+        },
+      }
+    );
 
-        if (response.data.result.verdict.addressComplete === true) {
-            // Extract complete address information
-            const completeAddress: CompleteAdress = {};
+    if (response.data.result.verdict.addressComplete === true) {
+      // Extract complete address information
+      const completeAddress: CompleteAdress = {};
 
-            // First try to get postal address components
-            if (response.data.result.address.postalAddress) {
-                const postalAddress = response.data.result.address.postalAddress;
-                if (postalAddress.postalCode) {
-                    completeAddress.postalCode = postalAddress.postalCode;
-                }
-                if (postalAddress.administrativeArea) {
-                    completeAddress.provinceOrState = postalAddress.administrativeArea;
-                }
-                if (postalAddress.regionCode) {
-                    completeAddress.country = postalAddress.regionCode === 'CA' ? 'Canada' :
-                        postalAddress.regionCode === 'US' ? 'United States' :
-                            postalAddress.regionCode;
-                }
-            }
-
-            // Try to extract postal code from formatted address as fallback
-            if (!completeAddress.postalCode && response.data.result.address.formattedAddress) {
-                const formattedAddress = response.data.result.address.formattedAddress;
-                // Canadian postal code regex
-                const canadianPostalRegex = /[A-Z]\d[A-Z]\s?\d[A-Z]\d/;
-                // US ZIP code regex
-                const usZipRegex = /\b\d{5}(?:-\d{4})?\b/;
-
-                let match = formattedAddress.match(canadianPostalRegex);
-                if (!match) match = formattedAddress.match(usZipRegex);
-
-                if (match) {
-                    completeAddress.postalCode = match[0];
-                }
-            }
-
-            // Get coordinates for the verified address
-            const fullAddress = `${street}, ${postalCode || completeAddress.postalCode || ''}`;
-            const coordinates = await getCoordinates(fullAddress);
-
-            res.send({
-                status: 'success',
-                data: 'Address verified successfully from server',
-                isAddressValid: true,
-                coordinates: coordinates,
-                completeAddress: completeAddress // Send the complete address back
-            });
-        } else {
-            res.send({ status: 'error', data: 'address verification failed from server 1' });
+      // First try to get postal address components
+      if (response.data.result.address.postalAddress) {
+        const postalAddress = response.data.result.address.postalAddress;
+        if (postalAddress.postalCode) {
+          completeAddress.postalCode = postalAddress.postalCode;
         }
-    } catch (err) {
-        console.error(err);
-        res.send({ status: 'error', data: 'address verification failed from server 2' });
+        if (postalAddress.administrativeArea) {
+          completeAddress.provinceOrState = postalAddress.administrativeArea;
+        }
+        if (postalAddress.regionCode) {
+          completeAddress.country =
+            postalAddress.regionCode === "CA"
+              ? "Canada"
+              : postalAddress.regionCode === "US"
+              ? "United States"
+              : postalAddress.regionCode;
+        }
+      }
+
+      // Try to extract postal code from formatted address as fallback
+      if (
+        !completeAddress.postalCode &&
+        response.data.result.address.formattedAddress
+      ) {
+        const formattedAddress = response.data.result.address.formattedAddress;
+        // Canadian postal code regex
+        const canadianPostalRegex = /[A-Z]\d[A-Z]\s?\d[A-Z]\d/;
+        // US ZIP code regex
+        const usZipRegex = /\b\d{5}(?:-\d{4})?\b/;
+
+        let match = formattedAddress.match(canadianPostalRegex);
+        if (!match) match = formattedAddress.match(usZipRegex);
+
+        if (match) {
+          completeAddress.postalCode = match[0];
+        }
+      }
+
+      // Get coordinates for the verified address
+      const fullAddress = `${street}, ${
+        postalCode || completeAddress.postalCode || ""
+      }`;
+      const coordinates = await getCoordinates(fullAddress);
+
+      res.send({
+        status: "success",
+        data: "Address verified successfully from server",
+        isAddressValid: true,
+        coordinates: coordinates,
+        completeAddress: completeAddress, // Send the complete address back
+      });
+    } else {
+      res.send({
+        status: "error",
+        data: "address verification failed from server 1",
+      });
     }
+  } catch (err) {
+    console.error(err);
+    res.send({
+      status: "error",
+      data: "address verification failed from server 2",
+    });
+  }
 };
 
 /**
@@ -108,26 +124,26 @@ export const verifyAddress = async (req: VerifyAddressRequest, res: Response) =>
  * @returns {Promise<void>} A promise that resolves when the coordinates have been fetched and stored.
  * @throws Will log an error message if the Geocoding API request fails.
  */
-const getCoordinates = async (fullAddress:string) => {
-    try {
-        const geoResponse = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(fullAddress)}&key=${GOOGLE_API_KEY}`
-        );
+const getCoordinates = async (fullAddress: string) => {
+  try {
+    const geoResponse = await axios.get(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+        fullAddress
+      )}&key=${GOOGLE_API_KEY}`
+    );
 
-        if (geoResponse.data.results.length > 0) {
-            const location = geoResponse.data.results[0].geometry.location;
+    if (geoResponse.data.results.length > 0) {
+      const location = geoResponse.data.results[0].geometry.location;
 
-            return {
-                latitude: location.lat,
-                longitude: location.lng,
-            };
-        } else {
-            return null;
-        }
-    } catch (err: any) {
-        console.error('Geocoding API Error:', err.response?.data || err.message);
-        return null;
+      return {
+        latitude: location.lat,
+        longitude: location.lng,
+      };
+    } else {
+      return null;
     }
+  } catch (err: any) {
+    console.error("Geocoding API Error:", err.response?.data || err.message);
+    return null;
+  }
 };
-
-

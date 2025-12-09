@@ -14,7 +14,7 @@ interface AuthenticateJWTRequest extends Request {
   user?: jwt.JwtPayload | string;
 }
 
-export interface ProfileRequest extends Request {
+interface ProfileRequest extends Request {
   user?: {
     id: string;
   };

@@ -1,5 +1,6 @@
 import express, { Response } from "express";
-const { getUserProfile } = require("../controller/userController");
+
+import { getUserProfile } from "../controller/userController";
 
 const userRouter = express.Router();
 

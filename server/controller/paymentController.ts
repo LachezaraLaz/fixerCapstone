@@ -157,5 +157,3 @@ export async function deductCut(req: DeductCutRequest, res: Response) {
     });
   }
 }
-
-module.exports = { deductCut };

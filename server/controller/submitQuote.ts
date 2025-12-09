@@ -66,7 +66,7 @@ interface GetQuotesByClientEmailRequest extends Request {
  *                     Returns a 403 status with a message 'Forbidden' if the token verification fails.
  *                     Calls the next middleware function if the token is successfully verified.
  */ //TODO: use existing authenticateJWT middleware from professionalClientProfile.ts
-const authenticateJWT = (
+export const authenticateJWT = (
   req: AuthenticateJWTRequest,
   res: Response,
   next: NextFunction
@@ -110,7 +110,7 @@ const authenticateJWT = (
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - Returns a promise that resolves to void.
  */
-const submitQuote = async (req: SubmitQuoteRequest, res: Response) => {
+export const submitQuote = async (req: SubmitQuoteRequest, res: Response) => {
   const {
     clientEmail,
     issueTitle,
@@ -216,7 +216,10 @@ const submitQuote = async (req: SubmitQuoteRequest, res: Response) => {
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - A promise that resolves when the quotes are fetched and the response is sent.
  */
-const getQuotesByJob = async (req: GetQuotesByJobRequest, res: Response) => {
+export const getQuotesByJob = async (
+  req: GetQuotesByJobRequest,
+  res: Response
+) => {
   const { jobId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(jobId)) {
@@ -267,7 +270,7 @@ const getQuotesByJob = async (req: GetQuotesByJobRequest, res: Response) => {
  *
  * @throws {Error} - Throws an error if there is an issue updating the quote status.
  */
-const updateQuoteStatus = async (
+export const updateQuoteStatus = async (
   req: UpdateQuoteStatusRequest,
   res: Response
 ) => {
@@ -428,7 +431,7 @@ const updateQuoteStatus = async (
 /**
  * Fetch all quotes for a given clientEmail
  */
-const getQuotesByClientEmail = async (
+export const getQuotesByClientEmail = async (
   req: GetQuotesByClientEmailRequest,
   res: Response
 ) => {
@@ -459,12 +462,4 @@ const getQuotesByClientEmail = async (
     console.error("Error fetching quotes by clientEmail:", error);
     return res.status(500).json({ error: "Failed to fetch quotes" });
   }
-};
-
-module.exports = {
-  authenticateJWT,
-  submitQuote,
-  getQuotesByJob,
-  updateQuoteStatus,
-  getQuotesByClientEmail,
 };

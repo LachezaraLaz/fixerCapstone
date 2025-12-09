@@ -160,12 +160,10 @@ export const createNotification = async (
       message
     );
 
-    res
-      .status(201)
-      .json({
-        message: "Notification created",
-        notification: notificationDto(notification),
-      });
+    res.status(201).json({
+      message: "Notification created",
+      notification: notificationDto(notification),
+    });
   } catch (error) {
     console.error("Error creating notification:", error);
     res.status(500).json({ message: "Failed to create notification" });

@@ -19,7 +19,9 @@ export class NotificationRepository {
    * @returns {Promise<Array>} A promise that resolves to an array of notifications.
    * @memberof module:server/repository
    */
-  static async getNotificationsByUserId(userId: string): Promise<INotification[]> {
+  static async getNotificationsByUserId(
+    userId: string
+  ): Promise<INotification[]> {
     return await Notification.find({ userId }).sort({ createdAt: -1 });
   }
 
@@ -50,7 +52,9 @@ export class NotificationRepository {
    * @returns {Promise<Object>} The updated notification object.
    * @memberof module:server/repository
    */
-  static async markNotificationAsRead(id: string): Promise<INotification | null> {
+  static async markNotificationAsRead(
+    id: string
+  ): Promise<INotification | null> {
     return await Notification.findByIdAndUpdate(
       id,
       { isRead: true },

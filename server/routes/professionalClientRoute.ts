@@ -1,33 +1,25 @@
 import express from "express";
 
-import { registerUser } from "../controller/professionalClientRegister";
-
-const { signinUser } = require("../controller/professionalClientSignIn");
-
 import {
-  profile,
-  authenticateJWT,
-  getPaymentMethod,
-  updateProfessionalProfile,
-  getBankingInfoStatus,
   addCreditCard,
+  authenticateJWT,
+  getBankingInfoStatus,
+  getPaymentMethod,
+  profile,
+  updateProfessionalProfile,
 } from "../controller/professionalClientProfile";
-const {
-  verifyCredentials,
-} = require("../controller/professionalClientVerifyCredentials");
-const { professionalUploadID } = require("../controller/professionalUploadID");
-const { upload } = require("../services/cloudinaryService"); // Import the Cloudinary upload service
-const {
-  forgotPassword,
+import { registerUser } from "../controller/professionalClientRegister";
+import { signinUser } from "../controller/professionalClientSignIn";
+import { verifyCredentials } from "../controller/professionalClientVerifyCredentials";
+import { professionalUploadID } from "../controller/professionalUploadID";
+import {
   resetPassword,
-  validateCurrentPassword,
   updatePassword,
-} = require("../controller/resetController");
-const { verifyEmail } = require("../controller/VerifyEmailForProfessional");
-const {
-  getReviewsByProfessionalEmail,
-} = require("../controller/reviewController"); // Import review functions
-const { linkProfessionalAccount } = require("../controller/paymentController");
+  validateCurrentPassword,
+} from "../controller/resetController";
+import { getReviewsByProfessionalEmail } from "../controller/reviewController";
+import { verifyEmail } from "../controller/VerifyEmailForProfessional";
+import { upload } from "../services/cloudinaryService";
 
 const professionalRouter = express.Router();
 

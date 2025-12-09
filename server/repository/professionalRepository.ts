@@ -3,14 +3,11 @@
  */
 
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 
 import { fixerClient, IFixerClient } from "../model/fixerClient";
 import serverClient from "../services/streamClient";
-
-dotenv.config();
 
 /**
  * A class representing a repository for professionals.

@@ -2,7 +2,6 @@
  * @module server/controller
  */
 
-import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 
@@ -17,8 +16,6 @@ interface VerifyEmailRequest extends Request {
 interface DecodedToken extends jwt.JwtPayload {
   userId: string;
 }
-
-dotenv.config();
 
 function generateResponsePage(
   title: string,

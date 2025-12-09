@@ -1,12 +1,13 @@
 import express from "express";
 
-const {
-  submitQuote,
+import {
   authenticateJWT,
-  getQuotesByJob,
-  updateQuoteStatus,
   getQuotesByClientEmail,
-} = require("../controller/submitQuote");
+  getQuotesByJob,
+  submitQuote,
+  updateQuoteStatus,
+} from "../controller/submitQuote";
+
 const quoteRouter = express.Router();
 
 quoteRouter.post("/create", authenticateJWT, submitQuote);

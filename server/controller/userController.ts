@@ -23,7 +23,10 @@ interface GetUserProfileRequest extends Request {
  *
  * @throws {Error} - If there is an error fetching the user profile.
  */
-const getUserProfile = async (req: GetUserProfileRequest, res: Response) => {
+export const getUserProfile = async (
+  req: GetUserProfileRequest,
+  res: Response
+) => {
   const { email } = req.params;
 
   if (!email) {
@@ -62,5 +65,3 @@ const getUserProfile = async (req: GetUserProfileRequest, res: Response) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
-
-module.exports = { getUserProfile };

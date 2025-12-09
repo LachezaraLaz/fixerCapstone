@@ -1,21 +1,18 @@
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import { Response, Request } from "express";
 
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import nodemailer from 'nodemailer'
-import {Response, Request} from "express"
- 
-import { UserRepository } from "../repository/userRepository"
-import { IRegisterUserDto, RegisterUserDto } from "../DTO/userDto" 
-import { IFixerClient } from '../model/fixerClient'
+import { UserRepository } from "../repository/userRepository";
+import { IRegisterUserDto, RegisterUserDto } from "../DTO/userDto";
+import { IFixerClient } from "../model/fixerClient";
 /**
  * @module server/controller
  */
 
-
-interface RegisterUserRequest extends Request{
-    body:IRegisterUserDto
+interface RegisterUserRequest extends Request {
+  body: IRegisterUserDto;
 }
-
 
 /**
  * Sends a verification email to the user with a verification token.
@@ -25,18 +22,18 @@ interface RegisterUserRequest extends Request{
  * @param {string} token - The verification token to be included in the email.
  * @returns {Promise<void>} A promise that resolves when the email is sent.
  */
-async function sendVerificationEmail(user:IFixerClient, token:string) {
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: { user: 'fixit9337@gmail.com', pass: process.env.PASS_RESET },
-    });
+async function sendVerificationEmail(user: IFixerClient, token: string) {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: { user: "fixit9337@gmail.com", pass: process.env.PASS_RESET },
+  });
 
-    const verificationUrl = `https://fixercapstone-production.up.railway.app/client/verify-email?token=${token}`;
-    const mailOptions = {
-        from: 'fixit9337@gmail.com',
-        to: user.email,
-        subject: 'Fixr Email Verification',
-        html: `
+  const verificationUrl = `https://fixercapstone-production.up.railway.app/client/verify-email?token=${token}`;
+  const mailOptions = {
+    from: "fixit9337@gmail.com",
+    to: user.email,
+    subject: "Fixr Email Verification",
+    html: `
   <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,9 +129,9 @@ async function sendVerificationEmail(user:IFixerClient, token:string) {
 </body>
 </html>
   `,
-    };
+  };
 
-    await transporter.sendMail(mailOptions);
+  await transporter.sendMail(mailOptions);
 }
 
 /**
@@ -148,34 +145,40 @@ async function sendVerificationEmail(user:IFixerClient, token:string) {
  * @throws {Error} - If user creation fails.
  */
 export const registerUser = async (req: RegisterUserRequest, res: Response) => {
-    const userDto = new RegisterUserDto(req.body);
-    const existedUser = await UserRepository.findByEmail(userDto.email);
+  const userDto = new RegisterUserDto(req.body);
+  const existedUser = await UserRepository.findByEmail(userDto.email);
 
-    if (existedUser) return res.status(400).send({ statusText: 'User already exists' });
+  if (existedUser)
+    return res.status(400).send({ statusText: "User already exists" });
 
-    userDto.password = await bcrypt.hash(userDto.password, 12);
-    userDto.approved = false;
-    userDto.accountType = 'client';
-    userDto.verified = false;
+  userDto.password = await bcrypt.hash(userDto.password, 12);
+  userDto.approved = false;
+  userDto.accountType = "client";
+  userDto.verified = false;
 
-    try {
-
-        if (!process.env.JWT_SECRET) {
-            throw new Error('JWT_SECRET is not defined in environment variables');
-        }
-
-     
-        const newUser = await UserRepository.createUser(userDto);
-        const verificationToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        await UserRepository.updateUser(newUser._id.toString(), { verificationToken });
-        await sendVerificationEmail(newUser, verificationToken);
-
-        res.send({ status: 'success', data: 'Account created successfully. Check your email to verify your account.' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ status: 'error', data: 'User creation failed' });
+  try {
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in environment variables");
     }
+
+    const newUser = await UserRepository.createUser(userDto);
+    const verificationToken = jwt.sign(
+      { userId: newUser._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    await UserRepository.updateUser(newUser._id.toString(), {
+      verificationToken,
+    });
+    await sendVerificationEmail(newUser, verificationToken);
+
+    res.send({
+      status: "success",
+      data: "Account created successfully. Check your email to verify your account.",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ status: "error", data: "User creation failed" });
+  }
 };
-
-

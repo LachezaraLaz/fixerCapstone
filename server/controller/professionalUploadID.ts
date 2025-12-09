@@ -6,13 +6,10 @@ import { Request, Response } from "express";
 import { professionalClient } from "../model/professionalClient";
 
 interface ProfessionalUploadIDRequest extends Request {
-  body: {};
-  file: {
-    path: string;
-  };
   user: {
     id: string;
   };
+  file?: Express.Multer.File;
 }
 
 /**

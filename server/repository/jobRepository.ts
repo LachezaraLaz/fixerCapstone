@@ -48,9 +48,4 @@ const updateJob = async (jobId: string, updateData: IJob) => {
   }
 };
 
-export {
-  getJobsByUserEmail,
-  getJobByIdRepo,
-  updateJobStatus,
-  updateJob,
-};
+export { getJobsByUserEmail, getJobByIdRepo, updateJobStatus, updateJob };

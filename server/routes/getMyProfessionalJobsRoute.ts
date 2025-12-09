@@ -1,9 +1,13 @@
-import express from 'express'
-const { authenticateJWT, getMyProfessionalJobs } = require('../controller/getMyProfessionalJobs');  // Adjust path as needed
+import express from "express";
+
+import {
+  authenticateJWT,
+  getMyProfessionalJobs,
+} from "../controller/getMyProfessionalJobs";
 
 const getMyProfessionalJobsRouter = express.Router();
 
 // Route to get professional's jobs
-getMyProfessionalJobsRouter.get('/get', authenticateJWT, getMyProfessionalJobs);
+getMyProfessionalJobsRouter.get("/get", authenticateJWT, getMyProfessionalJobs);
 
-export default getMyProfessionalJobsRouter
+export default getMyProfessionalJobsRouter;

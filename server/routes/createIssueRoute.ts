@@ -1,16 +1,14 @@
 import express from "express";
 
-const { createIssue } = require("../controller/createIssue");
-const {
+import { createIssue } from "../controller/createIssue";
+import {
   getJobsByUser,
   updateIssueStatus,
   updateJob,
-} = require("../controller/myIssuesPosted");
-const { getJobById } = require("../controller/myIssuesPosted");
-const { upload } = require("../services/cloudinaryService");
-const {
-  aiEnhancementController,
-} = require("../controller/aiEnhancementController");
+  getJobById,
+} from "../controller/myIssuesPosted";
+import { upload } from "../services/cloudinaryService";
+import { aiEnhancementController } from "../controller/aiEnhancementController";
 
 const createIssueRouter = express.Router();
 

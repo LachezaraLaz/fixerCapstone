@@ -19,20 +19,25 @@ import quoteRouter from "./routes/quoteRoute";
 import reviewRouter from "./routes/reviewRoute";
 import userRouter from "./routes/userRoute";
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 const MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:55000";
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ origin: "*" }));
 
 mongoose
   .connect(MONGO_URL)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log("server is running on port", PORT);
+});
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
 });
 
 app.use("/professional", professionalRouter);

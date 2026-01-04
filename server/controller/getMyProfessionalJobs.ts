@@ -8,8 +8,9 @@ import jwt from "jsonwebtoken";
 import { IJob, JobStatus } from "../model/job";
 import { Quote, QuoteStatus } from "../model/quote";
 
-interface AuthenticatedRequest extends Request {
-  user?: jwt.JwtPayload | string;
+interface JwtUserPayload {
+  id?: string;
+  email: string;
 }
 
 interface GetMyProfessionalJobsRequest extends Request {
@@ -30,7 +31,7 @@ interface GetMyProfessionalJobsRequest extends Request {
  *                     Proceeds to the next middleware if token is valid.
  */
 export const authenticateJWT = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -51,12 +52,12 @@ export const authenticateJWT = (
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
+    if (err || !user) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
     console.log("User data from token:", user); // Log user data
-    req.user = user;
+    req.user = user as JwtUserPayload;
     next();
   });
 };
@@ -76,11 +77,8 @@ export const authenticateJWT = (
  *
  * @throws {Error} - If an error occurs while fetching the jobs, a 500 status code and an error message are sent.
  */
-export const getMyProfessionalJobs = async (
-  req: GetMyProfessionalJobsRequest,
-  res: Response
-) => {
-  const professionalEmail = req.user.email;
+export const getMyProfessionalJobs = async (req: Request, res: Response) => {
+  const professionalEmail = req.user?.email;
 
   try {
     // Find quotes and only populate non-deleted jobs

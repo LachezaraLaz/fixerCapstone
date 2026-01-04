@@ -1,202 +1,227 @@
-import React, {useContext, useState} from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useContext, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CommonActions } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CommonActions } from "@react-navigation/native";
 import OrangeButton from "../../../components/orangeButton";
-import InputField  from '../../../components/inputField';
-import PasswordField from '../../../components/passwordField';
-import {en, fr} from '../../../localization'
+import InputField from "../../../components/inputField";
+import PasswordField from "../../../components/passwordField";
+import { en, fr } from "../../../localization";
 import { I18n } from "i18n-js";
 import LanguageModal from "../../../components/LanguageModal";
-import languageStyle from '../../../style/languageStyle';
+import languageStyle from "../../../style/languageStyle";
 import { LanguageContext } from "../../../context/LanguageContext";
 import CustomAlertError from "../../../components/customAlertError";
 
-import { IPAddress } from '../../../ipAddress';
+import { IPAddress } from "../../../ipAddress";
 
 /**
  * @module fixerClient
  */
 
-
 export default function SignInPage({ navigation, setIsLoggedIn }) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    let [modalVisible, setModalVisible] = useState(false);
-    const {locale, setLocale}  = useContext(LanguageContext);
-    const i18n = new I18n({ en, fr });
-    i18n.locale = locale;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  let [modalVisible, setModalVisible] = useState(false);
+  const { locale, setLocale } = useContext(LanguageContext);
+  const i18n = new I18n({ en, fr });
+  i18n.locale = locale;
 
-    //For custom alerts
-    const [customAlertVisible, setCustomAlertVisible] = useState(false);
-    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
+  //For custom alerts
+  const [customAlertVisible, setCustomAlertVisible] = useState(false);
+  const [customAlertContent, setCustomAlertContent] = useState({
+    title: "",
+    message: "",
+  });
 
-    /**
-     * Handles the sign-in process for a client user.
-     *
-     * This function validates the email and password fields, sends a sign-in request to the server,
-     * and handles the response by storing tokens and navigating to the main tabs screen upon successful sign-in.
-     *
-     * @async
-     * @function handleSignIn
-     * @returns {Promise<void>}
-     * @throws Will alert an error message if the email or password fields are empty, or if the sign-in request fails.
-     */
-    const handleSignIn = async () => {
-        if (!email || !password) {
-            setCustomAlertContent({
-                title: i18n.t('error'),
-                message: i18n.t('signin_missing_field_error'),
-            });
-            setCustomAlertVisible(true);
-            return;
+  /**
+   * Handles the sign-in process for a client user.
+   *
+   * This function validates the email and password fields, sends a sign-in request to the server,
+   * and handles the response by storing tokens and navigating to the main tabs screen upon successful sign-in.
+   *
+   * @async
+   * @function handleSignIn
+   * @returns {Promise<void>}
+   * @throws Will alert an error message if the email or password fields are empty, or if the sign-in request fails.
+   */
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      setCustomAlertContent({
+        title: i18n.t("error"),
+        message: i18n.t("signin_missing_field_error"),
+      });
+      setCustomAlertVisible(true);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://10.0.0.216:3000/client/signin/`,
+        {
+          email,
+          password,
         }
+      );
 
-        try {
-            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/signin/`, {
-                email,
-                password
-            });
+      if (response.status === 200) {
+        const { token, streamToken, userId, userName } = response.data;
 
-            if (response.status === 200) {
-                const { token, streamToken, userId, userName } = response.data;
+        // Store the token in AsyncStorage
+        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.setItem("streamToken", streamToken);
+        await AsyncStorage.setItem("userId", userId);
+        await AsyncStorage.setItem("userName", userName);
 
-                // Store the token in AsyncStorage
-                await AsyncStorage.setItem('token', token);
-                await AsyncStorage.setItem('streamToken', streamToken);
-                await AsyncStorage.setItem('userId', userId);
-                await AsyncStorage.setItem('userName', userName);
+        setIsLoggedIn(true);
 
-                setIsLoggedIn(true);
+        setTimeout(() => {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: "MainTabs" }],
+            })
+          );
+        }, 100);
+      }
+    } catch (error) {
+      console.log("Error:", error); // Add this line
+      if (error.response && error.response.status === 400) {
+        setCustomAlertContent({
+          title: i18n.t("error"),
+          message: i18n.t("signin_wrong_input"),
+        });
+        setCustomAlertVisible(true);
+      } else if (error.response && error.response.status === 403) {
+        setCustomAlertContent({
+          title: i18n.t("error"),
+          message: i18n.t("please_verify_your_email_before_logging_in"),
+        });
+        setCustomAlertVisible(true);
+      } else {
+        setCustomAlertContent({
+          title: i18n.t("error"),
+          message: i18n.t("an_unexpected_error_occurred"),
+        });
+        setCustomAlertVisible(true);
+      }
+    }
+  };
 
-                setTimeout(() => {
-                    navigation.dispatch(
-                        CommonActions.reset({
-                            index: 0,
-                            routes: [{ name: "MainTabs" }],
-                        })
-                    );
-                }, 100);
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => setModalVisible(true)}
+        style={languageStyle.languageButton}
+      >
+        <Text style={languageStyle.languageButtonText}>
+          🌍 {i18n.t("change_language")}
+        </Text>
+      </TouchableOpacity>
 
-            }
-        } catch (error) {
-            console.log('Error:', error); // Add this line
-            if (error.response && error.response.status === 400) {
-                setCustomAlertContent({
-                    title: i18n.t('error'),
-                    message: i18n.t('signin_wrong_input'),
-                });
-                setCustomAlertVisible(true);
-            } else if (error.response && error.response.status === 403) {
-                setCustomAlertContent({
-                    title: i18n.t('error'),
-                    message: i18n.t('please_verify_your_email_before_logging_in'),
-                });
-                setCustomAlertVisible(true);
-            } else {
-                setCustomAlertContent({
-                    title: i18n.t('error'),
-                    message: i18n.t('an_unexpected_error_occurred'),
-                });
-                setCustomAlertVisible(true);
-            }
-        }
-    };
+      <LanguageModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        setLocale={setLocale}
+      />
 
-    return (
-        <View style={styles.container}>
-            <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
-                <Text style={languageStyle.languageButtonText}>🌍 {i18n.t('change_language')}</Text>
-            </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.backButton}
+        testID="back-button"
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={28} color="orange" />
+      </TouchableOpacity>
 
-            <LanguageModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                setLocale={setLocale}
-            />
+      <Text style={styles.title} testID="signInTitle">
+        {i18n.t("sign_in")}
+      </Text>
 
-            <TouchableOpacity style={styles.backButton} testID="back-button" onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={28} color="orange"/>
-            </TouchableOpacity>
+      {/* Email Field */}
+      <InputField
+        placeholder={i18n.t("email")}
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
 
-            <Text style={styles.title} testID='signInTitle'>{i18n.t('sign_in')}</Text>
+      {/* Password Field */}
+      <PasswordField
+        placeholder={i18n.t("password")}
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={true} // Always hide password by default
+      />
 
-            {/* Email Field */}
-            <InputField
-                placeholder={i18n.t('email')}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
+      <OrangeButton
+        title={i18n.t("sign_in")}
+        onPress={handleSignIn}
+        testID="sign-in-button"
+        variant="normal"
+      />
 
-            {/* Password Field */}
-            <PasswordField
-                placeholder={i18n.t('password')}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={true} // Always hide password by default
-            />
+      <TouchableOpacity onPress={() => navigation.navigate("SignUpPage")}>
+        <Text style={styles.signUpText}>
+          {i18n.t("do_not_have_an_account")}
+        </Text>
+      </TouchableOpacity>
 
-            <OrangeButton title={i18n.t('sign_in')} onPress={handleSignIn} testID="sign-in-button" variant="normal" />
+      <TouchableOpacity
+        onPress={() => navigation.navigate("ForgotPasswordPage")}
+      >
+        <Text style={styles.forgotPasswordText}>
+          {i18n.t("forgot_password")}
+        </Text>
+      </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
-                <Text style={styles.signUpText}>{i18n.t('do_not_have_an_account')}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordPage')}>
-                <Text style={styles.forgotPasswordText}>{i18n.t('forgot_password')}</Text>
-            </TouchableOpacity>
-
-            <CustomAlertError
-                visible={customAlertVisible}
-                title={customAlertContent.title}
-                message={customAlertContent.message}
-                onClose={() => setCustomAlertVisible(false)}
-            />
-
-        </View>
-    );
+      <CustomAlertError
+        visible={customAlertVisible}
+        title={customAlertContent.title}
+        message={customAlertContent.message}
+        onClose={() => setCustomAlertVisible(false)}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: '#fff',
-    },
-    backButton: {
-        position: 'absolute',
-        top: 40,
-        left: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        zIndex: 1,
-    },
-    backText: {
-        marginLeft: 8,
-        fontSize: 18,
-        color: '#1E90FF',
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    signUpText: {
-        color: '#1E90FF',
-        textAlign: 'center',
-        marginTop: 15,
-        fontSize: 16,
-    },
-    forgotPasswordText: {
-        color: '#1E90FF',
-        textAlign: 'center',
-        marginTop: 15,
-        fontSize: 16,
-    }
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 1,
+  },
+  backText: {
+    marginLeft: 8,
+    fontSize: 18,
+    color: "#1E90FF",
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  signUpText: {
+    color: "#1E90FF",
+    textAlign: "center",
+    marginTop: 15,
+    fontSize: 16,
+  },
+  forgotPasswordText: {
+    color: "#1E90FF",
+    textAlign: "center",
+    marginTop: 15,
+    fontSize: 16,
+  },
 });

@@ -7,17 +7,8 @@ import jwt from "jsonwebtoken";
 
 import { fixerClient } from "../model/fixerClient";
 
-interface AuthenticateJWTRequest extends Request {
-  user?: jwt.JwtPayload | string;
-}
-
-interface ProfileRequest extends Request {
-  user?: {
-    id: string;
-  };
-}
-
-interface DecodedToken extends jwt.JwtPayload {
+interface JwtUserPayload {
+  id?: string;
   email: string;
 }
 
@@ -49,7 +40,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "";
  *                     Proceeds to the next middleware or route handler if the token is valid.
  */
 export const authenticateJWT = (
-  req: AuthenticateJWTRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -69,7 +60,7 @@ export const authenticateJWT = (
     if (err) {
       return res.status(403).json({ message: "Forbidden" }); // Token invalid
     }
-    req.user = user; // Attach user details from the token to the request
+    req.user = user as JwtUserPayload;
     next(); // Proceed to the next middleware or route handler
   });
 };
@@ -85,7 +76,7 @@ export const authenticateJWT = (
  *
  * @throws {Error} - If there is an error fetching the client data.
  */
-export const profile = async (req: ProfileRequest, res: Response) => {
+export const profile = async (req: Request, res: Response) => {
   try {
     if (!req.user?.id) {
       return res.status(400).json({ message: "Id not provided" });
@@ -116,7 +107,7 @@ export const updateProfile = async (req: UpdateProfile, res: Response) => {
     }
 
     // Extract user info from token using JWT
-    const decoded = jwt.verify(token, JWT_SECRET) as DecodedToken;
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtUserPayload;
     const userEmail = decoded.email;
 
     if (!userEmail) {

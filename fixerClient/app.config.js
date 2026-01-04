@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 export default {
   expo: {
     plugins: ["expo-localization"],
@@ -36,6 +38,7 @@ export default {
       favicon: "./assets/favicon.png"
     },
     extra: {
+      BACK_END_URL: process.env.BACK_END_URL,
       eas: {
         projectId: "2946827b-9037-4f1b-866f-9dd9ea93edab"
       }

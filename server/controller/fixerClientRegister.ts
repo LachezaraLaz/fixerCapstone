@@ -171,7 +171,7 @@ export const registerUser = async (req: RegisterUserRequest, res: Response) => {
     await UserRepository.updateUser(newUser._id.toString(), {
       verificationToken,
     });
-    await sendVerificationEmail(newUser, verificationToken);
+    // await sendVerificationEmail(newUser, verificationToken);
 
     res.send({
       status: "success",

@@ -1,20 +1,32 @@
-import React, {useState, useEffect, useContext} from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
-import axios from 'axios';
-import MapView, { Marker } from 'react-native-maps';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect, useContext } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from "react-native";
+import axios from "axios";
+import MapView, { Marker } from "react-native-maps";
+import { Ionicons } from "@expo/vector-icons";
 import OrangeButton from "../../../components/orangeButton";
-import InputField from '../../../components/inputField';
-import PasswordField from '../../../components/passwordField';
-import {en, fr} from '../../../localization'
+import InputField from "../../../components/inputField";
+import PasswordField from "../../../components/passwordField";
+import { en, fr } from "../../../localization";
 import { I18n } from "i18n-js";
 import LanguageModal from "../../../components/LanguageModal";
-import languageStyle from '../../../style/languageStyle';
+import languageStyle from "../../../style/languageStyle";
 import { LanguageContext } from "../../../context/LanguageContext";
 
-import { IPAddress } from '../../../ipAddress';
+import { IPAddress } from "../../../ipAddress";
 import CustomAlertError from "../../../components/customAlertError";
 import CustomAlertSuccess from "../../../components/customAlertSuccess";
+import Constants from "expo-constants";
+
+const BACK_END_URL =
+  Constants.manifest2.extra.BACK_END_URL || "http://10.0.0.216:3000";
 
 /**
  * @module fixerClient
@@ -22,454 +34,501 @@ import CustomAlertSuccess from "../../../components/customAlertSuccess";
 
 // List of Canadian provinces
 const CANADIAN_PROVINCES = [
-    'Alberta',
-    'British Columbia',
-    'Manitoba',
-    'New Brunswick',
-    'Newfoundland and Labrador',
-    'Nova Scotia',
-    'Ontario',
-    'Prince Edward Island',
-    'Quebec',
-    'Saskatchewan',
+  "Alberta",
+  "British Columbia",
+  "Manitoba",
+  "New Brunswick",
+  "Newfoundland and Labrador",
+  "Nova Scotia",
+  "Ontario",
+  "Prince Edward Island",
+  "Quebec",
+  "Saskatchewan",
 ];
 
 export default function SignUpPage({ navigation }) {
-    //For custom alerts
-    const [customAlertVisible, setCustomAlertVisible] = useState(false);
-    const [customAlertContent, setCustomAlertContent] = useState({ title: '', message: '' });
-    const [successAlertVisible, setSuccessAlertVisible] = useState(false);
-    const [successAlertContent, setSuccessAlertContent] = useState({ title: '', message: '' });
+  //For custom alerts
+  const [customAlertVisible, setCustomAlertVisible] = useState(false);
+  const [customAlertContent, setCustomAlertContent] = useState({
+    title: "",
+    message: "",
+  });
+  const [successAlertVisible, setSuccessAlertVisible] = useState(false);
+  const [successAlertContent, setSuccessAlertContent] = useState({
+    title: "",
+    message: "",
+  });
 
-    //general fields for page
-    const [email, setEmail] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [street, setStreet] = useState('');
-    const [postalCode, setPostalCode] = useState('');
-    const [provinceOrState, setProvinceOrState] = useState('');
-    const [country, setCountry] = useState('Canada');
+  //general fields for page
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [street, setStreet] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [provinceOrState, setProvinceOrState] = useState("");
+  const [country, setCountry] = useState("Canada");
 
-    //language
-    let [modalVisible, setModalVisible] = useState(false);
-    const {locale, setLocale}  = useContext(LanguageContext);
-    const i18n = new I18n({ en, fr });
-    i18n.locale = locale;
+  //language
+  let [modalVisible, setModalVisible] = useState(false);
+  const { locale, setLocale } = useContext(LanguageContext);
+  const i18n = new I18n({ en, fr });
+  i18n.locale = locale;
 
-    //for verification of address
-    const [coordinates, setCoordinates] = useState(null);
-    const [isAddressValid, setIsAddressValid] = useState(false);
+  //for verification of address
+  const [coordinates, setCoordinates] = useState(null);
+  const [isAddressValid, setIsAddressValid] = useState(false);
 
-    //valid inputs or not
-    const [isValid, setIsValid] = useState(false);
-    const [isError, setIsError] = useState(false);
+  //valid inputs or not
+  const [isValid, setIsValid] = useState(false);
+  const [isError, setIsError] = useState(false);
 
-    //once email and password are valid, then the rest of the fields appear
-    const [showNameAndAddressFields, setShowNameAndAddressFields] = useState(false);
+  //once email and password are valid, then the rest of the fields appear
+  const [showNameAndAddressFields, setShowNameAndAddressFields] =
+    useState(false);
 
-    // Password criteria states
-    const [hasMinLength, setHasMinLength] = useState(false);
-    const [hasNumber, setHasNumber] = useState(false);
-    const [hasUppercase, setHasUppercase] = useState(false);
-    const [hasLowercase, setHasLowercase] = useState(false);
-    const [hasSpecialChar, setHasSpecialChar] = useState(false)
-    const isPasswordValid = hasMinLength && hasNumber && hasUppercase && hasLowercase && hasSpecialChar;
+  // Password criteria states
+  const [hasMinLength, setHasMinLength] = useState(false);
+  const [hasNumber, setHasNumber] = useState(false);
+  const [hasUppercase, setHasUppercase] = useState(false);
+  const [hasLowercase, setHasLowercase] = useState(false);
+  const [hasSpecialChar, setHasSpecialChar] = useState(false);
+  const isPasswordValid =
+    hasMinLength && hasNumber && hasUppercase && hasLowercase && hasSpecialChar;
 
-    // Show/hide password state
-    const [showPassword, setShowPassword] = useState(false); // For password field
+  // Show/hide password state
+  const [showPassword, setShowPassword] = useState(false); // For password field
 
-
-    // functions for input validation:
-    //email
-    // Function ot validate email
-    const validateEmail = (text) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (text === '') {
-            setIsValid(false);
-            setIsError(false);
-        } else if (emailRegex.test(text)) {
-            setIsValid(true);
-            setIsError(false);
-        } else {
-            setIsValid(false);
-            setIsError(true);
-        }
-        setEmail(text);
-    };
-
-
-    //password
-    // Function to validate password strength
-    const validatePassword = (password) => {
-        setHasMinLength(password.length >= 8);
-        setHasNumber(/\d/.test(password));
-        setHasUppercase(/[A-Z]/.test(password));
-        setHasLowercase(/[a-z]/.test(password));
-        setHasSpecialChar(/[\W_]/.test(password)); // Special characters include anything that's not a letter or number
-    };
-
-    // Use useEffect to validate password whenever it changes
-    useEffect(() => {
-        validatePassword(password);
-    }, [password])
-
-    // Handle password input change
-    const handlePasswordChange = (text) => {
-        setPassword(text);
-        validatePassword(text); // Validate password in real-time
-    };
-
-    // Handle confirm password input change
-    const handleConfirmPasswordChange = (text) => {
-        setConfirmPassword(text);
-    };
-
-    // Handle password and confirm password validation
-    const validatePasswords = () => {
-        return (
-            hasMinLength &&
-            hasNumber &&
-            hasUppercase &&
-            hasLowercase &&
-            hasSpecialChar &&
-            password === confirmPassword
-        );
-    };
-
-    // first and last name fields validation
-    const validateName = (name) => {
-        if (!name) return false; // Name cannot be empty
-        const nameRegex = /^[A-Za-z-' ]+$/; // Only letters, hyphens, apostrophes, and spaces
-        return nameRegex.test(name) && name.charAt(0) === name.charAt(0).toUpperCase(); // First letter must be capitalized
-    };
-
-    const filterNameInput = (text) => {
-        // Use a regular expression to allow only letters, hyphens, and apostrophes
-        return text.replace(/[^A-Za-z-' ]/g, '');
-    };
-
-    // Format postal code as A1B 2C3
-    const formatPostalCode = (text) => {
-        // Remove all non-alphanumeric characters
-        let formattedText = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-
-        // Limit to 6 characters (A1B2C3) before formatting
-        formattedText = formattedText.slice(0, 6);
-
-        // Insert space after the first 3 characters if enough characters exist
-        if (formattedText.length > 3) {
-            formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
-        }
-
-        // Limit final result to 7 characters (A1B 2C3)
-        formattedText = formattedText.slice(0, 7);
-
-        setPostalCode(formattedText);
-    };
-
-
-    // Check if email and password are valid to show name and address fields
-    const checkEmailAndPassword = () => {
-        if (isValid && validatePasswords()) {
-            setShowNameAndAddressFields(true); // Show name and address fields
-        } else {
-            setCustomAlertContent({
-                title: i18n.t('error'),
-                message: i18n.t('signup_form_errors.check_email_password'),
-            });
-            setCustomAlertVisible(true);
-            //Alert.alert('Error', 'Please enter a valid email and matching passwords');
-        }
+  // functions for input validation:
+  //email
+  // Function ot validate email
+  const validateEmail = (text) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (text === "") {
+      setIsValid(false);
+      setIsError(false);
+    } else if (emailRegex.test(text)) {
+      setIsValid(true);
+      setIsError(false);
+    } else {
+      setIsValid(false);
+      setIsError(true);
     }
+    setEmail(text);
+  };
 
-    /**
-     * Handles the sign-up process for a new user.
-     *
-     * This function performs the following steps:
-     * 1. Validates that all required fields are filled.
-     * 2. Checks if the password and confirm password fields match.
-     * 3. Sends a POST request to the server to register the new user.
-     * 4. Handles various error scenarios including user already exists, network errors, and unexpected errors.
-     *
-     * @async
-     * @function handleSignUp
-     * @returns {Promise<void>} - A promise that resolves when the sign-up process is complete.
-     */
-    async function handleSignUp() {
-        if (!email || !password || !confirmPassword || !street || !postalCode) {
-            setCustomAlertContent({
-                title: i18n.t('error'),
-                message: i18n.t('signup_form_errors.all_fields_required'),
-            });
-            setCustomAlertVisible(true);
-            //Alert.alert('Error', 'All fields are required');
-            return;
-        }
-        if (!isValid) {
-            setCustomAlertContent({
-                title: i18n.t('error'),
-                message: i18n.t('signup_form_errors.valid_email'),
-            });
-            setCustomAlertVisible(true);
-            //Alert.alert('Error', 'Please enter a valid email address');
-            return;
-        }
-        if (!validatePasswords()) {
-            setCustomAlertContent({
-                title: i18n.t('error'),
-                message: i18n.t('signup_form_errors.password_criteria'),
-            });
-            setCustomAlertVisible(true);
-            //Alert.alert('Error', 'Password does not meet the required criteria');
-            return;
-        }
-        if (password !== confirmPassword) {
-            setCustomAlertContent({
-                title: i18n.t('error'),
-                message: i18n.t('signup_form_errors.password_match'),
-            });
-            setCustomAlertVisible(true);
-            //Alert.alert('Error', 'Passwords do not match');
-            return;
-        }
-        if (!validateName(firstName) || !validateName(lastName)) {
-            setCustomAlertContent({
-                title: i18n.t('error'),
-                message: i18n.t('signup_form_errors.capital_letter'),
-            });
-            setCustomAlertVisible(true);
-            //Alert.alert('Error', 'First name and last name must start with a capital letter.');
-            return;
-        }
-        if (!isAddressValid) {
-            setCustomAlertContent({
-                title: i18n.t('error'),
-                message: i18n.t('signup_form_errors.address_not_valid'),
-            });
-            setCustomAlertVisible(true);
-            //Alert.alert('Error', 'Please verify your address');
-        } else {
-            try {
-                const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/register`, {
-                    email: email,
-                    firstName: firstName,
-                    lastName: lastName,
-                    password: password,
-                    street: street,
-                    postalCode: postalCode,
-                    provinceOrState: provinceOrState,
-                    country: country
-                })
-                if (response.status !== 400) {
-                    setSuccessAlertContent({
-                        title: '🎉',
-                        message: i18n.t('signup_successful'),
-                    });
-                    setSuccessAlertVisible(true);
-                    //Alert.alert("Account created successfully. An email was sent to verify your email.")
-                }
-            } catch (error) {
-                if (error.response) {
-                    // Check if the response indicates the user already exists
-                    if (error.response.status === 400) {
-                        setCustomAlertContent({
-                            title: i18n.t('error'),
-                            message: i18n.t('signup_form_errors.user_already_exists'),
-                        });
-                        setCustomAlertVisible(true);
-                        //Alert.alert("Error", "User already exists");
-                    } else {
-                        setCustomAlertContent({
-                            title: i18n.t('error'),
-                            message: i18n.t('an_unexpected_error_occurred'),
-                        });
-                        setCustomAlertVisible(true);
-                        //Alert.alert("Error", error.response.data.message || `${i18n.t('an_unexpected_error_occurred')}`);
-                    }
-                } else if (error.request) {
-                    setCustomAlertContent({
-                        title: i18n.t('error'),
-                        message: i18n.t('network_error'),
-                    });
-                    setCustomAlertVisible(true);
-                    //Alert.alert("Error", "Network error");
-                } else {
-                    setCustomAlertContent({
-                        title: i18n.t('error'),
-                        message: i18n.t('an_unexpected_error_occurred'),
-                    });
-                    setCustomAlertVisible(true);
-                    //Alert.alert("Error", "An unexpected error occurred");
-                }
-            }
-        }
-    }
+  //password
+  // Function to validate password strength
+  const validatePassword = (password) => {
+    setHasMinLength(password.length >= 8);
+    setHasNumber(/\d/.test(password));
+    setHasUppercase(/[A-Z]/.test(password));
+    setHasLowercase(/[a-z]/.test(password));
+    setHasSpecialChar(/[\W_]/.test(password)); // Special characters include anything that's not a letter or number
+  };
 
-    /**
-     * Asynchronously verifies the address by sending a POST request to the server.
-     *
-     * This function sends the street and postal code to the server for verification.
-     * If the address is verified successfully, it updates the state with the validity
-     * of the address and its coordinates. In case of an error, it displays an alert
-     * with the appropriate error message.
-     *
-     * @async
-     * @function handleVerifyAddress
-     * @returns {Promise<void>} A promise that resolves when the address verification is complete.
-     * @throws Will display an alert with an error message if the request fails.
-     */
-    const handleVerifyAddress = async () => {
-        try {
-            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
-                street: street,
-                postalCode: postalCode,
-            })
-            // if (response.status === 'success') {
-            //     Alert.alert("Address verified successfully from client")
-            // }
+  // Use useEffect to validate password whenever it changes
+  useEffect(() => {
+    validatePassword(password);
+  }, [password]);
 
-            const { isAddressValid, coordinates } = response.data;
+  // Handle password input change
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+    validatePassword(text); // Validate password in real-time
+  };
 
-            setIsAddressValid(isAddressValid);
-            setCoordinates(coordinates);
+  // Handle confirm password input change
+  const handleConfirmPasswordChange = (text) => {
+    setConfirmPassword(text);
+  };
 
-        } catch (error) {
-            if (error.response) {
-                setCustomAlertContent({
-                    title: i18n.t('error'),
-                    message: error.response.data.message || i18n.t('an_unexpected_error_occurred'),
-                });
-                setCustomAlertVisible(true);
-                //Alert.alert("Error", error.response.data.message || 'An unexpected error occurred Ad.Ver.');
-            } else if (error.request) {
-                setCustomAlertContent({
-                    title: i18n.t('error'),
-                    message: i18n.t('network_error'),
-                });
-                setCustomAlertVisible(true);
-                //Alert.alert("Error", "Network error Ad.Ver.");
-            } else {
-                setCustomAlertContent({
-                    title: i18n.t('error'),
-                    message: i18n.t('an_unexpected_error_occurred'),
-                });
-                setCustomAlertVisible(true);
-                //Alert.alert("Error", "An unexpected error occurred Ad.Ver.");
-            }
-        }
-    };
-
+  // Handle password and confirm password validation
+  const validatePasswords = () => {
     return (
-        <ScrollView style={{backgroundColor: '#ffffff' }}>
-            <View style={styles.container}>
-                <TouchableOpacity onPress={() => setModalVisible(true)} style={languageStyle.languageButton}>
-                    <Text style={languageStyle.languageButtonText}>🌍 {i18n.t('change_language')}</Text>
-                </TouchableOpacity>
+      hasMinLength &&
+      hasNumber &&
+      hasUppercase &&
+      hasLowercase &&
+      hasSpecialChar &&
+      password === confirmPassword
+    );
+  };
 
-                <LanguageModal
-                    visible={modalVisible}
-                    onClose={() => setModalVisible(false)}
-                    setLocale={setLocale}
-                />
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={28} color="orange"/>
-                </TouchableOpacity>
+  // first and last name fields validation
+  const validateName = (name) => {
+    if (!name) return false; // Name cannot be empty
+    const nameRegex = /^[A-Za-z-' ]+$/; // Only letters, hyphens, apostrophes, and spaces
+    return (
+      nameRegex.test(name) && name.charAt(0) === name.charAt(0).toUpperCase()
+    ); // First letter must be capitalized
+  };
 
-                <Text style={styles.title}>{i18n.t('sign_up')}</Text>
+  const filterNameInput = (text) => {
+    // Use a regular expression to allow only letters, hyphens, and apostrophes
+    return text.replace(/[^A-Za-z-' ]/g, "");
+  };
 
-                <InputField
-                    placeholder={i18n.t('email')}
-                    value={email}
-                    onChangeText={validateEmail}
-                    isValid={isValid}
-                    isError={isError}
-                    autoCapitalize="none"
-                />
+  // Format postal code as A1B 2C3
+  const formatPostalCode = (text) => {
+    // Remove all non-alphanumeric characters
+    let formattedText = text.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
 
-                {!isValid && email.length > 0 && (
-                    <Text style={styles.errorText}>{i18n.t('valid_address')}</Text>
-                )}
+    // Limit to 6 characters (A1B2C3) before formatting
+    formattedText = formattedText.slice(0, 6);
 
-                {/* Password Field */}
-                <PasswordField
-                    placeholder={i18n.t('password')}
-                    value={password}
-                    onChangeText={handlePasswordChange}
-                    secureTextEntry={!showPassword}
-                    isValid={isPasswordValid} // Green when all criteria are met
-                    isError={!isPasswordValid && password.length > 0} // Red when criteria are not met
-                />
+    // Insert space after the first 3 characters if enough characters exist
+    if (formattedText.length > 3) {
+      formattedText = `${formattedText.slice(0, 3)} ${formattedText.slice(3)}`;
+    }
 
-                {/* Password Criteria */}
-                {password.length > 0 && (
-                    <View style={styles.passwordCriteriaContainer}>
-                        <Text style={[styles.criteriaText, hasMinLength && styles.criteriaMet]}>
-                            {hasMinLength ? '✓' : '•'} {i18n.t('password_min_length')}
-                        </Text>
-                        <Text style={[styles.criteriaText, hasNumber && styles.criteriaMet]}>
-                            {hasNumber ? '✓' : '•'} {i18n.t('password_number')}
-                        </Text>
-                        <Text style={[styles.criteriaText, hasUppercase && styles.criteriaMet]}>
-                            {hasUppercase ? '✓' : '•'} {i18n.t('password_uppercase')}
-                        </Text>
-                        <Text style={[styles.criteriaText, hasLowercase && styles.criteriaMet]}>
-                            {hasLowercase ? '✓' : '•'} {i18n.t('password_lowercase')}
-                        </Text>
-                        <Text style={[styles.criteriaText, hasSpecialChar && styles.criteriaMet]}>
-                            {hasSpecialChar ? '✓' : '•'} {i18n.t('password_special_char')}
-                        </Text>
-                    </View>
-                )}
+    // Limit final result to 7 characters (A1B 2C3)
+    formattedText = formattedText.slice(0, 7);
 
-                {/* Confirm Password Field */}
-                <PasswordField
-                    placeholder={i18n.t('confirm_password')}
-                    value={confirmPassword}
-                    onChangeText={handleConfirmPasswordChange}
-                    secureTextEntry={!showPassword}
-                    isValid={confirmPassword === password && confirmPassword.length > 0} // Green when passwords match
-                    isError={confirmPassword !== password && confirmPassword.length > 0} // Red when passwords do not match
-                    errorMessage={confirmPassword !== password && confirmPassword.length > 0 ? "Passwords do not match" : null}
-                />
+    setPostalCode(formattedText);
+  };
 
-                {/* Button to Proceed to Name and Address Fields */}
-                {!showNameAndAddressFields && (
-                    <OrangeButton title={i18n.t('next')} onPress={checkEmailAndPassword} variant="normal" />
-                )}
+  // Check if email and password are valid to show name and address fields
+  const checkEmailAndPassword = () => {
+    if (isValid && validatePasswords()) {
+      setShowNameAndAddressFields(true); // Show name and address fields
+    } else {
+      setCustomAlertContent({
+        title: i18n.t("error"),
+        message: i18n.t("signup_form_errors.check_email_password"),
+      });
+      setCustomAlertVisible(true);
+      //Alert.alert('Error', 'Please enter a valid email and matching passwords');
+    }
+  };
 
-                {/* Name and Address Fields (Conditional Rendering) */}
-                {showNameAndAddressFields && (
-                    <>
-                        <InputField
-                            placeholder={i18n.t('first_name')}
-                            value={firstName}
-                            onChangeText={(text) => setFirstName(filterNameInput(text))} // Filter invalid characters
-                            autoCapitalize="words"
-                        />
+  /**
+   * Handles the sign-up process for a new user.
+   *
+   * This function performs the following steps:
+   * 1. Validates that all required fields are filled.
+   * 2. Checks if the password and confirm password fields match.
+   * 3. Sends a POST request to the server to register the new user.
+   * 4. Handles various error scenarios including user already exists, network errors, and unexpected errors.
+   *
+   * @async
+   * @function handleSignUp
+   * @returns {Promise<void>} - A promise that resolves when the sign-up process is complete.
+   */
+  async function handleSignUp() {
+    if (!email || !password || !confirmPassword || !street || !postalCode) {
+      setCustomAlertContent({
+        title: i18n.t("error"),
+        message: i18n.t("signup_form_errors.all_fields_required"),
+      });
+      setCustomAlertVisible(true);
+      //Alert.alert('Error', 'All fields are required');
+      return;
+    }
+    if (!isValid) {
+      setCustomAlertContent({
+        title: i18n.t("error"),
+        message: i18n.t("signup_form_errors.valid_email"),
+      });
+      setCustomAlertVisible(true);
+      //Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+    if (!validatePasswords()) {
+      setCustomAlertContent({
+        title: i18n.t("error"),
+        message: i18n.t("signup_form_errors.password_criteria"),
+      });
+      setCustomAlertVisible(true);
+      //Alert.alert('Error', 'Password does not meet the required criteria');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setCustomAlertContent({
+        title: i18n.t("error"),
+        message: i18n.t("signup_form_errors.password_match"),
+      });
+      setCustomAlertVisible(true);
+      //Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+    if (!validateName(firstName) || !validateName(lastName)) {
+      setCustomAlertContent({
+        title: i18n.t("error"),
+        message: i18n.t("signup_form_errors.capital_letter"),
+      });
+      setCustomAlertVisible(true);
+      //Alert.alert('Error', 'First name and last name must start with a capital letter.');
+      return;
+    }
+    if (!isAddressValid) {
+      setCustomAlertContent({
+        title: i18n.t("error"),
+        message: i18n.t("signup_form_errors.address_not_valid"),
+      });
+      setCustomAlertVisible(true);
+      //Alert.alert('Error', 'Please verify your address');
+    } else {
+      try {
+        const response = await axios.post(`${BACK_END_URL}/client/register`, {
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          password: password,
+          street: street,
+          postalCode: postalCode,
+          provinceOrState: provinceOrState,
+          country: country,
+        });
+        if (response.status !== 400) {
+          setSuccessAlertContent({
+            title: "🎉",
+            message: i18n.t("signup_successful"),
+          });
+          setSuccessAlertVisible(true);
+          //Alert.alert("Account created successfully. An email was sent to verify your email.")
+        }
+      } catch (error) {
+        if (error.response) {
+          // Check if the response indicates the user already exists
+          if (error.response.status === 400) {
+            setCustomAlertContent({
+              title: i18n.t("error"),
+              message: i18n.t("signup_form_errors.user_already_exists"),
+            });
+            setCustomAlertVisible(true);
+            //Alert.alert("Error", "User already exists");
+          } else {
+            setCustomAlertContent({
+              title: i18n.t("error"),
+              message: i18n.t("an_unexpected_error_occurred"),
+            });
+            setCustomAlertVisible(true);
+            //Alert.alert("Error", error.response.data.message || `${i18n.t('an_unexpected_error_occurred')}`);
+          }
+        } else if (error.request) {
+          setCustomAlertContent({
+            title: i18n.t("error"),
+            message: i18n.t("network_error"),
+          });
+          setCustomAlertVisible(true);
+          //Alert.alert("Error", "Network error");
+        } else {
+          setCustomAlertContent({
+            title: i18n.t("error"),
+            message: i18n.t("an_unexpected_error_occurred"),
+          });
+          setCustomAlertVisible(true);
+          //Alert.alert("Error", "An unexpected error occurred");
+        }
+      }
+    }
+  }
 
-                        <InputField
-                            placeholder={i18n.t('last_name')}
-                            value={lastName}
-                            onChangeText={(text) => setLastName(filterNameInput(text))} // Filter invalid characters
-                        />
+  /**
+   * Asynchronously verifies the address by sending a POST request to the server.
+   *
+   * This function sends the street and postal code to the server for verification.
+   * If the address is verified successfully, it updates the state with the validity
+   * of the address and its coordinates. In case of an error, it displays an alert
+   * with the appropriate error message.
+   *
+   * @async
+   * @function handleVerifyAddress
+   * @returns {Promise<void>} A promise that resolves when the address verification is complete.
+   * @throws Will display an alert with an error message if the request fails.
+   */
+  const handleVerifyAddress = async () => {
+    try {
+      console.log("street", street);
+      console.log("postalCode", postalCode);
+      console.log("BACK_END_URL", BACK_END_URL);
+      const url = "http://10.0.0.216:3000/client/verifyAddress";
 
-                        <InputField
-                            placeholder={i18n.t('street_address')}
-                            value={street}
-                            onChangeText={setStreet}
-                            autoCapitalize="words"
-                        />
+      const response = await axios.post(url, {
+        street: street,
+        postalCode: postalCode,
+      });
 
-                        <InputField
-                            placeholder={i18n.t('postal_code')}
-                            value={postalCode}
-                            onChangeText={formatPostalCode}
-                            maxLength={7}
-                        />
+      console.log(response);
+      // if (response.status === 'success') {
+      //     Alert.alert("Address verified successfully from client")
+      // }
 
-                        {/* <Dropdown
+      const { isAddressValid, coordinates } = response.data;
+
+      console.log("response daa", response.data);
+
+      setIsAddressValid(isAddressValid);
+      setCoordinates(coordinates);
+    } catch (error) {
+      console.log("error", error);
+      if (error.response) {
+        setCustomAlertContent({
+          title: i18n.t("error"),
+          message:
+            error.response.data.message ||
+            i18n.t("an_unexpected_error_occurred"),
+        });
+        setCustomAlertVisible(true);
+        //Alert.alert("Error", error.response.data.message || 'An unexpected error occurred Ad.Ver.');
+      } else if (error.request) {
+        setCustomAlertContent({
+          title: i18n.t("error"),
+          message: i18n.t("network_error"),
+        });
+        setCustomAlertVisible(true);
+        //Alert.alert("Error", "Network error Ad.Ver.");
+      } else {
+        setCustomAlertContent({
+          title: i18n.t("error"),
+          message: i18n.t("an_unexpected_error_occurred"),
+        });
+        setCustomAlertVisible(true);
+        //Alert.alert("Error", "An unexpected error occurred Ad.Ver.");
+      }
+    }
+  };
+
+  return (
+    <ScrollView style={{ backgroundColor: "#ffffff" }}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={languageStyle.languageButton}
+        >
+          <Text style={languageStyle.languageButtonText}>
+            🌍 {i18n.t("change_language")}
+          </Text>
+        </TouchableOpacity>
+
+        <LanguageModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          setLocale={setLocale}
+        />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Ionicons name="arrow-back" size={28} color="orange" />
+        </TouchableOpacity>
+
+        <Text style={styles.title}>{i18n.t("sign_up")}</Text>
+
+        <InputField
+          placeholder={i18n.t("email")}
+          value={email}
+          onChangeText={validateEmail}
+          isValid={isValid}
+          isError={isError}
+          autoCapitalize="none"
+        />
+
+        {!isValid && email.length > 0 && (
+          <Text style={styles.errorText}>{i18n.t("valid_address")}</Text>
+        )}
+
+        {/* Password Field */}
+        <PasswordField
+          placeholder={i18n.t("password")}
+          value={password}
+          onChangeText={handlePasswordChange}
+          secureTextEntry={!showPassword}
+          isValid={isPasswordValid} // Green when all criteria are met
+          isError={!isPasswordValid && password.length > 0} // Red when criteria are not met
+        />
+
+        {/* Password Criteria */}
+        {password.length > 0 && (
+          <View style={styles.passwordCriteriaContainer}>
+            <Text
+              style={[styles.criteriaText, hasMinLength && styles.criteriaMet]}
+            >
+              {hasMinLength ? "✓" : "•"} {i18n.t("password_min_length")}
+            </Text>
+            <Text
+              style={[styles.criteriaText, hasNumber && styles.criteriaMet]}
+            >
+              {hasNumber ? "✓" : "•"} {i18n.t("password_number")}
+            </Text>
+            <Text
+              style={[styles.criteriaText, hasUppercase && styles.criteriaMet]}
+            >
+              {hasUppercase ? "✓" : "•"} {i18n.t("password_uppercase")}
+            </Text>
+            <Text
+              style={[styles.criteriaText, hasLowercase && styles.criteriaMet]}
+            >
+              {hasLowercase ? "✓" : "•"} {i18n.t("password_lowercase")}
+            </Text>
+            <Text
+              style={[
+                styles.criteriaText,
+                hasSpecialChar && styles.criteriaMet,
+              ]}
+            >
+              {hasSpecialChar ? "✓" : "•"} {i18n.t("password_special_char")}
+            </Text>
+          </View>
+        )}
+
+        {/* Confirm Password Field */}
+        <PasswordField
+          placeholder={i18n.t("confirm_password")}
+          value={confirmPassword}
+          onChangeText={handleConfirmPasswordChange}
+          secureTextEntry={!showPassword}
+          isValid={confirmPassword === password && confirmPassword.length > 0} // Green when passwords match
+          isError={confirmPassword !== password && confirmPassword.length > 0} // Red when passwords do not match
+          errorMessage={
+            confirmPassword !== password && confirmPassword.length > 0
+              ? "Passwords do not match"
+              : null
+          }
+        />
+
+        {/* Button to Proceed to Name and Address Fields */}
+        {!showNameAndAddressFields && (
+          <OrangeButton
+            title={i18n.t("next")}
+            onPress={checkEmailAndPassword}
+            variant="normal"
+          />
+        )}
+
+        {/* Name and Address Fields (Conditional Rendering) */}
+        {showNameAndAddressFields && (
+          <>
+            <InputField
+              placeholder={i18n.t("first_name")}
+              value={firstName}
+              onChangeText={(text) => setFirstName(filterNameInput(text))} // Filter invalid characters
+              autoCapitalize="words"
+            />
+
+            <InputField
+              placeholder={i18n.t("last_name")}
+              value={lastName}
+              onChangeText={(text) => setLastName(filterNameInput(text))} // Filter invalid characters
+            />
+
+            <InputField
+              placeholder={i18n.t("street_address")}
+              value={street}
+              onChangeText={setStreet}
+              autoCapitalize="words"
+            />
+
+            <InputField
+              placeholder={i18n.t("postal_code")}
+              value={postalCode}
+              onChangeText={formatPostalCode}
+              maxLength={7}
+            />
+
+            {/* <Dropdown
                             placeholder="Select Province"
                             items={CANADIAN_PROVINCES.map((province) => ({
                                 label: province,
@@ -485,106 +544,117 @@ export default function SignUpPage({ navigation }) {
                             disabled
                         /> */}
 
-                        <OrangeButton title={i18n.t('verify_address')} onPress={handleVerifyAddress} variant="normal" />
+            <OrangeButton
+              title={i18n.t("verify_address")}
+              onPress={handleVerifyAddress}
+              variant="normal"
+            />
 
-                        {isAddressValid && (
-                            <Text style={styles.text}>{i18n.t('valid_address_entered')}</Text>
-                        )}
+            {isAddressValid && (
+              <Text style={styles.text}>{i18n.t("valid_address_entered")}</Text>
+            )}
 
-                        {coordinates && (
-                            <MapView
-                                style={styles.map}
-                                initialRegion={{
-                                    latitude: coordinates.latitude,
-                                    longitude: coordinates.longitude,
-                                    latitudeDelta: 0.01,
-                                    longitudeDelta: 0.01,
-                                }}
-                            >
-                                <Marker coordinate={coordinates} />
-                            </MapView>
-                        )}
+            {coordinates && (
+              <MapView
+                style={styles.map}
+                initialRegion={{
+                  latitude: coordinates.latitude,
+                  longitude: coordinates.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+              >
+                <Marker coordinate={coordinates} />
+              </MapView>
+            )}
 
-                        {/* Sign Up Button (Enabled only if address is verified) */}
-                        <OrangeButton title={i18n.t('sign_up')} onPress={handleSignUp} testID="sign-up-button" disabled={!isAddressValid} variant="normal" />
-                    </>
-                )}
+            {/* Sign Up Button (Enabled only if address is verified) */}
+            <OrangeButton
+              title={i18n.t("sign_up")}
+              onPress={handleSignUp}
+              testID="sign-up-button"
+              disabled={!isAddressValid}
+              variant="normal"
+            />
+          </>
+        )}
 
-                {/* Sign In Link */}
-                <TouchableOpacity onPress={() => navigation.navigate('SignInPage')}>
-                    <Text style={styles.signInText}>{i18n.t('already_have_an_account')}</Text>
-                </TouchableOpacity>
+        {/* Sign In Link */}
+        <TouchableOpacity onPress={() => navigation.navigate("SignInPage")}>
+          <Text style={styles.signInText}>
+            {i18n.t("already_have_an_account")}
+          </Text>
+        </TouchableOpacity>
 
-                <CustomAlertError
-                    visible={customAlertVisible}
-                    title={customAlertContent.title}
-                    message={customAlertContent.message}
-                    onClose={() => setCustomAlertVisible(false)}
-                />
+        <CustomAlertError
+          visible={customAlertVisible}
+          title={customAlertContent.title}
+          message={customAlertContent.message}
+          onClose={() => setCustomAlertVisible(false)}
+        />
 
-                <CustomAlertSuccess
-                    visible={successAlertVisible}
-                    title={successAlertContent.title}
-                    message={successAlertContent.message}
-                    onClose={() => {
-                        setSuccessAlertVisible(false);
-                        navigation.goBack();
-                    }}
-                />
-
-            </View>
-        </ScrollView>
-    );
+        <CustomAlertSuccess
+          visible={successAlertVisible}
+          title={successAlertContent.title}
+          message={successAlertContent.message}
+          onClose={() => {
+            setSuccessAlertVisible(false);
+            navigation.goBack();
+          }}
+        />
+      </View>
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: '#fff',
-        paddingTop: 100,
-        paddingBottom: 50,
-    },
-    backButton: {
-        position: 'absolute',
-        top: 40,
-        left: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        zIndex: 1,
-    },
-    backText: {
-        marginLeft: 8,
-        fontSize: 18,
-        color: '#1E90FF',
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    passwordCriteriaContainer: {
-        marginBottom: 15,
-    },
-    criteriaText: {
-        color: 'gray',
-        fontSize: 14,
-    },
-    criteriaMet: {
-        color: 'green', // Green for met criteria
-    },
-    signInText: {
-        color: '#1E90FF',
-        textAlign: 'center',
-        marginTop: 15,
-        fontSize: 16,
-    },
-    map: {
-        width: '100%',
-        height: 200,
-        marginTop: 20,
-        marginBottom: 20,
-    },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: "#fff",
+    paddingTop: 100,
+    paddingBottom: 50,
+  },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 1,
+  },
+  backText: {
+    marginLeft: 8,
+    fontSize: 18,
+    color: "#1E90FF",
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  passwordCriteriaContainer: {
+    marginBottom: 15,
+  },
+  criteriaText: {
+    color: "gray",
+    fontSize: 14,
+  },
+  criteriaMet: {
+    color: "green", // Green for met criteria
+  },
+  signInText: {
+    color: "#1E90FF",
+    textAlign: "center",
+    marginTop: 15,
+    fontSize: 16,
+  },
+  map: {
+    width: "100%",
+    height: 200,
+    marginTop: 20,
+    marginBottom: 20,
+  },
 });

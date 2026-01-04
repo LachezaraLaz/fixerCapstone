@@ -36,6 +36,8 @@ export const verifyAddress = async (
 ) => {
   const { street, postalCode } = req.body;
 
+  console.log("body", req.body);
+
   try {
     const response = await axios.post(
       `https://addressvalidation.googleapis.com/v1:validateAddress?key=${GOOGLE_API_KEY}`,
@@ -94,6 +96,9 @@ export const verifyAddress = async (
         postalCode || completeAddress.postalCode || ""
       }`;
       const coordinates = await getCoordinates(fullAddress);
+
+      console.log("res", coordinates);
+      console.log("completeadd", completeAddress);
 
       res.send({
         status: "success",

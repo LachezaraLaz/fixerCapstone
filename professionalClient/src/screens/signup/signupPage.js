@@ -197,7 +197,7 @@ export default function SignUpPage({ navigation }) {
         }
         else {
             try {
-                const response = await axios.post(`https://fixercapstone-production.up.railway.app/professional/register`, {
+                const response = await axios.post(`http://192.168.2.91:3000/professional/register`, {
                     email: email,
                     firstName: firstName,
                     lastName: lastName,

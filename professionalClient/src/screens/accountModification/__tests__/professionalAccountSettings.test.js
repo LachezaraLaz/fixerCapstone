@@ -104,7 +104,7 @@ describe('ProfessionalAccountSettingsPage', () => {
         // Wait for the data to load
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/professional/profile',
+                'http://192.168.2.91:3000/professional/profile',
                 { headers: { Authorization: 'Bearer fake-token' } }
             );
         });
@@ -204,7 +204,7 @@ describe('ProfessionalAccountSettingsPage', () => {
         // Check that the API call was made with correct parameters
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/professional/reset/validateCurrentPassword',
+                'http://192.168.2.91:3000/professional/reset/validateCurrentPassword',
                 {
                     email: 'john.doe@example.com',
                     currentPassword: 'currentPassword123',
@@ -384,7 +384,7 @@ describe('ProfessionalAccountSettingsPage', () => {
         // Check that profile update API was called
         await waitFor(() => {
             expect(axios.put).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/professional/updateProfessionalProfile',
+                'http://192.168.2.91:3000/professional/updateProfessionalProfile',
                 {
                     firstName: 'Jane',
                     lastName: 'Doe',
@@ -394,7 +394,7 @@ describe('ProfessionalAccountSettingsPage', () => {
 
             // Check that password update API was called
             expect(axios.post).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/professional/reset/updatePasswordWithOld',
+                'http://192.168.2.91:3000/professional/reset/updatePasswordWithOld',
                 {
                     email: 'john.doe@example.com',
                     currentPassword: 'currentPassword123',

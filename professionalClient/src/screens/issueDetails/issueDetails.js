@@ -45,7 +45,7 @@ const IssueDetails = () => {
     const fetchJobDetails = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/${jobId}`);
+            const response = await axios.get(`http://192.168.2.91:3000/issue/${jobId}`);
             setJob(response.data);
         } catch (error) {
             Alert.alert("Error", "Failed to fetch issue details");
@@ -121,7 +121,7 @@ const IssueDetails = () => {
                                 setLoading(false);
                                 // First update job status to "Completed"
                                 const response = await axios.delete(
-                                    `https://fixercapstone-production.up.railway.app/issue/updateStatus/${job.id}`,
+                                    `http://192.168.2.91:3000/issue/updateStatus/${job.id}`,
                                     {
                                         params: { status: 'Completed' },
                                         headers: { Authorization: `Bearer ${token}` }
@@ -130,7 +130,7 @@ const IssueDetails = () => {
 
                                 // Deduct payment
                                 const deductResponse = await axios.post(
-                                    `https://fixercapstone-production.up.railway.app/payment/deduct-cut/${job.id}`,
+                                    `http://192.168.2.91:3000/payment/deduct-cut/${job.id}`,
                                     {
                                         jobId: job._id,
                                         verifyStatus: false // Optional flag to bypass status check

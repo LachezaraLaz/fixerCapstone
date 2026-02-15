@@ -57,7 +57,7 @@ const BankingInfoPage = () => {
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/professional/add-banking-info`,
+                `http://192.168.2.91:3000/professional/add-banking-info`,
                 { professionalId: userId, paymentMethodId: paymentMethod.id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

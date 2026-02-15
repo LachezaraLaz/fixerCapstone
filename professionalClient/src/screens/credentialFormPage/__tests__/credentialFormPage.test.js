@@ -58,7 +58,7 @@ describe('CredentialFormPage Component', () => {
 
         await waitFor(() => {
         expect(axios.post).toHaveBeenCalledWith(
-            'https://fixercapstone-production.up.railway.app/professional/verify',
+            'http://192.168.2.91:3000/professional/verify',
             { tradeLicense: '12345678' },
             {
             headers: { Authorization: 'Bearer mock-token' },

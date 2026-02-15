@@ -37,7 +37,7 @@ const NotificationPage = () => {
     const fetchNotifications = async () => {
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
+            const response = await axios.get(`http://192.168.2.91:3000/notification`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const sorted = sortNotifications(response.data);
@@ -65,7 +65,7 @@ const NotificationPage = () => {
     //     setLoading(true);
     //     const token = await AsyncStorage.getItem('token');
     //     try {
-    //         const response = await axios.get('https://fixercapstone-production.up.railway.app/notification/history', {
+    //         const response = await axios.get('http://192.168.2.91:3000/notification/history', {
     //             headers: { Authorization: `Bearer ${token}` },
     //             params: { page, limit: 5 }, // Fetch 5 notifications at a time
     //         });
@@ -100,7 +100,7 @@ const NotificationPage = () => {
     const toggleReadStatus = async (id, isRead) => {
         const token = await AsyncStorage.getItem('token');
         try {
-            await axios.patch(`https://fixercapstone-production.up.railway.app/notification/${id}/read`, { isRead: !isRead }, {
+            await axios.patch(`http://192.168.2.91:3000/notification/${id}/read`, { isRead: !isRead }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setNotifications((prev) => {

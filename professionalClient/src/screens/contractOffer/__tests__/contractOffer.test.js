@@ -108,7 +108,7 @@ describe('ContractOffer Component', () => {
 
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/users/user/testuser@example.com',
+                'http://192.168.2.91:3000/users/user/testuser@example.com',
                 { headers: { Authorization: 'Bearer mock-token' } }
             );
         });

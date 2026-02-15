@@ -93,7 +93,7 @@ describe('UploadID Component', () => {
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/professional/uploadID',
+                'http://192.168.2.91:3000/professional/uploadID',
                 expect.any(FormData),
                 {
                     headers: {

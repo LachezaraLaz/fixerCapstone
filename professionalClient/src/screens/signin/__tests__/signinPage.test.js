@@ -103,7 +103,7 @@ describe('signIn Component', () => {
         // Wait for the asynchronous requests
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/professional/signin/',
+                'http://192.168.2.91:3000/professional/signin/',
                 {
                     email: 'user@example.com',
                     password: 'password123',
@@ -168,7 +168,7 @@ describe('signIn Component', () => {
 
         await waitFor(() => {
             // Checking that the error message is displayed
-            expect(axios.post).toHaveBeenCalledWith(`https://fixercapstone-production.up.railway.app/professional/signin/`, {
+            expect(axios.post).toHaveBeenCalledWith(`http://192.168.2.91:3000/professional/signin/`, {
                 email: 'nonexistent@example.com',
                 password: 'password123'
             });

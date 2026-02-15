@@ -64,7 +64,7 @@ const ProfessionalAccountSettingsPage = () => {
                 }
 
                 const response = await axios.get(
-                    `https://fixercapstone-production.up.railway.app/professional/profile`,
+                    `http://192.168.2.91:3000/professional/profile`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -128,7 +128,7 @@ const ProfessionalAccountSettingsPage = () => {
             }
 
             const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/professional/reset/validateCurrentPassword`,
+                `http://192.168.2.91:3000/professional/reset/validateCurrentPassword`,
                 { email: formData.email, currentPassword: formData.currentPassword },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -220,7 +220,7 @@ const ProfessionalAccountSettingsPage = () => {
             };
 
             await axios.put(
-                `https://fixercapstone-production.up.railway.app/professional/updateProfessionalProfile`,
+                `http://192.168.2.91:3000/professional/updateProfessionalProfile`,
                 updatedData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -234,7 +234,7 @@ const ProfessionalAccountSettingsPage = () => {
                 };
 
                 await axios.post(
-                    `https://fixercapstone-production.up.railway.app/professional/reset/updatePasswordWithOld`,
+                    `http://192.168.2.91:3000/professional/reset/updatePasswordWithOld`,
                     passwordData,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );

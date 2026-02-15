@@ -164,7 +164,7 @@ describe('BankingInfoPage', () => {
         // Wait for API call
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                'https://fixercapstone-production.up.railway.app/professional/add-banking-info',
+                'http://192.168.2.91:3000/professional/add-banking-info',
                 { professionalId: 'test-user-id', paymentMethodId: 'pm_test123' },
                 { headers: { Authorization: 'Bearer test-token' } }
             );

@@ -89,7 +89,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
      */
     const fetchAllIssues = async () => {
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issues`);
+            const response = await axios.get(`http://192.168.2.91:3000/issues`);
             const fixedIssues = response.data.jobs
                 .map(issue => ({
                     ...issue,
@@ -128,7 +128,7 @@ export default function HomeScreen({ route, setIsLoggedIn }) {
                 return;
             }
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
+            const response = await axios.get(`http://192.168.2.91:3000/professional/banking-info-status`, {
                 params: { userId },
                 headers: { Authorization: `Bearer ${token}` }, // Include the token in the headers
             });

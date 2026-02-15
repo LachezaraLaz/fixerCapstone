@@ -116,7 +116,7 @@ describe('OldNotifications', () => {
 
         await waitFor(() => {
             expect(axios.patch).toHaveBeenCalledWith(
-                `https://fixercapstone-production.up.railway.app/notification/${fakeNotification.id}/read`,
+                `http://192.168.2.91:3000/notification/${fakeNotification.id}/read`,
                 { isRead: true },
                 { headers: { Authorization: 'Bearer mock-token' } }
             );

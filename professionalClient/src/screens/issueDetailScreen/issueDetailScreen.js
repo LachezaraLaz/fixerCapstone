@@ -95,7 +95,7 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
                     return;
                 }
 
-                const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
+                const response = await axios.get(`http://192.168.2.91:3000/professional/banking-info-status`, {
                     params: { userId },
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -220,7 +220,7 @@ export default function IssueDetailScreen({ issue, issues, onClose }) {
             };
 
             // Send the POST request
-            const response = await fetch('https://fixercapstone-production.up.railway.app/chat/init', {
+            const response = await fetch('http://192.168.2.91:3000/chat/init', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

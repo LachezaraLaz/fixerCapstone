@@ -70,7 +70,7 @@ const ProfilePage = () => {
                 return;
             }
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/profile`, {
+            const response = await axios.get(`http://192.168.2.91:3000/professional/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -103,7 +103,7 @@ const ProfilePage = () => {
      */
     const fetchReviews = async () => {
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/${professional.email}/reviews`);
+            const response = await axios.get(`http://192.168.2.91:3000/professional/${professional.email}/reviews`);
             setReviews(response.data);
             console.log(response.data);
             console.log(reviews.length)
@@ -141,7 +141,7 @@ const ProfilePage = () => {
                 return;
             }
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/banking-info-status`, {
+            const response = await axios.get(`http://192.168.2.91:3000/professional/banking-info-status`, {
                 params: { userId },
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -162,7 +162,7 @@ const ProfilePage = () => {
                 return;
             }
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/professional/payment-method`, {
+            const response = await axios.get(`http://192.168.2.91:3000/professional/payment-method`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { userId },
             });

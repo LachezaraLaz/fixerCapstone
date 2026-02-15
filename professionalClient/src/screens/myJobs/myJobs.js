@@ -35,7 +35,7 @@ export default function MyJobsProfessional() {
     const fetchNotificationNumber = async () => {
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
+            const response = await axios.get(`http://192.168.2.91:3000/notification`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -70,7 +70,7 @@ export default function MyJobsProfessional() {
                 return;
             }
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/myJobs/get`, {
+            const response = await axios.get(`http://192.168.2.91:3000/myJobs/get`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

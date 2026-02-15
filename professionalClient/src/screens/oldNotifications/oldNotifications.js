@@ -15,7 +15,7 @@ const OldNotifications = () => {
     const toggleReadStatus = async (id, isRead) => {
         const token = await AsyncStorage.getItem('token');
         try {
-            await axios.patch(`https://fixercapstone-production.up.railway.app/notification/${id}/read`, { isRead: !isRead }, {
+            await axios.patch(`http://192.168.2.91:3000/notification/${id}/read`, { isRead: !isRead }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setNotifications((prev) => {

@@ -117,7 +117,7 @@ describe('SignUpPage Tests', () => {
 
         // Assertions
         await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith('https://fixercapstone-production.up.railway.app/professional/register', {
+            expect(axios.post).toHaveBeenCalledWith('http://192.168.2.91:3000/professional/register', {
                 email: 'existing@example.com',
                 firstName: 'Jane',
                 lastName: 'Doe',

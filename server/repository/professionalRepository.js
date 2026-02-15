@@ -115,7 +115,7 @@ class ProfessionalRepository {
             },
         });
 
-        const verificationUrl = `https://fixercapstone-production.up.railway.app/professional/verify-email?token=${token}`;
+        const verificationUrl = `http://192.168.2.91:3000/professional/verify-email?token=${token}`;
 
         const mailOptions = {
             from: process.env.EMAIL,

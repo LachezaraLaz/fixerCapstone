@@ -25,7 +25,7 @@ async function sendVerificationEmail(user, token) {
         auth: { user: 'fixit9337@gmail.com', pass: process.env.PASS_RESET },
     });
 
-    const verificationUrl = `https://fixercapstone-production.up.railway.app/client/verify-email?token=${token}`;
+    const verificationUrl = `http://192.168.2.91:3000/client/verify-email?token=${token}`;
     const mailOptions = {
         from: 'fixit9337@gmail.com',
         to: user.email,

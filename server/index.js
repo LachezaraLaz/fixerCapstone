@@ -24,7 +24,7 @@ const app = express();
 const cors = require('cors');
 app.use(bodyParser.json());
 app.use(cors({
-    origin: ['https://fixercapstone-production.up.railway.app'],
+    origin: ['http://192.168.2.91:3000'],
 }));
 
 app.use(bodyParser.json());

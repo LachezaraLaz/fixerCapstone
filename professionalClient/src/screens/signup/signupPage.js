@@ -203,7 +203,7 @@ export default function SignUpPage({ navigation }) {
                     lastName: lastName,
                     password: password
                 })
-                if (response.status !== 400) {
+                if (response.status === 200) {
                     setSuccessAlertContent({
                         title: "Account created successfully",
                         message: "An email was sent to verify your email.",

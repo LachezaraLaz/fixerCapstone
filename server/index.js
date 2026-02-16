@@ -23,11 +23,12 @@ const chatRoute = require('./routes/chatRoute');
 const app = express();
 const cors = require('cors');
 app.use(bodyParser.json());
-app.use(cors({
-    origin: ['http://192.168.2.91:3000'],
-}));
+app.use(cors()); // duplicate ?
+//app.use(cors({
+  //  origin: ['http://192.168.2.91:3000'],
+//}));
 
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
 
@@ -35,7 +36,7 @@ mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log("Connected to MongoDB"))
     .catch(err => console.log(err));
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log("server is running on port", server.address().port);
 });
 
@@ -61,7 +62,7 @@ app.use('/payment', paymentRoutes.paymentRouter);
 app.use('/send-email-report', emailReportRouter);
 app.use('/chat', chatRoute.chatRouter);
 
-app.use(cors()); // duplicate ?
+
 app.use('/api/geocode', geocodeRoute);
 
 

@@ -68,7 +68,7 @@ const AddReview = ({ navigation, route }) => {
         }
 
         try {
-            const response = await axios.post(`https://fixercapstone-production.up.railway.app/reviews/add`, {
+            const response = await axios.post(`http://192.168.2.91:3000/reviews/add`, {
                 jobId,
                 rating: parseInt(rating, 10),
                 comment,

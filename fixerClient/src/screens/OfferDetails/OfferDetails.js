@@ -19,13 +19,13 @@ export default function OfferDetails({ route, navigation }) {
             const token = await AsyncStorage.getItem('token');
             if (!token) return;
 
-            const profile = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile`, {
+            const profile = await axios.get(`http://192.168.2.91:3000/client/profile`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             const clientEmail = profile.data.email;
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/quotes/client/${clientEmail}`, {
+            const response = await axios.get(`http://192.168.2.91:3000/quotes/client/${clientEmail}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -48,7 +48,7 @@ export default function OfferDetails({ route, navigation }) {
         try {
             const token = await AsyncStorage.getItem('token');
             const response = await axios.put(
-                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                `http://192.168.2.91:3000/quotes/${offerId}`,
                 { status },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

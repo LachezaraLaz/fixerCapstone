@@ -74,7 +74,7 @@ const ProfilePage = ({navigation, setIsLoggedIn}) => {
                 return;
             }
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile`, {
+            const response = await axios.get(`http://192.168.2.91:3000/client/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

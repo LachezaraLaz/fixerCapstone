@@ -202,7 +202,7 @@ describe('SignUpPage', () => {
     
         await waitFor(() => {
           expect(axios.post).toHaveBeenCalledWith(
-            'https://fixercapstone-production.up.railway.app/client/verifyAddress',
+            'http://192.168.2.91:3000/client/verifyAddress',
             {
               street: '123 Main St',
               postalCode: 'A1B 2C3',

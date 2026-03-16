@@ -22,7 +22,7 @@ dotenv.config();
 async function sendVerificationEmail(user, token) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
-        auth: { user: 'fixit9337@gmail.com', pass: process.env.PASS_RESET },
+        auth: { user: process.env.EMAIL, pass: process.env.PASS_RESET },
     });
 
     const verificationUrl = `http://192.168.2.91:3000/client/verify-email?token=${token}`;

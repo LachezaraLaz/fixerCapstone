@@ -213,7 +213,7 @@ export default function CreateIssue({ navigation }) {
             setLoadingAi(true);
             // Call AI endpoint
             const response = await axios.post(
-                'https://fixercapstone-production.up.railway.app/issue/aiEnhancement',
+                'http://192.168.2.91:3000/issue/aiEnhancement',
                 { description }
             );
 
@@ -285,7 +285,7 @@ export default function CreateIssue({ navigation }) {
         try {
           const token = await AsyncStorage.getItem('token');
       
-          const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile/`, {
+          const response = await axios.get(`http://192.168.2.91:3000/client/profile/`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -346,7 +346,7 @@ export default function CreateIssue({ navigation }) {
      */
     const verifyAddress = async () => {
         try {
-            const response = await axios.post('https://fixercapstone-production.up.railway.app/client/verifyAddress', {
+            const response = await axios.post('http://192.168.2.91:3000/client/verifyAddress', {
                 street: useDefaultLocation ? defaultLocation : newStreet,
                 postalCode: useDefaultLocation ? defaultLocation.split(',')[1]?.trim() : newPostalCode,
             });
@@ -448,7 +448,7 @@ export default function CreateIssue({ navigation }) {
                 address: fullAddress,
             });
 
-            const response = await axios.post(`https://fixercapstone-production.up.railway.app/issue/create`, formData, {
+            const response = await axios.post(`http://192.168.2.91:3000/issue/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`

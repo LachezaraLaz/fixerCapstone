@@ -51,7 +51,7 @@ export default function MyIssuesPosted({navigation}) {
     const fetchNotificationNumber = async () => {
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
+            const response = await axios.get(`http://192.168.2.91:3000/notification`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -90,7 +90,7 @@ export default function MyIssuesPosted({navigation}) {
             const decodedToken = jwtDecode(token);
             const userEmail = decodedToken.email;
 
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`, {
+            const response = await axios.get(`http://192.168.2.91:3000/issue/user/${userEmail}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 

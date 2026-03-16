@@ -35,7 +35,9 @@ const authenticateJWT = (req, res, next) => {
             return res.status(403).json({ message: 'Forbidden - Invalid token' });
         }
 
-        console.log("Decoded JWT Payload:", user); // Log the decoded token
+        if (process.env.NODE_ENV === 'development') {
+            console.log("Decoded JWT Payload:", user); // Log the decoded token
+        }
         req.user = user;
         next();
     });

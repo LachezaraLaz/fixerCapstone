@@ -252,7 +252,7 @@ export default function SignUpPage({ navigation }) {
             //Alert.alert('Error', 'Please verify your address');
         } else {
             try {
-                const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/register`, {
+                const response = await axios.post(`http://192.168.2.91:3000/client/register`, {
                     email: email,
                     firstName: firstName,
                     lastName: lastName,
@@ -322,7 +322,7 @@ export default function SignUpPage({ navigation }) {
      */
     const handleVerifyAddress = async () => {
         try {
-            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
+            const response = await axios.post(`http://192.168.2.91:3000/client/verifyAddress`, {
                 street: street,
                 postalCode: postalCode,
             })

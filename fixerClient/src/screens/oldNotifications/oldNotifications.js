@@ -22,7 +22,7 @@ const OldNotifications = () => {
         const token = await AsyncStorage.getItem('token');
         try {
             await axios.patch(
-                `https://fixercapstone-production.up.railway.app/notification/${id}/read`,
+                `http://192.168.2.91:3000/notification/${id}/read`,
                 { isRead: !isRead },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -105,8 +105,7 @@ const ProfilePage = () => {
         try {
             const response = await axios.get(`http://192.168.2.91:3000/professional/${professional.email}/reviews`);
             setReviews(response.data);
-            console.log(response.data);
-            console.log(reviews.length)
+            console.log('Fetched reviews:', response.data.length);
         } catch (error) {
             console.log('Error fetching reviews:', error.response || error.message);
             //Alert.alert('Error', 'Failed to load reviews.');
@@ -115,9 +114,14 @@ const ProfilePage = () => {
         }
     };
 
+
+    // I add this line and put it in the useEffect so we wont have that infinite display on the temrinal.
+    const reviewsFetched = useRef(false);
+
     useEffect(() => {
-        if (professional && professional.email) {
+        if (professional && professional.email && !reviewsFetched.current) {
             fetchReviews();
+            reviewsFetched.current = true;
         }
     }, [professional]);
 
@@ -267,7 +271,7 @@ const ProfilePage = () => {
                 <View style={styles.reviewsContainer}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.sectionTitle}>Rating & Reviews</Text>
-                        <TouchableOpacity 
+                        <TouchableOpacity
                         // onPress={() => navigation.navigate('ReviewsPage', {professionalEmail: professional.email})}
                         >
                             <Text style={styles.reviewCountLink}> ({reviews.length})</Text>

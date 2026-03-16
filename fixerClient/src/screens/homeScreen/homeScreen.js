@@ -47,7 +47,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
                 const token = await AsyncStorage.getItem('token');
                 if (!token) return;
 
-                const response = await axios.get(`https://fixercapstone-production.up.railway.app/client/profile`, {
+                const response = await axios.get(`http://192.168.2.91:3000/client/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -68,13 +68,13 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             if (!token) return;
 
             const profile = await axios.get(
-                `https://fixercapstone-production.up.railway.app/client/profile`,
+                `http://192.168.2.91:3000/client/profile`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             const email = profile.data.email;
 
             const resp = await axios.get(
-                `https://fixercapstone-production.up.railway.app/quotes/client/${email}`,
+                `http://192.168.2.91:3000/quotes/client/${email}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -96,7 +96,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             if (!token) return;
 
             const response = await axios.put(
-                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                `http://192.168.2.91:3000/quotes/${offerId}`,
                 { status: 'accepted' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -119,7 +119,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
             if (!token) return;
 
             const response = await axios.put(
-                `https://fixercapstone-production.up.railway.app/quotes/${offerId}`,
+                `http://192.168.2.91:3000/quotes/${offerId}`,
                 { status: 'rejected' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -150,7 +150,7 @@ export default function HomeScreen({ navigation, setIsLoggedIn }) {
     const fetchNotificationNumber = async () => {
         const token = await AsyncStorage.getItem('token');
         try {
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/notification`, {
+            const response = await axios.get(`http://192.168.2.91:3000/notification`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

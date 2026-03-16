@@ -162,7 +162,7 @@ describe('ReportPage', () => {
   
     await waitFor(() => {
       expect(axios.post).toHaveBeenCalledWith(
-        'https://fixercapstone-production.up.railway.app/send-email-report',
+        'http://192.168.2.91:3000/send-email-report',
         expect.objectContaining({
           description: 'Test description',
           issue: 'Fix Sink',

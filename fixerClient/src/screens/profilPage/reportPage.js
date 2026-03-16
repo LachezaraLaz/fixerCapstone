@@ -82,7 +82,7 @@ const ReportPage = ({navigation}) => {
             const userEmail = decodedToken.email;
 
             try {
-                const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/user/${userEmail}`);
+                const response = await axios.get(`http://192.168.2.91:3000/issue/user/${userEmail}`);
                 setIssues(response.data.jobs); // Set the jobs state to the fetched data
             } catch (error) {
                 console.error('Error fetching jobs:', error);
@@ -120,7 +120,7 @@ const ReportPage = ({navigation}) => {
             const userEmail = decodedToken.email;
 
             const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/send-email-report`,
+                `http://192.168.2.91:3000/send-email-report`,
                 formData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -102,7 +102,7 @@ export default function EditIssue({ route, navigation }) {
             setLoadingAi(true);
             // Call AI endpoint
             const response = await axios.post(
-                `https://fixercapstone-production.up.railway.app/issue/aiEnhancement`,
+                `http://192.168.2.91:3000/issue/aiEnhancement`,
                 { description }
             );
 
@@ -255,7 +255,7 @@ export default function EditIssue({ route, navigation }) {
      */
     const verifyAddress = async () => {
         try {
-            const response = await axios.post(`https://fixercapstone-production.up.railway.app/client/verifyAddress`, {
+            const response = await axios.post(`http://192.168.2.91:3000/client/verifyAddress`, {
                 street: useCurrentLocation ? currentAddress : newStreet,
                 postalCode: useCurrentLocation ? currentAddress.split(',')[1]?.trim() : newPostalCode,
             });
@@ -331,7 +331,7 @@ export default function EditIssue({ route, navigation }) {
                 navigation.goBack();
                 return;
             }
-            const response = await axios.get(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, {
+            const response = await axios.get(`http://192.168.2.91:3000/issue/${jobId}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (response.status === 200) {
@@ -432,7 +432,7 @@ export default function EditIssue({ route, navigation }) {
                 latitude: useCurrentLocation ? currentLatitude : coordinates.latitude,
             });
 
-            const response = await axios.put(`https://fixercapstone-production.up.railway.app/issue/${jobId}`, formData,
+            const response = await axios.put(`http://192.168.2.91:3000/issue/${jobId}`, formData,
                 {
                headers: {
                     'Content-Type': 'multipart/form-data',
